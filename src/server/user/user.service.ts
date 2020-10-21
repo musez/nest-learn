@@ -20,8 +20,15 @@ export class UserService {
     return await this.userRepository.find();
   }
 
-  // 查找一条数据
   async findOne(id: string): Promise<Users> {
-    return await this.userRepository.findOne({ id });
+    return await this.userRepository.findOne(id);
+  }
+
+  // async update(id: string): Promise<void> {
+  //   await this.userRepository.update({ id });
+  // }
+
+  async remove(id: string): Promise<void> {
+    await this.userRepository.delete(id);
   }
 }
