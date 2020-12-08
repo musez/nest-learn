@@ -21,7 +21,7 @@ import { UserModule } from './server/user/user.module';
       multipleStatements: true,
       dropSchema: false,
       synchronize: true, // 是否自动将实体类同步到数据库
-      logging: true,
+      logging: false,
     }),
     UserModule,
   ],
