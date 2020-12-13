@@ -15,9 +15,12 @@ export class ValidationPipe implements PipeTransform {
     const object = plainToClass(metatype, value);
     const errors = await validate(object);
     if (errors.length > 0) {
+      console.log(errors);
       const msg = Object.values(errors[0].constraints)[0]; // 只需要取第一个错误信息并返回即可
-      Logger.error(`Validation failed: ${msg}`);
-      throw new BadRequestException(`Validation failed: ${msg}`);
+      // Logger.error(`Validation failed: ${msg}`);
+      // throw new BadRequestException(`Validation failed: ${msg}`);
+      Logger.error(`字段校验不通过: ${msg}`);
+      throw new BadRequestException(`字段校验不通过: ${msg}`);
     }
     return value;
   }

@@ -1,5 +1,6 @@
 import { ExceptionFilter, Catch, ArgumentsHost, HttpException } from '@nestjs/common';
 import { Request, Response } from 'express';
+import dayjs = require('dayjs');
 import { Logger } from '../../utils/log4js';
 
 @Catch(HttpException)
@@ -18,10 +19,16 @@ export class HttpExceptionFilter implements ExceptionFilter {
     Response: ${exception.toString()} \n  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
     `;
     Logger.info(logFormat);
+
+    // 此刻的时间
+    const nowDate = dayjs(Date.now()).format('YYYY-MM-DD HH:mm:ss');
     response.status(status).json({
-      statusCode: status,
-      error: exception.message,
+      code: status,
+      data: null,
       msg: `${status >= 500 ? 'Service Error' : 'Client Error'}`,
+      date: nowDate,
+      path: request.url,
+      error: exception.message,
     });
   }
 }

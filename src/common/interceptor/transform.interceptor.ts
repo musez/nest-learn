@@ -10,15 +10,19 @@ export class TransformInterceptor implements NestInterceptor {
     return next.handle().pipe(
       map(data => {
         const logFormat = ` <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-    Request original url: ${req.originalUrl}
-    Method: ${req.method}
-    IP: ${req.ip}
-    User: ${JSON.stringify(req.user)}
-    Response data:\n ${JSON.stringify(data.data)}
-    <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<`;
+        Request original url: ${req.originalUrl}
+        Method: ${req.method}
+        IP: ${req.ip}
+        User: ${JSON.stringify(req.user)}
+        Response data:\n ${JSON.stringify(data)}
+        <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<`;
         Logger.info(logFormat);
         Logger.access(logFormat);
-        return data;
+        return {
+          data,
+          code: 200,
+          msg: '请求成功！',
+        }
       }),
     );
   }
