@@ -60,9 +60,9 @@ export class File extends BaseEntity {
   })
   fileUrl: string;
 
-  @Column('text', {
+  @Column('varchar', {
     comment: '关联 id',
     nullable: true,
   })
-  extId: number;
+  extId: string;
 }

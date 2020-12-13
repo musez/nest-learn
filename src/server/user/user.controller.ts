@@ -1,10 +1,12 @@
 import { Controller, Get, Post, Req, Query, Body, UsePipes } from '@nestjs/common';
 import { ApiTags, ApiQuery, ApiBody, ApiParam, ApiHeader, ApiHeaders, ApiResponse } from '@nestjs/swagger';
 import { UserService } from './user.service';
-import { ValidationPipe } from '../../common/pipe/validation.pipe';
 import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create.user.dto';
-import { UpdateUserDto } from './dto/update.user.dto';
+import { UpdateUserDto,  } from './dto/update.user.dto';
+import { RegisterUserDto } from './dto/register.user.dto';
+import { LoginUserDto } from './dto/login.user.dto';
+import { DeleteUserDto } from './dto/delete.user.dto';
 
 @ApiTags('用户')
 @Controller('user')
@@ -18,13 +20,21 @@ export class UserController {
   //   required: true,
   //   description: 'token',
   // })
-  @UsePipes(new ValidationPipe()) // 使用管道验证
   @ApiResponse({ status: 200, description: '请求成功！' })
-  // add(@Body() user: User): Promise<User> {
-  //   return this.userService.insert(user);
-  // }
   add(@Body() createUserDto: CreateUserDto): Promise<CreateUserDto> {
     return this.userService.insert(createUserDto);
+  }
+
+  @Post('login')
+  @ApiResponse({ status: 200, description: '请求成功！' })
+  login(@Body() loginUserDto: LoginUserDto): Promise<CreateUserDto> {
+    return this.userService.login(loginUserDto);
+  }
+
+  @Post('register')
+  @ApiResponse({ status: 200, description: '请求成功！' })
+  register(@Body() registerUserDto: RegisterUserDto): Promise<CreateUserDto> {
+    return this.userService.register(registerUserDto);
   }
 
   @Get('findList')
@@ -55,18 +65,17 @@ export class UserController {
   }
 
   @Post('modify')
-  @UsePipes(new ValidationPipe()) // 使用管道验证
   modify(@Body() updateUserDto: UpdateUserDto): Promise<void> {
     return this.userService.update(updateUserDto);
   }
 
   @Post('remove')
-  @ApiQuery({
-    name: 'id',
+  @ApiBody({
+    type: DeleteUserDto,
     description: '主键 id',
     required: true,
   })
-  remove(@Body('id') id: string): Promise<void> {
+  remove(@Body('id') id): Promise<void> {
     return this.userService.deleteById(id);
   }
 }

@@ -1,5 +1,4 @@
-import { PartialType } from '@nestjs/mapped-types';
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, PartialType } from '@nestjs/swagger';
 import { IsNotEmpty, IsString, IsInt } from 'class-validator';
 import { CreateRoleDto } from './create-role.dto';
 
@@ -8,6 +7,6 @@ export class UpdateRoleDto extends PartialType(CreateRoleDto) {
     description: '主键 id',
     required: true,
   })
-  @IsNotEmpty({ message: '主键 id不能为空' })
+  @IsNotEmpty({ message: '主键 id 不能为空' })
   readonly id: string;
 }

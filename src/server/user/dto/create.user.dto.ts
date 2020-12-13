@@ -1,5 +1,5 @@
 import { IsNotEmpty, IsString, IsInt } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class CreateUserDto {
   @ApiProperty({
@@ -18,73 +18,63 @@ export class CreateUserDto {
   @IsNotEmpty({ message: '用户密码不能为空！' })
   readonly userPwd: string;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     description: '姓名',
-    required: false,
     default: '',
   })
   @IsString()
   readonly name: string;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     description: '手机号',
-    required: false,
     default: '',
   })
   readonly mobile: string;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     description: '性别（0：保密；1：男；2：女）',
-    required: false,
     default: 0,
   })
   readonly sex: number;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     description: '生日',
-    required: false,
     default: null,
   })
   readonly birthday: Date;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     description: '省份',
-    required: false,
     default: null,
   })
   readonly provinceId: number;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     description: '城市',
-    required: false,
     default: null,
   })
   readonly cityId: number;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     description: '区/县',
-    required: false,
     default: null,
   })
   readonly districtId: number;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     description: '详细地址',
-    required: false,
     default: '',
   })
   readonly address: string;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     description: '状态（0：禁用；1：启用）',
-    required: false,
     default: 0,
   })
   readonly status: number;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     description: '描述',
-    required: false,
     default: '',
   })
   readonly description: string;

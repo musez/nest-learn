@@ -3,7 +3,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, getRepository, DeleteResult } from 'typeorm';
 import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create.user.dto';
-import { UpdateUserDto } from './dto/update.user.dto';
+import { UpdateUserDto,  } from './dto/update.user.dto';
+import { RegisterUserDto } from './dto/register.user.dto';
+import { LoginUserDto } from './dto/login.user.dto';
+import { DeleteUserDto } from './dto/delete.user.dto';
 
 @Injectable()
 export class UserService {
@@ -13,9 +16,15 @@ export class UserService {
   ) {
   }
 
-  // async insert(user: User): Promise<User> {
-  //   return await this.userRepository.save(user);
-  // }
+  async login(loginUserDto: LoginUserDto): Promise<CreateUserDto> {
+    return await this.userRepository.findOne(loginUserDto);
+  }
+
+  async register(registerUserDto: RegisterUserDto): Promise<CreateUserDto> {
+    return await this.userRepository.save(registerUserDto);
+  }
+
+
   async insert(createUserDto: CreateUserDto): Promise<CreateUserDto> {
     return await this.userRepository.save(createUserDto);
   }
@@ -43,11 +52,6 @@ export class UserService {
       limit: limit,
     };
   }
-
-  // async count(): Promise<number> {
-  //   return await this.userRepository.createQueryBuilder('user')
-  //     .getManyAndCount();// 获取结果及（非分页的）查询结果总数
-  // }
 
   async selectById(id: string): Promise<User> {
     return await this.userRepository.findOne(id);
