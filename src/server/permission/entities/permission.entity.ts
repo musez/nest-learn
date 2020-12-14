@@ -14,6 +14,8 @@ import {
   TreeParent,
 } from 'typeorm';
 import { BaseEntity } from '../../entities/base.entity';
+import { Staff } from '../../staff/entities/staff.entity';
+import { Role } from '../../role/entities/role.entity';
 
 @Entity('permission')
 @Tree('closure-table')
@@ -29,4 +31,7 @@ export class Permission extends BaseEntity {
 
   @TreeParent()
   parent: Permission;
+
+  @ManyToMany(() => Role, role => role.permissions)
+  roles: Role[];
 }

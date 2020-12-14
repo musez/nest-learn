@@ -1,5 +1,5 @@
 import {
-  Controller, Get, Post, Body, Put, Param, Delete, UseInterceptors, UploadedFile,
+  Controller, Get, Post, Body, Query, Put, Param, Delete, UseInterceptors, UploadedFile,
   UploadedFiles,
 } from '@nestjs/common';
 import { ApiTags, ApiQuery, ApiBody, ApiParam, ApiHeader, ApiHeaders, ApiResponse } from '@nestjs/swagger';
@@ -8,6 +8,8 @@ import {
   FilesInterceptor,
   FileFieldsInterceptor,
 } from '@nestjs/platform-express';
+import { join } from 'path';
+import { createWriteStream } from 'fs';
 import { FileService } from './file.service';
 import { CreateFileDto } from './dto/create-file.dto';
 import { UpdateFileDto } from './dto/update-file.dto';
@@ -19,6 +21,17 @@ export class FileController {
   }
 
   @Post('upload')
+  @UseInterceptors(FileInterceptor('file'))
+  UploadedFile(@UploadedFile() file, @Body() body) {
+    const writeStream = createWriteStream(join(__dirname, '../../../', 'uploads', `${file.originalname}`));
+
+    // 将 16 进制写入地址
+    // writeStream.write(file.buffer);
+
+    return this.fileService.insert(file, body);
+  }
+
+  @Post('uploads')
   // @ApiImplicitFile({
   //   name: 'file',
   //   description: '文件',
@@ -39,32 +52,59 @@ export class FileController {
     { name: 'extId', maxCount: 1 },
     { name: 'description', maxCount: 1 },
   ]))
-  UploadedFile(@UploadedFiles() files, @Body() body) {
-    return this.fileService.insert(files, body);
+  UploadedFiles(@UploadedFiles() files, @Body() body) {
+    console.log('UploadedFiles con');
+    console.log(files);
+    for (const file of files.files) {
+      const writeStream = createWriteStream(join(__dirname, '../../../', 'uploads', `${file.originalname}`));
+      // 将 16 进制写入地址
+      // writeStream.write(file.buffer);
+    }
+    return this.fileService.batchInsert(files, body);
   }
 
-  @Post()
-  create(@Body() createFileDto: CreateFileDto) {
-    return this.fileService.create(createFileDto);
+  @Get('findById')
+  @ApiQuery({
+    name: 'id',
+    description: '主键 id',
+    required: false,
+  })
+  findById(@Query('id') id: string) {
+    return this.fileService.selectById(id);
   }
 
-  @Get()
-  findAll() {
-    return this.fileService.findAll();
+  @Get('findByExtId')
+  @ApiQuery({
+    name: 'extId',
+    description: '关联 id',
+    required: false,
+  })
+  findByExtId(@Query('extId') extId: string) {
+    return this.fileService.selectByExtId(extId);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.fileService.findOne(+id);
-  }
-
-  @Put(':id')
-  update(@Param('id') id: string, @Body() updateFileDto: UpdateFileDto) {
-    return this.fileService.update(+id, updateFileDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.fileService.remove(+id);
-  }
+  // @Post()
+  // create(@Body() createFileDto: CreateFileDto) {
+  //   return this.fileService.create(createFileDto);
+  // }
+  //
+  // @Get()
+  // findAll() {
+  //   return this.fileService.findAll();
+  // }
+  //
+  // @Get(':id')
+  // findOne(@Param('id') id: string) {
+  //   return this.fileService.findOne(+id);
+  // }
+  //
+  // @Put(':id')
+  // update(@Param('id') id: string, @Body() updateFileDto: UpdateFileDto) {
+  //   return this.fileService.update(+id, updateFileDto);
+  // }
+  //
+  // @Delete(':id')
+  // remove(@Param('id') id: string) {
+  //   return this.fileService.remove(+id);
+  // }
 }

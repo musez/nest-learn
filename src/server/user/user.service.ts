@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, getRepository, DeleteResult } from 'typeorm';
 import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create.user.dto';
-import { UpdateUserDto,  } from './dto/update.user.dto';
+import { UpdateUserDto } from './dto/update.user.dto';
 import { RegisterUserDto } from './dto/register.user.dto';
 import { LoginUserDto } from './dto/login.user.dto';
 import { DeleteUserDto } from './dto/delete.user.dto';
@@ -17,6 +17,7 @@ export class UserService {
   }
 
   async login(loginUserDto: LoginUserDto): Promise<CreateUserDto> {
+    await this.userRepository.increment(loginUserDto, 'loginCount', 1);
     return await this.userRepository.findOne(loginUserDto);
   }
 

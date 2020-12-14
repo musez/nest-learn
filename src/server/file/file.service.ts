@@ -9,23 +9,62 @@ import { File } from './entities/file.entity';
 export class FileService {
   constructor(
     @InjectRepository(File)
-    private readonly userRepository: Repository<File>,
+    private readonly fileRepository: Repository<File>,
   ) {
   }
 
-  async insert(files, body): Promise<CreateFileDto> {
-    let file = new File();
-
-    console.log(files);
-    // console.log(body);
+  async insert(file, body): Promise<CreateFileDto> {
+    let fileEntity = new File();
 
     // 获取 body 中的文本参数
     let { description, extId } = body;
 
-    file.extId = extId;
-    file.description = description;
+    fileEntity.extId = extId;
+    fileEntity.description = description;
+    fileEntity.originalName = file.originalname;
+    fileEntity.encoding = file.encoding;
+    fileEntity.mimeType = file.mimetype;
+    fileEntity.destination = file.destination;
+    fileEntity.fileName = file.filename;
+    fileEntity.path = file.path;
+    fileEntity.size = file.size;
+    fileEntity.fileUrl = `${file.destination}/${file.filename}`;
 
-    return await this.userRepository.save(file);
+    return await this.fileRepository.save(fileEntity);
+  }
+
+  async batchInsert(files, body): Promise<CreateFileDto[]> {
+    let filesEntity = [];
+
+    // 获取 body 中的文本参数
+    let { description, extId } = body;
+
+    for (const file of files.files) {
+      let fileEntity = new File();
+
+      fileEntity.extId = extId;
+      fileEntity.description = description;
+      fileEntity.originalName = file.originalname;
+      fileEntity.encoding = file.encoding;
+      fileEntity.mimeType = file.mimetype;
+      fileEntity.destination = file.destination;
+      fileEntity.fileName = file.filename;
+      fileEntity.path = file.path;
+      fileEntity.size = file.size;
+      fileEntity.fileUrl = `${file.destination}/${file.filename}`;
+
+      filesEntity.push(fileEntity);
+    }
+
+    return await this.fileRepository.save(filesEntity);
+  }
+
+  selectById(id) {
+    return this.fileRepository.findOne(id);
+  }
+
+  selectByExtId(extId) {
+    return this.fileRepository.find({ extId: extId });
   }
 
   create(createFileDto: CreateFileDto) {

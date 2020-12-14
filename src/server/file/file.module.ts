@@ -18,8 +18,7 @@ import { File } from './entities/file.entity';
           // 自定义文件名
           // const filename = `${nuid.next()}.${file.mimetype.split('/')[1]}`;
           // return cb(null, filename);
-          console.log(file);
-          return cb(null, file.originalname);
+          return cb(null, dayjs().format('YYYYMMDDHHmmss') + '-' + file.originalname);
         },
       }),
     }),

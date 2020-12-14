@@ -61,7 +61,11 @@ export class User extends BaseEntity {
   })
   email: string;
 
-  @Column({ comment: '性别（0：保密；1：男；2：女）', nullable: true })
+  @Column({
+    comment: '性别（0：保密；1：男；2：女）',
+    nullable: true,
+    default: () => 0,
+  })
   sex: number;
 
   @Column({
@@ -142,7 +146,7 @@ export class User extends BaseEntity {
   @Column({
     comment: '登录次数',
     nullable: true,
-    default: 0,
+    default: () => 0,
   })
   loginCount: number;
 }

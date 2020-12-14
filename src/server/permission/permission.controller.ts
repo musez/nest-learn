@@ -36,18 +36,18 @@ export class PermissionController {
     return this.permissionService.selectTreeChild(parentId);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.permissionService.findOne(+id);
-  }
-
-  @Put(':id')
-  update(@Param('id') id: string, @Body() updatePermissionDto: UpdatePermissionDto) {
-    return this.permissionService.update(+id, updatePermissionDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.permissionService.remove(+id);
-  }
+  // @Get(':id')
+  // findOne(@Param('id') id: string) {
+  //   return this.permissionService.findOne(+id);
+  // }
+  //
+  // @Put(':id')
+  // update(@Param('id') id: string, @Body() updatePermissionDto: UpdatePermissionDto) {
+  //   return this.permissionService.update(+id, updatePermissionDto);
+  // }
+  //
+  // @Delete(':id')
+  // remove(@Param('id') id: string) {
+  //   return this.permissionService.remove(+id);
+  // }
 }
