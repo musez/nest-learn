@@ -10,7 +10,7 @@ export class StaffController {
   constructor(private readonly staffService: StaffService) {
   }
 
-  @Post('saveRoles')
+  @Post('saveGroups')
   @ApiBody({
     schema: {
       type: 'object',
@@ -19,24 +19,24 @@ export class StaffController {
           type: 'string',
           description: '主键 id',
         },
-        roles: {
+        groups: {
           type: 'string',
           description: '主键 id',
         },
       },
     },
   })
-  saveRoles(@Body('id') id: string, @Body('roles') roles: string): Promise<any> {
-    return this.staffService.insertRoles(id, roles);
+  saveGroups(@Body('id') id: string, @Body('groups') groups: string): Promise<any> {
+    return this.staffService.insertGroups(id, groups);
   }
 
-  @Get('findRoles')
+  @Get('findGroups')
   @ApiQuery({
     name: 'id',
     description: '主键 id',
     required: true,
   })
-  findRoles(@Query('id') id: string): Promise<any> {
-    return this.staffService.selectRoles(id);
+  findGroups(@Query('id') id: string): Promise<any> {
+    return this.staffService.selectGroups(id);
   }
 }

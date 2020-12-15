@@ -14,6 +14,7 @@ import { Exclude } from 'class-transformer';
 import { BaseEntity } from '../../entities/base.entity';
 import { Staff } from '../../staff/entities/staff.entity';
 import { Permission } from '../../permission/entities/permission.entity';
+import { StaffGroup } from '../../staff-group/entities/staff-group.entity';
 
 @Entity('role')
 export class Role extends BaseEntity {
@@ -23,8 +24,8 @@ export class Role extends BaseEntity {
   })
   staffName: string;
 
-  @ManyToMany(() => Staff, staff => staff.roles)
-  staffs: Staff[];
+  @ManyToMany(() => StaffGroup, staffGroup => staffGroup.roles)
+  staffGroups: StaffGroup[];
 
   @ManyToMany(() => Permission, permission => permission.roles)
   @JoinTable()

@@ -9,6 +9,7 @@ import { LoggerMiddleware } from './common/middleware/logger.middleware';
 import { RoleModule } from './server/role/role.module';
 import { PermissionModule } from './server/permission/permission.module';
 import { FileModule } from './server/file/file.module';
+import { StaffGroupModule } from './server/staff-group/staff-group.module';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { FileModule } from './server/file/file.module';
     PermissionModule,
     UserModule,
     FileModule,
+    StaffGroupModule,
   ],
   controllers: [AppController],
   providers: [AppService],

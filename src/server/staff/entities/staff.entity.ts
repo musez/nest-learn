@@ -13,6 +13,7 @@ import {
 import { Exclude } from 'class-transformer';
 import { BaseEntity } from '../../entities/base.entity';
 import { Role } from '../../role/entities/role.entity';
+import { StaffGroup } from '../../staff-group/entities/staff-group.entity';
 
 @Entity('staff')
 export class Staff extends BaseEntity {
@@ -72,7 +73,7 @@ export class Staff extends BaseEntity {
   })
   loginCount: number;
 
-  @ManyToMany(() => Role, role => role.staffs)
+  @ManyToMany(() => StaffGroup, staffGroup => staffGroup.staffs)
   @JoinTable()
-  roles: Role[];
+  staffGroups: StaffGroup[];
 }
