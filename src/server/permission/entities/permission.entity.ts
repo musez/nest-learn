@@ -26,6 +26,24 @@ export class Permission extends BaseEntity {
   })
   userName: string;
 
+  @Column( {
+    comment: '权限类别',
+    default: () => 0,
+  })
+  type: number;
+
+  @Column( {
+    comment: '权限 CODE 代码',
+    default: () => 0,
+  })
+  code: string;
+
+  @Column( {
+    comment: '权限 URL 规则',
+    default: () => 0,
+  })
+  uri: string;
+
   @TreeChildren()
   children: Permission[];
 
