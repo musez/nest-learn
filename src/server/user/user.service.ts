@@ -7,6 +7,8 @@ import { UpdateUserDto } from './dto/update.user.dto';
 import { RegisterUserDto } from './dto/register.user.dto';
 import { LoginUserDto } from './dto/login.user.dto';
 import { DeleteUserDto } from './dto/delete.user.dto';
+import { CreateFileDto } from '../file/dto/create-file.dto';
+import { File } from '../file/entities/file.entity';
 
 @Injectable()
 export class UserService {
@@ -25,14 +27,9 @@ export class UserService {
     return await this.userRepository.save(registerUserDto);
   }
 
-
   async insert(createUserDto: CreateUserDto): Promise<CreateUserDto> {
     return await this.userRepository.save(createUserDto);
   }
-
-  // async batchInsert(user: User): Promise<User> {
-  //   return await this.userRepository.save(user);
-  // }
 
   async selectList(): Promise<User[]> {
     return await this.userRepository.find();

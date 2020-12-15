@@ -3,7 +3,7 @@ import { ApiTags, ApiQuery, ApiBody, ApiParam, ApiHeader, ApiHeaders, ApiRespons
 import { UserService } from './user.service';
 import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create.user.dto';
-import { UpdateUserDto,  } from './dto/update.user.dto';
+import { UpdateUserDto } from './dto/update.user.dto';
 import { RegisterUserDto } from './dto/register.user.dto';
 import { LoginUserDto } from './dto/login.user.dto';
 import { DeleteUserDto } from './dto/delete.user.dto';
@@ -12,17 +12,6 @@ import { DeleteUserDto } from './dto/delete.user.dto';
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {
-  }
-
-  @Post('add')
-  // @ApiHeader({
-  //   name: 'authoriation',
-  //   required: true,
-  //   description: 'token',
-  // })
-  @ApiResponse({ status: 200, description: '请求成功！' })
-  add(@Body() createUserDto: CreateUserDto): Promise<CreateUserDto> {
-    return this.userService.insert(createUserDto);
   }
 
   @Post('login')
@@ -35,6 +24,12 @@ export class UserController {
   @ApiResponse({ status: 200, description: '请求成功！' })
   register(@Body() registerUserDto: RegisterUserDto): Promise<CreateUserDto> {
     return this.userService.register(registerUserDto);
+  }
+
+  @Post('add')
+  @ApiResponse({ status: 200, description: '请求成功！' })
+  add(@Body() createUserDto: CreateUserDto): Promise<CreateUserDto> {
+    return this.userService.insert(createUserDto);
   }
 
   @Get('findList')
@@ -71,9 +66,14 @@ export class UserController {
 
   @Post('remove')
   @ApiBody({
-    type: DeleteUserDto,
-    description: '主键 id',
-    required: true,
+    schema: {
+      type: 'object',
+      properties: {
+        id: {
+          description: '主键 id',
+        },
+      },
+    },
   })
   remove(@Body('id') id): Promise<void> {
     return this.userService.deleteById(id);

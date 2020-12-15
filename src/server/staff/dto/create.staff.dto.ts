@@ -3,13 +3,6 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateStaffDto {
   @ApiProperty({
-    description: '主键',
-    required: false,
-  })
-  @IsNotEmpty({ message: '主键不能为空' })
-  readonly id: number;
-
-  @ApiProperty({
     description: '名称',
     required: true,
   })

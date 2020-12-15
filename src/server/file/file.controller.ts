@@ -2,7 +2,7 @@ import {
   Controller, Get, Post, Body, Query, Put, Param, Delete, UseInterceptors, UploadedFile,
   UploadedFiles,
 } from '@nestjs/common';
-import { ApiTags, ApiQuery, ApiBody, ApiParam, ApiHeader, ApiHeaders, ApiResponse } from '@nestjs/swagger';
+import { ApiTags, ApiQuery, ApiBody, ApiConsumes, ApiParam, ApiHeader, ApiHeaders, ApiResponse } from '@nestjs/swagger';
 import {
   FileInterceptor,
   FilesInterceptor,
@@ -21,6 +21,27 @@ export class FileController {
   }
 
   @Post('upload')
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+          description: '文件',
+        },
+        extId: {
+          type: 'string',
+          description: '关联 id',
+        },
+        description: {
+          type: 'string',
+          description: '描述',
+        },
+      },
+    },
+  })
   @UseInterceptors(FileInterceptor('file'))
   UploadedFile(@UploadedFile() file, @Body() body) {
     const writeStream = createWriteStream(join(__dirname, '../../../', 'uploads', `${file.originalname}`));
@@ -32,29 +53,33 @@ export class FileController {
   }
 
   @Post('uploads')
-  // @ApiImplicitFile({
-  //   name: 'file',
-  //   description: '文件',
-  //   required: true,
-  // })
-  // @ApiImplicitBody({
-  //   name: 'description',
-  //   description: '描述',
-  //   required: true,
-  // })
-  // @ApiImplicitBody({
-  //   name: 'extId',
-  //   description: '关联 id',
-  //   required: true,
-  // })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        files: {
+          type: 'string',
+          format: 'binary',
+          description: '文件',
+        },
+        extId: {
+          type: 'string',
+          description: '关联 id',
+        },
+        description: {
+          type: 'string',
+          description: '描述',
+        },
+      },
+    },
+  })
   @UseInterceptors(FileFieldsInterceptor([
     { name: 'files', maxCount: 10 },
     { name: 'extId', maxCount: 1 },
     { name: 'description', maxCount: 1 },
   ]))
   UploadedFiles(@UploadedFiles() files, @Body() body) {
-    console.log('UploadedFiles con');
-    console.log(files);
     for (const file of files.files) {
       const writeStream = createWriteStream(join(__dirname, '../../../', 'uploads', `${file.originalname}`));
       // 将 16 进制写入地址
@@ -67,7 +92,7 @@ export class FileController {
   @ApiQuery({
     name: 'id',
     description: '主键 id',
-    required: false,
+    required: true,
   })
   findById(@Query('id') id: string) {
     return this.fileService.selectById(id);
@@ -77,7 +102,7 @@ export class FileController {
   @ApiQuery({
     name: 'extId',
     description: '关联 id',
-    required: false,
+    required: true,
   })
   findByExtId(@Query('extId') extId: string) {
     return this.fileService.selectByExtId(extId);

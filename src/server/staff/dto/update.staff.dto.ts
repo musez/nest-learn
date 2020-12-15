@@ -1,11 +1,12 @@
 import { ApiProperty, PartialType } from '@nestjs/swagger';
 import { IsNotEmpty, IsString, IsInt } from 'class-validator';
-import { CreateFileDto } from '../../file/dto/create-file.dto';
+import { CreateStaffDto } from './create.staff.dto';
 
-export class CreateStaffDto extends PartialType(CreateFileDto) {
+export class UpdateStaffDto extends PartialType(CreateStaffDto) {
   @ApiProperty({
     description: '主键 id',
     required: true,
+    default: '',
   })
   @IsNotEmpty({ message: '主键 id 不能为空' })
   readonly id: string;

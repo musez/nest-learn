@@ -18,7 +18,7 @@ export class RegisterUserDto {
   @IsNotEmpty({ message: '用户密码不能为空！' })
   readonly userPwd: string;
 
-  @ApiPropertyOptional({
+  @ApiProperty({
     description: '手机号',
     required: true,
     default: '',

@@ -4,8 +4,6 @@ import { Connection } from 'typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UserModule } from './server/user/user.module';
-import { StaffService } from './server/staff/staff.service';
-import { StaffController } from './server/staff/staff.controller';
 import { StaffModule } from './server/staff/staff.module';
 import { LoggerMiddleware } from './common/middleware/logger.middleware';
 import { RoleModule } from './server/role/role.module';
@@ -33,10 +31,10 @@ import { FileModule } from './server/file/file.module';
         migrationsDir: 'database/migration/default',
       },
     }),
-    UserModule,
     StaffModule,
-    PermissionModule,
     RoleModule,
+    PermissionModule,
+    UserModule,
     FileModule,
   ],
   controllers: [AppController],
