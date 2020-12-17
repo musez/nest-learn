@@ -1,10 +1,3 @@
-/**
- * @name: user.schema.ts
- * @author: wy
- * @date: 20201021 09:18
- * @description：user.schema.ts
- * @update: 20201021 09:18
- */
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -19,6 +12,7 @@ import {
 } from 'typeorm';
 import { Exclude } from 'class-transformer';
 import { BaseEntity } from '../../entities/base.entity';
+import { UserGroup } from '../../user-group/entities/user-group.entity';
 
 @Entity('user')
 export class User extends BaseEntity {
@@ -26,6 +20,7 @@ export class User extends BaseEntity {
   //   comment: '主键 id',
   // })
   // id: string;
+
 
   @Column('varchar', {
     comment: '名称',
@@ -149,4 +144,8 @@ export class User extends BaseEntity {
     default: () => 0,
   })
   loginCount: number;
+
+  @ManyToMany(() => UserGroup, userGroup => userGroup.users)
+  @JoinTable()
+  userGroups: UserGroup[];
 }

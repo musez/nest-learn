@@ -32,7 +32,7 @@ export function logger(req: Request, res: Response, next: () => any) {
     Method: ${req.method}
     IP: ${req.ip}
     Status code: ${code}
-    Parmas: ${JSON.stringify(req.params)}
+    Params: ${JSON.stringify(req.params)}
     Query: ${JSON.stringify(req.query)}
     Body: ${JSON.stringify(req.body)} \n  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   `;

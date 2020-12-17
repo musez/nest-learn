@@ -15,7 +15,7 @@ import {
   OneToOne,
   JoinColumn,
 } from 'typeorm';
-import { Staff } from '../staff/entities/staff.entity';
+import { User } from '../user/entities/user.entity';
 
 export abstract class BaseEntity {
   @PrimaryGeneratedColumn('uuid', {
@@ -46,9 +46,9 @@ export abstract class BaseEntity {
     nullable: true,
   })
   createBy: string;
-  // @OneToOne(() => Staff)
+  // @OneToOne(() => User)
   // @JoinColumn()
-  // createBy: Staff;
+  // createBy: User;
 
   @UpdateDateColumn({
     comment: '修改时间',
@@ -61,7 +61,7 @@ export abstract class BaseEntity {
     nullable: true,
   })
   updateBy: string;
-  // @OneToOne(() => Staff)
+  // @OneToOne(() => User)
   // @JoinColumn()
-  // updateBy: Staff;
+  // updateBy: User;
 }

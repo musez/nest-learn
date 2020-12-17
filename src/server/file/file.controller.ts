@@ -13,6 +13,7 @@ import { createWriteStream } from 'fs';
 import { FileService } from './file.service';
 import { CreateFileDto } from './dto/create-file.dto';
 import { UpdateFileDto } from './dto/update-file.dto';
+import { File } from './entities/file.entity';
 
 @ApiTags('文件')
 @Controller('file')
@@ -49,7 +50,21 @@ export class FileController {
     // 将 16 进制写入地址
     // writeStream.write(file.buffer);
 
-    return this.fileService.insert(file, body);
+    // 获取 body 中的文本参数
+    let { description, extId } = body;
+    let fileEntity = new File();
+    fileEntity.extId = extId;
+    fileEntity.description = description;
+    fileEntity.originalName = file.originalname;
+    fileEntity.encoding = file.encoding;
+    fileEntity.mimeType = file.mimetype;
+    fileEntity.destination = file.destination;
+    fileEntity.fileName = file.filename;
+    fileEntity.path = file.path;
+    fileEntity.size = file.size;
+    fileEntity.fileUrl = `${file.destination}/${file.filename}`;
+
+    return this.fileService.insert(fileEntity);
   }
 
   @Post('uploads')
@@ -80,12 +95,32 @@ export class FileController {
     { name: 'description', maxCount: 1 },
   ]))
   UploadedFiles(@UploadedFiles() files, @Body() body) {
+    // 获取 body 中的文本参数
+    let { description, extId } = body;
+    let filesEntity = [];
+
     for (const file of files.files) {
       const writeStream = createWriteStream(join(__dirname, '../../../', 'uploads', `${file.originalname}`));
       // 将 16 进制写入地址
       // writeStream.write(file.buffer);
+
+      let fileEntity = new File();
+
+      fileEntity.extId = extId;
+      fileEntity.description = description;
+      fileEntity.originalName = file.originalname;
+      fileEntity.encoding = file.encoding;
+      fileEntity.mimeType = file.mimetype;
+      fileEntity.destination = file.destination;
+      fileEntity.fileName = file.filename;
+      fileEntity.path = file.path;
+      fileEntity.size = file.size;
+      fileEntity.fileUrl = `${file.destination}/${file.filename}`;
+
+      filesEntity.push(fileEntity);
     }
-    return this.fileService.batchInsert(files, body);
+
+    return this.fileService.batchInsert(filesEntity);
   }
 
   @Get('findById')

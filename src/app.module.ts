@@ -3,13 +3,13 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Connection } from 'typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { UserModule } from './server/user/user.module';
-import { StaffModule } from './server/staff/staff.module';
 import { LoggerMiddleware } from './common/middleware/logger.middleware';
+import { UserModule } from './server/user/user.module';
 import { RoleModule } from './server/role/role.module';
 import { PermissionModule } from './server/permission/permission.module';
 import { FileModule } from './server/file/file.module';
-import { StaffGroupModule } from './server/staff-group/staff-group.module';
+import { UserGroupModule } from './server/user-group/user-group.module';
+import { AuthModule } from './server/auth/auth.module';
 
 @Module({
   imports: [
@@ -32,12 +32,12 @@ import { StaffGroupModule } from './server/staff-group/staff-group.module';
         migrationsDir: 'database/migration/default',
       },
     }),
-    StaffModule,
+    UserModule,
     RoleModule,
     PermissionModule,
-    UserModule,
     FileModule,
-    StaffGroupModule,
+    UserGroupModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

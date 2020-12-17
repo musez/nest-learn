@@ -7,8 +7,8 @@ import { UpdateUserDto } from './dto/update.user.dto';
 import { RegisterUserDto } from './dto/register.user.dto';
 import { LoginUserDto } from './dto/login.user.dto';
 import { DeleteUserDto } from './dto/delete.user.dto';
-import { CreateFileDto } from '../file/dto/create-file.dto';
-import { File } from '../file/entities/file.entity';
+
+export type Users = any;
 
 @Injectable()
 export class UserService {
@@ -18,10 +18,15 @@ export class UserService {
   ) {
   }
 
-  async login(loginUserDto: LoginUserDto): Promise<CreateUserDto> {
-    await this.userRepository.increment(loginUserDto, 'loginCount', 1);
-    return await this.userRepository.findOne(loginUserDto);
+  async selectByName(userName: string): Promise<User | undefined> {
+    const user = this.userRepository.findOne({ userName: userName });
+    if (user) return user;
+    else return null;
   }
+
+  // async updateLoginCount(updateUserDto: UpdateUserDto): Promise<any> {
+  //   return await this.userRepository.increment(updateUserDto, 'loginCount', 1);
+  // }
 
   async register(registerUserDto: RegisterUserDto): Promise<CreateUserDto> {
     return await this.userRepository.save(registerUserDto);
@@ -56,7 +61,8 @@ export class UserService {
   }
 
   async update(updateUserDto: UpdateUserDto): Promise<void> {
-    await this.userRepository.update({ id: updateUserDto.id }, updateUserDto);
+    let { id } = updateUserDto;
+    await this.userRepository.update({ id: id }, updateUserDto);
   }
 
   async deleteById(id: string): Promise<void> {

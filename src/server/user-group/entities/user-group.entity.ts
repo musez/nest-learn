@@ -14,21 +14,21 @@ import {
   TreeParent,
 } from 'typeorm';
 import { BaseEntity } from '../../entities/base.entity';
-import { Staff } from '../../staff/entities/staff.entity';
+import { User } from '../../user/entities/user.entity';
 import { Role } from '../../role/entities/role.entity';
 
-@Entity('StaffGroup')
-export class StaffGroup extends BaseEntity {
+@Entity('UserGroup')
+export class UserGroup extends BaseEntity {
   @Column('varchar', {
     comment: '名称',
     length: 50,
   })
-  userName: string;
+  name: string;
 
-  @ManyToMany(() => Staff, staff => staff.staffGroups)
-  staffs: Staff[];
+  @ManyToMany(() => User, user => user.userGroups)
+  users: User[];
 
-  @ManyToMany(() => Role, role => role.staffGroups)
+  @ManyToMany(() => Role, role => role.userGroups)
   @JoinTable()
   roles: Role[];
 }

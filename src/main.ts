@@ -59,6 +59,8 @@ async function bootstrap() {
     },
   });
   await app.listen(3000);
+
+  console.log(`应用程序运行在：${await app.getUrl()}`);
 }
 
 bootstrap();

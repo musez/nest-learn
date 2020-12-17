@@ -1,7 +1,15 @@
-import { IsNotEmpty, IsString, IsInt, IsEmail } from 'class-validator';
+import { IsNotEmpty, IsString, IsInt } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
-export class CreateUserDto {
+export class BaseUserDto {
+  @ApiProperty({
+    description: '主键 id',
+    required: true,
+    default: '',
+  })
+  @IsNotEmpty({ message: '主键 id 不能为空' })
+  readonly id: string;
+
   @ApiProperty({
     description: '名称',
     required: true,
@@ -30,13 +38,6 @@ export class CreateUserDto {
     default: '',
   })
   readonly mobile: string;
-
-  @ApiPropertyOptional({
-    description: '邮箱',
-    default: '',
-  })
-  @IsEmail()
-  readonly email: string;
 
   @ApiPropertyOptional({
     description: '性别（0：保密；1：男；2：女）',
@@ -86,27 +87,27 @@ export class CreateUserDto {
   })
   readonly description: string;
 
-  // @ApiProperty({
-  //   description: '创建时间',
-  //   required: false,
-  // })
-  // readonly createTime: Date;
-  //
-  // @ApiProperty({
-  //   description: '修改时间',
-  //   required: false,
-  // })
-  // readonly updateTime: Date;
-  //
-  // @ApiProperty({
-  //   description: '最后登录时间',
-  //   required: false,
-  // })
-  // readonly loginTime: Date;
-  //
-  // @ApiProperty({
-  //   description: '登录次数',
-  //   required: false,
-  // })
-  // readonly loginCount: number;
+  @ApiProperty({
+    description: '创建时间',
+    required: false,
+  })
+  readonly createTime: Date;
+
+  @ApiProperty({
+    description: '修改时间',
+    required: false,
+  })
+  readonly updateTime: Date;
+
+  @ApiProperty({
+    description: '最后登录时间',
+    required: false,
+  })
+  readonly loginTime: Date;
+
+  @ApiProperty({
+    description: '登录次数',
+    required: false,
+  })
+  readonly loginCount: number;
 }

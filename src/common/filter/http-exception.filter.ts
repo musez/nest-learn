@@ -26,7 +26,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
       code: status,
       data: null,
       msg: `${status >= 500 ? 'Service Error' : 'Client Error'}`,
-      date: nowDate,
+      time: nowDate,
       path: request.url,
       error: exception.message,
     });
