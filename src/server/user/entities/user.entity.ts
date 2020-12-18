@@ -8,11 +8,13 @@ import {
   JoinTable,
   ManyToMany,
   OneToMany,
+  OneToOne,
   BeforeUpdate,
 } from 'typeorm';
 import { Exclude } from 'class-transformer';
 import { BaseEntity } from '../../entities/base.entity';
 import { UserGroup } from '../../user-group/entities/user-group.entity';
+import { Userinfo } from '../../userinfo/entities/userinfo.entity';
 
 @Entity('user')
 export class User extends BaseEntity {
@@ -20,7 +22,6 @@ export class User extends BaseEntity {
   //   comment: '主键 id',
   // })
   // id: string;
-
 
   @Column('varchar', {
     comment: '名称',
@@ -34,6 +35,12 @@ export class User extends BaseEntity {
   })
   @Exclude()
   userPwd: string;
+
+  @Column({
+    comment: '用户类型',
+    nullable: false,
+  })
+  userType: number;
 
   @Column('varchar', {
     comment: '姓名',
@@ -94,42 +101,6 @@ export class User extends BaseEntity {
   })
   address: string;
 
-  // @Column('tinyint', {
-  //   comment: '状态（0：禁用；1：启用）',
-  //   default: () => 0,
-  // })
-  // status: number;
-  //
-  // @Column('text', {
-  //   comment: '描述',
-  //   nullable: true,
-  // })
-  // description: string;
-  //
-  // @CreateDateColumn({
-  //   comment: '创建时间',
-  //   type: 'datetime',
-  // })
-  // createTime: Date;
-  //
-  // @Column({
-  //   comment: '创建人 id',
-  //   nullable: true,
-  // })
-  // createBy: string;
-  //
-  // @UpdateDateColumn({
-  //   comment: '修改时间',
-  //   type: 'datetime',
-  // })
-  // updateTime: Date;
-  //
-  // @Column({
-  //   comment: '修改人 id',
-  //   nullable: true,
-  // })
-  // updateBy: string;
-
   @Column({
     comment: '最后登录时间',
     type: 'datetime',
@@ -144,6 +115,9 @@ export class User extends BaseEntity {
     default: () => 0,
   })
   loginCount: number;
+
+  @OneToOne((type) => Userinfo, (userinfo) => userinfo.user)
+  userinfo: Userinfo;
 
   @ManyToMany(() => UserGroup, userGroup => userGroup.users)
   @JoinTable()

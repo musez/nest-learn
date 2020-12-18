@@ -10,6 +10,7 @@ import { PermissionModule } from './server/permission/permission.module';
 import { FileModule } from './server/file/file.module';
 import { UserGroupModule } from './server/user-group/user-group.module';
 import { AuthModule } from './server/auth/auth.module';
+import { UserinfoModule } from './server/userinfo/userinfo.module';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { AuthModule } from './server/auth/auth.module';
     FileModule,
     UserGroupModule,
     AuthModule,
+    UserinfoModule,
   ],
   controllers: [AppController],
   providers: [AppService],

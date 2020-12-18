@@ -13,6 +13,23 @@ export class AuthController {
 
   @UseGuards(LocalAuthGuard)
   @Post('/login')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        username: {
+          type: 'string',
+          description: '用户名',
+          default: 'wangyue',
+        },
+        password: {
+          type: 'string',
+          description: '密码',
+          default: '111111',
+        },
+      },
+    },
+  })
   async login(@Request() request) {
     return this.authService.login(request.user);
   }

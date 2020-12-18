@@ -1,8 +1,19 @@
 import {
   Controller, Get, Post, Body, Query, Put, Param, Delete, UseInterceptors, UploadedFile,
   UploadedFiles,
+  UseGuards,
 } from '@nestjs/common';
-import { ApiTags, ApiQuery, ApiBody, ApiConsumes, ApiParam, ApiHeader, ApiHeaders, ApiResponse } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiQuery,
+  ApiBody,
+  ApiConsumes,
+  ApiParam,
+  ApiHeader,
+  ApiHeaders,
+  ApiResponse,
+  ApiBasicAuth,
+} from '@nestjs/swagger';
 import {
   FileInterceptor,
   FilesInterceptor,
@@ -14,14 +25,17 @@ import { FileService } from './file.service';
 import { CreateFileDto } from './dto/create-file.dto';
 import { UpdateFileDto } from './dto/update-file.dto';
 import { File } from './entities/file.entity';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
-@ApiTags('文件')
 @Controller('file')
+@ApiTags('文件')
+@ApiBasicAuth()
 export class FileController {
   constructor(private readonly fileService: FileService) {
   }
 
   @Post('upload')
+  @UseGuards(JwtAuthGuard)
   @ApiConsumes('multipart/form-data')
   @ApiBody({
     schema: {
@@ -68,6 +82,7 @@ export class FileController {
   }
 
   @Post('uploads')
+  @UseGuards(JwtAuthGuard)
   @ApiConsumes('multipart/form-data')
   @ApiBody({
     schema: {
@@ -124,6 +139,7 @@ export class FileController {
   }
 
   @Get('findById')
+  @UseGuards(JwtAuthGuard)
   @ApiQuery({
     name: 'id',
     description: '主键 id',
@@ -134,6 +150,7 @@ export class FileController {
   }
 
   @Get('findByExtId')
+  @UseGuards(JwtAuthGuard)
   @ApiQuery({
     name: 'extId',
     description: '关联 id',

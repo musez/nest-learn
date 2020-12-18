@@ -1,5 +1,24 @@
-import { Controller, Get, Post, Req, Query, Body, UseGuards } from '@nestjs/common';
-import { ApiTags, ApiQuery, ApiBody, ApiParam, ApiHeader, ApiHeaders, ApiResponse } from '@nestjs/swagger';
+import {
+  Controller,
+  Get,
+  Post,
+  Req,
+  Query,
+  Body,
+  UseGuards,
+  UseInterceptors,
+  ClassSerializerInterceptor,
+} from '@nestjs/common';
+import {
+  ApiTags,
+  ApiQuery,
+  ApiBody,
+  ApiParam,
+  ApiHeader,
+  ApiHeaders,
+  ApiResponse,
+  ApiBasicAuth,
+} from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { UserService } from './user.service';
 import { User } from './entities/user.entity';
@@ -22,20 +41,25 @@ export class UserController {
     return await this.userService.register(registerUserDto);
   }
 
-  @UseGuards(JwtAuthGuard)
   @Post('add')
+  @UseGuards(JwtAuthGuard)
+  @ApiBasicAuth()
   async add(@Body() createUserDto: CreateUserDto): Promise<CreateUserDto> {
     return await this.userService.insert(createUserDto);
   }
 
-  @UseGuards(JwtAuthGuard)
   @Get('findList')
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(ClassSerializerInterceptor)
+  @ApiBasicAuth()
   async findList(): Promise<User[]> {
     return await this.userService.selectList();
   }
 
-  @UseGuards(JwtAuthGuard)
   @Get('findListPage')
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(ClassSerializerInterceptor)
+  @ApiBasicAuth()
   @ApiQuery({
     name: 'page',
     description: '第几页',
@@ -52,14 +76,17 @@ export class UserController {
     return await this.userService.selectListPage(page, limit);
   }
 
-  @UseGuards(JwtAuthGuard)
   @Get('findById')
+  @UseInterceptors(ClassSerializerInterceptor)
+  @UseGuards(JwtAuthGuard)
+  @ApiBasicAuth()
   async findById(@Query('id') id: string): Promise<User> {
     return await this.userService.selectById(id);
   }
 
-  @UseGuards(JwtAuthGuard)
   @Post('modify')
+  @UseGuards(JwtAuthGuard)
+  @ApiBasicAuth()
   async modify(@Body() updateUserDto: UpdateUserDto): Promise<any> {
     let { id } = updateUserDto;
     let entity = await this.userService.selectById(id);
@@ -71,8 +98,9 @@ export class UserController {
     }
   }
 
-  @UseGuards(JwtAuthGuard)
   @Post('remove')
+  @UseGuards(JwtAuthGuard)
+  @ApiBasicAuth()
   @ApiBody({
     schema: {
       type: 'object',

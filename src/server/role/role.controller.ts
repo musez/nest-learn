@@ -1,13 +1,24 @@
 import { Controller, Get, Post, Body, Put, Param, Delete } from '@nestjs/common';
-import { ApiTags, ApiQuery, ApiBody, ApiParam, ApiHeader, ApiHeaders, ApiResponse } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiQuery,
+  ApiBody,
+  ApiParam,
+  ApiHeader,
+  ApiHeaders,
+  ApiResponse,
+  ApiBasicAuth,
+} from '@nestjs/swagger';
 import { RoleService } from './role.service';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
 
-@ApiTags('角色')
 @Controller('role')
+@ApiTags('角色')
+@ApiBasicAuth()
 export class RoleController {
-  constructor(private readonly roleService: RoleService) {}
+  constructor(private readonly roleService: RoleService) {
+  }
 
   // @Post()
   // create(@Body() createRoleDto: CreateRoleDto) {

@@ -1,11 +1,12 @@
 import { Controller, Get, Post, Body, Put, Param, Delete } from '@nestjs/common';
-import { ApiTags, ApiQuery, ApiBody, ApiParam, ApiHeader, ApiHeaders, ApiResponse } from '@nestjs/swagger';
+import { ApiTags, ApiQuery, ApiBody, ApiParam, ApiHeader, ApiHeaders, ApiResponse,ApiBasicAuth } from '@nestjs/swagger';
 import { UserGroupService } from './user-group.service';
 import { CreateUserGroupDto } from './dto/create-user-group.dto';
 import { UpdateUserGroupDto } from './dto/update-user-group.dto';
 
-@ApiTags('用户组')
 @Controller('user-group')
+@ApiTags('用户组')
+@ApiBasicAuth()
 export class UserGroupController {
   constructor(private readonly userGroupService: UserGroupService) {}
 

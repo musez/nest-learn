@@ -24,23 +24,23 @@ export class Permission extends BaseEntity {
     comment: '名称',
     length: 50,
   })
-  userName: string;
+  name: string;
 
-  @Column( {
-    comment: '权限类别',
+  @Column({
+    comment: '权限类别（1：导航；2：页面；3：操作；4：字段）',
     default: () => 0,
   })
   type: number;
 
-  @Column( {
+  @Column({
     comment: '权限 CODE 代码',
-    default: () => 0,
+    default: '',
   })
   code: string;
 
-  @Column( {
+  @Column({
     comment: '权限 URL 规则',
-    default: () => 0,
+    default: '',
   })
   uri: string;
 

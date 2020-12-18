@@ -17,7 +17,7 @@ import { BaseEntity } from '../../entities/base.entity';
 import { User } from '../../user/entities/user.entity';
 import { Role } from '../../role/entities/role.entity';
 
-@Entity('UserGroup')
+@Entity('user_group')
 export class UserGroup extends BaseEntity {
   @Column('varchar', {
     comment: '名称',

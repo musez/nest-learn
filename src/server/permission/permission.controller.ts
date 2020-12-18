@@ -1,12 +1,22 @@
 import { Controller, Get, Post, Query, Body, Put, Param, Delete } from '@nestjs/common';
-import { ApiTags, ApiQuery, ApiBody, ApiParam, ApiHeader, ApiHeaders, ApiResponse } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiQuery,
+  ApiBody,
+  ApiParam,
+  ApiHeader,
+  ApiHeaders,
+  ApiResponse,
+  ApiBasicAuth,
+} from '@nestjs/swagger';
 import { PermissionService } from './permission.service';
 import { CreatePermissionDto } from './dto/create-permission.dto';
 import { UpdatePermissionDto } from './dto/update-permission.dto';
 import { Permission } from './entities/permission.entity';
 
-@ApiTags('权限')
 @Controller('permission')
+@ApiTags('权限')
+@ApiBasicAuth()
 export class PermissionController {
   constructor(private readonly permissionService: PermissionService) {
   }
