@@ -25,7 +25,7 @@ export class File extends BaseEntity {
   encoding: string;
 
   @Column('varchar', {
-    comment: '文件类型',
+    comment: '文件 mimeType 类型',
     nullable: true,
   })
   mimeType: string;
@@ -53,6 +53,12 @@ export class File extends BaseEntity {
     nullable: true,
   })
   size: number;
+
+  @Column({
+    comment: '文件类型',
+    nullable: true,
+  })
+  fileType: string;
 
   @Column({
     comment: '文件地址',

@@ -1,9 +1,21 @@
 import { Controller, Get, Post, Body, Put, Param, Delete } from '@nestjs/common';
+import {
+  ApiTags,
+  ApiQuery,
+  ApiBody,
+  ApiParam,
+  ApiHeader,
+  ApiHeaders,
+  ApiResponse,
+  ApiBasicAuth,
+} from '@nestjs/swagger';
 import { UserinfoService } from './userinfo.service';
 import { CreateUserinfoDto } from './dto/create-userinfo.dto';
 import { UpdateUserinfoDto } from './dto/update-userinfo.dto';
 
 @Controller('userinfo')
+@ApiTags('用户信息')
+@ApiBasicAuth()
 export class UserinfoController {
   constructor(private readonly userinfoService: UserinfoService) {}
 

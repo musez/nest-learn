@@ -22,8 +22,20 @@ export class PermissionController {
   }
 
   @Post()
-  create(@Body() createPermissionDto: CreatePermissionDto) {
-    return this.permissionService.insert(createPermissionDto);
+  async create(@Body() createPermissionDto: CreatePermissionDto) {
+    let { parentId, ...result } = createPermissionDto;
+
+    let child = new Permission();
+    for (let key in result) {
+      child[key] = result[key];
+    }
+
+    let parent = await this.permissionService.findOne(parentId);
+    if (parent) {
+      child.parent = parent;
+    }
+
+    return this.permissionService.insert(child);
   }
 
   @Get()

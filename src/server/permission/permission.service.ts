@@ -13,8 +13,8 @@ export class PermissionService {
   ) {
   }
 
-  async insert(createPermissionDto: CreatePermissionDto): Promise<CreatePermissionDto> {
-    return await this.permissionRepository.save(createPermissionDto);
+  async insert(permission: Permission): Promise<Permission> {
+    return await this.permissionRepository.save(permission);
   }
 
   async selectList(): Promise<Permission[]> {
@@ -33,8 +33,8 @@ export class PermissionService {
     }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} permission`;
+  async findOne(id: string) {
+    return await this.permissionRepository.findOne(id);
   }
 
   update(id: number, updatePermissionDto: UpdatePermissionDto) {

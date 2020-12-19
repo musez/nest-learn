@@ -16,10 +16,11 @@ export class AuthService {
    * @param username
    * @param password
    */
-  async validateUser(username: string, password: string): Promise<any> {
-    const user = await this.userService.selectByName(username);
+  async validateUser(userName: string, userPwd: string): Promise<any> {
+    console.log('validateUser:',userName,userPwd);
+    const user = await this.userService.selectByName(userName);
     // 注：实际中的密码处理应通过加密措施
-    if (user && user.userPwd === password) {
+    if (user && user.userPwd === userPwd) {
       const { userPwd, ...result } = user;
       return result;
     } else {

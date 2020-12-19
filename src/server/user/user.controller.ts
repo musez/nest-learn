@@ -18,6 +18,7 @@ import {
   ApiHeaders,
   ApiResponse,
   ApiBasicAuth,
+  ApiOperation
 } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { UserService } from './user.service';
@@ -36,13 +37,9 @@ export class UserController {
   constructor(private readonly userService: UserService) {
   }
 
-  @Post('register')
-  async register(@Body() registerUserDto: RegisterUserDto): Promise<CreateUserDto> {
-    return await this.userService.register(registerUserDto);
-  }
-
   @Post('add')
   @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: '添加' })
   @ApiBasicAuth()
   async add(@Body() createUserDto: CreateUserDto): Promise<CreateUserDto> {
     return await this.userService.insert(createUserDto);
@@ -51,6 +48,7 @@ export class UserController {
   @Get('findList')
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(ClassSerializerInterceptor)
+  @ApiOperation({ summary: '获取列表' })
   @ApiBasicAuth()
   async findList(): Promise<User[]> {
     return await this.userService.selectList();
@@ -59,6 +57,7 @@ export class UserController {
   @Get('findListPage')
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(ClassSerializerInterceptor)
+  @ApiOperation({ summary: '获取列表（分页）' })
   @ApiBasicAuth()
   @ApiQuery({
     name: 'page',
@@ -78,6 +77,7 @@ export class UserController {
 
   @Get('findById')
   @UseInterceptors(ClassSerializerInterceptor)
+  @ApiOperation({ summary: '获取详情（主键 id）' })
   @UseGuards(JwtAuthGuard)
   @ApiBasicAuth()
   async findById(@Query('id') id: string): Promise<User> {
@@ -86,6 +86,7 @@ export class UserController {
 
   @Post('modify')
   @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: '修改' })
   @ApiBasicAuth()
   async modify(@Body() updateUserDto: UpdateUserDto): Promise<any> {
     let { id } = updateUserDto;
@@ -100,6 +101,7 @@ export class UserController {
 
   @Post('remove')
   @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: '删除' })
   @ApiBasicAuth()
   @ApiBody({
     schema: {

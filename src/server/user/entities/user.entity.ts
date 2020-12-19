@@ -36,7 +36,7 @@ export class User extends BaseEntity {
   @Exclude()
   userPwd: string;
 
-  @Column({
+  @Column('tinyint', {
     comment: '用户类型',
     nullable: false,
   })
@@ -63,7 +63,7 @@ export class User extends BaseEntity {
   })
   email: string;
 
-  @Column({
+  @Column('tinyint', {
     comment: '性别（0：保密；1：男；2：女）',
     nullable: true,
     default: () => 0,
@@ -71,6 +71,7 @@ export class User extends BaseEntity {
   sex: number;
 
   @Column({
+    type: 'date',
     comment: '生日',
     nullable: true,
   })

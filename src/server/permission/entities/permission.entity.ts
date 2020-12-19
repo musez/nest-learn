@@ -26,7 +26,7 @@ export class Permission extends BaseEntity {
   })
   name: string;
 
-  @Column({
+  @Column('tinyint', {
     comment: '权限类别（1：导航；2：页面；3：操作；4：字段）',
     default: () => 0,
   })

@@ -11,6 +11,7 @@ import { FileModule } from './server/file/file.module';
 import { UserGroupModule } from './server/user-group/user-group.module';
 import { AuthModule } from './server/auth/auth.module';
 import { UserinfoModule } from './server/userinfo/userinfo.module';
+import { AreaModule } from './server/area/area.module';
 
 @Module({
   imports: [
@@ -27,19 +28,20 @@ import { UserinfoModule } from './server/userinfo/userinfo.module';
       charset: 'utf8mb4',
       multipleStatements: true,
       dropSchema: false,
-      synchronize: false, // 是否自动将实体类同步到数据库
+      synchronize: true, // 是否自动将实体类同步到数据库
       logging: true,
       cli: {
         migrationsDir: 'database/migration/default',
       },
     }),
+    AuthModule,
     UserModule,
+    UserinfoModule,
+    UserGroupModule,
     RoleModule,
     PermissionModule,
     FileModule,
-    UserGroupModule,
-    AuthModule,
-    UserinfoModule,
+    AreaModule,
   ],
   controllers: [AppController],
   providers: [AppService],

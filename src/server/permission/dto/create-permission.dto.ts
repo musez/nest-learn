@@ -8,7 +8,7 @@ export class CreatePermissionDto {
     default: '',
   })
   @IsNotEmpty({ message: '名称不能为空！' })
-  readonly userName: string;
+  readonly name: string;
 
   @ApiProperty({
     description: '父 id',

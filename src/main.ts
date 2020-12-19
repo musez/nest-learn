@@ -7,18 +7,21 @@ import { ValidationPipe } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';// api文档插件
 import { logger } from './common/middleware/logger.middleware';
 import { TransformInterceptor } from './common/interceptor/transform.interceptor';
-import { AllExceptionsFilter } from './common/filter/any-exception.filter';
 import { HttpExceptionFilter } from './common/filter/http-exception.filter';
+import { AllExceptionsFilter } from './common/filter/any-exception.filter';
 
 async function bootstrap() {
   // const app = await NestFactory.create(AppModule);
   // await app.listen(3000);
 
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
-
+  app.enableCors();
+  app.useStaticAssets('uploads', {
+    prefix: '/uploads',
+  });
   // 配置 public 文件夹为静态目录，以达到可直接访问下面文件的目的
   const rootDir = join(__dirname, '..');
-  app.use('/public', express.static(join(rootDir, 'public')));
+  // app.use('/public', express.static(join(rootDir, 'public')));
 
   app.use(express.json()); // For parsing application/json
   app.use(express.urlencoded({ extended: true })); // For parsing application/x-www-form-urlencoded
@@ -26,8 +29,8 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe()); // 开启一个全局验证管道
 
   app.useGlobalInterceptors(new TransformInterceptor());// 使用全局拦截器打印出参
-  app.useGlobalFilters(new AllExceptionsFilter());// 过滤处理所有异常
   app.useGlobalFilters(new HttpExceptionFilter());// 过滤处理 HTTP 异常
+  app.useGlobalFilters(new AllExceptionsFilter());// 过滤处理所有异常
   app.use(logger);// 监听所有的请求路由，并打印日志
 
   app.setGlobalPrefix('/api');

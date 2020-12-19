@@ -13,6 +13,7 @@ import {
   ApiHeaders,
   ApiResponse,
   ApiBasicAuth,
+  ApiOperation,
 } from '@nestjs/swagger';
 import {
   FileInterceptor,
@@ -36,6 +37,7 @@ export class FileController {
 
   @Post('upload')
   @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: '文件上传（单）' })
   @ApiConsumes('multipart/form-data')
   @ApiBody({
     schema: {
@@ -83,6 +85,7 @@ export class FileController {
 
   @Post('uploads')
   @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: '文件上传（多）' })
   @ApiConsumes('multipart/form-data')
   @ApiBody({
     schema: {
@@ -140,6 +143,7 @@ export class FileController {
 
   @Get('findById')
   @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: '获取文件（主键 id）' })
   @ApiQuery({
     name: 'id',
     description: '主键 id',
@@ -151,6 +155,7 @@ export class FileController {
 
   @Get('findByExtId')
   @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: '获取文件（关联 extId）' })
   @ApiQuery({
     name: 'extId',
     description: '关联 id',
