@@ -1,4 +1,4 @@
-import { Controller, Post, Request, UseGuards, Body } from '@nestjs/common';
+import { Controller, Post, Request, UseGuards, Body, BadRequestException } from '@nestjs/common';
 import {
   ApiTags,
   ApiQuery,
@@ -13,8 +13,8 @@ import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
 import { User } from '../user/entities/user.entity';
 import { LocalAuthGuard } from './guards/local-auth.guard';
-import { RegisterUserDto } from '../user/dto/register.user.dto';
-import { CreateUserDto } from '../user/dto/create.user.dto';
+import { RegisterUserDto } from '../user/dto/register-user.dto';
+import { CreateUserDto } from '../user/dto/create-user.dto';
 import { UserService } from '../user/user.service';
 
 @ApiTags('认证')
@@ -36,12 +36,12 @@ export class AuthController {
         userName: {
           type: 'string',
           description: '用户名',
-          default: 'wangyue',
+          example: 'wangyue',
         },
         userPwd: {
           type: 'string',
           description: '密码',
-          default: '111111',
+          example: '111111',
         },
       },
     },
@@ -54,6 +54,12 @@ export class AuthController {
   @Post('register')
   @ApiOperation({ summary: '注册' })
   async register(@Body() registerUserDto: RegisterUserDto): Promise<CreateUserDto> {
-    return await this.userService.register(registerUserDto);
+    let { userPwd, userPwdRepeat } = registerUserDto;
+
+    if (userPwd !== userPwdRepeat) {
+      throw new BadRequestException('密码不一致！');
+    }
+
+    return await this.userService.insert(registerUserDto);
   }
 }

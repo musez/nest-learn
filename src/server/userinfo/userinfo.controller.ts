@@ -19,28 +19,28 @@ import { UpdateUserinfoDto } from './dto/update-userinfo.dto';
 export class UserinfoController {
   constructor(private readonly userinfoService: UserinfoService) {}
 
-  @Post()
-  create(@Body() createUserinfoDto: CreateUserinfoDto) {
-    return this.userinfoService.create(createUserinfoDto);
-  }
-
-  @Get()
-  findAll() {
-    return this.userinfoService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.userinfoService.findOne(+id);
-  }
-
-  @Put(':id')
-  update(@Param('id') id: string, @Body() updateUserinfoDto: UpdateUserinfoDto) {
-    return this.userinfoService.update(+id, updateUserinfoDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.userinfoService.remove(+id);
-  }
+  // @Post()
+  // create(@Body() createUserinfoDto: CreateUserinfoDto) {
+  //   return this.userinfoService.create(createUserinfoDto);
+  // }
+  //
+  // @Get()
+  // findAll() {
+  //   return this.userinfoService.findAll();
+  // }
+  //
+  // @Get(':id')
+  // findOne(@Param('id') id: string) {
+  //   return this.userinfoService.findOne(+id);
+  // }
+  //
+  // @Put(':id')
+  // update(@Param('id') id: string, @Body() updateUserinfoDto: UpdateUserinfoDto) {
+  //   return this.userinfoService.update(+id, updateUserinfoDto);
+  // }
+  //
+  // @Delete(':id')
+  // remove(@Param('id') id: string) {
+  //   return this.userinfoService.remove(+id);
+  // }
 }

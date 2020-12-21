@@ -18,38 +18,79 @@ import {
   ApiHeaders,
   ApiResponse,
   ApiBasicAuth,
-  ApiOperation
+  ApiOperation,
 } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { UserService } from './user.service';
 import { User } from './entities/user.entity';
-import { CreateUserDto } from './dto/create.user.dto';
-import { UpdateUserDto } from './dto/update.user.dto';
-import { RegisterUserDto } from './dto/register.user.dto';
-import { LoginUserDto } from './dto/login.user.dto';
-import { DeleteUserDto } from './dto/delete.user.dto';
+import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { RegisterUserDto } from './dto/register-user.dto';
+import { LoginUserDto } from './dto/login-user.dto';
+import { DeleteUserDto } from './dto/delete-user.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { LocalAuthGuard } from '../auth/guards/local-auth.guard';
+import { Userinfo } from '../userinfo/entities/userinfo.entity';
+import { UserinfoService } from '../userinfo/userinfo.service';
 
 @ApiTags('用户')
 @Controller('user')
+@ApiBasicAuth()
 export class UserController {
-  constructor(private readonly userService: UserService) {
+  constructor(
+    private readonly userService: UserService,
+    private readonly userinfoService: UserinfoService,
+  ) {
   }
 
   @Post('add')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '添加' })
-  @ApiBasicAuth()
   async add(@Body() createUserDto: CreateUserDto): Promise<CreateUserDto> {
-    return await this.userService.insert(createUserDto);
+    let {
+      userName,
+      userPwd,
+      userType,
+      name,
+      mobile,
+      email,
+      sex,
+      birthday,
+      provinceId,
+      cityId,
+      districtId,
+      address,
+      status,
+    } = createUserDto;
+
+    let user = new User();
+    user.userName = userName;
+    user.userPwd = userPwd;
+    user.userType = userType;
+    user.name = name;
+    user.mobile = mobile;
+    user.email = email;
+    user.sex = sex;
+    user.birthday = birthday;
+    user.status = status;
+
+    let userinfo = new Userinfo();
+    userinfo.user = user;
+    userinfo.provinceId = provinceId;
+    userinfo.cityId = cityId;
+    userinfo.districtId = districtId;
+    userinfo.address = address;
+
+    let userResult = await this.userService.insert(user);
+    let userinfoResult = await this.userinfoService.insert(userinfo);
+
+    return userResult;
   }
 
   @Get('findList')
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(ClassSerializerInterceptor)
   @ApiOperation({ summary: '获取列表' })
-  @ApiBasicAuth()
   async findList(): Promise<User[]> {
     return await this.userService.selectList();
   }
@@ -58,7 +99,6 @@ export class UserController {
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(ClassSerializerInterceptor)
   @ApiOperation({ summary: '获取列表（分页）' })
-  @ApiBasicAuth()
   @ApiQuery({
     name: 'page',
     description: '第几页',
@@ -79,7 +119,6 @@ export class UserController {
   @UseInterceptors(ClassSerializerInterceptor)
   @ApiOperation({ summary: '获取详情（主键 id）' })
   @UseGuards(JwtAuthGuard)
-  @ApiBasicAuth()
   async findById(@Query('id') id: string): Promise<User> {
     return await this.userService.selectById(id);
   }
@@ -87,7 +126,6 @@ export class UserController {
   @Post('modify')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '修改' })
-  @ApiBasicAuth()
   async modify(@Body() updateUserDto: UpdateUserDto): Promise<any> {
     let { id } = updateUserDto;
     let entity = await this.userService.selectById(id);
@@ -102,7 +140,6 @@ export class UserController {
   @Post('remove')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '删除' })
-  @ApiBasicAuth()
   @ApiBody({
     schema: {
       type: 'object',

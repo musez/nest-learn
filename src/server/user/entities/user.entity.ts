@@ -39,6 +39,7 @@ export class User extends BaseEntity {
   @Column('tinyint', {
     comment: '用户类型',
     nullable: false,
+    default: () => 0,
   })
   userType: number;
 
@@ -76,31 +77,6 @@ export class User extends BaseEntity {
     nullable: true,
   })
   birthday: Date;
-
-  @Column({
-    comment: '省份',
-    nullable: true,
-  })
-  provinceId: number;
-
-  @Column({
-    comment: '城市',
-    nullable: true,
-  })
-  cityId: number;
-
-  @Column({
-    comment: '区/县',
-    nullable: true,
-  })
-  districtId: number;
-
-  @Column({
-    comment: '详细地址',
-    length: 100,
-    nullable: true,
-  })
-  address: string;
 
   @Column({
     comment: '最后登录时间',

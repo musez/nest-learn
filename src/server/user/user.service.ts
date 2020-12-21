@@ -1,14 +1,12 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, getRepository, DeleteResult } from 'typeorm';
 import { User } from './entities/user.entity';
-import { CreateUserDto } from './dto/create.user.dto';
-import { UpdateUserDto } from './dto/update.user.dto';
-import { RegisterUserDto } from './dto/register.user.dto';
-import { LoginUserDto } from './dto/login.user.dto';
-import { DeleteUserDto } from './dto/delete.user.dto';
-
-export type Users = any;
+import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { RegisterUserDto } from './dto/register-user.dto';
+import { LoginUserDto } from './dto/login-user.dto';
+import { DeleteUserDto } from './dto/delete-user.dto';
 
 @Injectable()
 export class UserService {
@@ -28,11 +26,12 @@ export class UserService {
   //   return await this.userRepository.increment(updateUserDto, 'loginCount', 1);
   // }
 
-  async register(registerUserDto: RegisterUserDto): Promise<CreateUserDto> {
-    return await this.userRepository.save(registerUserDto);
-  }
-
   async insert(createUserDto: CreateUserDto): Promise<CreateUserDto> {
+    let { userName } = createUserDto;
+    let user = await this.userRepository.findOne({ userName: userName });
+    if (user) {
+      throw new BadRequestException(`用户名 ${userName} 已存在！`);
+    }
     return await this.userRepository.save(createUserDto);
   }
 
