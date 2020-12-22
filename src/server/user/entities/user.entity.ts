@@ -16,6 +16,26 @@ import { BaseEntity } from '../../entities/base.entity';
 import { UserGroup } from '../../user-group/entities/user-group.entity';
 import { Userinfo } from '../../userinfo/entities/userinfo.entity';
 
+
+// 状态类型
+export enum statusType {
+  ENABLE = 1,
+  DISABLE = 0,
+}
+
+// 性别类型
+export enum sexType {
+  DEFAULT = 0,
+  FEMALE = 1,
+  MALE = 2,
+}
+
+// 用户类型
+export enum userType {
+  ADMIN = 1,
+  NORMAL = 0,
+}
+
 @Entity('user')
 export class User extends BaseEntity {
   // @PrimaryGeneratedColumn('uuid', {
@@ -67,7 +87,7 @@ export class User extends BaseEntity {
   @Column('tinyint', {
     comment: '性别（0：保密；1：男；2：女）',
     nullable: true,
-    default: () => 0,
+    default: 0,
   })
   sex: number;
 
@@ -93,7 +113,9 @@ export class User extends BaseEntity {
   })
   loginCount: number;
 
-  @OneToOne((type) => Userinfo, (userinfo) => userinfo.user)
+  @OneToOne((type) => Userinfo, (userinfo) => userinfo.user, {
+    cascade: true,
+  })
   userinfo: Userinfo;
 
   @ManyToMany(() => UserGroup, userGroup => userGroup.users)

@@ -12,6 +12,8 @@ import { UserGroupModule } from './server/user-group/user-group.module';
 import { AuthModule } from './server/auth/auth.module';
 import { UserinfoModule } from './server/userinfo/userinfo.module';
 import { AreaModule } from './server/area/area.module';
+import { DictModule } from './server/dict/dict.module';
+import { DictItemModule } from './server/dict-item/dict-item.module';
 
 @Module({
   imports: [
@@ -24,8 +26,8 @@ import { AreaModule } from './server/area/area.module';
       database: 'cms_nest',
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
       migrations: ['database/migration/**/*.ts'],
-      timezone: 'UTC',
-      charset: 'utf8mb4',
+      // timezone: 'UTC',
+      // charset: 'utf8mb4',
       multipleStatements: true,
       dropSchema: false,
       synchronize: true, // 是否自动将实体类同步到数据库
@@ -42,6 +44,8 @@ import { AreaModule } from './server/area/area.module';
     PermissionModule,
     FileModule,
     AreaModule,
+    DictModule,
+    DictItemModule,
   ],
   controllers: [AppController],
   providers: [AppService],

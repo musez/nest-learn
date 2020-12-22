@@ -1,6 +1,6 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, getRepository, DeleteResult } from 'typeorm';
+import { Repository, Like } from 'typeorm';
 import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -35,14 +35,28 @@ export class UserService {
     return await this.userRepository.save(createUserDto);
   }
 
-  async selectList(): Promise<User[]> {
-    return await this.userRepository.find();
+  async selectList(query): Promise<User[]> {
+    let { userName } = query;
+
+    return await this.userRepository.find({
+      relations: ['userinfo'],
+      where: {
+        userName: Like(`%${userName}%`),
+      },
+    });
   }
 
-  async selectListPage(page: number, limit: number): Promise<any> {
+  async selectListPage(query): Promise<any> {
+    let { userName, mobile, page, limit } = query;
+    page = page ? page : 1;
+    limit = limit ? limit : 10;
     let offset = (page - 1) * limit;
 
     let res = await this.userRepository.createQueryBuilder('user')
+      .innerJoinAndSelect('user.userinfo', 'userinfo')
+      .orderBy('user.createTime', 'ASC')
+      .where('user.userName = :userName', { userName: `%${userName}%` })
+      .andWhere('user.mobile = :mobile', { mobile: mobile })
       .skip(offset)
       .take(limit)
       .getManyAndCount();
@@ -56,15 +70,22 @@ export class UserService {
   }
 
   async selectById(id: string): Promise<User> {
-    return await this.userRepository.findOne(id);
+    return await this.userRepository.findOne(id, { relations: ['userinfo'] });
   }
 
   async update(updateUserDto: UpdateUserDto): Promise<void> {
     let { id } = updateUserDto;
+    // save
     await this.userRepository.update({ id: id }, updateUserDto);
+    // await this.userRepository.save(updateUserDto);
   }
 
   async deleteById(id: string): Promise<void> {
-    await this.userRepository.delete(id);
+    let user = await this.userRepository.findOne(id);
+    if (!user) {
+      throw new BadRequestException(`数据 id = ${id} 不存在！`);
+    }
+
+    await this.userRepository.remove(user);
   }
 }

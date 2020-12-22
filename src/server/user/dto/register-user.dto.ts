@@ -6,8 +6,8 @@ export class RegisterUserDto extends PickType(BaseUserDto, ['userName', 'userPwd
   @ApiProperty({
     description: '确认密码',
     required: true,
-    default: '',
+    example: '111111',
   })
   @IsNotEmpty({ message: '用户密码不能为空！' })
-  readonly userPwdRepeat: string;
+  readonly userPwdConfirm: string;
 }

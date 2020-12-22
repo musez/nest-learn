@@ -5,17 +5,17 @@ export class BaseUserinfoDto {
   @ApiPropertyOptional({
     description: '省份',
   })
-  readonly provinceId?: number;
+  readonly province?: string;
 
   @ApiPropertyOptional({
     description: '城市',
   })
-  readonly cityId?: number;
+  readonly city?: string;
 
   @ApiPropertyOptional({
     description: '区/县',
   })
-  readonly districtId?: number;
+  readonly district?: string;
 
   @ApiPropertyOptional({
     description: '详细地址',

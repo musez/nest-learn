@@ -3,10 +3,7 @@ import {
   ApiTags,
   ApiQuery,
   ApiBody,
-  ApiParam,
-  ApiHeader,
-  ApiHeaders,
-  ApiResponse,
+
   ApiBasicAuth,
 } from '@nestjs/swagger';
 import { AreaService } from './area.service';

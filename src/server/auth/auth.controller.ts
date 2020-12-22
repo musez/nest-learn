@@ -3,10 +3,7 @@ import {
   ApiTags,
   ApiQuery,
   ApiBody,
-  ApiParam,
-  ApiHeader,
-  ApiHeaders,
-  ApiResponse,
+
   ApiOperation,
 } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
@@ -54,9 +51,9 @@ export class AuthController {
   @Post('register')
   @ApiOperation({ summary: '注册' })
   async register(@Body() registerUserDto: RegisterUserDto): Promise<CreateUserDto> {
-    let { userPwd, userPwdRepeat } = registerUserDto;
+    let { userPwd, userPwdConfirm } = registerUserDto;
 
-    if (userPwd !== userPwdRepeat) {
+    if (userPwd !== userPwdConfirm) {
       throw new BadRequestException('密码不一致！');
     }
 

@@ -1,5 +1,5 @@
 import {
-  Controller, Get, Post, Body, Query, Put, Param, Delete, UseInterceptors, UploadedFile,
+  Controller, Get, Post, Body, Query,  UseInterceptors, UploadedFile,
   UploadedFiles,
   UseGuards,
 } from '@nestjs/common';
@@ -8,10 +8,7 @@ import {
   ApiQuery,
   ApiBody,
   ApiConsumes,
-  ApiParam,
-  ApiHeader,
-  ApiHeaders,
-  ApiResponse,
+
   ApiBasicAuth,
   ApiOperation,
 } from '@nestjs/swagger';

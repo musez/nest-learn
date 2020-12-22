@@ -1,8 +1,8 @@
 import { ApiProperty, PartialType } from '@nestjs/swagger';
 import { IsNotEmpty, IsString, IsInt, IsUUID } from 'class-validator';
-import { CreateUserDto } from './create-user.dto';
+import { CreateDictDto } from './create-dict.dto';
 
-export class UpdateUserDto extends PartialType(CreateUserDto) {
+export class UpdateDictDto extends PartialType(CreateDictDto) {
   @ApiProperty({
     description: '主键 id',
     required: true,

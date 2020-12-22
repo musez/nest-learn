@@ -8,30 +8,27 @@ import {
   UseGuards,
   UseInterceptors,
   ClassSerializerInterceptor,
+  BadRequestException,
 } from '@nestjs/common';
 import {
   ApiTags,
   ApiQuery,
   ApiBody,
-  ApiParam,
-  ApiHeader,
-  ApiHeaders,
-  ApiResponse,
   ApiBasicAuth,
   ApiOperation,
 } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
+import CryptoJS from 'crypto-js';
 import { UserService } from './user.service';
 import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { RegisterUserDto } from './dto/register-user.dto';
-import { LoginUserDto } from './dto/login-user.dto';
 import { DeleteUserDto } from './dto/delete-user.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { LocalAuthGuard } from '../auth/guards/local-auth.guard';
 import { Userinfo } from '../userinfo/entities/userinfo.entity';
 import { UserinfoService } from '../userinfo/userinfo.service';
+import { Area } from '../area/entities/area.entity';
 
 @ApiTags('用户')
 @Controller('user')
@@ -48,41 +45,42 @@ export class UserController {
   @ApiOperation({ summary: '添加' })
   async add(@Body() createUserDto: CreateUserDto): Promise<CreateUserDto> {
     let {
-      userName,
-      userPwd,
-      userType,
-      name,
-      mobile,
-      email,
-      sex,
-      birthday,
-      provinceId,
-      cityId,
-      districtId,
+      province,
+      city,
+      district,
       address,
-      status,
     } = createUserDto;
 
     let user = new User();
-    user.userName = userName;
-    user.userPwd = userPwd;
-    user.userType = userType;
-    user.name = name;
-    user.mobile = mobile;
-    user.email = email;
-    user.sex = sex;
-    user.birthday = birthday;
-    user.status = status;
+
+    for (let key in createUserDto) {
+      if (createUserDto[key] !== null && createUserDto[key] !== 0) {
+        user[key] = createUserDto[key];
+      }
+    }
 
     let userinfo = new Userinfo();
-    userinfo.user = user;
-    userinfo.provinceId = provinceId;
-    userinfo.cityId = cityId;
-    userinfo.districtId = districtId;
-    userinfo.address = address;
+    if (province !== null) {
+      userinfo.province = province;
+    }
+
+    if (city !== null) {
+      userinfo.city = city;
+    }
+
+    if (district !== null) {
+      userinfo.district = district;
+    }
+
+    if (address !== null) {
+      userinfo.address = address;
+    }
+
+    user.userinfo = userinfo;
 
     let userResult = await this.userService.insert(user);
-    let userinfoResult = await this.userinfoService.insert(userinfo);
+    // userinfo.user = user;
+    // let userinfoResult = await this.userinfoService.insert(userinfo);
 
     return userResult;
   }
@@ -91,8 +89,8 @@ export class UserController {
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(ClassSerializerInterceptor)
   @ApiOperation({ summary: '获取列表' })
-  async findList(): Promise<User[]> {
-    return await this.userService.selectList();
+  async findList(@Query() query): Promise<User[]> {
+    return await this.userService.selectList(query);
   }
 
   @Get('findListPage')
@@ -109,10 +107,18 @@ export class UserController {
     description: '每页条数',
     required: false,
   })
-  async findListPage(@Query('page') page: number, @Query('limit') limit: number): Promise<any> {
-    page = page ? page : 1;
-    limit = limit ? limit : 10;
-    return await this.userService.selectListPage(page, limit);
+  @ApiQuery({
+    name: 'userName',
+    description: '用户名',
+    required: false,
+  })
+  @ApiQuery({
+    name: 'mobile',
+    description: '手机号',
+    required: false,
+  })
+  async findListPage(@Query() query): Promise<any> {
+    return await this.userService.selectListPage(query);
   }
 
   @Get('findById')
@@ -127,14 +133,46 @@ export class UserController {
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '修改' })
   async modify(@Body() updateUserDto: UpdateUserDto): Promise<any> {
-    let { id } = updateUserDto;
-    let entity = await this.userService.selectById(id);
-    if (entity) {
-      return this.userService.update(updateUserDto);
-    } else {
-      // todo
-      return `数据 id = ${id} 不存在！`;
+    let {
+      id,
+      province,
+      city,
+      district,
+      address,
+    } = updateUserDto;
+    let userSelectById = await this.userService.selectById(id);
+    if (!userSelectById) {
+      throw new BadRequestException(`数据 id = ${id} 不存在！`);
     }
+
+    let user = new User();
+
+    for (let cityKey in updateUserDto) {
+      if (updateUserDto[cityKey] !== null && updateUserDto[cityKey] !== 0) {
+        user[cityKey] = updateUserDto[cityKey];
+      }
+    }
+
+    let userinfo = new Userinfo();
+    if (province !== null) {
+      userinfo.province = province;
+    }
+
+    if (city !== null) {
+      userinfo.city = city;
+    }
+
+    if (district !== null) {
+      userinfo.district = district;
+    }
+
+    if (address !== null) {
+      userinfo.address = address;
+    }
+
+    user.userinfo = userinfo;
+
+    return this.userService.update(user);
   }
 
   @Post('remove')
@@ -152,12 +190,11 @@ export class UserController {
     },
   })
   async remove(@Body('id') id: string): Promise<any> {
-    let entity = await this.userService.selectById(id);
-    if (entity) {
-      return await this.userService.deleteById(id);
-    } else {
-      // todo
-      return `数据 id = ${id} 不存在！`;
-    }
+    // let entity = await this.userService.selectById(id);
+    // if (!entity) {
+    //   throw new BadRequestException(`数据 id = ${id} 不存在！`);
+    // }
+
+    return await this.userService.deleteById(id);
   }
 }

@@ -8,12 +8,14 @@ import {
   JoinTable,
   JoinColumn,
   ManyToMany,
+  ManyToOne,
   OneToMany,
   OneToOne,
   BeforeUpdate,
 } from 'typeorm';
 import { User } from '../../user/entities/user.entity';
 import { BaseEntity } from '../../entities/base.entity';
+import { Area } from '../../area/entities/area.entity';
 
 @Entity('userinfo')
 export class Userinfo {
@@ -26,19 +28,25 @@ export class Userinfo {
     comment: '省份',
     nullable: true,
   })
-  provinceId: number;
+  province: string;
+  // @ManyToOne((type) => Area, (area) => area.id)
+  // province: Area;
 
   @Column({
     comment: '城市',
     nullable: true,
   })
-  cityId: number;
+  city: string;
+  // @ManyToOne((type) => Area, (area) => area.id)
+  // city: Area;
 
   @Column({
     comment: '区/县',
     nullable: true,
   })
-  districtId: number;
+  district: string;
+  // @ManyToOne((type) => Area, (area) => area.id)
+  // district: Area;
 
   @Column({
     comment: '详细地址',
