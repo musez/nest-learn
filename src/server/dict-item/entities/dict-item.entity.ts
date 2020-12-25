@@ -18,7 +18,7 @@ export class DictItem extends BaseEntity {
   itemText: string;
 
   @Column('varchar', {
-    comment: '字典项编码',
+    comment: '字典项值',
     length: 50,
   })
   itemValue: string;
@@ -28,6 +28,6 @@ export class DictItem extends BaseEntity {
   })
   sort: number;
 
-  @ManyToOne((type) => Dict, (dict) => dict.dictItems)
+  @ManyToOne((type) => Dict, (dict) => dict.dictItemList)
   dict: Dict;
 }

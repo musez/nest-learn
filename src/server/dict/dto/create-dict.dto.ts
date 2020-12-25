@@ -1,6 +1,17 @@
 import { ApiProperty, ApiPropertyOptional, PickType } from '@nestjs/swagger';
 import { BaseDictDto } from './base-dict.dto';
+import { CreateDictItemDto } from '../../dict-item/dto/create-dict-item.dto';
 
 export class CreateDictDto extends PickType(BaseDictDto,
-  ['dictCode', 'dictName', 'dictItems', 'status', 'description']) {
+  ['dictCode', 'dictName', 'status', 'description'],
+) {
+  @ApiProperty({
+    description: '字典项',
+    example: [{
+      itemName: '',
+      itemValue: '',
+      sort: 0,
+    }],
+  })
+  readonly dictItemList?: CreateDictItemDto[];
 }

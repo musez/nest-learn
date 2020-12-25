@@ -1,6 +1,5 @@
 import { IsNotEmpty, IsString, IsInt, IsEmail, MinLength, MaxLength } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { DictItem } from '../../dict-item/entities/dict-item.entity';
 
 export class BaseDictDto {
   @ApiProperty({
@@ -27,12 +26,6 @@ export class BaseDictDto {
     default: 0,
   })
   readonly type?: number;
-
-  @ApiProperty({
-    description: '字典类型',
-    example: null,
-  })
-  readonly dictItems?: DictItem[];
 
   @IsInt({ message: '状态必须为数字！' })
   @ApiPropertyOptional({

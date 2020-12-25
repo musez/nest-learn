@@ -38,6 +38,10 @@ export class UserService {
   async selectList(query): Promise<User[]> {
     let { userName } = query;
 
+    if (!userName) {
+      userName = '';
+    }
+
     return await this.userRepository.find({
       relations: ['userinfo'],
       where: {
@@ -52,13 +56,21 @@ export class UserService {
     limit = limit ? limit : 10;
     let offset = (page - 1) * limit;
 
+    if (!userName) {
+      userName = '';
+    }
+
+    if (!mobile) {
+      mobile = '';
+    }
+
     let res = await this.userRepository.createQueryBuilder('user')
       .innerJoinAndSelect('user.userinfo', 'userinfo')
-      .orderBy('user.createTime', 'ASC')
-      .where('user.userName = :userName', { userName: `%${userName}%` })
-      .andWhere('user.mobile = :mobile', { mobile: mobile })
       .skip(offset)
       .take(limit)
+      .orderBy('user.createTime', 'ASC')
+      .where('user.userName like :userName', { userName: `%${userName}%` })
+      .andWhere('user.mobile = :mobile', { mobile: mobile })
       .getManyAndCount();
 
     return {

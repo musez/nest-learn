@@ -18,7 +18,9 @@ export class DictService {
   }
 
   async selectList(): Promise<Dict[]> {
-    return await this.dictRepository.find();
+    return await this.dictRepository.find({
+      relations: ['dictItemList'],
+    });
   }
 
   async selectListPage(query): Promise<any> {
@@ -28,6 +30,7 @@ export class DictService {
     let offset = (page - 1) * limit;
 
     let res = await this.dictRepository.createQueryBuilder('dict')
+      .innerJoinAndSelect('dict.dictItemList', 'dictItemList')
       .orderBy('dict.createTime', 'ASC')
       .skip(offset)
       .take(limit)
@@ -42,7 +45,9 @@ export class DictService {
   }
 
   async selectById(id: string): Promise<Dict> {
-    return await this.dictRepository.findOne(id);
+    return await this.dictRepository.findOne(id, {
+      relations: ['dictItemList'],
+    });
   }
 
   async update(updateDictDto: UpdateDictDto): Promise<void> {

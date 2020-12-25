@@ -25,7 +25,7 @@ export class DictController {
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '添加' })
   async create(@Body() createDictDto: CreateDictDto) {
-    let { dictItems } = createDictDto;
+    let { dictItemList } = createDictDto;
     let dict = new Dict();
 
     for (let key in createDictDto) {
@@ -34,24 +34,18 @@ export class DictController {
       }
     }
 
-    if (dictItems) {
-      // let dictItemList = [];
-
-      for (const key in dictItems) {
+    if (dictItemList) {
+      for (const key in dictItemList) {
         let dictItem = new DictItem();
 
-        for (const itemKey in dictItems[key]) {
-          if (dictItems[key][itemKey]) {
-            dictItem[itemKey] = dictItems[key][itemKey];
+        for (const itemKey in dictItemList[key]) {
+          if (dictItemList[key][itemKey]) {
+            dictItem[itemKey] = dictItemList[key][itemKey];
           }
         }
         dictItem.dict = dict;
-        // dictItemList.push(dictItem);
       }
-
-      // dict.dictItems = dictItemList;
     }
-    console.log(JSON.stringify(dict));
     let result = await this.dictService.insert(dict);
 
     return result;

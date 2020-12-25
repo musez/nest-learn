@@ -27,6 +27,8 @@ export class Dict extends BaseEntity {
   })
   type: number;
 
-  @OneToMany((type) => DictItem, (dictItem) => dictItem.dict) // note: we will create author property in the Photo class below
-  dictItems: DictItem[];
+  @OneToMany((type) => DictItem, (dictItem) => dictItem.dict, {
+    cascade: true,
+  })
+  dictItemList: DictItem[];
 }

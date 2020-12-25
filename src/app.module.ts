@@ -30,7 +30,7 @@ import { DictItemModule } from './server/dict-item/dict-item.module';
       // charset: 'utf8mb4',
       multipleStatements: true,
       dropSchema: false,
-      synchronize: true, // 是否自动将实体类同步到数据库
+      synchronize: false, // 是否自动将实体类同步到数据库
       logging: true,
       cli: {
         migrationsDir: 'database/migration/default',
