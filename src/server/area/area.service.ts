@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, TreeRepository } from 'typeorm';
+import { Repository, TreeRepository, Like } from 'typeorm';
 import { CreateAreaDto } from './dto/create-area.dto';
 import { UpdateAreaDto } from './dto/update-area.dto';
 import { Area } from './entities/area.entity';
@@ -9,28 +9,51 @@ import { Area } from './entities/area.entity';
 export class AreaService {
   constructor(
     @InjectRepository(Area)
-    private readonly areaService: Repository<Area>,
+    private readonly areaRepository: Repository<Area>,
   ) {
   }
 
-  create(createAreaDto: CreateAreaDto) {
-    return 'This action adds a new area';
+  async selectList(query): Promise<Area[]> {
+    let { areaName } = query;
+
+    if (!areaName) {
+      areaName = '';
+    }
+
+    return await this.areaRepository.find({
+      where: {
+        areaName: Like(`%${areaName}%`),
+      },
+    });
   }
 
-  findAll() {
-    return `This action returns all area`;
+  async selectListPage(query): Promise<any> {
+    let { areaName, page, limit } = query;
+    page = page ? page : 1;
+    limit = limit ? limit : 10;
+    let offset = (page - 1) * limit;
+
+    if (!areaName) {
+      areaName = '';
+    }
+
+    let res = await this.areaRepository.createQueryBuilder('area')
+      .skip(offset)
+      .take(limit)
+      .orderBy('area.createTime', 'ASC')
+      .where('area.areaName like :areaName', { areaName: `%${areaName}%` })
+      .getManyAndCount();
+
+    return {
+      list: res[0],
+      total: res[1],
+      page: page,
+      limit: limit,
+    };
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} area`;
-  }
-
-  update(id: number, updateAreaDto: UpdateAreaDto) {
-    return `This action updates a #${id} area`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} area`;
+  async selectById(id: string): Promise<Area> {
+    return await this.areaRepository.findOne(id);
   }
 
   // async selectTree(): Promise<Area[]> {

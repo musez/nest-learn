@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { CreateDictDto } from './dto/create-dict.dto';
 import { UpdateDictDto } from './dto/update-dict.dto';
 import { Dict } from './entities/dict.entity';
+import { DictItem } from '../dict-item/entities/dict-item.entity';
 
 @Injectable()
 export class DictService {
@@ -50,17 +51,47 @@ export class DictService {
     });
   }
 
-  async update(updateDictDto: UpdateDictDto): Promise<void> {
-    let { id } = updateDictDto;
-    await this.dictRepository.update({ id: id }, updateDictDto);
-  }
+  async update(updateDictDto: UpdateDictDto): Promise<any> {
+    let { id, dictItemList } = updateDictDto;
 
-  async deleteById(id: string): Promise<void> {
-    let user = await this.dictRepository.findOne(id);
-    if (!user) {
+    let isExist = await this.dictRepository.findOne(id);
+    if (!isExist) {
       throw new BadRequestException(`数据 id = ${id} 不存在！`);
     }
 
-    await this.dictRepository.remove(user);
+    let dict = new Dict();
+
+    for (let key in updateDictDto) {
+      if (updateDictDto[key] !== null && updateDictDto[key] !== 0 && updateDictDto[key] !== '') {
+        dict[key] = updateDictDto[key];
+      }
+    }
+
+    if (dictItemList) {
+      for (const key in dictItemList) {
+        let dictItem = new DictItem();
+
+        for (const itemKey in dictItemList[key]) {
+          if (dictItemList[key][itemKey]) {
+            dictItem[itemKey] = dictItemList[key][itemKey];
+          }
+        }
+        dictItem.dict = dict;
+      }
+    }
+
+    // let result = await this.dictRepository.update({ id: id }, updateDictDto);
+    let result = await this.dictRepository.save(updateDictDto);
+
+    return result;
+  }
+
+  async deleteById(id: string): Promise<void> {
+    let isExist = await this.dictRepository.findOne(id);
+    if (!isExist) {
+      throw new BadRequestException(`数据 id = ${id} 不存在！`);
+    }
+
+    await this.dictRepository.remove(isExist);
   }
 }

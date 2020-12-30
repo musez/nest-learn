@@ -39,8 +39,8 @@ async function bootstrap() {
     .setTitle('cms_nest 内容管理系统接口文档')
     .setDescription('后台管理系统接口文档') // 文档介绍
     .setVersion('1.0.0') // 文档版本
-    .setTermsOfService('http://localhost:3000/api-docs-json')
     .addServer('http://localhost:3000')
+    .setExternalDoc('swagger.json', 'http://localhost:3000/api-docs-json')
     .setContact('Wang Yue', 'https://juejin.cn/user/1063982984593997', '920317438@qq.com')
     // .addTag('用户') // 每个 tag 标签都可以对应着几个 @ApiUseTags('用户') 然后被 ApiUseTags 注释，字符串一致的都会变成同一个标签下的
     // .setBasePath('http://localhost:5000')

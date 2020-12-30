@@ -17,8 +17,8 @@ import {
 import { BaseEntity } from '../../entities/base.entity';
 
 @Entity('area')
-export class Area{
-  @PrimaryGeneratedColumn( {
+export class Area {
+  @PrimaryGeneratedColumn({
     comment: '主键 id',
   })
   id: number;

@@ -44,45 +44,7 @@ export class UserController {
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '添加' })
   async add(@Body() createUserDto: CreateUserDto): Promise<CreateUserDto> {
-    let {
-      province,
-      city,
-      district,
-      address,
-    } = createUserDto;
-
-    let user = new User();
-
-    for (let key in createUserDto) {
-      if (createUserDto[key] !== null && createUserDto[key] !== 0) {
-        user[key] = createUserDto[key];
-      }
-    }
-
-    let userinfo = new Userinfo();
-    if (province !== null) {
-      userinfo.province = province;
-    }
-
-    if (city !== null) {
-      userinfo.city = city;
-    }
-
-    if (district !== null) {
-      userinfo.district = district;
-    }
-
-    if (address !== null) {
-      userinfo.address = address;
-    }
-
-    user.userinfo = userinfo;
-
-    let userResult = await this.userService.insert(user);
-    // userinfo.user = user;
-    // let userinfoResult = await this.userinfoService.insert(userinfo);
-
-    return userResult;
+    return this.userService.insert(createUserDto);
   }
 
   @Get('findList')
@@ -133,46 +95,7 @@ export class UserController {
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '修改' })
   async modify(@Body() updateUserDto: UpdateUserDto): Promise<any> {
-    let {
-      id,
-      province,
-      city,
-      district,
-      address,
-    } = updateUserDto;
-    let userSelectById = await this.userService.selectById(id);
-    if (!userSelectById) {
-      throw new BadRequestException(`数据 id = ${id} 不存在！`);
-    }
-
-    let user = new User();
-
-    for (let cityKey in updateUserDto) {
-      if (updateUserDto[cityKey] !== null && updateUserDto[cityKey] !== 0) {
-        user[cityKey] = updateUserDto[cityKey];
-      }
-    }
-
-    let userinfo = new Userinfo();
-    if (province !== null) {
-      userinfo.province = province;
-    }
-
-    if (city !== null) {
-      userinfo.city = city;
-    }
-
-    if (district !== null) {
-      userinfo.district = district;
-    }
-
-    if (address !== null) {
-      userinfo.address = address;
-    }
-
-    user.userinfo = userinfo;
-
-    return this.userService.update(user);
+    return this.userService.update(updateUserDto);
   }
 
   @Post('remove')
@@ -190,11 +113,6 @@ export class UserController {
     },
   })
   async remove(@Body('id') id: string): Promise<any> {
-    // let entity = await this.userService.selectById(id);
-    // if (!entity) {
-    //   throw new BadRequestException(`数据 id = ${id} 不存在！`);
-    // }
-
     return await this.userService.deleteById(id);
   }
 }

@@ -1,11 +1,10 @@
-import { Controller, Get, Post, Query, Body,  UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Query, Body, UseGuards } from '@nestjs/common';
 import {
   ApiTags,
   ApiQuery,
   ApiBody,
-
   ApiBasicAuth,
-  ApiOperation
+  ApiOperation,
 } from '@nestjs/swagger';
 import { PermissionService } from './permission.service';
 import { CreatePermissionDto } from './dto/create-permission.dto';
@@ -24,19 +23,7 @@ export class PermissionController {
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '添加' })
   async add(@Body() createPermissionDto: CreatePermissionDto) {
-    let { parentId, ...result } = createPermissionDto;
-
-    let child = new Permission();
-    for (let key in result) {
-      child[key] = result[key];
-    }
-
-    let parent = await this.permissionService.findOne(parentId);
-    if (parent) {
-      child.parent = parent;
-    }
-
-    return this.permissionService.insert(child);
+    return this.permissionService.insert(createPermissionDto);
   }
 
   @Get()
@@ -65,18 +52,17 @@ export class PermissionController {
     return this.permissionService.selectTreeChild(parentId);
   }
 
-  // @Get(':id')
-  // findOne(@Param('id') id: string) {
-  //   return this.permissionService.findOne(+id);
-  // }
-  //
-  // @Put(':id')
-  // update(@Param('id') id: string, @Body() updatePermissionDto: UpdatePermissionDto) {
-  //   return this.permissionService.update(+id, updatePermissionDto);
-  // }
-  //
-  // @Delete(':id')
-  // remove(@Param('id') id: string) {
-  //   return this.permissionService.remove(+id);
-  // }
+  @Get('findById')
+  @ApiOperation({ summary: '获取详情（主键 id）' })
+  @UseGuards(JwtAuthGuard)
+  async findById(@Query('id') id: string): Promise<Permission> {
+    return await this.permissionService.selectById(id);
+  }
+
+  @Post('modify')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: '修改' })
+  async modify(@Body() updatePermissionDto: UpdatePermissionDto): Promise<any> {
+    return this.permissionService.update(updatePermissionDto);
+  }
 }

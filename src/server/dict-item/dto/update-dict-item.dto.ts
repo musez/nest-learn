@@ -1,4 +1,6 @@
-import { PartialType } from '@nestjs/mapped-types';
-import { CreateDictItemDto } from './create-dict-item.dto';
+import { PartialType, PickType } from '@nestjs/mapped-types';
+import { BaseDictItemDto } from './base-dict-item.dto';
 
-export class UpdateDictItemDto extends PartialType(CreateDictItemDto) {}
+export class UpdateDictItemDto extends PickType(BaseDictItemDto,
+  ['id', 'itemText', 'itemValue', 'sort']) {
+}

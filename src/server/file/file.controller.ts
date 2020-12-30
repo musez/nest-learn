@@ -1,14 +1,14 @@
 import {
-  Controller, Get, Post, Body, Query,  UseInterceptors, UploadedFile,
+  Controller, Get, Post, Body, Query, UseInterceptors, UploadedFile,
   UploadedFiles,
   UseGuards,
+  BadRequestException,
 } from '@nestjs/common';
 import {
   ApiTags,
   ApiQuery,
   ApiBody,
   ApiConsumes,
-
   ApiBasicAuth,
   ApiOperation,
 } from '@nestjs/swagger';
@@ -58,6 +58,10 @@ export class FileController {
   })
   @UseInterceptors(FileInterceptor('file'))
   UploadedFile(@UploadedFile() file, @Body() body) {
+    if (!file) {
+      throw new BadRequestException(`文件不能为空！`);
+    }
+
     const writeStream = createWriteStream(join(__dirname, '../../../', 'uploads', `${file.originalname}`));
 
     // 将 16 进制写入地址
@@ -110,6 +114,10 @@ export class FileController {
     { name: 'description', maxCount: 1 },
   ]))
   UploadedFiles(@UploadedFiles() files, @Body() body) {
+    if (!files.files) {
+      throw new BadRequestException(`文件不能为空！`);
+    }
+
     // 获取 body 中的文本参数
     let { description, extId } = body;
     let filesEntity = [];
@@ -161,29 +169,4 @@ export class FileController {
   findByExtId(@Query('extId') extId: string) {
     return this.fileService.selectByExtId(extId);
   }
-
-  // @Post()
-  // create(@Body() createFileDto: CreateFileDto) {
-  //   return this.fileService.create(createFileDto);
-  // }
-  //
-  // @Get()
-  // findAll() {
-  //   return this.fileService.findAll();
-  // }
-  //
-  // @Get(':id')
-  // findOne(@Param('id') id: string) {
-  //   return this.fileService.findOne(+id);
-  // }
-  //
-  // @Put(':id')
-  // update(@Param('id') id: string, @Body() updateFileDto: UpdateFileDto) {
-  //   return this.fileService.update(+id, updateFileDto);
-  // }
-  //
-  // @Delete(':id')
-  // remove(@Param('id') id: string) {
-  //   return this.fileService.remove(+id);
-  // }
 }

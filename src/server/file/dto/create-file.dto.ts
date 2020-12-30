@@ -1,8 +1,7 @@
 import { IsNotEmpty, IsString, IsInt } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { BaseEntity } from '../../entities/base.entity';
 
-export class CreateFileDto extends BaseEntity{
+export class CreateFileDto {
   @ApiProperty({
     description: '文件原始名称',
     required: true,

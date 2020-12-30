@@ -4,9 +4,8 @@ import { Repository, Like } from 'typeorm';
 import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { RegisterUserDto } from './dto/register-user.dto';
-import { LoginUserDto } from './dto/login-user.dto';
 import { DeleteUserDto } from './dto/delete-user.dto';
+import { Userinfo } from '../userinfo/entities/userinfo.entity';
 
 @Injectable()
 export class UserService {
@@ -28,11 +27,30 @@ export class UserService {
 
   async insert(createUserDto: CreateUserDto): Promise<CreateUserDto> {
     let { userName } = createUserDto;
-    let user = await this.userRepository.findOne({ userName: userName });
-    if (user) {
+
+    let isExist = await this.userRepository.findOne({ userName: userName });
+    if (isExist) {
       throw new BadRequestException(`用户名 ${userName} 已存在！`);
     }
-    return await this.userRepository.save(createUserDto);
+
+    let user = new User();
+
+    for (let key in createUserDto) {
+      if (createUserDto[key] !== null && createUserDto[key] !== 0) {
+        user[key] = createUserDto[key];
+      }
+    }
+
+    let userinfo = new Userinfo();
+    for (let key in createUserDto) {
+      if (createUserDto[key] !== null && createUserDto[key] !== 0) {
+        userinfo[key] = createUserDto[key];
+      }
+    }
+
+    user.userinfo = userinfo;
+
+    return await this.userRepository.save(user);
   }
 
   async selectList(query): Promise<User[]> {
@@ -86,18 +104,42 @@ export class UserService {
   }
 
   async update(updateUserDto: UpdateUserDto): Promise<void> {
-    let { id } = updateUserDto;
-    // save
-    await this.userRepository.update({ id: id }, updateUserDto);
-    // await this.userRepository.save(updateUserDto);
-  }
+    let {
+      id,
+    } = updateUserDto;
 
-  async deleteById(id: string): Promise<void> {
-    let user = await this.userRepository.findOne(id);
-    if (!user) {
+    let isExist = await this.userRepository.findOne(id);
+    if (!isExist) {
       throw new BadRequestException(`数据 id = ${id} 不存在！`);
     }
 
-    await this.userRepository.remove(user);
+    let user = new User();
+
+    for (let cityKey in updateUserDto) {
+      if (updateUserDto[cityKey] !== null && updateUserDto[cityKey] !== 0) {
+        user[cityKey] = updateUserDto[cityKey];
+      }
+    }
+
+    let userinfo = new Userinfo();
+    for (let key in updateUserDto) {
+      if (updateUserDto[key] !== null && updateUserDto[key] !== 0) {
+        userinfo[key] = updateUserDto[key];
+      }
+    }
+
+    user.userinfo = userinfo;
+
+    // await this.userRepository.update({ id: id }, updateUserDto);
+    await this.userRepository.save(updateUserDto);
+  }
+
+  async deleteById(id: string): Promise<void> {
+    let isExist = await this.userRepository.findOne(id);
+    if (!isExist) {
+      throw new BadRequestException(`数据 id = ${id} 不存在！`);
+    }
+
+    await this.userRepository.remove(isExist);
   }
 }
