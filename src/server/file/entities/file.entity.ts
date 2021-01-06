@@ -8,7 +8,7 @@ import {
   OneToMany,
   BeforeUpdate,
 } from 'typeorm';
-import { BaseEntity } from '../../entities/base.entity';
+import { BaseEntity } from '../../base.entity';
 
 @Entity('file')
 export class File extends BaseEntity {

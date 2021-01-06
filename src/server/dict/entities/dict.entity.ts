@@ -3,7 +3,7 @@ import {
   Column,
   OneToMany,
 } from 'typeorm';
-import { BaseEntity } from '../../entities/base.entity';
+import { BaseEntity } from '../../base.entity';
 import { DictItem } from '../../dict-item/entities/dict-item.entity';
 
 @Entity('dict')

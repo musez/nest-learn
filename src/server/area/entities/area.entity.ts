@@ -14,7 +14,7 @@ import {
   TreeChildren,
   TreeParent,
 } from 'typeorm';
-import { BaseEntity } from '../../entities/base.entity';
+import { BaseEntity } from '../../base.entity';
 
 @Entity('area')
 export class Area {

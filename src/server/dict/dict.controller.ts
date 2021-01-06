@@ -13,6 +13,8 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { Dict } from './entities/dict.entity';
 import { User } from '../user/entities/user.entity';
 import { DictItem } from '../dict-item/entities/dict-item.entity';
+import { BaseFindByIdDto, BasePageDto } from '../base.dto';
+import { ParseIntPipe } from '../../common/pipe/parse-int.pipe';
 
 @ApiTags('字典')
 @Controller('dict')
@@ -61,25 +63,15 @@ export class DictController {
   @Get('findListPage')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '获取列表（分页）' })
-  @ApiQuery({
-    name: 'page',
-    description: '第几页',
-    required: false,
-  })
-  @ApiQuery({
-    name: 'limit',
-    description: '每页条数',
-    required: false,
-  })
-  async findListPage(@Query() query): Promise<any> {
-    return await this.dictService.selectListPage(query);
+  async findListPage(@Query('page', new ParseIntPipe()) page, @Query('limit', new ParseIntPipe()) limit, @Query() basePageDto: BasePageDto): Promise<any> {
+    return await this.dictService.selectListPage(page, limit, basePageDto);
   }
 
   @Get('findById')
   @ApiOperation({ summary: '获取详情（主键 id）' })
   @UseGuards(JwtAuthGuard)
-  async findById(@Query('id') id: string): Promise<Dict> {
-    return await this.dictService.selectById(id);
+  async findById(@Query() baseFindByIdDto: BaseFindByIdDto): Promise<Dict> {
+    return await this.dictService.selectById(baseFindByIdDto);
   }
 
   @Post('modify')
@@ -92,18 +84,7 @@ export class DictController {
   @Post('remove')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '删除' })
-  @ApiBody({
-    schema: {
-      type: 'object',
-      properties: {
-        id: {
-          type: 'string',
-          description: '主键 id',
-        },
-      },
-    },
-  })
-  async remove(@Body('id') id: string): Promise<any> {
-    return await this.dictService.deleteById(id);
+  async remove(@Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
+    return await this.dictService.deleteById(baseFindByIdDto);
   }
 }

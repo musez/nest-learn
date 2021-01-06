@@ -4,8 +4,9 @@ import { Repository, Like } from 'typeorm';
 import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { DeleteUserDto } from './dto/delete-user.dto';
 import { Userinfo } from '../userinfo/entities/userinfo.entity';
+import { UserGroup } from '../user-group/entities/user-group.entity';
+import { BaseFindByIdDto } from '../base.dto';
 
 @Injectable()
 export class UserService {
@@ -68,8 +69,8 @@ export class UserService {
     });
   }
 
-  async selectListPage(query): Promise<any> {
-    let { userName, mobile, page, limit } = query;
+  async selectListPage(page, limit, query): Promise<any> {
+    let { userName, mobile } = query;
     page = page ? page : 1;
     limit = limit ? limit : 10;
     let offset = (page - 1) * limit;
@@ -99,7 +100,8 @@ export class UserService {
     };
   }
 
-  async selectById(id: string): Promise<User> {
+  async selectById(baseFindByIdDto: BaseFindByIdDto): Promise<User> {
+    let { id } = baseFindByIdDto;
     return await this.userRepository.findOne(id, { relations: ['userinfo'] });
   }
 
@@ -134,12 +136,29 @@ export class UserService {
     await this.userRepository.save(updateUserDto);
   }
 
-  async deleteById(id: string): Promise<void> {
+  async deleteById(baseFindByIdDto: BaseFindByIdDto): Promise<void> {
+    let { id } = baseFindByIdDto;
     let isExist = await this.userRepository.findOne(id);
     if (!isExist) {
       throw new BadRequestException(`数据 id = ${id} 不存在！`);
     }
 
     await this.userRepository.remove(isExist);
+  }
+
+  async bindUserGroup(id: string, userGroups: UserGroup[]): Promise<void> {
+    let isExist = await this.userRepository.findOne(id);
+    if (!isExist) {
+      throw new BadRequestException(`数据 id = ${id} 不存在！`);
+    }
+
+    let userGroupList = [];
+    for (let i = 0, len = userGroups.length; i < len; i++) {
+      let userGroup = new UserGroup();
+      userGroupList.push(userGroup);
+    }
+    isExist.userGroups = userGroupList;
+
+    await this.userRepository.save(isExist);
   }
 }

@@ -22,6 +22,9 @@ import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { Role } from './entities/role.entity';
+import { LimitRoleDto } from './dto/limit-role.dto';
+import { BaseFindByIdDto } from '../base.dto';
+import { ParseIntPipe } from '../../common/pipe/parse-int.pipe';
 
 @Controller('role')
 @ApiTags('角色')
@@ -47,35 +50,15 @@ export class RoleController {
   @Get('findListPage')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '获取列表（分页）' })
-  @ApiQuery({
-    name: 'page',
-    description: '第几页',
-    required: false,
-  })
-  @ApiQuery({
-    name: 'limit',
-    description: '每页条数',
-    required: false,
-  })
-  @ApiQuery({
-    name: 'name',
-    description: '名称',
-    required: false,
-  })
-  @ApiQuery({
-    name: 'mobile',
-    description: '手机号',
-    required: false,
-  })
-  async findListPage(@Query() query): Promise<any> {
-    return await this.roleService.selectListPage(query);
+  async findListPage(@Query('page', new ParseIntPipe()) page, @Query('limit', new ParseIntPipe()) limit, @Query() query: LimitRoleDto): Promise<any> {
+    return await this.roleService.selectListPage(page, limit, query);
   }
 
   @Get('findById')
   @ApiOperation({ summary: '获取详情（主键 id）' })
   @UseGuards(JwtAuthGuard)
-  async findById(@Query('id') id: string): Promise<Role> {
-    return await this.roleService.selectById(id);
+  async findById(@Query() baseFindByIdDto: BaseFindByIdDto): Promise<Role> {
+    return await this.roleService.selectById(baseFindByIdDto);
   }
 
   @Post('modify')
@@ -88,18 +71,7 @@ export class RoleController {
   @Post('remove')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '删除' })
-  @ApiBody({
-    schema: {
-      type: 'object',
-      properties: {
-        id: {
-          type: 'string',
-          description: '主键 id',
-        },
-      },
-    },
-  })
-  async remove(@Body('id') id: string): Promise<any> {
-    return await this.roleService.deleteById(id);
+  async remove(@Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
+    return await this.roleService.deleteById(baseFindByIdDto);
   }
 }

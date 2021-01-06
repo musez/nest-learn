@@ -6,6 +6,7 @@ import { join } from 'path';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';// api文档插件
 import { TransformInterceptor } from './common/interceptor/transform.interceptor';
 import { ValidationPipe } from './common/pipe/validation.pipe';
+import { ParseIntPipe } from './common/pipe/parse-int.pipe';
 import { HttpExceptionFilter } from './common/filter/http-exception.filter';
 import { AllExceptionsFilter } from './common/filter/any-exception.filter';
 import { logger } from './common/middleware/logger.middleware';
@@ -28,6 +29,8 @@ async function bootstrap() {
 
   app.useGlobalInterceptors(new TransformInterceptor());// 使用全局拦截器打印出参
   app.useGlobalPipes(new ValidationPipe()); // 开启一个全局验证管道
+  // app.useGlobalPipes(new ParseIntPipe()); // 开启一个全局转换管道
+
   app.useGlobalFilters(new HttpExceptionFilter());// 过滤处理 HTTP 异常
   app.useGlobalFilters(new AllExceptionsFilter());// 过滤处理所有异常
   app.use(logger);// 监听所有的请求路由，并打印日志

@@ -12,7 +12,7 @@ import {
   BeforeUpdate,
 } from 'typeorm';
 import { Exclude } from 'class-transformer';
-import { BaseEntity } from '../../entities/base.entity';
+import { BaseEntity } from '../../base.entity';
 import { UserGroup } from '../../user-group/entities/user-group.entity';
 import { Userinfo } from '../../userinfo/entities/userinfo.entity';
 

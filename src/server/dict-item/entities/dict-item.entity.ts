@@ -4,7 +4,7 @@ import {
   ManyToOne,
   JoinColumn,
 } from 'typeorm';
-import { BaseEntity } from '../../entities/base.entity';
+import { BaseEntity } from '../../base.entity';
 import { User } from '../../user/entities/user.entity';
 import { Dict } from '../../dict/entities/dict.entity';
 import { Area } from '../../area/entities/area.entity';

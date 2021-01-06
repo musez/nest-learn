@@ -5,6 +5,7 @@ import { CreateDictDto } from './dto/create-dict.dto';
 import { UpdateDictDto } from './dto/update-dict.dto';
 import { Dict } from './entities/dict.entity';
 import { DictItem } from '../dict-item/entities/dict-item.entity';
+import { BaseFindByIdDto } from '../base.dto';
 
 @Injectable()
 export class DictService {
@@ -24,8 +25,7 @@ export class DictService {
     });
   }
 
-  async selectListPage(query): Promise<any> {
-    let { page, limit } = query;
+  async selectListPage(page, limit, query): Promise<any> {
     page = page ? page : 1;
     limit = limit ? limit : 10;
     let offset = (page - 1) * limit;
@@ -45,7 +45,8 @@ export class DictService {
     };
   }
 
-  async selectById(id: string): Promise<Dict> {
+  async selectById(baseFindByIdDto: BaseFindByIdDto): Promise<Dict> {
+    let { id } = baseFindByIdDto;
     return await this.dictRepository.findOne(id, {
       relations: ['dictItemList'],
     });
@@ -86,7 +87,8 @@ export class DictService {
     return result;
   }
 
-  async deleteById(id: string): Promise<void> {
+  async deleteById(baseFindByIdDto: BaseFindByIdDto): Promise<void> {
+    let { id } = baseFindByIdDto;
     let isExist = await this.dictRepository.findOne(id);
     if (!isExist) {
       throw new BadRequestException(`数据 id = ${id} 不存在！`);

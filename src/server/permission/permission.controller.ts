@@ -11,6 +11,7 @@ import { CreatePermissionDto } from './dto/create-permission.dto';
 import { UpdatePermissionDto } from './dto/update-permission.dto';
 import { Permission } from './entities/permission.entity';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { BaseFindByIdDto } from '../base.dto';
 
 @Controller('permission')
 @ApiTags('权限')
@@ -55,8 +56,8 @@ export class PermissionController {
   @Get('findById')
   @ApiOperation({ summary: '获取详情（主键 id）' })
   @UseGuards(JwtAuthGuard)
-  async findById(@Query('id') id: string): Promise<Permission> {
-    return await this.permissionService.selectById(id);
+  async findById(@Query() baseFindByIdDto: BaseFindByIdDto): Promise<Permission> {
+    return await this.permissionService.selectById(baseFindByIdDto);
   }
 
   @Post('modify')

@@ -9,6 +9,8 @@ import {
   UseInterceptors,
   ClassSerializerInterceptor,
   BadRequestException,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -23,12 +25,13 @@ import { UserService } from './user.service';
 import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { DeleteUserDto } from './dto/delete-user.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { LocalAuthGuard } from '../auth/guards/local-auth.guard';
 import { Userinfo } from '../userinfo/entities/userinfo.entity';
 import { UserinfoService } from '../userinfo/userinfo.service';
-import { Area } from '../area/entities/area.entity';
+import { UserGroup } from '../user-group/entities/user-group.entity';
+import { LimitUserDto } from './dto/limit-user.dto';
+import { BaseFindByIdDto } from '../base.dto';
+import { ParseIntPipe } from '../../common/pipe/parse-int.pipe';
 
 @ApiTags('用户')
 @Controller('user')
@@ -36,7 +39,6 @@ import { Area } from '../area/entities/area.entity';
 export class UserController {
   constructor(
     private readonly userService: UserService,
-    private readonly userinfoService: UserinfoService,
   ) {
   }
 
@@ -59,36 +61,16 @@ export class UserController {
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(ClassSerializerInterceptor)
   @ApiOperation({ summary: '获取列表（分页）' })
-  @ApiQuery({
-    name: 'page',
-    description: '第几页',
-    required: false,
-  })
-  @ApiQuery({
-    name: 'limit',
-    description: '每页条数',
-    required: false,
-  })
-  @ApiQuery({
-    name: 'userName',
-    description: '用户名',
-    required: false,
-  })
-  @ApiQuery({
-    name: 'mobile',
-    description: '手机号',
-    required: false,
-  })
-  async findListPage(@Query() query): Promise<any> {
-    return await this.userService.selectListPage(query);
+  async findListPage(@Query('page', new ParseIntPipe()) page, @Query('limit', new ParseIntPipe()) limit, @Query() limitUserDto: LimitUserDto): Promise<any> {
+    return await this.userService.selectListPage(page, limit, limitUserDto);
   }
 
   @Get('findById')
   @UseInterceptors(ClassSerializerInterceptor)
   @ApiOperation({ summary: '获取详情（主键 id）' })
   @UseGuards(JwtAuthGuard)
-  async findById(@Query('id') id: string): Promise<User> {
-    return await this.userService.selectById(id);
+  async findById(@Query() baseFindByIdDto: BaseFindByIdDto): Promise<User> {
+    return await this.userService.selectById(baseFindByIdDto);
   }
 
   @Post('modify')
@@ -101,18 +83,14 @@ export class UserController {
   @Post('remove')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '删除' })
-  @ApiBody({
-    schema: {
-      type: 'object',
-      properties: {
-        id: {
-          type: 'string',
-          description: '主键 id',
-        },
-      },
-    },
-  })
-  async remove(@Body('id') id: string): Promise<any> {
-    return await this.userService.deleteById(id);
+  async remove(@Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
+    return await this.userService.deleteById(baseFindByIdDto);
+  }
+
+  @Post('bindUserGroup')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: '绑定用户组' })
+  async bindUserGroup(@Body() id: string, @Body('userGroups') userGroups: UserGroup[]): Promise<any> {
+    return await this.userService.bindUserGroup(id, userGroups);
   }
 }

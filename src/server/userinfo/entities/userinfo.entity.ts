@@ -14,7 +14,7 @@ import {
   BeforeUpdate,
 } from 'typeorm';
 import { User } from '../../user/entities/user.entity';
-import { BaseEntity } from '../../entities/base.entity';
+import { BaseEntity } from '../../base.entity';
 import { Area } from '../../area/entities/area.entity';
 
 @Entity('userinfo')

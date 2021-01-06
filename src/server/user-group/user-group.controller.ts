@@ -3,6 +3,7 @@ import {
   Get,
   Post,
   Req,
+  Request,
   Query,
   Body,
   UseGuards,
@@ -26,6 +27,8 @@ import { CreateUserGroupDto } from './dto/create-user-group.dto';
 import { UpdateUserGroupDto } from './dto/update-user-group.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { UserGroup } from './entities/user-group.entity';
+import { BasePageDto } from '../base.dto';
+import { ParseIntPipe } from '../../common/pipe/parse-int.pipe';
 
 @Controller('user-group')
 @ApiTags('用户组')
@@ -51,28 +54,8 @@ export class UserGroupController {
   @Get('findListPage')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '获取列表（分页）' })
-  @ApiQuery({
-    name: 'page',
-    description: '第几页',
-    required: false,
-  })
-  @ApiQuery({
-    name: 'limit',
-    description: '每页条数',
-    required: false,
-  })
-  @ApiQuery({
-    name: 'name',
-    description: '名称',
-    required: false,
-  })
-  @ApiQuery({
-    name: 'mobile',
-    description: '手机号',
-    required: false,
-  })
-  async findListPage(@Query() query): Promise<any> {
-    return await this.userGroupService.selectListPage(query);
+  async findListPage(@Query('page', new ParseIntPipe()) page, @Query('limit', new ParseIntPipe()) limit, @Query() basePageDto: BasePageDto): Promise<any> {
+    return await this.userGroupService.selectListPage(page, limit, basePageDto);
   }
 
   @Get('findById')

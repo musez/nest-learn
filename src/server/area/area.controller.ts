@@ -22,12 +22,16 @@ import { CreateAreaDto } from './dto/create-area.dto';
 import { UpdateAreaDto } from './dto/update-area.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { Area } from './entities/area.entity';
+import { LimitAreaDto } from './dto/limit-area.dto';
+import { BaseFindByIdDto } from '../base.dto';
+import { ParseIntPipe } from '../../common/pipe/parse-int.pipe';
 
 @Controller('area')
 @ApiTags('地区')
 @ApiBasicAuth()
 export class AreaController {
-  constructor(private readonly areaService: AreaService) {}
+  constructor(private readonly areaService: AreaService) {
+  }
 
   @Get('findList')
   @UseGuards(JwtAuthGuard)
@@ -39,30 +43,15 @@ export class AreaController {
   @Get('findListPage')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '获取列表（分页）' })
-  @ApiQuery({
-    name: 'page',
-    description: '第几页',
-    required: false,
-  })
-  @ApiQuery({
-    name: 'limit',
-    description: '每页条数',
-    required: false,
-  })
-  @ApiQuery({
-    name: 'areaName',
-    description: '名称',
-    required: false,
-  })
-  async findListPage(@Query() query): Promise<any> {
-    return await this.areaService.selectListPage(query);
+  async findListPage(@Query('page', new ParseIntPipe()) page, @Query('limit', new ParseIntPipe()) limit,@Query() limitAreaDto: LimitAreaDto): Promise<any> {
+    return await this.areaService.selectListPage(page,limit,limitAreaDto);
   }
 
   @Get('findById')
   @ApiOperation({ summary: '获取详情（主键 id）' })
   @UseGuards(JwtAuthGuard)
-  async findById(@Query('id') id: string): Promise<Area> {
-    return await this.areaService.selectById(id);
+  async findById(@Query() baseFindByIdDto: BaseFindByIdDto): Promise<Area> {
+    return await this.areaService.selectById(baseFindByIdDto);
   }
 
   // @Get('findTree')

@@ -24,6 +24,7 @@ import { CreateFileDto } from './dto/create-file.dto';
 import { UpdateFileDto } from './dto/update-file.dto';
 import { File } from './entities/file.entity';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { BaseFindByIdDto } from '../base.dto';
 
 @Controller('file')
 @ApiTags('文件')
@@ -154,8 +155,8 @@ export class FileController {
     description: '主键 id',
     required: true,
   })
-  findById(@Query('id') id: string) {
-    return this.fileService.selectById(id);
+  findById(@Query() baseFindByIdDto: BaseFindByIdDto) {
+    return this.fileService.selectById(baseFindByIdDto);
   }
 
   @Get('findByExtId')

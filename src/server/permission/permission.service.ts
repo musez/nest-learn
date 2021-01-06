@@ -4,6 +4,7 @@ import { Repository, TreeRepository } from 'typeorm';
 import { UpdatePermissionDto } from './dto/update-permission.dto';
 import { Permission } from './entities/permission.entity';
 import { CreatePermissionDto } from './dto/create-permission.dto';
+import { BaseFindByIdDto } from '../base.dto';
 
 @Injectable()
 export class PermissionService {
@@ -45,7 +46,8 @@ export class PermissionService {
     }
   }
 
-  async selectById(id: string): Promise<Permission> {
+  async selectById(baseFindByIdDto: BaseFindByIdDto): Promise<Permission> {
+    let { id } = baseFindByIdDto;
     return await this.permissionRepository.findOne(id);
   }
 

@@ -11,7 +11,7 @@ import {
   BeforeUpdate,
 } from 'typeorm';
 import { Exclude } from 'class-transformer';
-import { BaseEntity } from '../../entities/base.entity';
+import { BaseEntity } from '../../base.entity';
 import { User } from '../../user/entities/user.entity';
 import { Permission } from '../../permission/entities/permission.entity';
 import { UserGroup } from '../../user-group/entities/user-group.entity';

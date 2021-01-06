@@ -5,6 +5,7 @@ import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
 import { UserGroup } from '../user-group/entities/user-group.entity';
 import { Role } from './entities/role.entity';
+import { BaseFindByIdDto } from '../base.dto';
 
 @Injectable()
 export class RoleService {
@@ -32,8 +33,8 @@ export class RoleService {
     });
   }
 
-  async selectListPage(query): Promise<any> {
-    let { name, page, limit } = query;
+  async selectListPage(page, limit, query): Promise<any> {
+    let { name } = query;
     page = page ? page : 1;
     limit = limit ? limit : 10;
     let offset = (page - 1) * limit;
@@ -57,7 +58,8 @@ export class RoleService {
     };
   }
 
-  async selectById(id: string): Promise<Role> {
+  async selectById(baseFindByIdDto: BaseFindByIdDto): Promise<Role> {
+    let { id } = baseFindByIdDto;
     return await this.userGroupRepository.findOne(id);
   }
 
@@ -80,7 +82,8 @@ export class RoleService {
     await this.userGroupRepository.save(updateRoleDto);
   }
 
-  async deleteById(id: string): Promise<void> {
+  async deleteById(baseFindByIdDto: BaseFindByIdDto): Promise<void> {
+    let { id } = baseFindByIdDto;
     let isExist = await this.userGroupRepository.findOne(id);
     if (!isExist) {
       throw new BadRequestException(`数据 id = ${id} 不存在！`);

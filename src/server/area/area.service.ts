@@ -4,6 +4,7 @@ import { Repository, TreeRepository, Like } from 'typeorm';
 import { CreateAreaDto } from './dto/create-area.dto';
 import { UpdateAreaDto } from './dto/update-area.dto';
 import { Area } from './entities/area.entity';
+import { BaseFindByIdDto } from '../base.dto';
 
 @Injectable()
 export class AreaService {
@@ -27,8 +28,8 @@ export class AreaService {
     });
   }
 
-  async selectListPage(query): Promise<any> {
-    let { areaName, page, limit } = query;
+  async selectListPage(page, limit, query): Promise<any> {
+    let { areaName } = query;
     page = page ? page : 1;
     limit = limit ? limit : 10;
     let offset = (page - 1) * limit;
@@ -52,7 +53,8 @@ export class AreaService {
     };
   }
 
-  async selectById(id: string): Promise<Area> {
+  async selectById(baseFindByIdDto: BaseFindByIdDto): Promise<Area> {
+    let { id } = baseFindByIdDto;
     return await this.areaRepository.findOne(id);
   }
 

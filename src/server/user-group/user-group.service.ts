@@ -31,8 +31,8 @@ export class UserGroupService {
     });
   }
 
-  async selectListPage(query): Promise<any> {
-    let { name, page, limit } = query;
+  async selectListPage(page, limit, query): Promise<any> {
+    let { name } = query;
     page = page ? page : 1;
     limit = limit ? limit : 10;
     let offset = (page - 1) * limit;
