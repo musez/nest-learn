@@ -2,36 +2,28 @@ import {
   Controller,
   Get,
   Post,
-  Req,
   Query,
   Body,
   UseGuards,
   UseInterceptors,
   ClassSerializerInterceptor,
-  BadRequestException,
-  UsePipes,
-  ValidationPipe,
 } from '@nestjs/common';
 import {
   ApiTags,
-  ApiQuery,
-  ApiBody,
   ApiBasicAuth,
   ApiOperation,
 } from '@nestjs/swagger';
-import { AuthGuard } from '@nestjs/passport';
-import CryptoJS from 'crypto-js';
 import { UserService } from './user.service';
 import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { Userinfo } from '../userinfo/entities/userinfo.entity';
-import { UserinfoService } from '../userinfo/userinfo.service';
-import { UserGroup } from '../user-group/entities/user-group.entity';
+import { Group } from '../group/entities/group.entity';
 import { LimitUserDto } from './dto/limit-user.dto';
 import { BaseFindByIdDto } from '../base.dto';
 import { ParseIntPipe } from '../../common/pipe/parse-int.pipe';
+import { CreateGroupDto } from '../group/dto/create-group.dto';
+import { BindUserGroupDto } from './dto/bind-user-group.dto';
 
 @ApiTags('用户')
 @Controller('user')
@@ -87,10 +79,17 @@ export class UserController {
     return await this.userService.deleteById(baseFindByIdDto);
   }
 
-  @Post('bindUserGroup')
+  @Post('getGroup')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: '获取用户组' })
+  async findGroupByUserId(@Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
+    return await this.userService.selectGroupByUserId(baseFindByIdDto);
+  }
+
+  @Post('bindGroup')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '绑定用户组' })
-  async bindUserGroup(@Body() id: string, @Body('userGroups') userGroups: UserGroup[]): Promise<any> {
-    return await this.userService.bindUserGroup(id, userGroups);
+  async bindGroup(@Body() bindUserGroupDto: BindUserGroupDto): Promise<any> {
+    return await this.userService.bindGroup(bindUserGroupDto);
   }
 }

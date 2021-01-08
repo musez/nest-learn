@@ -13,7 +13,7 @@ import {
 } from 'typeorm';
 import { Exclude } from 'class-transformer';
 import { BaseEntity } from '../../base.entity';
-import { UserGroup } from '../../user-group/entities/user-group.entity';
+import { Group } from '../../group/entities/group.entity';
 import { Userinfo } from '../../userinfo/entities/userinfo.entity';
 
 
@@ -38,11 +38,6 @@ export enum userType {
 
 @Entity('user')
 export class User extends BaseEntity {
-  // @PrimaryGeneratedColumn('uuid', {
-  //   comment: '主键 id',
-  // })
-  // id: string;
-
   @Column('varchar', {
     comment: '名称',
     length: 50,
@@ -51,7 +46,7 @@ export class User extends BaseEntity {
 
   @Column('varchar', {
     comment: '密码',
-    length: 50,
+    length: 100,
   })
   @Exclude()
   userPwd: string;
@@ -118,7 +113,15 @@ export class User extends BaseEntity {
   })
   userinfo: Userinfo;
 
-  @ManyToMany(() => UserGroup, userGroup => userGroup.users)
-  @JoinTable()
-  userGroups: UserGroup[];
+  // @ManyToMany(() => Group, group => group.users, {
+  //   cascade: true,
+  // })
+  // @JoinTable()
+  // groups: Group[];
+
+  @OneToMany(
+    type => Group,
+    group => group.users,
+  )
+  groups: Group[];
 }

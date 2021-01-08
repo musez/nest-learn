@@ -4,6 +4,8 @@ import { AppModule } from './app.module';
 import * as express from 'express';
 import { join } from 'path';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';// api文档插件
+// import * as passport from 'passport';
+// import * as session from 'express-session'
 import { TransformInterceptor } from './common/interceptor/transform.interceptor';
 import { ValidationPipe } from './common/pipe/validation.pipe';
 import { ParseIntPipe } from './common/pipe/parse-int.pipe';
@@ -17,6 +19,16 @@ async function bootstrap() {
 
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   app.enableCors();
+
+  // app.use(session({
+  //   secret: 'secret-key',
+  //   name: 'sess-tutorial',
+  //   resave: false,
+  //   saveUninitialized: false
+  // }))
+  // app.use(passport.initialize());
+  // app.use(passport.session());
+
   app.useStaticAssets('uploads', {
     prefix: '/uploads',
   });

@@ -1,8 +1,8 @@
 import { IsNotEmpty, IsString, IsInt, IsEmail } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional, PartialType } from '@nestjs/swagger';
-import { CreateUserGroupDto } from './create-user-group.dto';
+import { CreateUserGroupRelationalDto } from './create-user-group-relational.dto';
 
-export class UpdateUserGroupDto extends PartialType(CreateUserGroupDto) {
+export class UpdateUserGroupRelationalDto extends PartialType(CreateUserGroupRelationalDto) {
   @ApiProperty({
     description: '主键 id',
     required: true,

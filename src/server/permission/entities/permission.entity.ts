@@ -50,6 +50,12 @@ export class Permission extends BaseEntity {
   @TreeParent()
   parent: Permission;
 
-  @ManyToMany(() => Role, role => role.permissions)
+  // @ManyToMany(() => Role, role => role.permissions)
+  // roles: Role[];
+
+  @OneToMany(
+    type => Role,
+    role => role.permissions,
+  )
   roles: Role[];
 }

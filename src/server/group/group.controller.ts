@@ -22,54 +22,54 @@ import {
   ApiBasicAuth,
   ApiOperation,
 } from '@nestjs/swagger';
-import { UserGroupService } from './user-group.service';
-import { CreateUserGroupDto } from './dto/create-user-group.dto';
-import { UpdateUserGroupDto } from './dto/update-user-group.dto';
+import { GroupService } from './group.service';
+import { CreateGroupDto } from './dto/create-group.dto';
+import { UpdateGroupDto } from './dto/update-group.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { UserGroup } from './entities/user-group.entity';
+import { Group } from './entities/group.entity';
 import { BasePageDto } from '../base.dto';
 import { ParseIntPipe } from '../../common/pipe/parse-int.pipe';
 
-@Controller('user-group')
+@Controller('group')
 @ApiTags('用户组')
 @ApiBasicAuth()
-export class UserGroupController {
-  constructor(private readonly userGroupService: UserGroupService) {
+export class GroupController {
+  constructor(private readonly groupService: GroupService) {
   }
 
   @Post('add')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '添加' })
-  async add(@Body() createUserGroupDto: CreateUserGroupDto) {
-    return this.userGroupService.insert(createUserGroupDto);
+  async add(@Body() createGroupDto: CreateGroupDto) {
+    return this.groupService.insert(createGroupDto);
   }
 
   @Get('findList')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '获取列表' })
-  async findList(@Query() query): Promise<UserGroup[]> {
-    return await this.userGroupService.selectList(query);
+  async findList(@Query() query): Promise<Group[]> {
+    return await this.groupService.selectList(query);
   }
 
   @Get('findListPage')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '获取列表（分页）' })
   async findListPage(@Query('page', new ParseIntPipe()) page, @Query('limit', new ParseIntPipe()) limit, @Query() basePageDto: BasePageDto): Promise<any> {
-    return await this.userGroupService.selectListPage(page, limit, basePageDto);
+    return await this.groupService.selectListPage(page, limit, basePageDto);
   }
 
   @Get('findById')
   @ApiOperation({ summary: '获取详情（主键 id）' })
   @UseGuards(JwtAuthGuard)
-  async findById(@Query('id') id: string): Promise<UserGroup> {
-    return await this.userGroupService.selectById(id);
+  async findById(@Query('id') id: string): Promise<Group> {
+    return await this.groupService.selectById(id);
   }
 
   @Post('modify')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '修改' })
-  async modify(@Body() updateUserGroupDto: UpdateUserGroupDto): Promise<any> {
-    return this.userGroupService.update(updateUserGroupDto);
+  async modify(@Body() updateGroupDto: UpdateGroupDto): Promise<any> {
+    return this.groupService.update(updateGroupDto);
   }
 
   @Post('remove')
@@ -87,6 +87,6 @@ export class UserGroupController {
     },
   })
   async remove(@Body('id') id: string): Promise<any> {
-    return await this.userGroupService.deleteById(id);
+    return await this.groupService.deleteById(id);
   }
 }

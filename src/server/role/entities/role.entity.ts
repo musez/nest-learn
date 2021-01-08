@@ -14,7 +14,7 @@ import { Exclude } from 'class-transformer';
 import { BaseEntity } from '../../base.entity';
 import { User } from '../../user/entities/user.entity';
 import { Permission } from '../../permission/entities/permission.entity';
-import { UserGroup } from '../../user-group/entities/user-group.entity';
+import { Group } from '../../group/entities/group.entity';
 
 @Entity('role')
 export class Role extends BaseEntity {
@@ -24,10 +24,24 @@ export class Role extends BaseEntity {
   })
   userName: string;
 
-  @ManyToMany(() => UserGroup, userGroup => userGroup.roles)
-  userGroups: UserGroup[];
+  // @ManyToMany(() => Group, group => group.roles)
+  // groups: Group[];
 
-  @ManyToMany(() => Permission, permission => permission.roles)
+  @OneToMany(
+    type => Group,
+    group => group.roles,
+  )
+  groups: Group[];
+
+  // @ManyToMany(() => Permission, permission => permission.roles)
+  // @JoinTable()
+  // permissions: Permission[];
+
+
+  @OneToMany(
+    type => Permission,
+    permission => permission.roles,
+  )
   @JoinTable()
   permissions: Permission[];
 }

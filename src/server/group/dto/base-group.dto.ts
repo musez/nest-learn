@@ -1,7 +1,7 @@
-import { IsNotEmpty, IsString, IsInt } from 'class-validator';
+import { IsNotEmpty, IsString, IsInt, MaxLength } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
-export class BaseUserGroupDto {
+export class BaseGroupDto {
   @ApiProperty({
     description: '主键 id',
     required: true,
@@ -15,6 +15,9 @@ export class BaseUserGroupDto {
     default: '',
   })
   @IsNotEmpty({ message: '名称不能为空！' })
+  @MaxLength(50, {
+    message: '名称不能大于 50 位！',
+  })
   readonly name: string;
 
   @ApiProperty({

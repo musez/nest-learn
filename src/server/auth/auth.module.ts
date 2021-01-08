@@ -14,7 +14,7 @@ import { AuthController } from './auth.controller';
     PassportModule,
     JwtModule.register({
       secret: jwtConstants.secret,// 设置 secret
-      signOptions: { expiresIn: '7200s' },// 设置 token 的属性，时间为 3600*10 就是十小时，其余配置可以看 jwt 的一些相关
+      signOptions: { expiresIn: '7200s' },// 设置 token 的属性，时间为 3600 * 10 就是十小时，其余配置可以看 jwt 的一些相关
     }),
   ],
   providers: [AuthService, LocalStrategy, JwtStrategy],// 把 AuthService，LocalStrategy，JwtStrategy 注册成提供者

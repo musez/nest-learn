@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Like } from 'typeorm';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
-import { UserGroup } from '../user-group/entities/user-group.entity';
+import { Group } from '../group/entities/group.entity';
 import { Role } from './entities/role.entity';
 import { BaseFindByIdDto } from '../base.dto';
 
@@ -11,12 +11,12 @@ import { BaseFindByIdDto } from '../base.dto';
 export class RoleService {
   constructor(
     @InjectRepository(Role)
-    private readonly userGroupRepository: Repository<Role>,
+    private readonly groupRepository: Repository<Role>,
   ) {
   }
 
   async insert(createRoleDto: CreateRoleDto): Promise<CreateRoleDto> {
-    return await this.userGroupRepository.save(createRoleDto);
+    return await this.groupRepository.save(createRoleDto);
   }
 
   async selectList(query): Promise<Role[]> {
@@ -26,7 +26,7 @@ export class RoleService {
       name = '';
     }
 
-    return await this.userGroupRepository.find({
+    return await this.groupRepository.find({
       where: {
         name: Like(`%${name}%`),
       },
@@ -43,7 +43,7 @@ export class RoleService {
       name = '';
     }
 
-    let res = await this.userGroupRepository.createQueryBuilder('role')
+    let res = await this.groupRepository.createQueryBuilder('role')
       .skip(offset)
       .take(limit)
       .orderBy('role.createTime', 'ASC')
@@ -60,13 +60,13 @@ export class RoleService {
 
   async selectById(baseFindByIdDto: BaseFindByIdDto): Promise<Role> {
     let { id } = baseFindByIdDto;
-    return await this.userGroupRepository.findOne(id);
+    return await this.groupRepository.findOne(id);
   }
 
   async update(updateRoleDto: UpdateRoleDto): Promise<void> {
     let { id } = updateRoleDto;
 
-    let isExist = await this.userGroupRepository.findOne(id);
+    let isExist = await this.groupRepository.findOne(id);
     if (!isExist) {
       throw new BadRequestException(`数据 id = ${id} 不存在！`);
     }
@@ -79,16 +79,16 @@ export class RoleService {
       }
     }
 
-    await this.userGroupRepository.save(updateRoleDto);
+    await this.groupRepository.save(updateRoleDto);
   }
 
   async deleteById(baseFindByIdDto: BaseFindByIdDto): Promise<void> {
     let { id } = baseFindByIdDto;
-    let isExist = await this.userGroupRepository.findOne(id);
+    let isExist = await this.groupRepository.findOne(id);
     if (!isExist) {
       throw new BadRequestException(`数据 id = ${id} 不存在！`);
     }
 
-    await this.userGroupRepository.remove(isExist);
+    await this.groupRepository.remove(isExist);
   }
 }

@@ -15,6 +15,9 @@ export class BaseUserDto {
     example: 'wang',
   })
   @IsNotEmpty({ message: '名称不能为空！' })
+  @MaxLength(50, {
+    message: '名称不能大于 50 位！',
+  })
   readonly userName: string;
 
   @ApiProperty({
@@ -43,6 +46,9 @@ export class BaseUserDto {
     example: '王',
   })
   @IsString()
+  @MaxLength(50, {
+    message: '姓名不能大于 50 位！',
+  })
   readonly name?: string;
 
   @ApiPropertyOptional({

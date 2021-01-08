@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import * as crypto from 'crypto';
 import { User } from '../user/entities/user.entity';
 import { UserService } from '../user/user.service';
 
@@ -19,7 +20,8 @@ export class AuthService {
   async validateUser(userName: string, userPwd: string): Promise<any> {
     const user = await this.userService.selectByName(userName);
     // 注：实际中的密码处理应通过加密措施
-    if (user && user.userPwd === userPwd) {
+    let userPwdCrypto = crypto.createHmac('sha256', userPwd).digest('hex');
+    if (user && user.userPwd === userPwdCrypto) {
       const { userPwd, ...result } = user;
       return result;
     } else {

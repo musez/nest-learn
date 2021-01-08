@@ -1,18 +1,24 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Like } from 'typeorm';
+import * as crypto from 'crypto';
 import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { Userinfo } from '../userinfo/entities/userinfo.entity';
-import { UserGroup } from '../user-group/entities/user-group.entity';
 import { BaseFindByIdDto } from '../base.dto';
+import { BindUserGroupDto } from './dto/bind-user-group.dto';
+import { UserGroupRelationalService } from '../user-group-relational/user-group-relational.service';
+import { CreateGroupRoleRelationalDto } from '../group-role-relational/dto/create-group-role-relational.dto';
+import { CreateUserGroupRelationalDto } from '../user-group-relational/dto/create-user-group-relational.dto';
+import { UserGroupRelational } from '../user-group-relational/entities/user-group-relational.entity';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    private readonly userGroupRelationalService: UserGroupRelationalService,
   ) {
   }
 
@@ -38,7 +44,11 @@ export class UserService {
 
     for (let key in createUserDto) {
       if (createUserDto[key] !== null && createUserDto[key] !== 0) {
-        user[key] = createUserDto[key];
+        if (key === 'userPwd') {
+          user.userPwd = crypto.createHmac('sha256', createUserDto.userPwd).digest('hex');
+        } else {
+          user[key] = createUserDto[key];
+        }
       }
     }
 
@@ -146,19 +156,30 @@ export class UserService {
     await this.userRepository.remove(isExist);
   }
 
-  async bindUserGroup(id: string, userGroups: UserGroup[]): Promise<void> {
+  async bindGroup(bindUserGroupDto: BindUserGroupDto): Promise<void> {
+    let { id, groups } = bindUserGroupDto;
     let isExist = await this.userRepository.findOne(id);
     if (!isExist) {
       throw new BadRequestException(`数据 id = ${id} 不存在！`);
     }
 
     let userGroupList = [];
-    for (let i = 0, len = userGroups.length; i < len; i++) {
-      let userGroup = new UserGroup();
-      userGroupList.push(userGroup);
+    for (let i = 0, len = groups.length; i < len; i++) {
+      let createUserGroupRelationalDto = new CreateUserGroupRelationalDto();
+      createUserGroupRelationalDto.userId = id;
+      createUserGroupRelationalDto.groupId = groups[i].id;
+      userGroupList.push(createUserGroupRelationalDto);
     }
-    isExist.userGroups = userGroupList;
 
-    await this.userRepository.save(isExist);
+    await this.userGroupRelationalService.insert(userGroupList);
+  }
+
+  async selectGroupByUserId(baseFindByIdDto: BaseFindByIdDto): Promise<UserGroupRelational[]> {
+    let isExist = await this.userRepository.findOne(baseFindByIdDto);
+    if (!isExist) {
+      throw new BadRequestException(`数据 id = ${baseFindByIdDto} 不存在！`);
+    }
+
+    return await this.userGroupRelationalService.selectByUserId(baseFindByIdDto);
   }
 }

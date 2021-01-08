@@ -8,12 +8,15 @@ import { UserModule } from './server/user/user.module';
 import { RoleModule } from './server/role/role.module';
 import { PermissionModule } from './server/permission/permission.module';
 import { FileModule } from './server/file/file.module';
-import { UserGroupModule } from './server/user-group/user-group.module';
+import { GroupModule } from './server/group/group.module';
 import { AuthModule } from './server/auth/auth.module';
 import { UserinfoModule } from './server/userinfo/userinfo.module';
 import { AreaModule } from './server/area/area.module';
 import { DictModule } from './server/dict/dict.module';
 import { DictItemModule } from './server/dict-item/dict-item.module';
+import { RolePermissionRelationalModule } from './server/role-permission-relational/role-permission-relational.module';
+import { UserGroupRelationalModule } from './server/user-group-relational/user-group-relational.module';
+import { GroupRoleRelationalModule } from './server/group-role-relational/group-role-relational.module';
 
 @Module({
   imports: [
@@ -30,7 +33,7 @@ import { DictItemModule } from './server/dict-item/dict-item.module';
       // charset: 'utf8mb4',
       multipleStatements: true,
       dropSchema: false,
-      synchronize: false, // 是否自动将实体类同步到数据库
+      synchronize: true, // 是否自动将实体类同步到数据库
       logging: true,
       cli: {
         migrationsDir: 'database/migration/default',
@@ -39,13 +42,16 @@ import { DictItemModule } from './server/dict-item/dict-item.module';
     AuthModule,
     UserModule,
     UserinfoModule,
-    UserGroupModule,
+    GroupModule,
     RoleModule,
     PermissionModule,
     FileModule,
     AreaModule,
     DictModule,
     DictItemModule,
+    RolePermissionRelationalModule,
+    UserGroupRelationalModule,
+    GroupRoleRelationalModule,
   ],
   controllers: [AppController],
   providers: [AppService],
