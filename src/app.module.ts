@@ -14,9 +14,9 @@ import { UserinfoModule } from './server/userinfo/userinfo.module';
 import { AreaModule } from './server/area/area.module';
 import { DictModule } from './server/dict/dict.module';
 import { DictItemModule } from './server/dict-item/dict-item.module';
-import { RolePermissionRelationalModule } from './server/role-permission-relational/role-permission-relational.module';
-import { UserGroupRelationalModule } from './server/user-group-relational/user-group-relational.module';
-import { GroupRoleRelationalModule } from './server/group-role-relational/group-role-relational.module';
+import { RolePermissionModule } from './server/role-permission/role-permission.module';
+import { UserGroupModule } from './server/user-group/user-group.module';
+import { GroupRoleModule } from './server/group-role/group-role.module';
 
 @Module({
   imports: [
@@ -49,9 +49,9 @@ import { GroupRoleRelationalModule } from './server/group-role-relational/group-
     AreaModule,
     DictModule,
     DictItemModule,
-    RolePermissionRelationalModule,
-    UserGroupRelationalModule,
-    GroupRoleRelationalModule,
+    RolePermissionModule,
+    UserGroupModule,
+    GroupRoleModule,
   ],
   controllers: [AppController],
   providers: [AppService],

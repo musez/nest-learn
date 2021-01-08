@@ -8,17 +8,17 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { Userinfo } from '../userinfo/entities/userinfo.entity';
 import { BaseFindByIdDto } from '../base.dto';
 import { BindUserGroupDto } from './dto/bind-user-group.dto';
-import { UserGroupRelationalService } from '../user-group-relational/user-group-relational.service';
-import { CreateGroupRoleRelationalDto } from '../group-role-relational/dto/create-group-role-relational.dto';
-import { CreateUserGroupRelationalDto } from '../user-group-relational/dto/create-user-group-relational.dto';
-import { UserGroupRelational } from '../user-group-relational/entities/user-group-relational.entity';
+import { UserGroupService } from '../user-group/user-group.service';
+import { CreateGroupRoleDto } from '../group-role/dto/create-group-role.dto';
+import { CreateUserGroupDto } from '../user-group/dto/create-user-group.dto';
+import { UserGroup } from '../user-group/entities/user-group.entity';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
-    private readonly userGroupRelationalService: UserGroupRelationalService,
+    private readonly userGroupService: UserGroupService,
   ) {
   }
 
@@ -165,21 +165,21 @@ export class UserService {
 
     let userGroupList = [];
     for (let i = 0, len = groups.length; i < len; i++) {
-      let createUserGroupRelationalDto = new CreateUserGroupRelationalDto();
-      createUserGroupRelationalDto.userId = id;
-      createUserGroupRelationalDto.groupId = groups[i].id;
-      userGroupList.push(createUserGroupRelationalDto);
+      let createUserGroupDto = new CreateUserGroupDto();
+      createUserGroupDto.userId = id;
+      createUserGroupDto.groupId = groups[i].id;
+      userGroupList.push(createUserGroupDto);
     }
 
-    await this.userGroupRelationalService.insert(userGroupList);
+    await this.userGroupService.insert(userGroupList);
   }
 
-  async selectGroupByUserId(baseFindByIdDto: BaseFindByIdDto): Promise<UserGroupRelational[]> {
+  async selectGroupByUserId(baseFindByIdDto: BaseFindByIdDto): Promise<UserGroup[]> {
     let isExist = await this.userRepository.findOne(baseFindByIdDto);
     if (!isExist) {
       throw new BadRequestException(`数据 id = ${baseFindByIdDto} 不存在！`);
     }
 
-    return await this.userGroupRelationalService.selectByUserId(baseFindByIdDto);
+    return await this.userGroupService.selectByUserId(baseFindByIdDto);
   }
 }

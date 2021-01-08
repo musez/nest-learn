@@ -4,10 +4,10 @@ import { User } from './entities/user.entity';
 import { UserController } from './user.controller';
 import { UserService } from './user.service';
 import { UserinfoModule } from '../userinfo/userinfo.module';
-import { UserGroupRelationalModule } from '../user-group-relational/user-group-relational.module';
+import { UserGroupModule } from '../user-group/user-group.module';
 
 @Module({
-  imports: [UserinfoModule, UserGroupRelationalModule, TypeOrmModule.forFeature([User])],
+  imports: [UserinfoModule, UserGroupModule, TypeOrmModule.forFeature([User])],
   controllers: [UserController],
   providers: [UserService],
   exports: [UserService],
