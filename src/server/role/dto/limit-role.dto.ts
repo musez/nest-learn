@@ -6,8 +6,5 @@ export class LimitRoleDto extends PartialType(BasePageDto) {
   @ApiPropertyOptional({
     description: '名称',
   })
-  @MaxLength(50, {
-    message: '名称不能大于 50 位！',
-  })
   readonly name: string;
 }

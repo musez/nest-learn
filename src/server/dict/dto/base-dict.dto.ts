@@ -11,14 +11,16 @@ export class BaseDictDto {
 
   @ApiProperty({
     description: '字典名称',
-    example: null,
+    example: '',
   })
+  @IsNotEmpty({ message: '字典名称不能为空' })
   readonly dictCode: string;
 
   @ApiProperty({
     description: '字典编码',
-    example: null,
+    example: '',
   })
+  @IsNotEmpty({ message: '字典编码不能为空' })
   readonly dictName: string;
 
   @ApiPropertyOptional({

@@ -1,26 +1,28 @@
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository, Like } from 'typeorm';
 import { CreateGroupRoleDto } from './dto/create-group-role.dto';
-import { UpdateGroupRoleDto } from './dto/update-group-role.dto';
+import { BaseFindByIdDto } from '../base.dto';
+import { GroupRole } from './entities/group-role.entity';
 
 @Injectable()
 export class GroupRoleService {
-  create(createGroupRoleDto: CreateGroupRoleDto) {
-    return 'This action adds a new groupRole';
+  constructor(
+    @InjectRepository(GroupRole)
+    private readonly groupRoleRepository: Repository<GroupRole>,
+  ) {
   }
 
-  findAll() {
-    return `This action returns all groupRole`;
+  async insert(createGroupRoleDto: CreateGroupRoleDto[]): Promise<CreateGroupRoleDto[]> {
+    return await this.groupRoleRepository.save(createGroupRoleDto);
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} groupRole`;
-  }
-
-  update(id: number, updateGroupRoleDto: UpdateGroupRoleDto) {
-    return `This action updates a #${id} groupRole`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} groupRole`;
+  async selectByGroupId(baseFindByIdDto: BaseFindByIdDto): Promise<GroupRole[]> {
+    return await this.groupRoleRepository.find({
+      relations: ['role'],
+      where: {
+        groupId: baseFindByIdDto,
+      },
+    });
   }
 }

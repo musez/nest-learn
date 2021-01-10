@@ -4,19 +4,19 @@ import { Connection } from 'typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { LoggerMiddleware } from './common/middleware/logger.middleware';
-import { UserModule } from './server/user/user.module';
-import { RoleModule } from './server/role/role.module';
-import { PermissionModule } from './server/permission/permission.module';
-import { FileModule } from './server/file/file.module';
-import { GroupModule } from './server/group/group.module';
 import { AuthModule } from './server/auth/auth.module';
+import { UserModule } from './server/user/user.module';
 import { UserinfoModule } from './server/userinfo/userinfo.module';
-import { AreaModule } from './server/area/area.module';
+import { UserGroupModule } from './server/user-group/user-group.module';
+import { GroupModule } from './server/group/group.module';
+import { RoleModule } from './server/role/role.module';
+import { GroupRoleModule } from './server/group-role/group-role.module';
+import { PermissionModule } from './server/permission/permission.module';
+import { RolePermissionModule } from './server/role-permission/role-permission.module';
 import { DictModule } from './server/dict/dict.module';
 import { DictItemModule } from './server/dict-item/dict-item.module';
-import { RolePermissionModule } from './server/role-permission/role-permission.module';
-import { UserGroupModule } from './server/user-group/user-group.module';
-import { GroupRoleModule } from './server/group-role/group-role.module';
+import { AreaModule } from './server/area/area.module';
+import { FileModule } from './server/file/file.module';
 
 @Module({
   imports: [
@@ -43,15 +43,15 @@ import { GroupRoleModule } from './server/group-role/group-role.module';
     UserModule,
     UserinfoModule,
     GroupModule,
+    UserGroupModule,
     RoleModule,
+    GroupRoleModule,
     PermissionModule,
-    FileModule,
-    AreaModule,
+    RolePermissionModule,
     DictModule,
     DictItemModule,
-    RolePermissionModule,
-    UserGroupModule,
-    GroupRoleModule,
+    AreaModule,
+    FileModule,
   ],
   controllers: [AppController],
   providers: [AppService],

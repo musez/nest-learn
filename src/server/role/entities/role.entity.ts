@@ -22,7 +22,7 @@ export class Role extends BaseEntity {
     comment: '名称',
     length: 50,
   })
-  userName: string;
+  name: string;
 
   // @ManyToMany(() => Group, group => group.roles)
   // groups: Group[];

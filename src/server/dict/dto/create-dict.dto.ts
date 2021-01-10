@@ -8,7 +8,7 @@ export class CreateDictDto extends PickType(BaseDictDto,
   @ApiPropertyOptional({
     description: '字典项',
     example: [{
-      itemName: '',
+      itemText: '',
       itemValue: '',
       sort: 0,
     }],

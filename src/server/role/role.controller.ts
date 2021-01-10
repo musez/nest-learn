@@ -25,12 +25,15 @@ import { Role } from './entities/role.entity';
 import { LimitRoleDto } from './dto/limit-role.dto';
 import { BaseFindByIdDto } from '../base.dto';
 import { ParseIntPipe } from '../../common/pipe/parse-int.pipe';
+import { BindRolePermissionDto } from './dto/bind-role-permission.dto';
 
 @Controller('role')
 @ApiTags('角色')
 @ApiBasicAuth()
 export class RoleController {
-  constructor(private readonly roleService: RoleService) {
+  constructor(
+    private readonly roleService: RoleService,
+  ) {
   }
 
   @Post('add')
@@ -73,5 +76,19 @@ export class RoleController {
   @ApiOperation({ summary: '删除' })
   async remove(@Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
     return await this.roleService.deleteById(baseFindByIdDto);
+  }
+
+  @Post('getPermissions')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: '获取角色权限' })
+  async findPermissionsByRoleId(@Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
+    return await this.roleService.selectPermissionsByRoleId(baseFindByIdDto);
+  }
+
+  @Post('bindPermissions')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: '绑定角色权限' })
+  async bindPermissions(@Body() bindRolePermissionDto: BindRolePermissionDto): Promise<any> {
+    return await this.roleService.bindPermissions(bindRolePermissionDto);
   }
 }

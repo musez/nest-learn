@@ -4,12 +4,21 @@ import { Repository, Like } from 'typeorm';
 import { CreateGroupDto } from './dto/create-group.dto';
 import { UpdateGroupDto } from './dto/update-group.dto';
 import { Group } from './entities/group.entity';
+import { BaseFindByIdDto } from '../base.dto';
+import { BindUserGroupDto } from '../user/dto/bind-user-group.dto';
+import { CreateUserGroupDto } from '../user-group/dto/create-user-group.dto';
+import { UserGroup } from '../user-group/entities/user-group.entity';
+import { GroupRoleService } from '../group-role/group-role.service';
+import { GroupRole } from '../group-role/entities/group-role.entity';
+import { BindGroupRoleDto } from '../group-role/dto/bind-group-role.dto';
+import { CreateGroupRoleDto } from '../group-role/dto/create-group-role.dto';
 
 @Injectable()
 export class GroupService {
   constructor(
     @InjectRepository(Group)
     private readonly groupRepository: Repository<Group>,
+    private readonly groupRoleService: GroupRoleService,
   ) {
   }
 
@@ -78,12 +87,40 @@ export class GroupService {
     await this.groupRepository.save(updateGroupDto);
   }
 
-  async deleteById(id: string): Promise<void> {
+  async deleteById(baseFindByIdDto: BaseFindByIdDto): Promise<void> {
+    let { id } = baseFindByIdDto;
+    let isExist = await this.groupRepository.findOne(id);
+    if (!isExist) {
+      throw new BadRequestException(`数据 id = ${baseFindByIdDto} 不存在！`);
+    }
+
+    await this.groupRepository.remove(isExist);
+  }
+
+  async selectRolesByGroupId(baseFindByIdDto: BaseFindByIdDto): Promise<GroupRole[]> {
+    let isExist = await this.groupRepository.findOne(baseFindByIdDto);
+    if (!isExist) {
+      throw new BadRequestException(`数据 id = ${baseFindByIdDto} 不存在！`);
+    }
+
+    return await this.groupRoleService.selectByGroupId(baseFindByIdDto);
+  }
+
+  async bindRoles(bindGroupRoleDto: BindGroupRoleDto): Promise<void> {
+    let { id, roles } = bindGroupRoleDto;
     let isExist = await this.groupRepository.findOne(id);
     if (!isExist) {
       throw new BadRequestException(`数据 id = ${id} 不存在！`);
     }
 
-    await this.groupRepository.remove(isExist);
+    let userGroupList = [];
+    for (let i = 0, len = roles.length; i < len; i++) {
+      let createGroupRoleDto = new CreateGroupRoleDto();
+      createGroupRoleDto.groupId = id;
+      createGroupRoleDto.roleId = roles[i].id;
+      userGroupList.push(createGroupRoleDto);
+    }
+
+    await this.groupRoleService.insert(userGroupList);
   }
 }

@@ -85,21 +85,29 @@ export class UserService {
     limit = limit ? limit : 10;
     let offset = (page - 1) * limit;
 
-    if (!userName) {
-      userName = '';
+    let queryConditionList = [];
+
+    if (userName) {
+      queryConditionList.push('user.userName like :userName');
     }
 
-    if (!mobile) {
-      mobile = '';
+    if (mobile) {
+      queryConditionList.push('user.mobile = :mobile');
     }
+
+    let queryCondition = queryConditionList.join(' AND ');
 
     let res = await this.userRepository.createQueryBuilder('user')
       .innerJoinAndSelect('user.userinfo', 'userinfo')
+      .where(queryCondition, {
+        userName: `%${userName}%`,
+        mobile: mobile,
+      })
+      // .where('user.userName like :userName', { userName: `%${userName}%` })
+      // .andWhere('user.mobile = :mobile', { mobile: mobile })
       .skip(offset)
       .take(limit)
       .orderBy('user.createTime', 'ASC')
-      .where('user.userName like :userName', { userName: `%${userName}%` })
-      .andWhere('user.mobile = :mobile', { mobile: mobile })
       .getManyAndCount();
 
     return {
@@ -156,7 +164,7 @@ export class UserService {
     await this.userRepository.remove(isExist);
   }
 
-  async bindGroup(bindUserGroupDto: BindUserGroupDto): Promise<void> {
+  async bindGroups(bindUserGroupDto: BindUserGroupDto): Promise<void> {
     let { id, groups } = bindUserGroupDto;
     let isExist = await this.userRepository.findOne(id);
     if (!isExist) {
@@ -174,7 +182,7 @@ export class UserService {
     await this.userGroupService.insert(userGroupList);
   }
 
-  async selectGroupByUserId(baseFindByIdDto: BaseFindByIdDto): Promise<UserGroup[]> {
+  async selectGroupsByUserId(baseFindByIdDto: BaseFindByIdDto): Promise<UserGroup[]> {
     let isExist = await this.userRepository.findOne(baseFindByIdDto);
     if (!isExist) {
       throw new BadRequestException(`数据 id = ${baseFindByIdDto} 不存在！`);

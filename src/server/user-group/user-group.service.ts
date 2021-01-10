@@ -24,29 +24,10 @@ export class UserGroupService {
 
   async selectByUserId(baseFindByIdDto: BaseFindByIdDto): Promise<UserGroup[]> {
     return await this.userGroupRepository.find({
+      relations: ['group'],
       where: {
         userId: baseFindByIdDto,
       },
     });
   }
-
-  // create(createUserGroupDto: CreateUserGroupDto) {
-  //   return 'This action adds a new userGroup';
-  // }
-  //
-  // findAll() {
-  //   return `This action returns all userGroup`;
-  // }
-  //
-  // findOne(id: number) {
-  //   return `This action returns a #${id} userGroup`;
-  // }
-  //
-  // update(id: number, updateUserGroupDto: UpdateUserGroupDto) {
-  //   return `This action updates a #${id} userGroup`;
-  // }
-  //
-  // remove(id: number) {
-  //   return `This action removes a #${id} userGroup`;
-  // }
 }

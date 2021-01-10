@@ -13,9 +13,8 @@ import {
 } from 'typeorm';
 import { Exclude } from 'class-transformer';
 import { BaseEntity } from '../../base.entity';
-import { Group } from '../../group/entities/group.entity';
 import { Userinfo } from '../../userinfo/entities/userinfo.entity';
-
+import { Group } from '../../group/entities/group.entity';
 
 // 状态类型
 export enum statusType {

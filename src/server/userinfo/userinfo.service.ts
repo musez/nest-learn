@@ -18,24 +18,4 @@ export class UserinfoService {
   async insert(createUserinfoDto: CreateUserinfoDto): Promise<CreateUserinfoDto> {
     return await this.userinfoRepository.save(createUserinfoDto);
   }
-
-  // create(createUserinfoDto: CreateUserinfoDto) {
-  //   return 'This action adds a new userinfo';
-  // }
-
-  // findAll() {
-  //   return `This action returns all userinfo`;
-  // }
-  //
-  // findOne(id: number) {
-  //   return `This action returns a #${id} userinfo`;
-  // }
-  //
-  // update(id: number, updateUserinfoDto: UpdateUserinfoDto) {
-  //   return `This action updates a #${id} userinfo`;
-  // }
-  //
-  // remove(id: number) {
-  //   return `This action removes a #${id} userinfo`;
-  // }
 }

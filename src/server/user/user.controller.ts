@@ -79,17 +79,17 @@ export class UserController {
     return await this.userService.deleteById(baseFindByIdDto);
   }
 
-  @Post('getGroup')
-  @UseGuards(JwtAuthGuard)
-  @ApiOperation({ summary: '获取用户组' })
-  async findGroupByUserId(@Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
-    return await this.userService.selectGroupByUserId(baseFindByIdDto);
-  }
-
-  @Post('bindGroup')
+  @Post('bindGroups')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '绑定用户组' })
-  async bindGroup(@Body() bindUserGroupDto: BindUserGroupDto): Promise<any> {
-    return await this.userService.bindGroup(bindUserGroupDto);
+  async bindGroups(@Body() bindUserGroupDto: BindUserGroupDto): Promise<any> {
+    return await this.userService.bindGroups(bindUserGroupDto);
+  }
+
+  @Post('getGroups')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: '获取用户组' })
+  async findGroupsByUserId(@Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
+    return await this.userService.selectGroupsByUserId(baseFindByIdDto);
   }
 }
