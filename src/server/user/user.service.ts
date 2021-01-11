@@ -98,13 +98,11 @@ export class UserService {
     let queryCondition = queryConditionList.join(' AND ');
 
     let res = await this.userRepository.createQueryBuilder('user')
-      .innerJoinAndSelect('user.userinfo', 'userinfo')
+      .leftJoinAndSelect('user.userinfo', 'userinfo')
       .where(queryCondition, {
         userName: `%${userName}%`,
         mobile: mobile,
       })
-      // .where('user.userName like :userName', { userName: `%${userName}%` })
-      // .andWhere('user.mobile = :mobile', { mobile: mobile })
       .skip(offset)
       .take(limit)
       .orderBy('user.createTime', 'ASC')
@@ -189,5 +187,27 @@ export class UserService {
     }
 
     return await this.userGroupService.selectByUserId(baseFindByIdDto);
+  }
+
+  async selectPermissionsByUserId(id: string): Promise<any> {
+    let isExist = await this.userRepository.findOne(id);
+    if (!isExist) {
+      throw new BadRequestException(`数据 id = ${id} 不存在！`);
+    }
+
+    // TODO 获取权限
+    // let res = await this.userRepository.createQueryBuilder('user')
+    //   .innerJoinAndSelect('user.groups', 'group')
+    //   .innerJoinAndSelect('group.roles', 'role')
+    //   .innerJoinAndSelect('role.permissions', 'permission')
+    //   // .where('group.userId = :id AND role.groupId = group.userId AND permission.roleId = role.permissionId', { id: id })
+    //   .getMany();
+
+    // let res = await this.userRepository.find({
+    //   relations: ['user_group', 'group', 'group_role', 'role', 'role_permission', 'permission'],
+    //   where: { id },
+    // });
+
+    return null;
   }
 }

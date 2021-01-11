@@ -1,6 +1,7 @@
-import { Controller, Post, Request, UseGuards, Body, BadRequestException } from '@nestjs/common';
+import { Controller, Get, Post, Request, UseGuards, Body, BadRequestException } from '@nestjs/common';
 import {
   ApiTags,
+  ApiBasicAuth,
   ApiQuery,
   ApiBody,
   ApiOperation,
@@ -12,6 +13,7 @@ import { LocalAuthGuard } from './guards/local-auth.guard';
 import { RegisterUserDto } from '../user/dto/register-user.dto';
 import { CreateUserDto } from '../user/dto/create-user.dto';
 import { UserService } from '../user/user.service';
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
 @ApiTags('认证')
 @Controller('auth')
@@ -57,5 +59,16 @@ export class AuthController {
     }
 
     return await this.userService.insert(registerUserDto);
+  }
+
+  @Get('getPermissionsByToken')
+  @UseGuards(JwtAuthGuard)
+  @ApiBasicAuth()
+  @ApiOperation({ summary: '根据 token 获取权限' })
+  async getPermissionsByToken(@Request() request): Promise<any> {
+    let { user } = request;
+    let { userId: id } = user;
+
+    return await this.userService.selectPermissionsByUserId(id);
   }
 }
