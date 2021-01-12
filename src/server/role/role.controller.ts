@@ -78,7 +78,7 @@ export class RoleController {
     return await this.roleService.deleteById(baseFindByIdDto);
   }
 
-  @Post('getPermissions')
+  @Get('getPermissions')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '获取角色权限' })
   async findPermissionsByRoleId(@Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {

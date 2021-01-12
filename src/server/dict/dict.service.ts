@@ -1,6 +1,7 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import * as _ from 'lodash';
 import { CreateDictDto } from './dto/create-dict.dto';
 import { UpdateDictDto } from './dto/update-dict.dto';
 import { Dict } from './entities/dict.entity';
@@ -63,7 +64,7 @@ export class DictService {
     let dict = new Dict();
 
     for (let key in updateDictDto) {
-      if (updateDictDto[key] !== null && updateDictDto[key] !== 0 && updateDictDto[key] !== '') {
+      if (!_.isEmpty(updateDictDto[key])) {
         dict[key] = updateDictDto[key];
       }
     }

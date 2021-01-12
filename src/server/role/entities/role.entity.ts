@@ -37,6 +37,12 @@ export class Role extends BaseEntity {
   // @JoinTable()
   // permissions: Permission[];
 
+  @OneToMany(
+    type => User,
+    user => user.roles,
+  )
+  @JoinTable()
+  users: User[];
 
   @OneToMany(
     type => Permission,

@@ -1,6 +1,7 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Like } from 'typeorm';
+import * as _ from 'lodash';
 import { CreateGroupDto } from './dto/create-group.dto';
 import { UpdateGroupDto } from './dto/update-group.dto';
 import { Group } from './entities/group.entity';
@@ -79,7 +80,7 @@ export class GroupService {
     let group = new Group();
 
     for (let cityKey in updateGroupDto) {
-      if (updateGroupDto[cityKey] !== null && updateGroupDto[cityKey] !== 0) {
+      if (!_.isEmpty(updateGroupDto[cityKey])) {
         group[cityKey] = updateGroupDto[cityKey];
       }
     }

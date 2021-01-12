@@ -15,6 +15,7 @@ import { Exclude } from 'class-transformer';
 import { BaseEntity } from '../../base.entity';
 import { Userinfo } from '../../userinfo/entities/userinfo.entity';
 import { Group } from '../../group/entities/group.entity';
+import { Role } from '../../role/entities/role.entity';
 
 // 状态类型
 export enum statusType {
@@ -123,4 +124,10 @@ export class User extends BaseEntity {
     group => group.users,
   )
   groups: Group[];
+
+  @OneToMany(
+    type => Role,
+    role => role.users,
+  )
+  roles: Role[];
 }

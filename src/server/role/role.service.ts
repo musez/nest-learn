@@ -1,6 +1,7 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Like } from 'typeorm';
+import * as _ from 'lodash';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
 import { Group } from '../group/entities/group.entity';
@@ -84,7 +85,7 @@ export class RoleService {
     let role = new Role();
 
     for (let cityKey in updateRoleDto) {
-      if (updateRoleDto[cityKey] !== null && updateRoleDto[cityKey] !== 0) {
+      if (!_.isEmpty(updateRoleDto[cityKey])) {
         role[cityKey] = updateRoleDto[cityKey];
       }
     }

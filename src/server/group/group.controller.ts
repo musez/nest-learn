@@ -82,7 +82,7 @@ export class GroupController {
     return await this.groupService.deleteById(baseFindByIdDto);
   }
 
-  @Post('getRoles')
+  @Get('getRoles')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '获取用户组角色' })
   async findRolesByGroupId(@Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {

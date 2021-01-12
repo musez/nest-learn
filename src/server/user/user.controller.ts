@@ -24,6 +24,7 @@ import { BaseFindByIdDto } from '../base.dto';
 import { ParseIntPipe } from '../../common/pipe/parse-int.pipe';
 import { CreateGroupDto } from '../group/dto/create-group.dto';
 import { BindUserGroupDto } from './dto/bind-user-group.dto';
+import { BindUserRoleDto } from '../user-role/dto/bind-user-role.dto';
 
 @ApiTags('用户')
 @Controller('user')
@@ -86,10 +87,24 @@ export class UserController {
     return await this.userService.bindGroups(bindUserGroupDto);
   }
 
-  @Post('getGroups')
+  @Get('getGroups')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '获取用户组' })
   async findGroupsByUserId(@Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
     return await this.userService.selectGroupsByUserId(baseFindByIdDto);
+  }
+
+  @Post('bindRoles')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: '绑定用户组' })
+  async bindRoles(@Body() bindUserRoleDto: BindUserRoleDto): Promise<any> {
+    return await this.userService.bindRoles(bindUserRoleDto);
+  }
+
+  @Get('getRoles')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: '获取用户组' })
+  async findRolesByUserId(@Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
+    return await this.userService.selectRolesByUserId(baseFindByIdDto);
   }
 }

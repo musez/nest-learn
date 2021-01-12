@@ -67,8 +67,7 @@ export class AuthController {
   @ApiOperation({ summary: '根据 token 获取权限' })
   async getPermissionsByToken(@Request() request): Promise<any> {
     let { user } = request;
-    let { userId: id } = user;
-
+    let { id } = user;
     return await this.userService.selectPermissionsByUserId(id);
   }
 }

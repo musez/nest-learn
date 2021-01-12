@@ -5,9 +5,10 @@ import { UserController } from './user.controller';
 import { UserService } from './user.service';
 import { UserinfoModule } from '../userinfo/userinfo.module';
 import { UserGroupModule } from '../user-group/user-group.module';
+import { UserRoleModule } from '../user-role/user-role.module';
 
 @Module({
-  imports: [UserinfoModule, UserGroupModule, TypeOrmModule.forFeature([User])],
+  imports: [UserinfoModule, UserGroupModule, UserRoleModule, TypeOrmModule.forFeature([User])],
   controllers: [UserController],
   providers: [UserService],
   exports: [UserService],

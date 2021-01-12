@@ -17,6 +17,7 @@ import { DictModule } from './server/dict/dict.module';
 import { DictItemModule } from './server/dict-item/dict-item.module';
 import { AreaModule } from './server/area/area.module';
 import { FileModule } from './server/file/file.module';
+import { UserRoleModule } from './server/user-role/user-role.module';
 
 @Module({
   imports: [
@@ -44,6 +45,7 @@ import { FileModule } from './server/file/file.module';
     UserinfoModule,
     GroupModule,
     UserGroupModule,
+    UserRoleModule,
     RoleModule,
     GroupRoleModule,
     PermissionModule,
