@@ -5,9 +5,7 @@ import { Permission } from '../../permission/entities/permission.entity';
 
 @Entity('role_permission')
 export class RolePermission {
-  @PrimaryGeneratedColumn('uuid', {
-    comment: '主键 id',
-  })
+  @PrimaryGeneratedColumn('uuid', { comment: '主键 id' })
   id: string;
 
   @Column({ name: 'roleId' })
@@ -16,17 +14,11 @@ export class RolePermission {
   @Column({ name: 'permissionId' })
   permissionId!: string;
 
-  @ManyToOne(
-    type => Role,
-    role => role.permissions,
-  )
+  @ManyToOne(type => Role, role => role.permissions)
   @JoinColumn({ name: 'roleId' })
   role: Role;
 
-  @ManyToOne(
-    type => Permission,
-    permission => permission.roles,
-  )
+  @ManyToOne(type => Permission, permission => permission.roles)
   @JoinColumn({ name: 'permissionId' })
   permission: Permission;
 }

@@ -18,6 +18,7 @@ import { DictItemModule } from './server/dict-item/dict-item.module';
 import { AreaModule } from './server/area/area.module';
 import { FileModule } from './server/file/file.module';
 import { UserRoleModule } from './server/user-role/user-role.module';
+import { ArticleModule } from './server/article/article.module';
 
 @Module({
   imports: [
@@ -34,7 +35,7 @@ import { UserRoleModule } from './server/user-role/user-role.module';
       // charset: 'utf8mb4',
       multipleStatements: true,
       dropSchema: false,
-      synchronize: false, // 是否自动将实体类同步到数据库
+      synchronize: true, // 是否自动将实体类同步到数据库
       logging: true,
       cli: {
         migrationsDir: 'database/migration/default',
@@ -50,6 +51,7 @@ import { UserRoleModule } from './server/user-role/user-role.module';
     GroupRoleModule,
     PermissionModule,
     RolePermissionModule,
+    ArticleModule,
     DictModule,
     DictItemModule,
     AreaModule,

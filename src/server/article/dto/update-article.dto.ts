@@ -1,8 +1,8 @@
 import { IsNotEmpty, IsString, IsInt, IsEmail } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional, PartialType } from '@nestjs/swagger';
-import { CreateRolePermissionDto } from './create-role-permission.dto';
+import { CreateArticleDto } from './create-article.dto';
 
-export class UpdateRolePermissionDto extends PartialType(CreateRolePermissionDto) {
+export class UpdateArticleDto extends PartialType(CreateArticleDto) {
   @ApiProperty({ description: '主键 id', required: true })
   @IsNotEmpty({ message: '主键 id 不能为空' })
   readonly id: string;

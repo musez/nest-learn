@@ -65,7 +65,7 @@ async function bootstrap() {
 
   // 为了创建完整的文档（具有定义的 HTTP 路由），我们使用类的 createDocument() 方法 SwaggerModule。此方法带有两个参数，分别是应用程序实例和基本 Swagger 选项。
   const document = SwaggerModule.createDocument(app, options);
-  // 最后一步是 setup()。它依次接受（1）装入 Swagger的路径，（2）应用程序实例, （3）描述 Nest 应用程序的文档。
+  // 最后一步是 setup()。它依次接受（1）装入 Swagger 的路径，（2）应用程序实例, （3）描述 Nest 应用程序的文档。
   SwaggerModule.setup('/api-docs', app, document, {
     swaggerOptions: {
       explorer: true,

@@ -5,13 +5,6 @@ import { CreateDictItemDto } from '../../dict-item/dto/create-dict-item.dto';
 export class CreateDictDto extends PickType(BaseDictDto,
   ['dictCode', 'dictName', 'status', 'description'],
 ) {
-  @ApiPropertyOptional({
-    description: '字典项',
-    example: [{
-      itemText: '',
-      itemValue: '',
-      sort: 0,
-    }],
-  })
+  @ApiPropertyOptional({ description: '字典项', example: [{ itemText: '', itemValue: '', sort: 0 }] })
   readonly dictItemList?: CreateDictItemDto[];
 }

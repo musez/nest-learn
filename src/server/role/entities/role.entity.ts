@@ -18,36 +18,24 @@ import { Group } from '../../group/entities/group.entity';
 
 @Entity('role')
 export class Role extends BaseEntity {
-  @Column('varchar', {
-    comment: '名称',
-    length: 50,
-  })
+  @Column('varchar', { comment: '名称', length: 50 })
   name: string;
 
   // @ManyToMany(() => Group, group => group.roles)
   // groups: Group[];
 
-  @OneToMany(
-    type => Group,
-    group => group.roles,
-  )
+  @OneToMany(type => Group, group => group.roles)
   groups: Group[];
 
   // @ManyToMany(() => Permission, permission => permission.roles)
   // @JoinTable()
   // permissions: Permission[];
 
-  @OneToMany(
-    type => User,
-    user => user.roles,
-  )
+  @OneToMany(type => User, user => user.roles)
   @JoinTable()
   users: User[];
 
-  @OneToMany(
-    type => Permission,
-    permission => permission.roles,
-  )
+  @OneToMany(type => Permission, permission => permission.roles)
   @JoinTable()
   permissions: Permission[];
 }

@@ -4,9 +4,7 @@ import { Role } from '../../role/entities/role.entity';
 
 @Entity('group_role')
 export class GroupRole {
-  @PrimaryGeneratedColumn('uuid', {
-    comment: '主键 id',
-  })
+  @PrimaryGeneratedColumn('uuid', { comment: '主键 id' })
   id: string;
 
   @Column({ name: 'groupId' })
@@ -15,17 +13,11 @@ export class GroupRole {
   @Column({ name: 'roleId' })
   roleId!: string;
 
-  @ManyToOne(
-    type => Group,
-    group => group.roles,
-  )
+  @ManyToOne(type => Group, group => group.roles)
   @JoinColumn({ name: 'groupId' })
   group: Group;
 
-  @ManyToOne(
-    type => Role,
-    role => role.groups,
-  )
+  @ManyToOne(type => Role, role => role.groups)
   @JoinColumn({ name: 'roleId' })
   role: Role;
 }

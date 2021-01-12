@@ -4,9 +4,7 @@ import { User } from '../../user/entities/user.entity';
 
 @Entity('user_role')
 export class UserRole {
-  @PrimaryGeneratedColumn('uuid', {
-    comment: '主键 id',
-  })
+  @PrimaryGeneratedColumn('uuid', { comment: '主键 id',})
   id: string;
 
   @Column({ name: 'userId' })
