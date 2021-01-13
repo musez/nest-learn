@@ -17,7 +17,6 @@ import {
 } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
-import { User } from '../user/entities/user.entity';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { RegisterUserDto } from '../user/dto/register-user.dto';
 import { CreateUserDto } from '../user/dto/create-user.dto';
@@ -58,7 +57,7 @@ export class AuthController {
         captchaText: {
           type: 'string',
           description: '验证码',
-          example: '111111',
+          example: 'icmz',
         },
       },
     },

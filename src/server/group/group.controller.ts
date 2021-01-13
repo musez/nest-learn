@@ -85,7 +85,7 @@ export class GroupController {
   @Get('getRoles')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '获取用户组角色' })
-  async findRolesByGroupId(@Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
+  async findRolesByGroupId(@Query() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
     return await this.groupService.selectRolesByGroupId(baseFindByIdDto);
   }
 

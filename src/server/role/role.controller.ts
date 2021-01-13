@@ -81,7 +81,7 @@ export class RoleController {
   @Get('getPermissions')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '获取角色权限' })
-  async findPermissionsByRoleId(@Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
+  async findPermissionsByRoleId(@Query() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
     return await this.roleService.selectPermissionsByRoleId(baseFindByIdDto);
   }
 

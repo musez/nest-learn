@@ -71,7 +71,7 @@ export class CacheService {
    * @param {type}
    * @return:
    */
-  public async flushall(): Promise<any> {
+  public async flushAll(): Promise<any> {
     if (!this.client) {
       await this.getClient();
     }

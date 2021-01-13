@@ -90,7 +90,7 @@ export class UserController {
   @Get('getGroups')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '获取用户组' })
-  async findGroupsByUserId(@Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
+  async findGroupsByUserId(@Query() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
     return await this.userService.selectGroupsByUserId(baseFindByIdDto);
   }
 
@@ -104,7 +104,7 @@ export class UserController {
   @Get('getRoles')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '获取用户组' })
-  async findRolesByUserId(@Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
+  async findRolesByUserId(@Query() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
     return await this.userService.selectRolesByUserId(baseFindByIdDto);
   }
 }
