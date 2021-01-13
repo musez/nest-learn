@@ -3,12 +3,14 @@ import { JwtService } from '@nestjs/jwt';
 import * as crypto from 'crypto';
 import { User } from '../user/entities/user.entity';
 import { UserService } from '../user/user.service';
+import { CaptchaService } from '../captcha/captcha.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly userService: UserService,
     private readonly jwtService: JwtService,
+    private readonly captchaService: CaptchaService,
   ) {
   }
 
@@ -24,6 +26,16 @@ export class AuthService {
     if (user && user.userPwd === userPwdCrypto) {
       const { userPwd, ...result } = user;
       return result;
+    } else {
+      return null;
+    }
+  }
+
+  async validateCaptcha(captchaId: string, captchaText: string): Promise<any> {
+    let captcha = await this.captchaService.selectCaptcha();
+
+    if (captcha.captchaId === captchaId && captcha.text === captchaText.toLowerCase()) {
+      return true;
     } else {
       return null;
     }

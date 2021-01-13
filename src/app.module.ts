@@ -1,6 +1,7 @@
 import { Module, MiddlewareConsumer, RequestMethod } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Connection } from 'typeorm';
+import { RedisModule } from 'nestjs-redis';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { LoggerMiddleware } from './common/middleware/logger.middleware';
@@ -19,6 +20,8 @@ import { AreaModule } from './server/area/area.module';
 import { FileModule } from './server/file/file.module';
 import { UserRoleModule } from './server/user-role/user-role.module';
 import { ArticleModule } from './server/article/article.module';
+import { CacheModule } from './server/cache/cache.module';
+import { CaptchaModule } from './server/captcha/captcha.module';
 
 @Module({
   imports: [
@@ -35,11 +38,17 @@ import { ArticleModule } from './server/article/article.module';
       // charset: 'utf8mb4',
       multipleStatements: true,
       dropSchema: false,
-      synchronize: true, // 是否自动将实体类同步到数据库
+      synchronize: false, // 是否自动将实体类同步到数据库
       logging: true,
       cli: {
         migrationsDir: 'database/migration/default',
       },
+    }),
+    RedisModule.register({
+      port: 6379,
+      host: '127.0.0.1',
+      password: '',
+      db: 0,
     }),
     AuthModule,
     UserModule,
@@ -56,6 +65,8 @@ import { ArticleModule } from './server/article/article.module';
     DictItemModule,
     AreaModule,
     FileModule,
+    CacheModule,
+    CaptchaModule,
   ],
   controllers: [AppController],
   providers: [AppService],

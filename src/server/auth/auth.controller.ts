@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Request, UseGuards, Body, BadRequestException } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Request,
+  UseGuards,
+  Body,
+  BadRequestException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import {
   ApiTags,
   ApiBasicAuth,
@@ -41,12 +50,29 @@ export class AuthController {
           description: '密码',
           example: '111111',
         },
+        captchaId: {
+          type: 'string',
+          description: '验证码 id',
+          example: '111111',
+        },
+        captchaText: {
+          type: 'string',
+          description: '验证码',
+          example: '111111',
+        },
       },
     },
   })
-  async login(@Request() request) {
+  async login(@Request() request, @Body() body) {
     let user = request.user;
-    return this.authService.login(user);
+    let { captchaId, captchaText } = body;
+
+    const captcha = await this.authService.validateCaptcha(captchaId, captchaText);
+    if (captcha) {
+      return this.authService.login(user);
+    } else {
+      throw new UnauthorizedException('验证码错误！');
+    }
   }
 
   @Post('register')
