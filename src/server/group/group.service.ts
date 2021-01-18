@@ -30,7 +30,7 @@ export class GroupService {
   async selectList(query): Promise<Group[]> {
     let { name } = query;
 
-    if (!name) {
+    if (_.isEmpty(name)) {
       name = '';
     }
 
@@ -47,7 +47,7 @@ export class GroupService {
     limit = limit ? limit : 10;
     let offset = (page - 1) * limit;
 
-    if (!name) {
+    if (_.isEmpty(name)) {
       name = '';
     }
 
@@ -73,7 +73,7 @@ export class GroupService {
   async update(updateGroupDto: UpdateGroupDto): Promise<void> {
     let { id } = updateGroupDto;
     let isExist = await this.groupRepository.findOne(id);
-    if (!isExist) {
+    if (_.isEmpty(isExist)) {
       throw new BadRequestException(`数据 id = ${id} 不存在！`);
     }
 
@@ -91,7 +91,7 @@ export class GroupService {
   async deleteById(baseFindByIdDto: BaseFindByIdDto): Promise<void> {
     let { id } = baseFindByIdDto;
     let isExist = await this.groupRepository.findOne(id);
-    if (!isExist) {
+    if (_.isEmpty(isExist)) {
       throw new BadRequestException(`数据 id = ${baseFindByIdDto} 不存在！`);
     }
 
@@ -100,7 +100,7 @@ export class GroupService {
 
   async selectRolesByGroupId(baseFindByIdDto: BaseFindByIdDto): Promise<GroupRole[]> {
     let isExist = await this.groupRepository.findOne(baseFindByIdDto);
-    if (!isExist) {
+    if (_.isEmpty(isExist)) {
       throw new BadRequestException(`数据 id = ${baseFindByIdDto} 不存在！`);
     }
 
@@ -110,7 +110,7 @@ export class GroupService {
   async bindRoles(bindGroupRoleDto: BindGroupRoleDto): Promise<void> {
     let { id, roles } = bindGroupRoleDto;
     let isExist = await this.groupRepository.findOne(id);
-    if (!isExist) {
+    if (_.isEmpty(isExist)) {
       throw new BadRequestException(`数据 id = ${id} 不存在！`);
     }
 

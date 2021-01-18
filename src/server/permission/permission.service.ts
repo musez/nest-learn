@@ -1,6 +1,7 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, TreeRepository } from 'typeorm';
+import * as _ from 'lodash';
 import { UpdatePermissionDto } from './dto/update-permission.dto';
 import { Permission } from './entities/permission.entity';
 import { CreatePermissionDto } from './dto/create-permission.dto';
@@ -38,9 +39,14 @@ export class PermissionService {
     return await this.permissionRepository.findTrees();
   }
 
-  async selectTreeChild(parent: Permission): Promise<Permission[]> {
-    if (parent) {
-      return await this.permissionRepository.findDescendants(parent);
+  async selectTreeChild(parentId: string): Promise<Permission[]> {
+    if (parentId) {
+      let isExist = await this.permissionRepository.findOne(parentId);
+      if (_.isEmpty(isExist)) {
+        throw new BadRequestException(`数据 parentId = ${parentId} 不存在！`);
+      }
+
+      return await this.permissionRepository.findDescendants(isExist);
     } else {
       return await this.permissionRepository.findRoots();
     }
@@ -65,7 +71,7 @@ export class PermissionService {
     }
 
     let isExist = await this.permissionRepository.findOne(id);
-    if (!isExist) {
+    if (_.isEmpty(isExist)) {
       throw new BadRequestException(`数据 id = ${id} 不存在！`);
     }
 

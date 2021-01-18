@@ -55,6 +55,11 @@
     ora "5.1.0"
     rxjs "6.6.3"
 
+"@aximario/json-tree@^2.1.0":
+  version "2.1.0"
+  resolved "https://registry.npm.taobao.org/@aximario/json-tree/download/@aximario/json-tree-2.1.0.tgz#eb3024b9685cb26efedcff260873803672312530"
+  integrity sha1-6zAkuWhcsm7+3P8mCHOANnIxJTA=
+
 "@babel/code-frame@^7.0.0", "@babel/code-frame@^7.10.4", "@babel/code-frame@^7.8.3":
   version "7.10.4"
   resolved "https://registry.npm.taobao.org/@babel/code-frame/download/@babel/code-frame-7.10.4.tgz?cache=0&sync_timestamp=1593529659031&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2F%40babel%2Fcode-frame%2Fdownload%2F%40babel%2Fcode-frame-7.10.4.tgz#168da1a36e90da68ae8d49c0f1b48c7c6249213a"

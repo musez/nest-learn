@@ -57,7 +57,7 @@ export class DictService {
     let { id, dictItemList } = updateDictDto;
 
     let isExist = await this.dictRepository.findOne(id);
-    if (!isExist) {
+    if (_.isEmpty(isExist)) {
       throw new BadRequestException(`数据 id = ${id} 不存在！`);
     }
 
@@ -91,7 +91,7 @@ export class DictService {
   async deleteById(baseFindByIdDto: BaseFindByIdDto): Promise<void> {
     let { id } = baseFindByIdDto;
     let isExist = await this.dictRepository.findOne(id);
-    if (!isExist) {
+    if (_.isEmpty(isExist)) {
       throw new BadRequestException(`数据 id = ${id} 不存在！`);
     }
 

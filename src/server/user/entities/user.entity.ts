@@ -72,10 +72,6 @@ export class User extends BaseEntity {
   @OneToOne((type) => Userinfo, (userinfo) => userinfo.user, { cascade: true })
   userinfo: Userinfo;
 
-  // @ManyToMany(() => Group, group => group.users, {cascade: true})
-  // @JoinTable()
-  // groups: Group[];
-
   @OneToMany(type => Group, group => group.users)
   groups: Group[];
 

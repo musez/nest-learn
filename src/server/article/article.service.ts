@@ -22,7 +22,7 @@ export class ArticleService {
   async selectList(query): Promise<Article[]> {
     let { title } = query;
 
-    if (!title) {
+    if (_.isEmpty(title)) {
       title = '';
     }
 
@@ -39,7 +39,7 @@ export class ArticleService {
     limit = limit ? limit : 10;
     let offset = (page - 1) * limit;
 
-    if (!title) {
+    if (_.isEmpty(title)) {
       title = '';
     }
 
@@ -67,7 +67,7 @@ export class ArticleService {
     let { id } = updateArticleDto;
 
     let isExist = await this.articleRepository.findOne(id);
-    if (!isExist) {
+    if (_.isEmpty(isExist)) {
       throw new BadRequestException(`数据 id = ${id} 不存在！`);
     }
 
@@ -85,7 +85,7 @@ export class ArticleService {
   async deleteById(baseFindByIdDto: BaseFindByIdDto): Promise<void> {
     let { id } = baseFindByIdDto;
     let isExist = await this.articleRepository.findOne(id);
-    if (!isExist) {
+    if (_.isEmpty(isExist)) {
       throw new BadRequestException(`数据 id = ${id} 不存在！`);
     }
 

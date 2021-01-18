@@ -14,7 +14,6 @@ import {
   TreeParent,
 } from 'typeorm';
 import { BaseEntity } from '../../base.entity';
-import { User } from '../../user/entities/user.entity';
 import { Role } from '../../role/entities/role.entity';
 
 @Entity('permission')
@@ -32,14 +31,11 @@ export class Permission extends BaseEntity {
   @Column({ comment: '权限 URL 规则', default: '' })
   uri: string;
 
-  @TreeChildren()
+  @TreeChildren({ cascade: true })
   children: Permission[];
 
   @TreeParent()
   parent: Permission;
-
-  // @ManyToMany(() => Role, role => role.permissions)
-  // roles: Role[];
 
   @OneToMany(type => Role, role => role.permissions)
   roles: Role[];

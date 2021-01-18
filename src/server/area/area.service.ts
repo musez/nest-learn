@@ -1,10 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, TreeRepository, Like } from 'typeorm';
+import { construct } from '@aximario/json-tree';
+import * as _ from 'lodash';
 import { CreateAreaDto } from './dto/create-area.dto';
 import { UpdateAreaDto } from './dto/update-area.dto';
 import { Area } from './entities/area.entity';
-import { BaseFindByIdDto } from '../base.dto';
+import { BaseFindByIdDto, BaseFindByPIdDto } from '../base.dto';
 
 @Injectable()
 export class AreaService {
@@ -17,8 +19,8 @@ export class AreaService {
   async selectList(query): Promise<Area[]> {
     let { areaName } = query;
 
-    if (!areaName) {
-      areaName = '';
+    if (_.isEmpty(areaName)) {
+      return [];
     }
 
     return await this.areaRepository.find({
@@ -34,7 +36,7 @@ export class AreaService {
     limit = limit ? limit : 10;
     let offset = (page - 1) * limit;
 
-    if (!areaName) {
+    if (_.isEmpty(areaName)) {
       areaName = '';
     }
 
@@ -58,7 +60,56 @@ export class AreaService {
     return await this.areaRepository.findOne(id);
   }
 
-  // async selectTree(): Promise<Area[]> {
-  //   return await this.areaService.findTrees();
-  // }
+  async selectListByPId(baseFindByPIdDto: BaseFindByPIdDto): Promise<Area[]> {
+    let { parentId } = baseFindByPIdDto;
+
+    if (_.isEmpty(parentId)) {
+      parentId = '-1';
+    }
+
+    return await this.areaRepository.find({
+      where: {
+        parentId: parentId,
+      },
+    });
+  }
+
+  async selectTreeByPId(baseFindByPIdDto: BaseFindByPIdDto): Promise<any> {
+    let { parentId } = baseFindByPIdDto;
+
+    if (_.isEmpty(parentId)) {
+      let res = await this.areaRepository.find();
+      return construct(res, {
+        id: 'id',
+        pid: 'parentId',
+        children: 'children',
+      });
+    } else {
+      let result = await this.selectChildren(parentId);
+
+      return result;
+    }
+  }
+
+  async selectChildren(id): Promise<any> {
+    let list = [];
+    let childList = await this.areaRepository.find({
+      where: {
+        parentId: id,
+      },
+    });
+
+    for (const item of childList) {
+      let obj = { ...item };
+      let child = await this.selectChildren(item.id);
+      if (child.length > 0) {
+        obj['children'] = child;
+      } else {
+        obj['children'] = [];
+      }
+      list.push(obj);
+    }
+
+    return list;
+  }
 }

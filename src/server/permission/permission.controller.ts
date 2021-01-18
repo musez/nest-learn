@@ -20,14 +20,14 @@ export class PermissionController {
   constructor(private readonly permissionService: PermissionService) {
   }
 
-  @Post()
+  @Post('add')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '添加' })
   async add(@Body() createPermissionDto: CreatePermissionDto) {
     return this.permissionService.insert(createPermissionDto);
   }
 
-  @Get()
+  @Get('findList')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '获取列表' })
   findList() {
@@ -44,12 +44,8 @@ export class PermissionController {
   @Get('findTreeChild')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '获取树（单层级）' })
-  @ApiQuery({
-    name: 'parentId',
-    description: '父 id',
-    required: false,
-  })
-  findTreeChild(@Query('parentId') parentId: Permission) {
+  @ApiQuery({ name: 'parentId', description: '父 id', required: false, })
+  findTreeChild(@Query('parentId') parentId: string) {
     return this.permissionService.selectTreeChild(parentId);
   }
 
