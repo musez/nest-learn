@@ -66,8 +66,9 @@ export class AuthController {
     let user = request.user;
     let { captchaId, captchaText } = body;
 
-    const captcha = await this.authService.validateCaptcha(captchaId, captchaText);
-    if (captcha) {
+    const validateCaptcha = await this.authService.validateCaptcha(captchaId, captchaText);
+    if (validateCaptcha) {
+      this.userService.incrementLoginCount(user.id)
       return this.authService.login(user);
     } else {
       throw new UnauthorizedException('验证码错误！');

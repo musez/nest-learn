@@ -47,22 +47,28 @@ export class AreaController {
     return await this.areaService.selectListPage(page, limit, limitAreaDto);
   }
 
-  @Get('findById')
-  @ApiOperation({ summary: '获取详情（主键 id）' })
-  @UseGuards(JwtAuthGuard)
-  async findById(@Query() baseFindByIdDto: BaseFindByIdDto): Promise<Area> {
-    return await this.areaService.selectById(baseFindByIdDto);
-  }
-
   @Get('findListByPId')
   @ApiOperation({ summary: '获取列表（父 id）' })
   findListByPId(@Query() baseFindByPIdDto: BaseFindByPIdDto): Promise<any> {
     return this.areaService.selectListByPId(baseFindByPIdDto);
   }
 
+  @Get('findTree')
+  @ApiOperation({ summary: '获取树' })
+  findTree(): Promise<any> {
+    return this.areaService.selectTree();
+  }
+
   @Get('findTreeByPId')
   @ApiOperation({ summary: '获取树（父 id）' })
   findTreeByPId(@Query() baseFindByPIdDto: BaseFindByPIdDto): Promise<any> {
     return this.areaService.selectTreeByPId(baseFindByPIdDto);
+  }
+
+  @Get('findById')
+  @ApiOperation({ summary: '获取详情（主键 id）' })
+  @UseGuards(JwtAuthGuard)
+  async findById(@Query() baseFindByIdDto: BaseFindByIdDto): Promise<Area> {
+    return await this.areaService.selectById(baseFindByIdDto);
   }
 }

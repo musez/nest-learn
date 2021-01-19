@@ -1,7 +1,7 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import * as _ from 'lodash';
+import { Utils } from './../../utils/index';
 import { CreateDictDto } from './dto/create-dict.dto';
 import { UpdateDictDto } from './dto/update-dict.dto';
 import { Dict } from './entities/dict.entity';
@@ -57,18 +57,18 @@ export class DictService {
     let { id, dictItemList } = updateDictDto;
 
     let isExist = await this.dictRepository.findOne(id);
-    if (_.isEmpty(isExist)) {
-      throw new BadRequestException(`数据 id = ${id} 不存在！`);
+    if (Utils.isEmpty(isExist)) {
+      throw new BadRequestException(`数据 id ${id} 不存在！`);
     }
 
     let dict = new Dict();
 
     for (let key in updateDictDto) {
-      if (!_.isEmpty(updateDictDto[key])) {
+      if (!Utils.isEmpty(updateDictDto[key])) {
         dict[key] = updateDictDto[key];
       }
     }
-
+    console.log(dictItemList);
     if (dictItemList) {
       for (const key in dictItemList) {
         let dictItem = new DictItem();
@@ -91,8 +91,8 @@ export class DictService {
   async deleteById(baseFindByIdDto: BaseFindByIdDto): Promise<void> {
     let { id } = baseFindByIdDto;
     let isExist = await this.dictRepository.findOne(id);
-    if (_.isEmpty(isExist)) {
-      throw new BadRequestException(`数据 id = ${id} 不存在！`);
+    if (Utils.isEmpty(isExist)) {
+      throw new BadRequestException(`数据 id ${id} 不存在！`);
     }
 
     await this.dictRepository.remove(isExist);

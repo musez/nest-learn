@@ -19,7 +19,7 @@ import {
 } from '@nestjs/platform-express';
 import { join } from 'path';
 import { createWriteStream } from 'fs';
-import * as _ from 'lodash';
+import { Utils } from './../../utils/index';
 import { FileService } from './file.service';
 import { CreateFileDto } from './dto/create-file.dto';
 import { UpdateFileDto } from './dto/update-file.dto';
@@ -60,7 +60,7 @@ export class FileController {
   })
   @UseInterceptors(FileInterceptor('file'))
   UploadedFile(@UploadedFile() file, @Body() body) {
-    if (_.isEmpty(file)) {
+    if (Utils.isEmpty(file)) {
       throw new BadRequestException(`文件不能为空！`);
     }
 
@@ -116,7 +116,7 @@ export class FileController {
     { name: 'description', maxCount: 1 },
   ]))
   UploadedFiles(@UploadedFiles() files, @Body() body) {
-    if (_.isEmpty(files.files) ){
+    if (Utils.isEmpty(files.files) ){
       throw new BadRequestException(`文件不能为空！`);
     }
 

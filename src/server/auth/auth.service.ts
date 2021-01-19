@@ -33,8 +33,11 @@ export class AuthService {
 
   async validateCaptcha(captchaId: string, captchaText: string): Promise<any> {
     let captcha = await this.captchaService.selectCaptcha();
-
-    if (captchaId === captcha.captchaId && (captchaText.toLowerCase() === captcha.text || captchaText.toLowerCase() === 'icmz')) {
+    console.log(captcha);
+    console.log(captchaId);
+    console.log(captchaText);
+    // 万能验证码 icmz
+    if (captchaId.toString() === captcha.captchaId.toString() && (captchaText.toLowerCase() === captcha.text || captchaText.toLowerCase() === 'icmz')) {
       // if (captchaId === captcha.captchaId && (captchaText.toLowerCase() === captcha.text)) {
       return true;
     } else {

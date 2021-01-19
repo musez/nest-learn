@@ -2,7 +2,7 @@ import { Injectable, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Like } from 'typeorm';
 import * as crypto from 'crypto';
-import * as _ from 'lodash';
+import { Utils } from './../../utils/index';
 import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -34,9 +34,16 @@ export class UserService {
     else return null;
   }
 
-  // async updateLoginCount(updateUserDto: UpdateUserDto): Promise<any> {
-  //   return await this.userRepository.increment(updateUserDto, 'loginCount', 1);
-  // }
+  async incrementLoginCount(id: string): Promise<any> {
+    let isExist = await this.userRepository.findOne(id, {
+      select: ['id'],
+    });
+    if (!isExist) {
+      throw new BadRequestException(`数据 id ${id} 不存在！`);
+    }
+
+    return await this.userRepository.increment(isExist, 'loginCount', 1);
+  }
 
   async insert(createUserDto: CreateUserDto): Promise<CreateUserDto> {
     let { userName } = createUserDto;
@@ -49,7 +56,7 @@ export class UserService {
     let user = new User();
 
     for (let key in createUserDto) {
-      if (!_.isEmpty(createUserDto[key])) {
+      if (!Utils.isEmpty(createUserDto[key])) {
         if (key === 'userPwd') {
           user.userPwd = crypto.createHmac('sha256', createUserDto.userPwd).digest('hex');
         } else {
@@ -60,7 +67,7 @@ export class UserService {
 
     let userinfo = new Userinfo();
     for (let key in createUserDto) {
-      if (!_.isEmpty(createUserDto[key])) {
+      if (!Utils.isEmpty(createUserDto[key])) {
         userinfo[key] = createUserDto[key];
       }
     }
@@ -73,7 +80,7 @@ export class UserService {
   async selectList(query): Promise<User[]> {
     let { userName } = query;
 
-    if (_.isEmpty(userName)) {
+    if (Utils.isEmpty(userName)) {
       userName = '';
     }
 
@@ -133,21 +140,21 @@ export class UserService {
     } = updateUserDto;
 
     let isExist = await this.userRepository.findOne(id);
-    if (_.isEmpty(isExist)) {
-      throw new BadRequestException(`数据 id = ${id} 不存在！`);
+    if (Utils.isEmpty(isExist)) {
+      throw new BadRequestException(`数据 id ${id} 不存在！`);
     }
 
     let user = new User();
 
     for (let cityKey in updateUserDto) {
-      if (!_.isEmpty(updateUserDto[cityKey])) {
+      if (!Utils.isEmpty(updateUserDto[cityKey])) {
         user[cityKey] = updateUserDto[cityKey];
       }
     }
 
     let userinfo = new Userinfo();
     for (let key in updateUserDto) {
-      if (!_.isEmpty(updateUserDto[key])) {
+      if (!Utils.isEmpty(updateUserDto[key])) {
         userinfo[key] = updateUserDto[key];
       }
     }
@@ -161,8 +168,8 @@ export class UserService {
   async deleteById(baseFindByIdDto: BaseFindByIdDto): Promise<void> {
     let { id } = baseFindByIdDto;
     let isExist = await this.userRepository.findOne(id);
-    if (_.isEmpty(isExist)) {
-      throw new BadRequestException(`数据 id = ${id} 不存在！`);
+    if (Utils.isEmpty(isExist)) {
+      throw new BadRequestException(`数据 id ${id} 不存在！`);
     }
 
     await this.userRepository.remove(isExist);
@@ -171,8 +178,8 @@ export class UserService {
   async bindGroups(bindUserGroupDto: BindUserGroupDto): Promise<void> {
     let { id, groups } = bindUserGroupDto;
     let isExist = await this.userRepository.findOne(id);
-    if (_.isEmpty(isExist)) {
-      throw new BadRequestException(`数据 id = ${id} 不存在！`);
+    if (Utils.isEmpty(isExist)) {
+      throw new BadRequestException(`数据 id ${id} 不存在！`);
     }
 
     let userGroupList = [];
@@ -188,8 +195,8 @@ export class UserService {
 
   async selectGroupsByUserId(baseFindByIdDto: BaseFindByIdDto): Promise<UserGroup[]> {
     let isExist = await this.userRepository.findOne(baseFindByIdDto);
-    if (_.isEmpty(isExist)) {
-      throw new BadRequestException(`数据 id = ${baseFindByIdDto} 不存在！`);
+    if (Utils.isEmpty(isExist)) {
+      throw new BadRequestException(`数据 id ${baseFindByIdDto} 不存在！`);
     }
 
     return await this.userGroupService.selectByUserId(baseFindByIdDto);
@@ -198,8 +205,8 @@ export class UserService {
   async bindRoles(bindUserRoleDto: BindUserRoleDto): Promise<void> {
     let { id, roles } = bindUserRoleDto;
     let isExist = await this.userRepository.findOne(id);
-    if (_.isEmpty(isExist)) {
-      throw new BadRequestException(`数据 id = ${id} 不存在！`);
+    if (Utils.isEmpty(isExist)) {
+      throw new BadRequestException(`数据 id ${id} 不存在！`);
     }
 
     let userGroupList = [];
@@ -215,8 +222,8 @@ export class UserService {
 
   async selectRolesByUserId(baseFindByIdDto: BaseFindByIdDto): Promise<UserRole[]> {
     let isExist = await this.userRepository.findOne(baseFindByIdDto);
-    if (_.isEmpty(isExist)) {
-      throw new BadRequestException(`数据 id = ${baseFindByIdDto} 不存在！`);
+    if (Utils.isEmpty(isExist)) {
+      throw new BadRequestException(`数据 id ${baseFindByIdDto} 不存在！`);
     }
 
     return await this.userRoleService.selectByUserId(baseFindByIdDto);
@@ -224,8 +231,8 @@ export class UserService {
 
   async selectPermissionsByUserId(id: string): Promise<any> {
     let isExist = await this.userRepository.findOne(id);
-    if (_.isEmpty(isExist)) {
-      throw new BadRequestException(`数据 id = ${id} 不存在！`);
+    if (Utils.isEmpty(isExist)) {
+      throw new BadRequestException(`数据 id ${id} 不存在！`);
     }
 
     let res1 = await this.userRepository.query(`
@@ -249,33 +256,9 @@ export class UserService {
         where u.id = '${id}'
         `);
 
-    let res = _.assign(isExist, {
-      permission: _.uniqBy(_.concat(res1, res2), 'id'),
+    let res = Utils.assign(isExist, {
+      permission: Utils.uniqBy(Utils.concat(res1, res2), 'id'),
     });
-
-    // let res1 = await this.userRepository.createQueryBuilder('permission')
-    //   .select('permission.id , permission.name')
-    //   .innerJoinAndSelect('role_permission', 'rp', 'permission.id = rp.permissionId')
-    //   .innerJoinAndSelect('role', 'r', 'rp.roleId = r.id')
-    //   .innerJoinAndSelect('user_role', 'ur', 'r.id = ur.roleId')
-    //   .innerJoinAndSelect('user', 'u', 'u.id = ur.userId')
-    //   .where('u.id = :id', {
-    //     id: id,
-    //   })
-    //   .getMany();
-    //
-    // let res2 = await this.userRepository.createQueryBuilder('permission')
-    //   .select('permission.id , permission.name')
-    //   .innerJoinAndSelect('role_permission', 'rp', 'permission.id = rp.permissionId')
-    //   .innerJoinAndSelect('role', 'r', 'rp.roleId = r.id')
-    //   .innerJoinAndSelect('group_role', 'gr', 'r.id = gr.roleId')
-    //   .innerJoinAndSelect('group', 'g', 'gr.groupId = g.id')
-    //   .innerJoinAndSelect('user_group', 'ug', 'g.id = ug.groupId')
-    //   .innerJoinAndSelect('user', 'u', 'u.id = ug.userId')
-    //   .where('u.id = :id', {
-    //     id: id,
-    //   })
-    //   .getMany();
 
     return res;
   }

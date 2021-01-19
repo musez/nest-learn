@@ -11,7 +11,9 @@ import { CreatePermissionDto } from './dto/create-permission.dto';
 import { UpdatePermissionDto } from './dto/update-permission.dto';
 import { Permission } from './entities/permission.entity';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { BaseFindByIdDto } from '../base.dto';
+import { BaseFindByIdDto, BasePageDto } from '../base.dto';
+import { ParseIntPipe } from '../../common/pipe/parse-int.pipe';
+import { LimitPermissionDto } from './dto/limit-permission.dto';
 
 @Controller('permission')
 @ApiTags('权限')
@@ -34,19 +36,34 @@ export class PermissionController {
     return this.permissionService.selectList();
   }
 
+  @Get('findListPage')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: '获取列表（分页）' })
+  findListPage(@Query('page', new ParseIntPipe()) page, @Query('limit', new ParseIntPipe()) limit, @Query() limitPermissionDto: LimitPermissionDto) {
+    return this.permissionService.selectListPage(page, limit, limitPermissionDto);
+  }
+
+  @Get('findListByPId')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: '获取列表（父 id）' })
+  @ApiQuery({ name: 'parentId', description: '父 id', required: false })
+  findListByPId(@Query('parentId') parentId: string) {
+    return this.permissionService.selectListByPId(parentId);
+  }
+
   @Get('findTree')
   @UseGuards(JwtAuthGuard)
-  @ApiOperation({ summary: '获取树（多层级）' })
+  @ApiOperation({ summary: '获取树' })
   findTree() {
     return this.permissionService.selectTree();
   }
 
-  @Get('findTreeChild')
+  @Get('findTreeByPId')
   @UseGuards(JwtAuthGuard)
-  @ApiOperation({ summary: '获取树（单层级）' })
-  @ApiQuery({ name: 'parentId', description: '父 id', required: false, })
-  findTreeChild(@Query('parentId') parentId: string) {
-    return this.permissionService.selectTreeChild(parentId);
+  @ApiOperation({ summary: '获取树（父 id）' })
+  @ApiQuery({ name: 'parentId', description: '父 id', required: false })
+  findTreeByPId(@Query('parentId') parentId: string) {
+    return this.permissionService.selectTreeByPId(parentId);
   }
 
   @Get('findById')

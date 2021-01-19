@@ -1,7 +1,7 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Like } from 'typeorm';
-import * as _ from 'lodash';
+import { Utils } from './../../utils/index';
 import { CreateArticleDto } from './dto/create-article.dto';
 import { UpdateArticleDto } from './dto/update-article.dto';
 import { BaseFindByIdDto } from '../base.dto';
@@ -22,7 +22,7 @@ export class ArticleService {
   async selectList(query): Promise<Article[]> {
     let { title } = query;
 
-    if (_.isEmpty(title)) {
+    if (Utils.isEmpty(title)) {
       title = '';
     }
 
@@ -39,7 +39,7 @@ export class ArticleService {
     limit = limit ? limit : 10;
     let offset = (page - 1) * limit;
 
-    if (_.isEmpty(title)) {
+    if (Utils.isEmpty(title)) {
       title = '';
     }
 
@@ -67,14 +67,14 @@ export class ArticleService {
     let { id } = updateArticleDto;
 
     let isExist = await this.articleRepository.findOne(id);
-    if (_.isEmpty(isExist)) {
-      throw new BadRequestException(`数据 id = ${id} 不存在！`);
+    if (Utils.isEmpty(isExist)) {
+      throw new BadRequestException(`数据 id ${id} 不存在！`);
     }
 
     let article = new Article();
 
     for (let cityKey in updateArticleDto) {
-      if (!_.isEmpty(updateArticleDto[cityKey])) {
+      if (!Utils.isEmpty(updateArticleDto[cityKey])) {
         article[cityKey] = updateArticleDto[cityKey];
       }
     }
@@ -85,8 +85,8 @@ export class ArticleService {
   async deleteById(baseFindByIdDto: BaseFindByIdDto): Promise<void> {
     let { id } = baseFindByIdDto;
     let isExist = await this.articleRepository.findOne(id);
-    if (_.isEmpty(isExist)) {
-      throw new BadRequestException(`数据 id = ${id} 不存在！`);
+    if (Utils.isEmpty(isExist)) {
+      throw new BadRequestException(`数据 id ${id} 不存在！`);
     }
 
     await this.articleRepository.remove(isExist);

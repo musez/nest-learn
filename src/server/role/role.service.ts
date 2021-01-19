@@ -1,7 +1,7 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Like } from 'typeorm';
-import * as _ from 'lodash';
+import { Utils } from './../../utils/index';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
 import { Group } from '../group/entities/group.entity';
@@ -33,7 +33,7 @@ export class RoleService {
   async selectList(query): Promise<Role[]> {
     let { name } = query;
 
-    if (_.isEmpty(name)) {
+    if (Utils.isEmpty(name)) {
       name = '';
     }
 
@@ -50,7 +50,7 @@ export class RoleService {
     limit = limit ? limit : 10;
     let offset = (page - 1) * limit;
 
-    if (_.isEmpty(name)) {
+    if (Utils.isEmpty(name)) {
       name = '';
     }
 
@@ -78,14 +78,14 @@ export class RoleService {
     let { id } = updateRoleDto;
 
     let isExist = await this.roleRepository.findOne(id);
-    if (_.isEmpty(isExist)) {
-      throw new BadRequestException(`数据 id = ${id} 不存在！`);
+    if (Utils.isEmpty(isExist)) {
+      throw new BadRequestException(`数据 id ${id} 不存在！`);
     }
 
     let role = new Role();
 
     for (let cityKey in updateRoleDto) {
-      if (!_.isEmpty(updateRoleDto[cityKey])) {
+      if (!Utils.isEmpty(updateRoleDto[cityKey])) {
         role[cityKey] = updateRoleDto[cityKey];
       }
     }
@@ -96,8 +96,8 @@ export class RoleService {
   async deleteById(baseFindByIdDto: BaseFindByIdDto): Promise<void> {
     let { id } = baseFindByIdDto;
     let isExist = await this.roleRepository.findOne(id);
-    if (_.isEmpty(isExist)) {
-      throw new BadRequestException(`数据 id = ${id} 不存在！`);
+    if (Utils.isEmpty(isExist)) {
+      throw new BadRequestException(`数据 id ${id} 不存在！`);
     }
 
     await this.roleRepository.remove(isExist);
@@ -105,8 +105,8 @@ export class RoleService {
 
   async selectPermissionsByRoleId(baseFindByIdDto: BaseFindByIdDto): Promise<RolePermission[]> {
     let isExist = await this.roleRepository.findOne(baseFindByIdDto);
-    if (_.isEmpty(isExist)) {
-      throw new BadRequestException(`数据 id = ${baseFindByIdDto} 不存在！`);
+    if (Utils.isEmpty(isExist)) {
+      throw new BadRequestException(`数据 id ${baseFindByIdDto} 不存在！`);
     }
 
     return await this.rolePermissionService.selectByRoleId(baseFindByIdDto);
@@ -115,8 +115,8 @@ export class RoleService {
   async bindPermissions(bindRolePermissionDto: BindRolePermissionDto): Promise<void> {
     let { id, permissions } = bindRolePermissionDto;
     let isExist = await this.roleRepository.findOne(id);
-    if (_.isEmpty(isExist)) {
-      throw new BadRequestException(`数据 id = ${id} 不存在！`);
+    if (Utils.isEmpty(isExist)) {
+      throw new BadRequestException(`数据 id ${id} 不存在！`);
     }
 
     let userGroupList = [];

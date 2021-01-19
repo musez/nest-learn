@@ -1,7 +1,7 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, TreeRepository } from 'typeorm';
-import * as _ from 'lodash';
+import { Utils } from './../../utils/index';
 import { UpdatePermissionDto } from './dto/update-permission.dto';
 import { Permission } from './entities/permission.entity';
 import { CreatePermissionDto } from './dto/create-permission.dto';
@@ -35,20 +35,76 @@ export class PermissionService {
     return await this.permissionRepository.find();
   }
 
+  async selectListPage(page, limit, query): Promise<any> {
+    let { parentId, name } = query;
+
+    page = page ? page : 1;
+    limit = limit ? limit : 10;
+    let offset = (page - 1) * limit;
+
+
+    if (Utils.isEmpty(name)) {
+      name = '';
+    }
+
+    let res = [];
+    if (parentId) {
+      let isExist = await this.permissionRepository.findOne(parentId);
+      if (Utils.isEmpty(isExist)) {
+        throw new BadRequestException(`数据 parentId = ${parentId} 不存在！`);
+      }
+
+      res = await this.permissionRepository.createDescendantsQueryBuilder('permission', 'permissionClosure', isExist)
+        .andWhere('name like :name', {
+          name: `%${name}%`,
+        })
+        .skip(offset)
+        .take(limit)
+        .orderBy('permission.createTime', 'ASC')
+        .getManyAndCount();
+    } else {
+      res = await this.permissionRepository.createQueryBuilder('permission')
+        .andWhere('name like :name', {
+          name: `%${name}%`,
+        })
+        .skip(offset)
+        .take(limit)
+        .orderBy('permission.createTime', 'ASC')
+        .getManyAndCount();
+    }
+
+    return {
+      list: res[0],
+      total: res[1],
+      page: page,
+      limit: limit,
+    };
+  }
+
+  async selectListByPId(parentId: string): Promise<Permission[]> {
+    let isExist = await this.permissionRepository.findOne(parentId);
+    if (Utils.isEmpty(isExist)) {
+      throw new BadRequestException(`数据 parentId = ${parentId} 不存在！`);
+    }
+
+    return await this.permissionRepository.createDescendantsQueryBuilder('permission', 'permissionClosure', isExist)
+      .getMany();
+  }
+
   async selectTree(): Promise<Permission[]> {
     return await this.permissionRepository.findTrees();
   }
 
-  async selectTreeChild(parentId: string): Promise<Permission[]> {
+  async selectTreeByPId(parentId: string): Promise<any> {
     if (parentId) {
       let isExist = await this.permissionRepository.findOne(parentId);
-      if (_.isEmpty(isExist)) {
+      if (Utils.isEmpty(isExist)) {
         throw new BadRequestException(`数据 parentId = ${parentId} 不存在！`);
       }
 
-      return await this.permissionRepository.findDescendants(isExist);
+      return await this.permissionRepository.findDescendantsTree(isExist);
     } else {
-      return await this.permissionRepository.findRoots();
+      return await this.permissionRepository.findTrees();
     }
   }
 
@@ -71,8 +127,8 @@ export class PermissionService {
     }
 
     let isExist = await this.permissionRepository.findOne(id);
-    if (_.isEmpty(isExist)) {
-      throw new BadRequestException(`数据 id = ${id} 不存在！`);
+    if (Utils.isEmpty(isExist)) {
+      throw new BadRequestException(`数据 id ${id} 不存在！`);
     }
 
     return await this.permissionRepository.save(isExist);

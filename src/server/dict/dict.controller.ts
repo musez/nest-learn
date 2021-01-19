@@ -6,7 +6,7 @@ import {
   ApiBasicAuth,
   ApiOperation,
 } from '@nestjs/swagger';
-import * as _ from 'lodash';
+import { Utils } from './../../utils/index';
 import { DictService } from './dict.service';
 import { CreateDictDto } from './dto/create-dict.dto';
 import { UpdateDictDto } from './dto/update-dict.dto';
@@ -32,11 +32,11 @@ export class DictController {
     let dict = new Dict();
 
     for (let key in createDictDto) {
-      if (!_.isEmpty(createDictDto[key])) {
+      if (!Utils.isEmpty(createDictDto[key])) {
         dict[key] = createDictDto[key];
       }
     }
-
+    console.log(dictItemList);
     if (dictItemList) {
       for (const key in dictItemList) {
         let dictItem = new DictItem();

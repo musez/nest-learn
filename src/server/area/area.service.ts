@@ -1,8 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, TreeRepository, Like } from 'typeorm';
-import { construct } from '@aximario/json-tree';
-import * as _ from 'lodash';
+import { Utils } from './../../utils/index';
 import { CreateAreaDto } from './dto/create-area.dto';
 import { UpdateAreaDto } from './dto/update-area.dto';
 import { Area } from './entities/area.entity';
@@ -19,7 +18,7 @@ export class AreaService {
   async selectList(query): Promise<Area[]> {
     let { areaName } = query;
 
-    if (_.isEmpty(areaName)) {
+    if (Utils.isEmpty(areaName)) {
       return [];
     }
 
@@ -36,7 +35,7 @@ export class AreaService {
     limit = limit ? limit : 10;
     let offset = (page - 1) * limit;
 
-    if (_.isEmpty(areaName)) {
+    if (Utils.isEmpty(areaName)) {
       areaName = '';
     }
 
@@ -55,15 +54,10 @@ export class AreaService {
     };
   }
 
-  async selectById(baseFindByIdDto: BaseFindByIdDto): Promise<Area> {
-    let { id } = baseFindByIdDto;
-    return await this.areaRepository.findOne(id);
-  }
-
   async selectListByPId(baseFindByPIdDto: BaseFindByPIdDto): Promise<Area[]> {
     let { parentId } = baseFindByPIdDto;
 
-    if (_.isEmpty(parentId)) {
+    if (Utils.isEmpty(parentId)) {
       parentId = '-1';
     }
 
@@ -74,12 +68,21 @@ export class AreaService {
     });
   }
 
+  async selectTree(): Promise<any> {
+    let res = await this.areaRepository.find();
+    return Utils.construct(res, {
+      id: 'id',
+      pid: 'parentId',
+      children: 'children',
+    });
+  }
+
   async selectTreeByPId(baseFindByPIdDto: BaseFindByPIdDto): Promise<any> {
     let { parentId } = baseFindByPIdDto;
 
-    if (_.isEmpty(parentId)) {
+    if (Utils.isEmpty(parentId)) {
       let res = await this.areaRepository.find();
-      return construct(res, {
+      return Utils.construct(res, {
         id: 'id',
         pid: 'parentId',
         children: 'children',
@@ -104,12 +107,19 @@ export class AreaService {
       let child = await this.selectChildren(item.id);
       if (child.length > 0) {
         obj['children'] = child;
+        obj['hasChildren'] = true;
       } else {
         obj['children'] = [];
+        obj['hasChildren'] = false;
       }
       list.push(obj);
     }
 
     return list;
+  }
+
+  async selectById(baseFindByIdDto: BaseFindByIdDto): Promise<Area> {
+    let { id } = baseFindByIdDto;
+    return await this.areaRepository.findOne(id);
   }
 }
