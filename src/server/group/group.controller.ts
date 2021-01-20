@@ -57,8 +57,8 @@ export class GroupController {
   @Get('findListPage')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '获取列表（分页）' })
-  async findListPage(@Query('page', new ParseIntPipe()) page, @Query('limit', new ParseIntPipe()) limit, @Query() limitGroupDto: LimitGroupDto): Promise<any> {
-    return await this.groupService.selectListPage(page, limit, limitGroupDto);
+  async findListPage(@Query() limitGroupDto: LimitGroupDto): Promise<any> {
+    return await this.groupService.selectListPage(limitGroupDto);
   }
 
   @Get('findById')

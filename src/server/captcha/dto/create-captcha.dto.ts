@@ -1,5 +1,5 @@
-import { IsNotEmpty, IsString, IsInt, IsEmail, MinLength, MaxLength } from 'class-validator';
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { IsNotEmpty } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateCaptchaDto {
   @ApiProperty({ description: '验证码 id', required: true, example: '111111' })

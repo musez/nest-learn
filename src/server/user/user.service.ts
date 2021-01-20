@@ -54,11 +54,10 @@ export class UserService {
     }
 
     let user = new User();
-
     for (let key in createUserDto) {
       if (!Utils.isEmpty(createUserDto[key])) {
         if (key === 'userPwd') {
-          user.userPwd = crypto.createHmac('sha256', createUserDto.userPwd).digest('hex');
+          user.userPwd = crypto.createHmac('sha256', '888888').digest('hex');
         } else {
           user[key] = createUserDto[key];
         }
@@ -92,22 +91,19 @@ export class UserService {
     });
   }
 
-  async selectListPage(page, limit, query): Promise<any> {
-    let { userName, mobile } = query;
+  async selectListPage(query): Promise<any> {
+    let { page, limit, userName, mobile } = query;
     page = page ? page : 1;
     limit = limit ? limit : 10;
     let offset = (page - 1) * limit;
 
     let queryConditionList = [];
-
     if (userName) {
       queryConditionList.push('user.userName like :userName');
     }
-
     if (mobile) {
       queryConditionList.push('user.mobile = :mobile');
     }
-
     let queryCondition = queryConditionList.join(' AND ');
 
     let res = await this.userRepository.createQueryBuilder('user')
@@ -135,9 +131,7 @@ export class UserService {
   }
 
   async update(updateUserDto: UpdateUserDto): Promise<void> {
-    let {
-      id,
-    } = updateUserDto;
+    let { id } = updateUserDto;
 
     let isExist = await this.userRepository.findOne(id);
     if (Utils.isEmpty(isExist)) {
@@ -145,10 +139,13 @@ export class UserService {
     }
 
     let user = new User();
-
-    for (let cityKey in updateUserDto) {
-      if (!Utils.isEmpty(updateUserDto[cityKey])) {
-        user[cityKey] = updateUserDto[cityKey];
+    for (let key in updateUserDto) {
+      if (!Utils.isEmpty(updateUserDto[key])) {
+        if (key === 'userPwd') {
+          // user.userPwd = crypto.createHmac('sha256', updateUserDto.userPwd).digest('hex');
+        } else {
+          user[key] = updateUserDto[key];
+        }
       }
     }
 
@@ -160,7 +157,6 @@ export class UserService {
     }
 
     user.userinfo = userinfo;
-
     // await this.userRepository.update({ id: id }, updateUserDto);
     await this.userRepository.save(updateUserDto);
   }

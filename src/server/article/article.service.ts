@@ -33,8 +33,8 @@ export class ArticleService {
     });
   }
 
-  async selectListPage(page, limit, query): Promise<any> {
-    let { title } = query;
+  async selectListPage(query): Promise<any> {
+    let { page, limit, title } = query;
     page = page ? page : 1;
     limit = limit ? limit : 10;
     let offset = (page - 1) * limit;
@@ -73,9 +73,9 @@ export class ArticleService {
 
     let article = new Article();
 
-    for (let cityKey in updateArticleDto) {
-      if (!Utils.isEmpty(updateArticleDto[cityKey])) {
-        article[cityKey] = updateArticleDto[cityKey];
+    for (let key in updateArticleDto) {
+      if (!Utils.isEmpty(updateArticleDto[key])) {
+        article[key] = updateArticleDto[key];
       }
     }
 

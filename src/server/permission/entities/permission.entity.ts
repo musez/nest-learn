@@ -25,11 +25,35 @@ export class Permission extends BaseEntity {
   @Column('tinyint', { comment: '权限类别（1：导航；2：页面；3：操作；4：字段）', default: () => 0 })
   type: number;
 
-  @Column({ comment: '权限 CODE 代码', default: '' })
+  @Column({ comment: '权限 CODE 代码', length: 50, default: '' })
   code: string;
 
-  @Column({ comment: '权限 URL 规则', default: '' })
+  @Column({ comment: '权限 URI 规则', length: 50, default: '' })
   uri: string;
+
+  @Column({ comment: '权限路由 PATH', length: 50, default: '' })
+  routerPath: string;
+
+  @Column({ comment: '权限路由 NAME', length: 50, default: '' })
+  routerName: string;
+
+  @Column({ comment: '权限路由 REDIRECT', length: 50, default: '' })
+  routerRedirect: string;
+
+  @Column({ comment: '权限路由 COMPONENT', length: 50, default: '' })
+  routerComponent: string;
+
+  @Column('tinyint', { comment: '权限路由 HIDDEN（0：不隐藏；1：隐藏；）', default: () => 0 })
+  routerHidden: number;
+
+  @Column({ comment: '权限路由 TITLE', length: 50, default: '' })
+  routerTitle: string;
+
+  @Column({ comment: '权限路由 ICON', length: 50, default: '' })
+  routerIcon: string;
+
+  @Column({ comment: '权限路由 SORT', default: 0 })
+  routerSort: number;
 
   @TreeChildren({ cascade: true })
   children: Permission[];

@@ -64,8 +64,8 @@ export class DictController {
   @Get('findListPage')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '获取列表（分页）' })
-  async findListPage(@Query('page', new ParseIntPipe()) page, @Query('limit', new ParseIntPipe()) limit, @Query() basePageDto: BasePageDto): Promise<any> {
-    return await this.dictService.selectListPage(page, limit, basePageDto);
+  async findListPage(@Query() basePageDto: BasePageDto): Promise<any> {
+    return await this.dictService.selectListPage(basePageDto);
   }
 
   @Get('findById')

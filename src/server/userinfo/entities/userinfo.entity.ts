@@ -22,19 +22,20 @@ export class Userinfo {
   @PrimaryGeneratedColumn('uuid', { comment: '主键 id' })
   id: string;
 
-  @Column({ comment: '省份', nullable: true }) province: string;
+  @Column({ comment: '省份', nullable: true })
+  provinceId: string;
   // @ManyToOne((type) => Area, (area) => area.id)
-  // province: Area;
+  // provinceId: Area;
 
   @Column({ comment: '城市', nullable: true })
-  city: string;
+  cityId: string;
   // @ManyToOne((type) => Area, (area) => area.id)
-  // city: Area;
+  // cityId: Area;
 
   @Column({ comment: '区/县', nullable: true })
-  district: string;
+  districtId: string;
   // @ManyToOne((type) => Area, (area) => area.id)
-  // district: Area;
+  // districtId: Area;
 
   @Column({ comment: '详细地址', length: 100, nullable: true })
   address: string;

@@ -3,5 +3,5 @@ import { ApiProperty, ApiPropertyOptional, PickType } from '@nestjs/swagger';
 import { BaseUserinfoDto } from './base-userinfo.dto';
 
 export class CreateUserinfoDto extends PickType(BaseUserinfoDto,
-  ['province', 'city', 'district', 'address']) {
+  ['provinceId', 'cityId', 'districtId', 'address']) {
 }

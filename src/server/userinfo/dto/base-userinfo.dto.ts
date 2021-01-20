@@ -3,13 +3,13 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class BaseUserinfoDto {
   @ApiPropertyOptional({ description: '省份', })
-  readonly province?: string;
+  readonly provinceId?: string;
 
   @ApiPropertyOptional({ description: '城市', })
-  readonly city?: string;
+  readonly cityId?: string;
 
   @ApiPropertyOptional({ description: '区/县', })
-  readonly district?: string;
+  readonly districtId?: string;
 
   @ApiPropertyOptional({ description: '详细地址', })
   readonly address?: string;

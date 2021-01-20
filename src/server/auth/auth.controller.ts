@@ -39,26 +39,10 @@ export class AuthController {
     schema: {
       type: 'object',
       properties: {
-        userName: {
-          type: 'string',
-          description: '用户名',
-          example: 'wangyue',
-        },
-        userPwd: {
-          type: 'string',
-          description: '密码',
-          example: '111111',
-        },
-        captchaId: {
-          type: 'string',
-          description: '验证码 id',
-          example: '111111',
-        },
-        captchaText: {
-          type: 'string',
-          description: '验证码',
-          example: 'icmz',
-        },
+        userName: { type: 'string', description: '用户名', example: 'wangyue' },
+        userPwd: { type: 'string', description: '密码', example: '111111' },
+        captchaId: { type: 'string', description: '验证码 id', example: '111111' },
+        captchaText: { type: 'string', description: '验证码', example: 'icmz', },
       },
     },
   })
@@ -68,7 +52,7 @@ export class AuthController {
 
     const validateCaptcha = await this.authService.validateCaptcha(captchaId, captchaText);
     if (validateCaptcha) {
-      this.userService.incrementLoginCount(user.id)
+      await this.userService.incrementLoginCount(user.id);// 登录次数 +1
       return this.authService.login(user);
     } else {
       throw new UnauthorizedException('验证码错误！');

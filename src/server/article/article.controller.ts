@@ -30,7 +30,8 @@ import { LimitArticleDto } from './dto/limit-article.dto';
 @ApiTags('文章')
 @ApiBasicAuth()
 export class ArticleController {
-  constructor(private readonly articleService: ArticleService) {}
+  constructor(private readonly articleService: ArticleService) {
+  }
 
   @Post('add')
   @UseGuards(JwtAuthGuard)
@@ -49,8 +50,8 @@ export class ArticleController {
   @Get('findListPage')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '获取列表（分页）' })
-  async findListPage(@Query('page', new ParseIntPipe()) page, @Query('limit', new ParseIntPipe()) limit, @Query() query: LimitArticleDto): Promise<any> {
-    return await this.articleService.selectListPage(page, limit, query);
+  async findListPage(@Query() query: LimitArticleDto): Promise<any> {
+    return await this.articleService.selectListPage(query);
   }
 
   @Get('findById')

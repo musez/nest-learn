@@ -41,8 +41,8 @@ export class GroupService {
     });
   }
 
-  async selectListPage(page, limit, query): Promise<any> {
-    let { name } = query;
+  async selectListPage(query): Promise<any> {
+    let { page, limit, name } = query;
     page = page ? page : 1;
     limit = limit ? limit : 10;
     let offset = (page - 1) * limit;
@@ -79,9 +79,9 @@ export class GroupService {
 
     let group = new Group();
 
-    for (let cityKey in updateGroupDto) {
-      if (!Utils.isEmpty(updateGroupDto[cityKey])) {
-        group[cityKey] = updateGroupDto[cityKey];
+    for (let key in updateGroupDto) {
+      if (!Utils.isEmpty(updateGroupDto[key])) {
+        group[key] = updateGroupDto[key];
       }
     }
 

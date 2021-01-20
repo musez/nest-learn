@@ -1,4 +1,5 @@
 import { IsNotEmpty, IsString, IsInt, IsEmail, MinLength, MaxLength } from 'class-validator';
+import { Transform } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class BaseUserDto {
@@ -8,19 +9,18 @@ export class BaseUserDto {
 
   @ApiProperty({ description: '名称', required: true, example: 'wang' })
   @IsNotEmpty({ message: '名称不能为空！' })
-  @MaxLength(50, {
-    message: '名称不能大于 50 位！',
-  })
+  @MaxLength(50, { message: '名称不能大于 50 位！', })
   readonly userName: string;
 
-  @ApiProperty({ description: '密码', required: true, example: '111111' })
+  @ApiPropertyOptional({ description: '密码', required: true, example: '888888' })
   @IsNotEmpty({ message: '用户密码不能为空！' })
   @MinLength(6, { message: '用户密码不能小于 6 位！' })
   @MaxLength(18, { message: '用户密码不能大于 18 位！' })
   readonly userPwd: string;
 
-  @IsInt({ message: '用户类型必须为数字！' })
   @ApiPropertyOptional({ description: '用户类型（0：普通用户；1：管理员；）', default: 0 })
+  @Transform(userType => Number.parseInt(userType))
+  @IsInt({ message: '用户类型必须为数字！' })
   readonly userType?: number;
 
   @ApiPropertyOptional({ description: '姓名', example: '王' })
@@ -35,26 +35,29 @@ export class BaseUserDto {
   @IsEmail()
   readonly email?: string;
 
-  @IsInt({ message: '性别必须为数字！' })
   @ApiPropertyOptional({ description: '性别（0：保密；1：男；2：女）', default: 0 })
+  @Transform(sex => Number.parseInt(sex))
+  @IsInt({ message: '性别必须为数字！' })
   readonly sex?: number;
 
   @ApiPropertyOptional({ description: '生日', example: '2020-12-25' })
   readonly birthday?: Date;
 
   @ApiPropertyOptional({ description: '省份', example: null })
-  readonly province?: string;
+  readonly provinceId?: string;
 
   @ApiPropertyOptional({ description: '城市', example: null })
-  readonly city?: string;
+  readonly cityId?: string;
+
   @ApiPropertyOptional({ description: '区/县', example: null })
-  readonly district?: string;
+  readonly districtId?: string;
 
   @ApiPropertyOptional({ description: '详细地址', example: null })
   readonly address?: string;
 
-  @IsInt({ message: '状态必须为数字！' })
   @ApiPropertyOptional({ description: '状态（0：禁用；1：启用）', default: 0 })
+  @Transform(status => Number.parseInt(status))
+  @IsInt({ message: '状态必须为数字！' })
   readonly status?: number;
 
   @ApiPropertyOptional({ description: '描述', example: null })

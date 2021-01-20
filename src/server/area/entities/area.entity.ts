@@ -3,18 +3,8 @@ import {
   PrimaryGeneratedColumn,
   Column,
   CreateDateColumn,
-  UpdateDateColumn,
-  BeforeInsert,
-  JoinTable,
-  ManyToMany,
-  OneToMany,
-  OneToOne,
-  BeforeUpdate,
-  Tree,
-  TreeChildren,
-  TreeParent,
+  UpdateDateColumn
 } from 'typeorm';
-import { BaseEntity } from '../../base.entity';
 
 @Entity('area')
 export class Area {

@@ -39,8 +39,8 @@ export class PermissionController {
   @Get('findListPage')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '获取列表（分页）' })
-  findListPage(@Query('page', new ParseIntPipe()) page, @Query('limit', new ParseIntPipe()) limit, @Query() limitPermissionDto: LimitPermissionDto) {
-    return this.permissionService.selectListPage(page, limit, limitPermissionDto);
+  findListPage(@Query() limitPermissionDto: LimitPermissionDto) {
+    return this.permissionService.selectListPage(limitPermissionDto);
   }
 
   @Get('findListByPId')

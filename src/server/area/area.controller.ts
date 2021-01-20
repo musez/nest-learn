@@ -1,30 +1,19 @@
 import {
   Controller,
   Get,
-  Post,
-  Req,
   Query,
-  Body,
   UseGuards,
-  UseInterceptors,
-  ClassSerializerInterceptor,
-  BadRequestException,
 } from '@nestjs/common';
 import {
   ApiTags,
-  ApiQuery,
-  ApiBody,
   ApiBasicAuth,
   ApiOperation,
 } from '@nestjs/swagger';
 import { AreaService } from './area.service';
-import { CreateAreaDto } from './dto/create-area.dto';
-import { UpdateAreaDto } from './dto/update-area.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { Area } from './entities/area.entity';
 import { LimitAreaDto } from './dto/limit-area.dto';
 import { BaseFindByIdDto, BaseFindByPIdDto } from '../base.dto';
-import { ParseIntPipe } from '../../common/pipe/parse-int.pipe';
 
 @Controller('area')
 @ApiTags('地区')
@@ -43,8 +32,8 @@ export class AreaController {
   @Get('findListPage')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '获取列表（分页）' })
-  async findListPage(@Query('page', new ParseIntPipe()) page, @Query('limit', new ParseIntPipe()) limit, @Query() limitAreaDto: LimitAreaDto): Promise<any> {
-    return await this.areaService.selectListPage(page, limit, limitAreaDto);
+  async findListPage(@Query() limitAreaDto: LimitAreaDto): Promise<any> {
+    return await this.areaService.selectListPage(limitAreaDto);
   }
 
   @Get('findListByPId')

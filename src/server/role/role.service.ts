@@ -44,8 +44,8 @@ export class RoleService {
     });
   }
 
-  async selectListPage(page, limit, query): Promise<any> {
-    let { name } = query;
+  async selectListPage(query): Promise<any> {
+    let { page, limit, name } = query;
     page = page ? page : 1;
     limit = limit ? limit : 10;
     let offset = (page - 1) * limit;
@@ -84,9 +84,9 @@ export class RoleService {
 
     let role = new Role();
 
-    for (let cityKey in updateRoleDto) {
-      if (!Utils.isEmpty(updateRoleDto[cityKey])) {
-        role[cityKey] = updateRoleDto[cityKey];
+    for (let key in updateRoleDto) {
+      if (!Utils.isEmpty(updateRoleDto[key])) {
+        role[key] = updateRoleDto[key];
       }
     }
 

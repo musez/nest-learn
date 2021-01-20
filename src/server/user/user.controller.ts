@@ -6,6 +6,7 @@ import {
   Body,
   UseGuards,
   UseInterceptors,
+  UsePipes,
   ClassSerializerInterceptor,
 } from '@nestjs/common';
 import {
@@ -54,8 +55,8 @@ export class UserController {
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(ClassSerializerInterceptor)
   @ApiOperation({ summary: '获取列表（分页）' })
-  async findListPage(@Query('page', new ParseIntPipe()) page, @Query('limit', new ParseIntPipe()) limit, @Query() limitUserDto: LimitUserDto): Promise<any> {
-    return await this.userService.selectListPage(page, limit, limitUserDto);
+  async findListPage(@Query() limitUserDto: LimitUserDto): Promise<any> {
+    return await this.userService.selectListPage(limitUserDto);
   }
 
   @Get('findById')

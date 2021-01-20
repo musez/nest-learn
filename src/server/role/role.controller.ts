@@ -53,8 +53,8 @@ export class RoleController {
   @Get('findListPage')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '获取列表（分页）' })
-  async findListPage(@Query('page', new ParseIntPipe()) page, @Query('limit', new ParseIntPipe()) limit, @Query() query: LimitRoleDto): Promise<any> {
-    return await this.roleService.selectListPage(page, limit, query);
+  async findListPage(@Query() query: LimitRoleDto): Promise<any> {
+    return await this.roleService.selectListPage(query);
   }
 
   @Get('findById')

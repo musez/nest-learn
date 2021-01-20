@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as crypto from 'crypto';
-import { User } from '../user/entities/user.entity';
 import { UserService } from '../user/user.service';
 import { CaptchaService } from '../captcha/captcha.service';
 
@@ -15,9 +14,9 @@ export class AuthService {
   }
 
   /**
-   * validate username and password
-   * @param username
-   * @param password
+   * 验证用户名密码
+   * @param {string} userName - 用户名
+   * @param {string} userPwd - 密码
    */
   async validateUser(userName: string, userPwd: string): Promise<any> {
     const user = await this.userService.selectByName(userName);
@@ -31,13 +30,17 @@ export class AuthService {
     }
   }
 
+  /**
+   * 验证图片验证码
+   * @param {string} captchaId - 图片验证码 id
+   * @param {string} captchaText - 图片验证码文本
+   * @returns {boolean|Object}
+   */
   async validateCaptcha(captchaId: string, captchaText: string): Promise<any> {
     let captcha = await this.captchaService.selectCaptcha();
-    console.log(captcha);
-    console.log(captchaId);
-    console.log(captchaText);
+
     // 万能验证码 icmz
-    if (captchaId.toString() === captcha.captchaId.toString() && (captchaText.toLowerCase() === captcha.text || captchaText.toLowerCase() === 'icmz')) {
+    if ((captchaId.toString() === captcha.captchaId.toString()) && (captchaText.toLowerCase() === captcha.text || captchaText.toLowerCase() === 'icmz')) {
       // if (captchaId === captcha.captchaId && (captchaText.toLowerCase() === captcha.text)) {
       return true;
     } else {
@@ -46,8 +49,8 @@ export class AuthService {
   }
 
   /**
-   * user login
-   * @param user
+   * 用户登录
+   * @param {Object} user - 用户
    */
   async login(user: any) {
     const payload = { username: user.userName, sub: user.id };

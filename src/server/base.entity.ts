@@ -1,21 +1,9 @@
 import {
-  Entity,
   PrimaryGeneratedColumn,
   Column,
   CreateDateColumn,
   UpdateDateColumn,
-  BeforeInsert,
-  JoinTable,
-  ManyToMany,
-  OneToMany,
-  BeforeUpdate,
-  Tree,
-  TreeChildren,
-  TreeParent,
-  OneToOne,
-  JoinColumn,
 } from 'typeorm';
-import { User } from './user/entities/user.entity';
 
 export abstract class BaseEntity {
   @PrimaryGeneratedColumn('uuid', { comment: '主键 id' })

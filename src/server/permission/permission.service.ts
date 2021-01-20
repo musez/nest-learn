@@ -35,8 +35,8 @@ export class PermissionService {
     return await this.permissionRepository.find();
   }
 
-  async selectListPage(page, limit, query): Promise<any> {
-    let { parentId, name } = query;
+  async selectListPage(query): Promise<any> {
+    let { page, limit, parentId, name } = query;
 
     page = page ? page : 1;
     limit = limit ? limit : 10;

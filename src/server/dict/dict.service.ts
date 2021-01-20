@@ -26,7 +26,8 @@ export class DictService {
     });
   }
 
-  async selectListPage(page, limit, query): Promise<any> {
+  async selectListPage(query): Promise<any> {
+    let { page, limit } = query;
     page = page ? page : 1;
     limit = limit ? limit : 10;
     let offset = (page - 1) * limit;

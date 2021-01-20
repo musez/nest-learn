@@ -1,9 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, TreeRepository, Like } from 'typeorm';
+import { Repository, Like } from 'typeorm';
 import { Utils } from './../../utils/index';
-import { CreateAreaDto } from './dto/create-area.dto';
-import { UpdateAreaDto } from './dto/update-area.dto';
 import { Area } from './entities/area.entity';
 import { BaseFindByIdDto, BaseFindByPIdDto } from '../base.dto';
 
@@ -29,8 +27,8 @@ export class AreaService {
     });
   }
 
-  async selectListPage(page, limit, query): Promise<any> {
-    let { areaName } = query;
+  async selectListPage(query): Promise<any> {
+    let { page, limit, areaName } = query;
     page = page ? page : 1;
     limit = limit ? limit : 10;
     let offset = (page - 1) * limit;

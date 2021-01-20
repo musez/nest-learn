@@ -1,7 +1,6 @@
-import { Controller, Get, Post, Query, Body, Put, Param, Delete, Res } from '@nestjs/common';
+import { Controller, Get, Query, Res } from '@nestjs/common';
 import {
   ApiTags,
-  ApiBasicAuth,
   ApiOperation,
 } from '@nestjs/swagger';
 import { CaptchaService } from './captcha.service';
@@ -13,7 +12,6 @@ import { CacheService } from '../cache/cache.service';
 export class CaptchaController {
   constructor(
     private readonly captchaService: CaptchaService,
-    private readonly cacheService: CacheService,
   ) {
   }
 
@@ -22,7 +20,7 @@ export class CaptchaController {
   async getCaptcha(@Query() createCaptchaDto: CreateCaptchaDto, @Res() res): Promise<any> {
     let { captchaId } = createCaptchaDto;
 
-    let svgCaptcha = this.captchaService.getCaptcha(captchaId);
+    let svgCaptcha = this.captchaService.getCaptcha();
 
     await this.captchaService.insertCaptcha(captchaId, svgCaptcha.text);
 
