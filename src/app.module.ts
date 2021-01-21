@@ -36,10 +36,10 @@ import { CaptchaModule } from './server/captcha/captcha.module';
       migrations: ['database/migration/**/*.ts'],
       // timezone: 'UTC',
       // charset: 'utf8mb4',
-      multipleStatements: false,
+      multipleStatements: true,
       dropSchema: false,
-      synchronize: false, // 是否自动将实体类同步到数据库
-      logging: false,
+      synchronize: true, // 是否自动将实体类同步到数据库
+      logging: true,
       cli: {
         migrationsDir: 'database/migration/default',
       },

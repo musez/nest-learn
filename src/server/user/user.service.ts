@@ -57,12 +57,13 @@ export class UserService {
     for (let key in createUserDto) {
       if (!Utils.isEmpty(createUserDto[key])) {
         if (key === 'userPwd') {
-          user.userPwd = crypto.createHmac('sha256', '888888').digest('hex');
+          // user.userPwd = crypto.createHmac('sha256', '888888').digest('hex');
         } else {
           user[key] = createUserDto[key];
         }
       }
     }
+    user.userPwd = crypto.createHmac('sha256', '888888').digest('hex');
 
     let userinfo = new Userinfo();
     for (let key in createUserDto) {

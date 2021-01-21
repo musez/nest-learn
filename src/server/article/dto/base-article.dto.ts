@@ -3,11 +3,11 @@ import { Transform } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class BaseArticleDto {
-  @ApiProperty({ description: '主键 id', required: true })
+  @ApiProperty({ description: '主键 id' })
   @IsNotEmpty({ message: '主键 id 不能为空' })
   readonly id: string;
 
-  @ApiProperty({ description: '标题', required: true, example: '' })
+  @ApiProperty({ description: '标题', example: '' })
   @IsNotEmpty({ message: '标题不能为空！' })
   @MaxLength(255, { message: '标题不能大于 255 位！' })
   readonly title: string;
@@ -28,7 +28,7 @@ export class BaseArticleDto {
   @MaxLength(100, { message: '关键字不能大于 100 位！' })
   readonly keywords?: string;
 
-  @ApiProperty({ description: '媒体类型（1：文本；2：链接；3：图片；4：组图；5：视频；6：音频）', required: false, default: 0 })
+  @ApiProperty({ description: '媒体类型（1：文本；2：链接；3：图片；4：组图；5：视频；6：音频）', default: 0 })
   @Transform(type => Number.parseInt(type))
   @IsInt({ message: '媒体类型为数字！' })
   readonly type: number;
@@ -56,36 +56,36 @@ export class BaseArticleDto {
   @ApiPropertyOptional({ description: '发布时间' })
   readonly publicTime: Date;
 
-  @ApiPropertyOptional({ description: '浏览量', default: 0 })
+  @ApiPropertyOptional({ description: '浏览量', example: 0 })
   @Transform(browseCount => Number.parseInt(browseCount))
   @IsInt({ message: '浏览量为数字！' })
   readonly browseCount: number;
 
-  @ApiPropertyOptional({ description: '点赞量', default: 0 })
+  @ApiPropertyOptional({ description: '点赞量', example: 0 })
   @Transform(linkCount => Number.parseInt(linkCount))
   @IsInt({ message: '点赞量为数字！' })
   readonly linkCount: number;
 
-  @ApiPropertyOptional({ description: '收藏量', default: 0 })
+  @ApiPropertyOptional({ description: '收藏量', example: 0 })
   @Transform(collectCount => Number.parseInt(collectCount))
   @IsInt({ message: '收藏量为数字！' })
   readonly collectCount: number;
 
-  @ApiPropertyOptional({ description: '分享量', default: 0 })
+  @ApiPropertyOptional({ description: '分享量', example: 0 })
   @Transform(shareCount => Number.parseInt(shareCount))
   @IsInt({ message: '分享量为数字！' })
   readonly shareCount: number;
 
-  @ApiPropertyOptional({ description: '评论量', default: 0 })
+  @ApiPropertyOptional({ description: '评论量', example: 0 })
   @Transform(commentCount => Number.parseInt(commentCount))
   @IsInt({ message: '评论量为数字！' })
   readonly commentCount: number;
 
-  @ApiPropertyOptional({ description: '状态（0：禁用；1：启用）', default: 0 })
+  @ApiProperty({ description: '状态（0：禁用；1：启用）', example: 0 })
   @Transform(status => Number.parseInt(status))
   @IsInt({ message: '状态必须为数字！' })
   readonly status?: number;
 
-  @ApiProperty({ description: '描述', required: false, default: '' })
+  @ApiPropertyOptional({ description: '描述', example: '' })
   readonly description: string;
 }

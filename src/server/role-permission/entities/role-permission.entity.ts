@@ -8,10 +8,10 @@ export class RolePermission {
   @PrimaryGeneratedColumn('uuid', { comment: '主键 id' })
   id: string;
 
-  @Column({ name: 'roleId' })
+  @Column({ comment: '角色 id' })
   roleId!: string;
 
-  @Column({ name: 'permissionId' })
+  @Column({ comment: '权限 id' })
   permissionId!: string;
 
   @ManyToOne(type => Role, role => role.permissions)

@@ -1,31 +1,31 @@
 import { IsNotEmpty, IsString, IsInt } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class CreateFileDto {
-  @ApiProperty({ description: '文件原始名称', required: true })
+  @ApiPropertyOptional({ description: '文件原始名称' })
   readonly originalName: string;
 
-  @ApiProperty({ description: '文件编码', required: false })
+  @ApiPropertyOptional({ description: '文件编码' })
   readonly encoding: string;
 
-  @ApiProperty({ description: '文件类型', required: false })
+  @ApiPropertyOptional({ description: '文件类型' })
   readonly mimeType: string;
 
-  @ApiProperty({ description: '文件目录', required: false })
+  @ApiPropertyOptional({ description: '文件目录' })
   readonly destination: string;
 
-  @ApiProperty({ description: '文件名称', required: false })
+  @ApiPropertyOptional({ description: '文件名称' })
   readonly fileName: string;
 
-  @ApiProperty({ description: '文件路径', required: false })
+  @ApiPropertyOptional({ description: '文件路径' })
   readonly path: string;
 
-  @ApiProperty({ description: '文件大小', required: false })
+  @ApiPropertyOptional({ description: '文件大小' })
   readonly size: number;
 
-  @ApiProperty({ description: '文件地址', required: false })
+  @ApiPropertyOptional({ description: '文件地址' })
   readonly fileUrl: string;
 
-  @ApiProperty({ description: '关联 id', required: true })
+  @ApiPropertyOptional({ description: '关联 id' })
   readonly extId: string;
 }

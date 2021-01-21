@@ -7,10 +7,10 @@ export class GroupRole {
   @PrimaryGeneratedColumn('uuid', { comment: '主键 id' })
   id: string;
 
-  @Column({ name: 'groupId' })
+  @Column({ comment: '用户组 id' })
   groupId!: string;
 
-  @Column({ name: 'roleId' })
+  @Column({ comment: '角色 id' })
   roleId!: string;
 
   @ManyToOne(type => Group, group => group.roles)

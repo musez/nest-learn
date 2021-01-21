@@ -3,6 +3,6 @@ import { ApiProperty, ApiPropertyOptional, PickType, PartialType } from '@nestjs
 import { BaseFindByIdDto } from '../../base.dto';
 
 export class BindUserGroupDto extends PartialType(BaseFindByIdDto) {
-  @ApiProperty({ description: '用户组', required: true, example: [{ id: '' }] })
+  @ApiProperty({ description: '用户组', example: [{ id: '' }] })
   readonly groups: BaseFindByIdDto[];
 }

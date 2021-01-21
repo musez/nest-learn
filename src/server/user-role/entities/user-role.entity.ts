@@ -4,19 +4,16 @@ import { User } from '../../user/entities/user.entity';
 
 @Entity('user_role')
 export class UserRole {
-  @PrimaryGeneratedColumn('uuid', { comment: '主键 id',})
+  @PrimaryGeneratedColumn('uuid', { comment: '主键 id' })
   id: string;
 
-  @Column({ name: 'userId' })
+  @Column({ comment: '用户 id' })
   userId!: string;
 
-  @Column({ name: 'roleId' })
+  @Column({ comment: '角色 id' })
   roleId!: string;
 
-  @ManyToOne(
-    type => User,
-    user => user.roles,
-  )
+  @ManyToOne(type => User, user => user.roles)
   @JoinColumn({ name: 'userId' })
   user: User;
 

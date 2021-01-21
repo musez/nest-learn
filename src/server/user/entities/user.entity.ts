@@ -17,23 +17,18 @@ import { Userinfo } from '../../userinfo/entities/userinfo.entity';
 import { Group } from '../../group/entities/group.entity';
 import { Role } from '../../role/entities/role.entity';
 
-// 状态类型
-export enum statusType {
-  ENABLE = 1,
-  DISABLE = 0,
+// 用户类型
+export enum UserType {
+  NORMAL = 0,
+  ADMIN = 1,
+  SUPER_ADMIN = 2,
 }
 
 // 性别类型
-export enum sexType {
+export enum SexType {
   DEFAULT = 0,
   FEMALE = 1,
   MALE = 2,
-}
-
-// 用户类型
-export enum userType {
-  ADMIN = 1,
-  NORMAL = 0,
 }
 
 @Entity('user')
@@ -45,8 +40,8 @@ export class User extends BaseEntity {
   @Exclude()
   userPwd: string;
 
-  @Column('tinyint', { comment: '用户类型（0：普通用户；1：管理员；）', nullable: false, default: () => 0 })
-  userType: number;
+  @Column('tinyint', { comment: '用户类型（0：普通用户；1：管理员；2：超级管理员；）', default: UserType.NORMAL })
+  userType: UserType;
 
   @Column('varchar', { comment: '姓名', length: 50, nullable: true })
   name: string;
@@ -57,13 +52,19 @@ export class User extends BaseEntity {
   @Column('varchar', { comment: '邮箱', length: 20, nullable: true })
   email: string;
 
-  @Column('tinyint', { comment: '性别（0：保密；1：男；2：女）', nullable: true, default: 0 })
-  sex: number;
+  @Column('tinyint', { comment: '性别（0：保密；1：男；2：女）', nullable: true, default: SexType.DEFAULT })
+  sex: SexType;
 
   @Column({ type: 'date', comment: '生日', nullable: true })
   birthday: Date;
 
-  @Column({ comment: '最后登录时间', type: 'datetime', onUpdate: 'current_timestamp', default: () => 'current_timestamp' })
+  @Column({
+    comment: '最后登录时间',
+    type: 'datetime',
+    onUpdate: 'current_timestamp',
+    default: () => 'current_timestamp',
+    nullable: true,
+  })
   loginTime: Date;
 
   @Column({ comment: '登录次数', nullable: true, default: () => 0 })

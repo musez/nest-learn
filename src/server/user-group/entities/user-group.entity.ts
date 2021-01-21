@@ -7,10 +7,10 @@ export class UserGroup {
   @PrimaryGeneratedColumn('uuid', { comment: '主键 id' })
   id: string;
 
-  @Column({ name: 'userId' })
+  @Column({ comment: '用户 id' })
   userId!: string;
 
-  @Column({ name: 'groupId' })
+  @Column({ comment: '用户组 id' })
   groupId!: string;
 
   @ManyToOne(type => User, user => user.groups)

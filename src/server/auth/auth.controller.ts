@@ -42,7 +42,7 @@ export class AuthController {
         userName: { type: 'string', description: '用户名', example: 'wangyue' },
         userPwd: { type: 'string', description: '密码', example: '111111' },
         captchaId: { type: 'string', description: '验证码 id', example: '111111' },
-        captchaText: { type: 'string', description: '验证码', example: 'icmz', },
+        captchaText: { type: 'string', description: '验证码', example: 'icmz' },
       },
     },
   })

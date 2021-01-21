@@ -3,7 +3,7 @@ import { Transform } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class BaseDictDto {
-  @ApiProperty({ description: '主键 id', required: true })
+  @ApiProperty({ description: '主键 id' })
   @IsNotEmpty({ message: '主键 id 不能为空' })
   readonly id: string;
 
@@ -15,22 +15,16 @@ export class BaseDictDto {
   @IsNotEmpty({ message: '字典编码不能为空' })
   readonly dictName: string;
 
-  @ApiPropertyOptional({ description: '字典类型（0：string；1：number；）', default: 0 })
+  @ApiPropertyOptional({ description: '字典类型（0：string；1：number；）', example: 0 })
   @Transform(type => Number.parseInt(type))
   @IsInt({ message: '字典类型为数字！' })
   readonly type?: number;
 
-  @ApiPropertyOptional({ description: '状态（0：禁用；1：启用）', default: 0 })
+  @ApiProperty({ description: '状态（0：禁用；1：启用）', example: 0 })
   @Transform(status => Number.parseInt(status))
   @IsInt({ message: '状态必须为数字！' })
   readonly status?: number;
 
-  @ApiPropertyOptional({ description: '描述', example: null })
+  @ApiPropertyOptional({ description: '描述', example: '' })
   readonly description?: string;
-
-  @ApiProperty({ description: '创建时间', required: false })
-  readonly createTime: Date;
-
-  @ApiProperty({ description: '修改时间', required: false })
-  readonly updateTime: Date;
 }

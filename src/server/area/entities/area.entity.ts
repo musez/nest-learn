@@ -3,7 +3,7 @@ import {
   PrimaryGeneratedColumn,
   Column,
   CreateDateColumn,
-  UpdateDateColumn
+  UpdateDateColumn,
 } from 'typeorm';
 
 @Entity('area')
@@ -11,13 +11,13 @@ export class Area {
   @PrimaryGeneratedColumn({ comment: '主键 id' })
   id: number;
 
-  @Column({ comment: '父 id', nullable: true })
+  @Column({ comment: '父 id' })
   parentId: number;
 
-  @Column('varchar', { comment: '地区编码', nullable: true })
+  @Column('varchar', { comment: '地区编码' })
   areaCode: string;
 
-  @Column('varchar', { comment: '地区编码', nullable: true })
+  @Column('varchar', { comment: '地区名称' })
   areaName: string;
 
   @Column('tinyint', { comment: '地区级别（1：省份 province；2：市 city；3：区县 district；4：街道 street）', nullable: true })
@@ -29,13 +29,13 @@ export class Area {
   @Column('varchar', { comment: '城市中心点（即：经纬度坐标）', nullable: true })
   center: string;
 
-  @CreateDateColumn({ comment: '创建时间', type: 'datetime' })
+  @CreateDateColumn({ comment: '创建时间', type: 'datetime', nullable: true })
   createTime: Date;
 
   @Column({ comment: '创建人 id', nullable: true })
   createBy: string;
 
-  @UpdateDateColumn({ comment: '修改时间', type: 'datetime' })
+  @UpdateDateColumn({ comment: '最后更新时间', type: 'datetime', nullable: true })
   updateTime: Date;
 
   @Column({ comment: '修改人 id', nullable: true })

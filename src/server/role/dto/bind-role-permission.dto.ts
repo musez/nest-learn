@@ -3,6 +3,6 @@ import { ApiProperty, ApiPropertyOptional, PickType, PartialType } from '@nestjs
 import { BaseFindByIdDto } from '../../base.dto';
 
 export class BindRolePermissionDto extends PartialType(BaseFindByIdDto) {
-  @ApiProperty({ description: '权限', required: true, example: [{ id: '' }] })
+  @ApiProperty({ description: '权限', example: [{ id: '' }] })
   readonly permissions: BaseFindByIdDto[];
 }
