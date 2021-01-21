@@ -3,7 +3,7 @@ import { Transform } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class BaseUserDto {
-  @ApiProperty({ description: '主键 id' })
+  @ApiProperty({ description: '主键 id', example: '' })
   @IsNotEmpty({ message: '主键 id 不能为空' })
   readonly id: string;
 
@@ -32,7 +32,7 @@ export class BaseUserDto {
   readonly mobile?: string;
 
   @ApiPropertyOptional({ description: '邮箱', example: '123@qq.com' })
-  @IsEmail()
+  // @IsEmail()
   readonly email?: string;
 
   @ApiPropertyOptional({ description: '性别（0：保密；1：男；2：女）', example: 0 })

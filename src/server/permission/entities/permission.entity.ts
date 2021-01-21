@@ -33,6 +33,26 @@ export enum PermissionHiddenType {
 @Entity('permission')
 @Tree('closure-table')
 export class Permission extends BaseEntity {
+  constructor() {
+    super();
+
+    this.name = undefined;
+    this.type = undefined;
+    this.code = undefined;
+    this.uri = undefined;
+    this.routerPath = undefined;
+    this.routerName = undefined;
+    this.routerRedirect = undefined;
+    this.routerComponent = undefined;
+    this.routerHidden = undefined;
+    this.routerTitle = undefined;
+    this.routerIcon = undefined;
+    this.routerSort = undefined;
+    this.children = undefined;
+    this.parent = undefined;
+    this.roles = undefined;
+  }
+
   @Column('varchar', { comment: '名称', length: 50 })
   name: string;
 

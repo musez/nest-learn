@@ -63,13 +63,8 @@ export class DictService {
     }
 
     let dict = new Dict();
+    Utils.dto2entity(updateDictDto, dict);
 
-    for (let key in updateDictDto) {
-      if (!Utils.isEmpty(updateDictDto[key])) {
-        dict[key] = updateDictDto[key];
-      }
-    }
-    console.log(dictItemList);
     if (dictItemList) {
       for (const key in dictItemList) {
         let dictItem = new DictItem();

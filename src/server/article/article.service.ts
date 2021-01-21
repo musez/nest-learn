@@ -72,12 +72,7 @@ export class ArticleService {
     }
 
     let article = new Article();
-
-    for (let key in updateArticleDto) {
-      if (!Utils.isEmpty(updateArticleDto[key])) {
-        article[key] = updateArticleDto[key];
-      }
-    }
+    Utils.dto2entity(updateArticleDto, article);
 
     await this.articleRepository.save(article);
   }

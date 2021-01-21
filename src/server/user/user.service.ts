@@ -54,23 +54,11 @@ export class UserService {
     }
 
     let user = new User();
-    for (let key in createUserDto) {
-      if (!Utils.isEmpty(createUserDto[key])) {
-        if (key === 'userPwd') {
-          // user.userPwd = crypto.createHmac('sha256', '888888').digest('hex');
-        } else {
-          user[key] = createUserDto[key];
-        }
-      }
-    }
+    Utils.dto2entity(createUserDto, user);
     user.userPwd = crypto.createHmac('sha256', '888888').digest('hex');
 
     let userinfo = new Userinfo();
-    for (let key in createUserDto) {
-      if (!Utils.isEmpty(createUserDto[key])) {
-        userinfo[key] = createUserDto[key];
-      }
-    }
+    Utils.dto2entity(createUserDto, userinfo);
 
     user.userinfo = userinfo;
 
@@ -140,22 +128,24 @@ export class UserService {
     }
 
     let user = new User();
-    for (let key in updateUserDto) {
-      if (!Utils.isEmpty(updateUserDto[key])) {
-        if (key === 'userPwd') {
-          // user.userPwd = crypto.createHmac('sha256', updateUserDto.userPwd).digest('hex');
-        } else {
-          user[key] = updateUserDto[key];
-        }
-      }
-    }
+    // for (let key in updateUserDto) {
+    //   if (!Utils.isEmpty(updateUserDto[key])) {
+    //     if (key === 'userPwd') {
+    //       // user.userPwd = crypto.createHmac('sha256', updateUserDto.userPwd).digest('hex');
+    //     } else {
+    //       user[key] = updateUserDto[key];
+    //     }
+    //   }
+    // }
+    Utils.dto2entity(updateUserDto, user);
 
     let userinfo = new Userinfo();
-    for (let key in updateUserDto) {
-      if (!Utils.isEmpty(updateUserDto[key])) {
-        userinfo[key] = updateUserDto[key];
-      }
-    }
+    // for (let key in updateUserDto) {
+    //   if (!Utils.isEmpty(updateUserDto[key])) {
+    //     userinfo[key] = updateUserDto[key];
+    //   }
+    // }
+    Utils.dto2entity(updateUserDto, userinfo);
 
     user.userinfo = userinfo;
     // await this.userRepository.update({ id: id }, updateUserDto);

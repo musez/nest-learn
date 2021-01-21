@@ -78,12 +78,7 @@ export class GroupService {
     }
 
     let group = new Group();
-
-    for (let key in updateGroupDto) {
-      if (!Utils.isEmpty(updateGroupDto[key])) {
-        group[key] = updateGroupDto[key];
-      }
-    }
+    Utils.dto2entity(updateGroupDto, group);
 
     await this.groupRepository.save(updateGroupDto);
   }

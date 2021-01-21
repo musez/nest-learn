@@ -33,6 +33,24 @@ export enum SexType {
 
 @Entity('user')
 export class User extends BaseEntity {
+  constructor() {
+    super();
+
+    this.userName = undefined;
+    this.userPwd = undefined;
+    this.userType = undefined;
+    this.name = undefined;
+    this.mobile = undefined;
+    this.email = undefined;
+    this.sex = undefined;
+    this.birthday = undefined;
+    this.loginTime = undefined;
+    this.loginCount = undefined;
+    this.userinfo = undefined;
+    this.groups = undefined;
+    this.roles = undefined;
+  }
+
   @Column('varchar', { comment: '名称', length: 50 })
   userName: string;
 

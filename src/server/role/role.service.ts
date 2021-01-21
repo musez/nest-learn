@@ -83,12 +83,7 @@ export class RoleService {
     }
 
     let role = new Role();
-
-    for (let key in updateRoleDto) {
-      if (!Utils.isEmpty(updateRoleDto[key])) {
-        role[key] = updateRoleDto[key];
-      }
-    }
+    Utils.dto2entity(updateRoleDto, role);
 
     await this.roleRepository.save(updateRoleDto);
   }

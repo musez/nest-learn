@@ -15,7 +15,7 @@ export class BasePageDto {
 }
 
 export class BaseFindByIdDto {
-  @ApiProperty({ description: '主键 id', required: true, example: '' })
+  @ApiProperty({ description: '主键 id', example: '' })
   @IsNotEmpty({ message: '主键 id 不能为空' })
   readonly id: string;
 }

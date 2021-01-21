@@ -4,6 +4,14 @@ import { Group } from '../../group/entities/group.entity';
 
 @Entity('user_group')
 export class UserGroup {
+  constructor() {
+    this.id = undefined;
+    this.userId = undefined;
+    this.groupId = undefined;
+    this.user = undefined;
+    this.group = undefined;
+  }
+
   @PrimaryGeneratedColumn('uuid', { comment: '主键 id' })
   id: string;
 

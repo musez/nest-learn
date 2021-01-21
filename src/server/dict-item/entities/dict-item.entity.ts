@@ -9,6 +9,15 @@ import { Dict } from '../../dict/entities/dict.entity';
 
 @Entity('dict_item')
 export class DictItem extends BaseEntity {
+  constructor() {
+    super();
+
+    this.itemText = undefined;
+    this.itemValue = undefined;
+    this.sort = undefined;
+    this.dict = undefined;
+  }
+
   @Column('varchar', { comment: '字典项名称', length: 50 })
   itemText: string;
 

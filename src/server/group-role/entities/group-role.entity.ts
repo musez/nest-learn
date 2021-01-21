@@ -4,6 +4,12 @@ import { Role } from '../../role/entities/role.entity';
 
 @Entity('group_role')
 export class GroupRole {
+  constructor() {
+    this.id = undefined;
+    this.groupId = undefined;
+    this.roleId = undefined;
+  }
+
   @PrimaryGeneratedColumn('uuid', { comment: '主键 id' })
   id: string;
 

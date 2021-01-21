@@ -3,7 +3,7 @@ import { Transform } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class BaseRoleDto {
-  @ApiProperty({ description: '主键 id' })
+  @ApiProperty({ description: '主键 id', example: '' })
   @IsNotEmpty({ message: '主键 id 不能为空' })
   readonly id: string;
 

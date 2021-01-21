@@ -4,6 +4,12 @@ import { User } from '../../user/entities/user.entity';
 
 @Entity('user_role')
 export class UserRole {
+  constructor() {
+    this.id = undefined;
+    this.userId = undefined;
+    this.roleId = undefined;
+  }
+
   @PrimaryGeneratedColumn('uuid', { comment: '主键 id' })
   id: string;
 
@@ -17,10 +23,7 @@ export class UserRole {
   @JoinColumn({ name: 'userId' })
   user: User;
 
-  @ManyToOne(
-    type => Role,
-    role => role.users,
-  )
+  @ManyToOne(type => Role, role => role.users)
   @JoinColumn({ name: 'roleId' })
   role: Role;
 }

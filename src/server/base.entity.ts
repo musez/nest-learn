@@ -12,6 +12,17 @@ export enum statusType {
 }
 
 export abstract class BaseEntity {
+  constructor() {
+    this.id = undefined;
+    this.status = undefined;
+    this.description = undefined;
+    this.createTime = undefined;
+    this.createBy = undefined;
+    this.updateTime = undefined;
+    this.updateBy = undefined;
+  }
+
+
   @PrimaryGeneratedColumn('uuid', { comment: '主键 id' })
   id: string;
 

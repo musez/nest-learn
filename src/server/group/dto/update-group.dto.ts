@@ -3,7 +3,7 @@ import { ApiProperty, ApiPropertyOptional, PartialType } from '@nestjs/swagger';
 import { CreateGroupDto } from './create-group.dto';
 
 export class UpdateGroupDto extends PartialType(CreateGroupDto) {
-  @ApiProperty({ description: '主键 id' })
+  @ApiProperty({ description: '主键 id', example: '' })
   @IsNotEmpty({ message: '主键 id 不能为空' })
   readonly id: string;
 }

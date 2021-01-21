@@ -24,6 +24,28 @@ export enum ArticleType {
 
 @Entity('article')
 export class Article extends BaseEntity {
+  constructor() {
+    super();
+
+    this.title = undefined;
+    this.summary = undefined;
+    this.author = undefined;
+    this.source = undefined;
+    this.keywords = undefined;
+    this.type = undefined;
+    this.thumbUrl = undefined;
+    this.contentUrl = undefined;
+    this.mediaUrl = undefined;
+    this.weight = undefined;
+    this.content = undefined;
+    this.publicTime = undefined;
+    this.browseCount = undefined;
+    this.linkCount = undefined;
+    this.collectCount = undefined;
+    this.shareCount = undefined;
+    this.commentCount = undefined;
+  }
+
   @Column('varchar', { comment: '标题', length: 255 })
   title: string;
 
@@ -39,7 +61,7 @@ export class Article extends BaseEntity {
   @Column('varchar', { comment: '关键字（多个使用逗号“，”分隔）', length: 100, nullable: true })
   keywords: string;
 
-  @Column('tinyint', { comment: '媒体类型（1：文本；2：链接；3：图片；4：组图；5：视频；6：音频）'})
+  @Column('tinyint', { comment: '媒体类型（1：文本；2：链接；3：图片；4：组图；5：视频；6：音频）' })
   type: ArticleType;
 
   @Column('varchar', { comment: '缩略图', length: 255, nullable: true })

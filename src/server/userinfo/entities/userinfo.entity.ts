@@ -19,6 +19,15 @@ import { Area } from '../../area/entities/area.entity';
 
 @Entity('userinfo')
 export class Userinfo {
+  constructor() {
+    this.id = undefined;
+    this.provinceId = undefined;
+    this.cityId = undefined;
+    this.districtId = undefined;
+    this.address = undefined;
+    this.user = undefined;
+  }
+
   @PrimaryGeneratedColumn('uuid', { comment: '主键 id' })
   id: string;
 

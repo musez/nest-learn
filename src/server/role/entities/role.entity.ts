@@ -18,6 +18,15 @@ import { Group } from '../../group/entities/group.entity';
 
 @Entity('role')
 export class Role extends BaseEntity {
+  constructor() {
+    super();
+
+    this.name = undefined;
+    this.groups = undefined;
+    this.users = undefined;
+    this.permissions = undefined;
+  }
+
   @Column('varchar', { comment: '名称', length: 50 })
   name: string;
 

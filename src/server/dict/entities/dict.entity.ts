@@ -14,6 +14,14 @@ export enum DictType {
 
 @Entity('dict')
 export class Dict extends BaseEntity {
+  constructor() {
+    super();
+    this.dictCode = undefined;
+    this.dictName = undefined;
+    this.type = undefined;
+    this.dictItemList = undefined;
+  }
+
   @Column('varchar', { comment: '字典名称', length: 50 })
   dictCode: string;
 
