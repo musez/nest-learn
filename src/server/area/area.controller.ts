@@ -14,6 +14,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { Area } from './entities/area.entity';
 import { LimitAreaDto } from './dto/limit-area.dto';
 import { BaseFindByIdDto, BaseFindByPIdDto } from '../base.dto';
+import { CurUser } from '../../common/decorators/user.decorator';
 
 @Controller('area')
 @ApiTags('地区')
@@ -25,39 +26,39 @@ export class AreaController {
   @Get('findList')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '获取列表（默认返回 []）' })
-  async findList(@Query() query): Promise<Area[]> {
+  async findList(@CurUser() user, @Query() query): Promise<Area[]> {
     return await this.areaService.selectList(query);
   }
 
   @Get('findListPage')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '获取列表（分页）' })
-  async findListPage(@Query() limitAreaDto: LimitAreaDto): Promise<any> {
+  async findListPage(@CurUser() user, @Query() limitAreaDto: LimitAreaDto): Promise<any> {
     return await this.areaService.selectListPage(limitAreaDto);
   }
 
   @Get('findListByPId')
   @ApiOperation({ summary: '获取列表（父 id）' })
-  findListByPId(@Query() baseFindByPIdDto: BaseFindByPIdDto): Promise<any> {
+  findListByPId(@CurUser() user, @Query() baseFindByPIdDto: BaseFindByPIdDto): Promise<any> {
     return this.areaService.selectListByPId(baseFindByPIdDto);
   }
 
   @Get('findTree')
   @ApiOperation({ summary: '获取树' })
-  findTree(): Promise<any> {
+  findTree(@CurUser() user): Promise<any> {
     return this.areaService.selectTree();
   }
 
   @Get('findTreeByPId')
   @ApiOperation({ summary: '获取树（父 id）' })
-  findTreeByPId(@Query() baseFindByPIdDto: BaseFindByPIdDto): Promise<any> {
+  findTreeByPId(@CurUser() user, @Query() baseFindByPIdDto: BaseFindByPIdDto): Promise<any> {
     return this.areaService.selectTreeByPId(baseFindByPIdDto);
   }
 
   @Get('findById')
   @ApiOperation({ summary: '获取详情（主键 id）' })
   @UseGuards(JwtAuthGuard)
-  async findById(@Query() baseFindByIdDto: BaseFindByIdDto): Promise<Area> {
+  async findById(@CurUser() user, @Query() baseFindByIdDto: BaseFindByIdDto): Promise<Area> {
     return await this.areaService.selectById(baseFindByIdDto);
   }
 }

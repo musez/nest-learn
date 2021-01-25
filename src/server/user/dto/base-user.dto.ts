@@ -1,6 +1,7 @@
-import { IsNotEmpty, IsString, IsInt, IsEmail, MinLength, MaxLength } from 'class-validator';
+import { ValidateIf, IsNotEmpty, IsString, IsInt, IsEmail, MinLength, MaxLength } from 'class-validator';
 import { Transform } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { BaseConstants, UserConstants } from '../../../constants/constants';
 
 export class BaseUserDto {
   @ApiProperty({ description: '主键 id', example: '' })
@@ -9,13 +10,14 @@ export class BaseUserDto {
 
   @ApiProperty({ description: '名称', required: true, example: 'wang' })
   @IsNotEmpty({ message: '名称不能为空！' })
-  @MaxLength(50, { message: '名称不能大于 50 位！' })
+  @MinLength(UserConstants.USERNAME_MIN_LENGTH, { message: '名称不能小于 $constraint1 位！' })
+  @MaxLength(UserConstants.USERNAME_MAX_LENGTH, { message: '名称不能大于 $constraint1 位！' })
   readonly userName: string;
 
   @ApiProperty({ description: '密码', example: '888888' })
   @IsNotEmpty({ message: '用户密码不能为空！' })
-  @MinLength(6, { message: '用户密码不能小于 6 位！' })
-  @MaxLength(18, { message: '用户密码不能大于 18 位！' })
+  @MinLength(UserConstants.PASSWORD_MIN_LENGTH, { message: '用户密码不能小于 $constraint1 位！' })
+  @MaxLength(UserConstants.PASSWORD_MAX_LENGTH, { message: '用户密码不能大于 $constraint1 位！' })
   readonly userPwd: string;
 
   @ApiProperty({ description: '用户类型（0：普通用户；1：管理员；2：超级管理员；）', example: 0 })
@@ -25,14 +27,18 @@ export class BaseUserDto {
 
   @ApiPropertyOptional({ description: '姓名', example: '王' })
   @IsString()
-  @MaxLength(50, { message: '姓名不能大于 50 位！' })
+  @MinLength(UserConstants.NAME_MIN_LENGTH, { message: '姓名不能小于 $constraint1 位！' })
+  @MaxLength(UserConstants.NAME_MAX_LENGTH, { message: '姓名不能大于 $constraint1 位！' })
   readonly name?: string;
 
   @ApiPropertyOptional({ description: '手机号', example: '15171111111' })
   readonly mobile?: string;
 
   @ApiPropertyOptional({ description: '邮箱', example: '123@qq.com' })
-  // @IsEmail()
+  @ValidateIf(obj => {
+    return obj && typeof obj.email !== 'undefined';
+  })
+  @IsEmail()
   readonly email?: string;
 
   @ApiPropertyOptional({ description: '性别（0：保密；1：男；2：女）', example: 0 })
@@ -53,6 +59,7 @@ export class BaseUserDto {
   readonly districtId?: string;
 
   @ApiPropertyOptional({ description: '详细地址', example: null })
+  @MaxLength(UserConstants.ADDRESS_MAX_LENGTH, { message: '详细地址不能大于 $constraint1 位！' })
   readonly address?: string;
 
   @ApiProperty({ description: '状态（0：禁用；1：启用）', example: 0 })
@@ -61,6 +68,7 @@ export class BaseUserDto {
   readonly status?: number;
 
   @ApiPropertyOptional({ description: '描述', example: '' })
+  @MaxLength(BaseConstants.DESCRIPTION_MAX_LENGTH, { message: '描述不能大于 $constraint1 位！' })
   readonly description?: string;
 
   @ApiPropertyOptional({ description: '最后登录时间' })

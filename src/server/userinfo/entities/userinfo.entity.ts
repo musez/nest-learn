@@ -2,20 +2,10 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
-  CreateDateColumn,
-  UpdateDateColumn,
-  BeforeInsert,
-  JoinTable,
   JoinColumn,
-  ManyToMany,
-  ManyToOne,
-  OneToMany,
   OneToOne,
-  BeforeUpdate,
 } from 'typeorm';
 import { User } from '../../user/entities/user.entity';
-import { BaseEntity } from '../../base.entity';
-import { Area } from '../../area/entities/area.entity';
 
 @Entity('userinfo')
 export class Userinfo {
@@ -32,19 +22,13 @@ export class Userinfo {
   id: string;
 
   @Column({ comment: '省份', nullable: true })
-  provinceId: string;
-  // @ManyToOne((type) => Area, (area) => area.id)
-  // provinceId: Area;
+  provinceId: number;
 
   @Column({ comment: '城市', nullable: true })
-  cityId: string;
-  // @ManyToOne((type) => Area, (area) => area.id)
-  // cityId: Area;
+  cityId: number;
 
   @Column({ comment: '区/县', nullable: true })
-  districtId: string;
-  // @ManyToOne((type) => Area, (area) => area.id)
-  // districtId: Area;
+  districtId: number;
 
   @Column({ comment: '详细地址', length: 100, nullable: true })
   address: string;

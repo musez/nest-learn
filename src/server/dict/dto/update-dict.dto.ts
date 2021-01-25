@@ -7,5 +7,5 @@ export class UpdateDictDto extends PickType(BaseDictDto,
   ['id', 'dictCode', 'dictName', 'status', 'description'],
 ) {
   @ApiPropertyOptional({ description: '字典项', example: [{ id: '', itemName: '', itemValue: '', sort: 0 }] })
-  readonly dictItemList?: UpdateDictItemDto[];
+  readonly dictItems?: UpdateDictItemDto[];
 }

@@ -16,6 +16,7 @@ import { User } from '../user/entities/user.entity';
 import { DictItem } from '../dict-item/entities/dict-item.entity';
 import { BaseFindByIdDto, BasePageDto } from '../base.dto';
 import { ParseIntPipe } from '../../common/pipe/parse-int.pipe';
+import { CurUser } from '../../common/decorators/user.decorator';
 
 @ApiTags('字典')
 @Controller('dict')
@@ -27,8 +28,8 @@ export class DictController {
   @Post('add')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '添加' })
-  async create(@Body() createDictDto: CreateDictDto) {
-    let { dictItemList } = createDictDto;
+  async create(@CurUser() user, @Body() createDictDto: CreateDictDto) {
+    let { dictItems } = createDictDto;
     let dict = new Dict();
 
     for (let key in createDictDto) {
@@ -36,14 +37,14 @@ export class DictController {
         dict[key] = createDictDto[key];
       }
     }
-    console.log(dictItemList);
-    if (dictItemList) {
-      for (const key in dictItemList) {
+
+    if (dictItems) {
+      for (const key in dictItems) {
         let dictItem = new DictItem();
 
-        for (const itemKey in dictItemList[key]) {
-          if (dictItemList[key][itemKey]) {
-            dictItem[itemKey] = dictItemList[key][itemKey];
+        for (const itemKey in dictItems[key]) {
+          if (dictItems[key][itemKey]) {
+            dictItem[itemKey] = dictItems[key][itemKey];
           }
         }
         dictItem.dict = dict;
@@ -57,35 +58,35 @@ export class DictController {
   @Get('findList')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '获取列表' })
-  async findList(): Promise<Dict[]> {
+  async findList(@CurUser() user): Promise<Dict[]> {
     return await this.dictService.selectList();
   }
 
   @Get('findListPage')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '获取列表（分页）' })
-  async findListPage(@Query() basePageDto: BasePageDto): Promise<any> {
+  async findListPage(@CurUser() user, @Query() basePageDto: BasePageDto): Promise<any> {
     return await this.dictService.selectListPage(basePageDto);
   }
 
   @Get('findById')
   @ApiOperation({ summary: '获取详情（主键 id）' })
   @UseGuards(JwtAuthGuard)
-  async findById(@Query() baseFindByIdDto: BaseFindByIdDto): Promise<Dict> {
+  async findById(@CurUser() user, @Query() baseFindByIdDto: BaseFindByIdDto): Promise<Dict> {
     return await this.dictService.selectById(baseFindByIdDto);
   }
 
   @Post('modify')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '修改' })
-  async modify(@Body() updateDictDto: UpdateDictDto): Promise<any> {
+  async modify(@CurUser() user, @Body() updateDictDto: UpdateDictDto): Promise<any> {
     return this.dictService.update(updateDictDto);
   }
 
   @Post('remove')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '删除' })
-  async remove(@Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
+  async remove(@CurUser() user, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
     return await this.dictService.deleteById(baseFindByIdDto);
   }
 }

@@ -32,6 +32,7 @@ import { ParseIntPipe } from '../../common/pipe/parse-int.pipe';
 import { LimitGroupDto } from './dto/limit-group.dto';
 import { BindUserGroupDto } from '../user/dto/bind-user-group.dto';
 import { BindGroupRoleDto } from '../group-role/dto/bind-group-role.dto';
+import { CurUser } from '../../common/decorators/user.decorator';
 
 @Controller('group')
 @ApiTags('用户组')
@@ -43,56 +44,56 @@ export class GroupController {
   @Post('add')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '添加' })
-  async add(@Body() createGroupDto: CreateGroupDto) {
+  async add(@CurUser() user, @Body() createGroupDto: CreateGroupDto) {
     return this.groupService.insert(createGroupDto);
   }
 
   @Get('findList')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '获取列表' })
-  async findList(@Query() query): Promise<Group[]> {
+  async findList(@CurUser() user, @Query() query): Promise<Group[]> {
     return await this.groupService.selectList(query);
   }
 
   @Get('findListPage')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '获取列表（分页）' })
-  async findListPage(@Query() limitGroupDto: LimitGroupDto): Promise<any> {
+  async findListPage(@CurUser() user, @Query() limitGroupDto: LimitGroupDto): Promise<any> {
     return await this.groupService.selectListPage(limitGroupDto);
   }
 
   @Get('findById')
   @ApiOperation({ summary: '获取详情（主键 id）' })
   @UseGuards(JwtAuthGuard)
-  async findById(@Query('id') id: string): Promise<Group> {
+  async findById(@CurUser() user, @Query('id') id: string): Promise<Group> {
     return await this.groupService.selectById(id);
   }
 
   @Post('modify')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '修改' })
-  async modify(@Body() updateGroupDto: UpdateGroupDto): Promise<any> {
+  async modify(@CurUser() user, @Body() updateGroupDto: UpdateGroupDto): Promise<any> {
     return this.groupService.update(updateGroupDto);
   }
 
   @Post('remove')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '删除' })
-  async remove(@Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
+  async remove(@CurUser() user, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
     return await this.groupService.deleteById(baseFindByIdDto);
   }
 
   @Get('getRoles')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '获取用户组角色' })
-  async findRolesByGroupId(@Query() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
+  async findRolesByGroupId(@CurUser() user, @Query() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
     return await this.groupService.selectRolesByGroupId(baseFindByIdDto);
   }
 
   @Post('bindRoles')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '绑定用户组角色' })
-  async bindRoles(@Body() bindGroupRoleDto: BindGroupRoleDto): Promise<any> {
+  async bindRoles(@CurUser() user, @Body() bindGroupRoleDto: BindGroupRoleDto): Promise<any> {
     return await this.groupService.bindRoles(bindGroupRoleDto);
   }
 }

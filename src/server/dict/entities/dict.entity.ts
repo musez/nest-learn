@@ -19,7 +19,7 @@ export class Dict extends BaseEntity {
     this.dictCode = undefined;
     this.dictName = undefined;
     this.type = undefined;
-    this.dictItemList = undefined;
+    this.dictItems = undefined;
   }
 
   @Column('varchar', { comment: '字典名称', length: 50 })
@@ -32,5 +32,5 @@ export class Dict extends BaseEntity {
   type: DictType;
 
   @OneToMany((type) => DictItem, (dictItem) => dictItem.dict, { cascade: true })
-  dictItemList: DictItem[];
+  dictItems: DictItem[];
 }

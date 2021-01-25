@@ -1,6 +1,7 @@
 import { IsNotEmpty, IsString, IsInt, IsEmail, MinLength, MaxLength } from 'class-validator';
 import { Transform } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { BaseConstants } from '../../../constants/constants';
 
 export class BaseDictDto {
   @ApiProperty({ description: '主键 id', example: '' })
@@ -9,6 +10,7 @@ export class BaseDictDto {
 
   @ApiProperty({ description: '字典名称', example: '' })
   @IsNotEmpty({ message: '字典名称不能为空' })
+  @MaxLength(BaseConstants.NAME_MAX_LENGTH, { message: '字典名称不能大于 $constraint1 位！' })
   readonly dictCode: string;
 
   @ApiProperty({ description: '字典编码', example: '' })
@@ -26,5 +28,6 @@ export class BaseDictDto {
   readonly status?: number;
 
   @ApiPropertyOptional({ description: '描述', example: '' })
+  @MaxLength(BaseConstants.DESCRIPTION_MAX_LENGTH, { message: '描述不能大于 $constraint1 位！' })
   readonly description?: string;
 }

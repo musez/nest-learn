@@ -22,7 +22,7 @@ export class DictService {
 
   async selectList(): Promise<Dict[]> {
     return await this.dictRepository.find({
-      relations: ['dictItemList'],
+      relations: ['dictItems'],
     });
   }
 
@@ -33,7 +33,7 @@ export class DictService {
     let offset = (page - 1) * limit;
 
     let res = await this.dictRepository.createQueryBuilder('dict')
-      .innerJoinAndSelect('dict.dictItemList', 'dictItemList')
+      .innerJoinAndSelect('dict.dictItems', 'dictItems')
       .orderBy('dict.createTime', 'ASC')
       .skip(offset)
       .take(limit)
@@ -50,28 +50,28 @@ export class DictService {
   async selectById(baseFindByIdDto: BaseFindByIdDto): Promise<Dict> {
     let { id } = baseFindByIdDto;
     return await this.dictRepository.findOne(id, {
-      relations: ['dictItemList'],
+      relations: ['dictItems'],
     });
   }
 
   async update(updateDictDto: UpdateDictDto): Promise<any> {
-    let { id, dictItemList } = updateDictDto;
+    let { id, dictItems } = updateDictDto;
 
     let isExist = await this.dictRepository.findOne(id);
     if (Utils.isEmpty(isExist)) {
-      throw new BadRequestException(`数据 id ${id} 不存在！`);
+      throw new BadRequestException(`数据 id：${id} 不存在！`);
     }
 
     let dict = new Dict();
     Utils.dto2entity(updateDictDto, dict);
 
-    if (dictItemList) {
-      for (const key in dictItemList) {
+    if (dictItems) {
+      for (const key in dictItems) {
         let dictItem = new DictItem();
 
-        for (const itemKey in dictItemList[key]) {
-          if (dictItemList[key][itemKey]) {
-            dictItem[itemKey] = dictItemList[key][itemKey];
+        for (const itemKey in dictItems[key]) {
+          if (dictItems[key][itemKey]) {
+            dictItem[itemKey] = dictItems[key][itemKey];
           }
         }
         dictItem.dict = dict;
@@ -88,7 +88,7 @@ export class DictService {
     let { id } = baseFindByIdDto;
     let isExist = await this.dictRepository.findOne(id);
     if (Utils.isEmpty(isExist)) {
-      throw new BadRequestException(`数据 id ${id} 不存在！`);
+      throw new BadRequestException(`数据 id：${id} 不存在！`);
     }
 
     await this.dictRepository.remove(isExist);

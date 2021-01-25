@@ -1,6 +1,7 @@
 import { IsNotEmpty, IsString, IsInt, MaxLength } from 'class-validator';
 import { Transform } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { BaseConstants } from '../../../constants/constants';
 
 export class BasePermissionDto {
   @ApiProperty({ description: '主键 id', example: '' })
@@ -9,7 +10,7 @@ export class BasePermissionDto {
 
   @ApiProperty({ description: '名称', example: '' })
   @IsNotEmpty({ message: '名称不能为空！' })
-  @MaxLength(50, { message: '名称不能大于 50 位！' })
+  @MaxLength(BaseConstants.NAME_MAX_LENGTH, { message: '名称不能大于 $constraint1 位！' })
   readonly name: string;
 
   @ApiProperty({ description: '权限类别（1：导航；2：页面；3：操作；4：字段）' })
@@ -63,5 +64,6 @@ export class BasePermissionDto {
   readonly status?: number;
 
   @ApiPropertyOptional({ description: '描述', example: '' })
-  readonly description: string;
+  @MaxLength(BaseConstants.DESCRIPTION_MAX_LENGTH, { message: '描述不能大于 $constraint1 位！' })
+  readonly description?: string;
 }

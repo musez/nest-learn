@@ -79,7 +79,7 @@ export class RoleService {
 
     let isExist = await this.roleRepository.findOne(id);
     if (Utils.isEmpty(isExist)) {
-      throw new BadRequestException(`数据 id ${id} 不存在！`);
+      throw new BadRequestException(`数据 id：${id} 不存在！`);
     }
 
     let role = new Role();
@@ -92,7 +92,7 @@ export class RoleService {
     let { id } = baseFindByIdDto;
     let isExist = await this.roleRepository.findOne(id);
     if (Utils.isEmpty(isExist)) {
-      throw new BadRequestException(`数据 id ${id} 不存在！`);
+      throw new BadRequestException(`数据 id：${id} 不存在！`);
     }
 
     await this.roleRepository.remove(isExist);
@@ -101,7 +101,7 @@ export class RoleService {
   async selectPermissionsByRoleId(baseFindByIdDto: BaseFindByIdDto): Promise<RolePermission[]> {
     let isExist = await this.roleRepository.findOne(baseFindByIdDto);
     if (Utils.isEmpty(isExist)) {
-      throw new BadRequestException(`数据 id ${baseFindByIdDto} 不存在！`);
+      throw new BadRequestException(`数据 id：${baseFindByIdDto} 不存在！`);
     }
 
     return await this.rolePermissionService.selectByRoleId(baseFindByIdDto);
@@ -111,7 +111,7 @@ export class RoleService {
     let { id, permissions } = bindRolePermissionDto;
     let isExist = await this.roleRepository.findOne(id);
     if (Utils.isEmpty(isExist)) {
-      throw new BadRequestException(`数据 id ${id} 不存在！`);
+      throw new BadRequestException(`数据 id：${id} 不存在！`);
     }
 
     let userGroupList = [];

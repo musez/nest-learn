@@ -51,7 +51,7 @@ export class PermissionService {
     if (parentId) {
       let isExist = await this.permissionRepository.findOne(parentId);
       if (Utils.isEmpty(isExist)) {
-        throw new BadRequestException(`数据 parentId = ${parentId} 不存在！`);
+        throw new BadRequestException(`数据 parentId：${parentId} 不存在！`);
       }
 
       res = await this.permissionRepository.createDescendantsQueryBuilder('permission', 'permissionClosure', isExist)
@@ -84,7 +84,7 @@ export class PermissionService {
   async selectListByPId(parentId: string): Promise<Permission[]> {
     let isExist = await this.permissionRepository.findOne(parentId);
     if (Utils.isEmpty(isExist)) {
-      throw new BadRequestException(`数据 parentId = ${parentId} 不存在！`);
+      throw new BadRequestException(`数据 parentId：${parentId} 不存在！`);
     }
 
     return await this.permissionRepository.createDescendantsQueryBuilder('permission', 'permissionClosure', isExist)
@@ -99,7 +99,7 @@ export class PermissionService {
     if (parentId) {
       let isExist = await this.permissionRepository.findOne(parentId);
       if (Utils.isEmpty(isExist)) {
-        throw new BadRequestException(`数据 parentId = ${parentId} 不存在！`);
+        throw new BadRequestException(`数据 parentId：${parentId} 不存在！`);
       }
 
       return await this.permissionRepository.findDescendantsTree(isExist);
@@ -128,7 +128,7 @@ export class PermissionService {
 
     let isExist = await this.permissionRepository.findOne(id);
     if (Utils.isEmpty(isExist)) {
-      throw new BadRequestException(`数据 id ${id} 不存在！`);
+      throw new BadRequestException(`数据 id：${id} 不存在！`);
     }
 
     return await this.permissionRepository.save(isExist);

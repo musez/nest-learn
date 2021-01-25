@@ -46,9 +46,9 @@ export class User extends BaseEntity {
     this.birthday = undefined;
     this.loginTime = undefined;
     this.loginCount = undefined;
-    this.userinfo = undefined;
-    this.groups = undefined;
-    this.roles = undefined;
+    // this.userinfo = undefined;
+    // this.groups = undefined;
+    // this.roles = undefined;
   }
 
   @Column('varchar', { comment: '名称', length: 50 })

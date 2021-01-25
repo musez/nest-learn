@@ -26,6 +26,7 @@ import { UpdateFileDto } from './dto/update-file.dto';
 import { File } from './entities/file.entity';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { BaseFindByIdDto } from '../base.dto';
+import { CurUser } from '../../common/decorators/user.decorator';
 
 @Controller('file')
 @ApiTags('文件')
@@ -59,7 +60,7 @@ export class FileController {
     },
   })
   @UseInterceptors(FileInterceptor('file'))
-  UploadedFile(@UploadedFile() file, @Body() body) {
+  UploadedFile(@CurUser() user, @UploadedFile() file, @Body() body) {
     if (Utils.isEmpty(file)) {
       throw new BadRequestException(`文件不能为空！`);
     }
@@ -110,13 +111,16 @@ export class FileController {
       },
     },
   })
-  @UseInterceptors(FileFieldsInterceptor([
-    { name: 'files', maxCount: 10 },
-    { name: 'extId', maxCount: 1 },
-    { name: 'description', maxCount: 1 },
-  ]))
-  UploadedFiles(@UploadedFiles() files, @Body() body) {
-    if (Utils.isEmpty(files.files) ){
+  @UseInterceptors(FileFieldsInterceptor([{
+    name: 'files', maxCount: 10,
+  }, {
+    name: 'extId',
+    maxCount: 1,
+  }, {
+    name: 'description', maxCount: 1,
+  }]))
+  UploadedFiles(@CurUser() user, @UploadedFiles() files, @Body() body) {
+    if (Utils.isEmpty(files.files)) {
       throw new BadRequestException(`文件不能为空！`);
     }
 
@@ -151,23 +155,15 @@ export class FileController {
   @Get('findById')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '获取文件（主键 id）' })
-  @ApiQuery({
-    name: 'id',
-    description: '主键 id',
-    required: true,
-  })
-  findById(@Query() baseFindByIdDto: BaseFindByIdDto) {
+  @ApiQuery({ name: 'id', description: '主键 id', required: true })
+  findById(@CurUser() user, @Query() baseFindByIdDto: BaseFindByIdDto) {
     return this.fileService.selectById(baseFindByIdDto);
   }
 
   @Get('findByExtId')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '获取文件（关联 extId）' })
-  @ApiQuery({
-    name: 'extId',
-    description: '关联 id',
-    required: true,
-  })
+  @ApiQuery({ name: 'extId', description: '关联 id', required: true })
   findByExtId(@Query('extId') extId: string) {
     return this.fileService.selectByExtId(extId);
   }

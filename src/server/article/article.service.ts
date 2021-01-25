@@ -68,7 +68,7 @@ export class ArticleService {
 
     let isExist = await this.articleRepository.findOne(id);
     if (Utils.isEmpty(isExist)) {
-      throw new BadRequestException(`数据 id ${id} 不存在！`);
+      throw new BadRequestException(`数据 id：${id} 不存在！`);
     }
 
     let article = new Article();
@@ -81,7 +81,7 @@ export class ArticleService {
     let { id } = baseFindByIdDto;
     let isExist = await this.articleRepository.findOne(id);
     if (Utils.isEmpty(isExist)) {
-      throw new BadRequestException(`数据 id ${id} 不存在！`);
+      throw new BadRequestException(`数据 id：${id} 不存在！`);
     }
 
     await this.articleRepository.remove(isExist);

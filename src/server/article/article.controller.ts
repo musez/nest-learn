@@ -25,6 +25,7 @@ import { ParseIntPipe } from '../../common/pipe/parse-int.pipe';
 import { BaseFindByIdDto } from '../base.dto';
 import { Article } from './entities/article.entity';
 import { LimitArticleDto } from './dto/limit-article.dto';
+import { CurUser } from '../../common/decorators/user.decorator';
 
 @Controller('article')
 @ApiTags('文章')
@@ -36,42 +37,42 @@ export class ArticleController {
   @Post('add')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '添加' })
-  async add(@Body() createArticleDto: CreateArticleDto) {
+  async add(@CurUser() user, @Body() createArticleDto: CreateArticleDto) {
     return this.articleService.insert(createArticleDto);
   }
 
   @Get('findList')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '获取列表' })
-  async findList(@Query() query): Promise<Article[]> {
+  async findList(@CurUser() user, @Query() query): Promise<Article[]> {
     return await this.articleService.selectList(query);
   }
 
   @Get('findListPage')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '获取列表（分页）' })
-  async findListPage(@Query() query: LimitArticleDto): Promise<any> {
+  async findListPage(@CurUser() user, @Query() query: LimitArticleDto): Promise<any> {
     return await this.articleService.selectListPage(query);
   }
 
   @Get('findById')
   @ApiOperation({ summary: '获取详情（主键 id）' })
   @UseGuards(JwtAuthGuard)
-  async findById(@Query() baseFindByIdDto: BaseFindByIdDto): Promise<Article> {
+  async findById(@CurUser() user, @Query() baseFindByIdDto: BaseFindByIdDto): Promise<Article> {
     return await this.articleService.selectById(baseFindByIdDto);
   }
 
   @Post('modify')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '修改' })
-  async modify(@Body() updateArticleDto: UpdateArticleDto): Promise<any> {
+  async modify(@CurUser() user, @Body() updateArticleDto: UpdateArticleDto): Promise<any> {
     return this.articleService.update(updateArticleDto);
   }
 
   @Post('remove')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '删除' })
-  async remove(@Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
+  async remove(@CurUser() user, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
     return await this.articleService.deleteById(baseFindByIdDto);
   }
 }

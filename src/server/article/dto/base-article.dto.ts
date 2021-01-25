@@ -1,6 +1,7 @@
 import { IsNotEmpty, IsString, IsInt, MaxLength } from 'class-validator';
 import { Transform } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { BaseConstants } from '../../../constants/constants';
 
 export class BaseArticleDto {
   @ApiProperty({ description: '主键 id', example: '' })
@@ -87,5 +88,6 @@ export class BaseArticleDto {
   readonly status?: number;
 
   @ApiPropertyOptional({ description: '描述', example: '' })
-  readonly description: string;
+  @MaxLength(BaseConstants.DESCRIPTION_MAX_LENGTH, { message: '描述不能大于 $constraint1 位！' })
+  readonly description?: string;
 }
