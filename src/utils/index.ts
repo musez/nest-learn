@@ -1,7 +1,12 @@
+import *  as dayjs from 'dayjs';
 import * as _ from 'lodash';
 import { construct } from '@aximario/json-tree';
 
 export class Utils {
+  static now() {
+    return dayjs(Date.now()).format('YYYY-MM-DD HH:mm:ss');
+  }
+
   static dto2entity(dto: any, entity: any): any {
     let e = {};
     for (const key in entity) {
@@ -14,6 +19,10 @@ export class Utils {
 
   static isEmpty(...args) {
     return _.isEmpty(...args);
+  }
+
+  static isNil(...args) {
+    return _.isNil(...args);
   }
 
   static uniqBy(...args) {

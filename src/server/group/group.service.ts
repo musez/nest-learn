@@ -23,14 +23,14 @@ export class GroupService {
   ) {
   }
 
-  async insert(CreateGroupDto: CreateGroupDto): Promise<CreateGroupDto> {
+  async insert(curUser, CreateGroupDto: CreateGroupDto): Promise<CreateGroupDto> {
     return await this.groupRepository.save(CreateGroupDto);
   }
 
   async selectList(query): Promise<Group[]> {
     let { name } = query;
 
-    if (Utils.isEmpty(name)) {
+    if (Utils.isNil(name)) {
       name = '';
     }
 
@@ -47,7 +47,7 @@ export class GroupService {
     limit = limit ? limit : 10;
     let offset = (page - 1) * limit;
 
-    if (Utils.isEmpty(name)) {
+    if (Utils.isNil(name)) {
       name = '';
     }
 
@@ -70,10 +70,10 @@ export class GroupService {
     return await this.groupRepository.findOne(id);
   }
 
-  async update(updateGroupDto: UpdateGroupDto): Promise<void> {
+  async update(updateGroupDto: UpdateGroupDto, curUser?): Promise<void> {
     let { id } = updateGroupDto;
     let isExist = await this.groupRepository.findOne(id);
-    if (Utils.isEmpty(isExist)) {
+    if (Utils.isNil(isExist)) {
       throw new BadRequestException(`数据 id：${id} 不存在！`);
     }
 
@@ -86,7 +86,7 @@ export class GroupService {
   async deleteById(baseFindByIdDto: BaseFindByIdDto): Promise<void> {
     let { id } = baseFindByIdDto;
     let isExist = await this.groupRepository.findOne(id);
-    if (Utils.isEmpty(isExist)) {
+    if (Utils.isNil(isExist)) {
       throw new BadRequestException(`数据 id：${baseFindByIdDto} 不存在！`);
     }
 
@@ -95,7 +95,7 @@ export class GroupService {
 
   async selectRolesByGroupId(baseFindByIdDto: BaseFindByIdDto): Promise<GroupRole[]> {
     let isExist = await this.groupRepository.findOne(baseFindByIdDto);
-    if (Utils.isEmpty(isExist)) {
+    if (Utils.isNil(isExist)) {
       throw new BadRequestException(`数据 id：${baseFindByIdDto} 不存在！`);
     }
 
@@ -105,7 +105,7 @@ export class GroupService {
   async bindRoles(bindGroupRoleDto: BindGroupRoleDto): Promise<void> {
     let { id, roles } = bindGroupRoleDto;
     let isExist = await this.groupRepository.findOne(id);
-    if (Utils.isEmpty(isExist)) {
+    if (Utils.isNil(isExist)) {
       throw new BadRequestException(`数据 id：${id} 不存在！`);
     }
 

@@ -3,6 +3,6 @@ import { IsNotEmpty, IsString, IsInt, IsUUID, MaxLength } from 'class-validator'
 import { BasePageDto } from '../../base.dto';
 
 export class LimitGroupDto extends PartialType(BasePageDto) {
-  @ApiPropertyOptional({ description: '名称', })
-  readonly name: string;
+  @ApiPropertyOptional({ description: '名称' })
+  readonly name?: string;
 }

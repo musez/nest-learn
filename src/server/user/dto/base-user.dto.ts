@@ -50,15 +50,15 @@ export class BaseUserDto {
   readonly birthday?: Date;
 
   @ApiPropertyOptional({ description: '省份', example: null })
-  readonly provinceId?: string;
+  readonly provinceId?: number;
 
   @ApiPropertyOptional({ description: '城市', example: null })
-  readonly cityId?: string;
+  readonly cityId?: number;
 
   @ApiPropertyOptional({ description: '区/县', example: null })
-  readonly districtId?: string;
+  readonly districtId?: number;
 
-  @ApiPropertyOptional({ description: '详细地址', example: null })
+  @ApiPropertyOptional({ description: '详细地址', example: '' })
   @MaxLength(UserConstants.ADDRESS_MAX_LENGTH, { message: '详细地址不能大于 $constraint1 位！' })
   readonly address?: string;
 
@@ -71,9 +71,9 @@ export class BaseUserDto {
   @MaxLength(BaseConstants.DESCRIPTION_MAX_LENGTH, { message: '描述不能大于 $constraint1 位！' })
   readonly description?: string;
 
-  @ApiPropertyOptional({ description: '最后登录时间' })
-  readonly loginTime: Date;
+  // @ApiPropertyOptional({ description: '最后登录时间' })
+  // readonly loginTime?: Date;
 
-  @ApiPropertyOptional({ description: '登录次数' })
-  readonly loginCount: number;
+  // @ApiPropertyOptional({ description: '登录次数' })
+  // readonly loginCount?: number;
 }

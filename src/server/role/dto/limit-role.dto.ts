@@ -4,5 +4,5 @@ import { BasePageDto } from '../../base.dto';
 
 export class LimitRoleDto extends PartialType(BasePageDto) {
   @ApiPropertyOptional({ description: '名称' })
-  readonly name: string;
+  readonly name?: string;
 }

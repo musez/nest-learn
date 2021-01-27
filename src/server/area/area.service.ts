@@ -16,7 +16,7 @@ export class AreaService {
   async selectList(query): Promise<Area[]> {
     let { areaName } = query;
 
-    if (Utils.isEmpty(areaName)) {
+    if (Utils.isNil(areaName)) {
       return [];
     }
 
@@ -33,7 +33,7 @@ export class AreaService {
     limit = limit ? limit : 10;
     let offset = (page - 1) * limit;
 
-    if (Utils.isEmpty(areaName)) {
+    if (Utils.isNil(areaName)) {
       areaName = '';
     }
 
@@ -55,7 +55,7 @@ export class AreaService {
   async selectListByPId(baseFindByPIdDto: BaseFindByPIdDto): Promise<Area[]> {
     let { parentId } = baseFindByPIdDto;
 
-    if (Utils.isEmpty(parentId)) {
+    if (Utils.isNil(parentId)) {
       parentId = '-1';
     }
 
@@ -78,7 +78,7 @@ export class AreaService {
   async selectTreeByPId(baseFindByPIdDto: BaseFindByPIdDto): Promise<any> {
     let { parentId } = baseFindByPIdDto;
 
-    if (Utils.isEmpty(parentId)) {
+    if (Utils.isNil(parentId)) {
       let res = await this.areaRepository.find();
       return Utils.construct(res, {
         id: 'id',
@@ -86,13 +86,13 @@ export class AreaService {
         children: 'children',
       });
     } else {
-      let result = await this.selectChildren(parentId);
+      let result = await this.selectChildrenRecursive(parentId);
 
       return result;
     }
   }
 
-  async selectChildren(id): Promise<any> {
+  async selectChildrenRecursive(id): Promise<any> {
     let list = [];
     let childList = await this.areaRepository.find({
       where: {
@@ -102,7 +102,7 @@ export class AreaService {
 
     for (const item of childList) {
       let obj = { ...item };
-      let child = await this.selectChildren(item.id);
+      let child = await this.selectChildrenRecursive(item.id);
       if (child.length > 0) {
         obj['children'] = child;
         obj['hasChildren'] = true;

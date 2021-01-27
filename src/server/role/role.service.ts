@@ -26,14 +26,14 @@ export class RoleService {
   ) {
   }
 
-  async insert(createRoleDto: CreateRoleDto): Promise<CreateRoleDto> {
+  async insert(curUser, createRoleDto: CreateRoleDto): Promise<CreateRoleDto> {
     return await this.roleRepository.save(createRoleDto);
   }
 
   async selectList(query): Promise<Role[]> {
     let { name } = query;
 
-    if (Utils.isEmpty(name)) {
+    if (Utils.isNil(name)) {
       name = '';
     }
 
@@ -50,7 +50,7 @@ export class RoleService {
     limit = limit ? limit : 10;
     let offset = (page - 1) * limit;
 
-    if (Utils.isEmpty(name)) {
+    if (Utils.isNil(name)) {
       name = '';
     }
 
@@ -74,11 +74,11 @@ export class RoleService {
     return await this.roleRepository.findOne(id);
   }
 
-  async update(updateRoleDto: UpdateRoleDto): Promise<void> {
+  async update(updateRoleDto: UpdateRoleDto, curUser?): Promise<void> {
     let { id } = updateRoleDto;
 
     let isExist = await this.roleRepository.findOne(id);
-    if (Utils.isEmpty(isExist)) {
+    if (Utils.isNil(isExist)) {
       throw new BadRequestException(`数据 id：${id} 不存在！`);
     }
 
@@ -91,7 +91,7 @@ export class RoleService {
   async deleteById(baseFindByIdDto: BaseFindByIdDto): Promise<void> {
     let { id } = baseFindByIdDto;
     let isExist = await this.roleRepository.findOne(id);
-    if (Utils.isEmpty(isExist)) {
+    if (Utils.isNil(isExist)) {
       throw new BadRequestException(`数据 id：${id} 不存在！`);
     }
 
@@ -100,7 +100,7 @@ export class RoleService {
 
   async selectPermissionsByRoleId(baseFindByIdDto: BaseFindByIdDto): Promise<RolePermission[]> {
     let isExist = await this.roleRepository.findOne(baseFindByIdDto);
-    if (Utils.isEmpty(isExist)) {
+    if (Utils.isNil(isExist)) {
       throw new BadRequestException(`数据 id：${baseFindByIdDto} 不存在！`);
     }
 
@@ -110,7 +110,7 @@ export class RoleService {
   async bindPermissions(bindRolePermissionDto: BindRolePermissionDto): Promise<void> {
     let { id, permissions } = bindRolePermissionDto;
     let isExist = await this.roleRepository.findOne(id);
-    if (Utils.isEmpty(isExist)) {
+    if (Utils.isNil(isExist)) {
       throw new BadRequestException(`数据 id：${id} 不存在！`);
     }
 

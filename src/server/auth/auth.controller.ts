@@ -22,6 +22,7 @@ import { RegisterUserDto } from '../user/dto/register-user.dto';
 import { CreateUserDto } from '../user/dto/create-user.dto';
 import { UserService } from '../user/user.service';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { CurUser } from '../../common/decorators/user.decorator';
 
 @ApiTags('认证')
 @Controller('auth')
@@ -46,14 +47,13 @@ export class AuthController {
       },
     },
   })
-  async login(@Request() request, @Body() body) {
-    let user = request.user;
+  async login(@CurUser() curUser, @Body() body) {
     let { captchaId, captchaText } = body;
 
     const validateCaptcha = await this.authService.validateCaptcha(captchaId, captchaText);
     if (validateCaptcha) {
-      await this.userService.incrementLoginCount(user.id);// 登录次数 +1
-      return this.authService.login(user);
+      await this.userService.incrementLoginCount(curUser.id);// 登录次数 +1
+      return this.authService.login(curUser);
     } else {
       throw new UnauthorizedException('验证码错误！');
     }
@@ -75,9 +75,8 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @ApiBasicAuth()
   @ApiOperation({ summary: '根据 token 获取权限' })
-  async getPermissionsByToken(@Request() request): Promise<any> {
-    let { user } = request;
-    let { id } = user;
+  async getPermissionsByToken(@CurUser() curUser): Promise<any> {
+    let { id } = curUser;
     return await this.userService.selectPermissionsByUserId(id);
   }
 }

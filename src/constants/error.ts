@@ -6,9 +6,9 @@ class CodeAndMsg {
 }
 
 export class ErrorCode {
-  static readonly SUCCESS: CodeAndMsg = { CODE: 0, MESSAGE: '请求成功！' };
-  static readonly ERROR: CodeAndMsg = { CODE: 1, MESSAGE: '请求失败！' };
-  static readonly ParamsError: CodeAndMsg = { CODE: 2, MESSAGE: '参数错误！' };
+  static readonly SUCCESS: CodeAndMsg = { CODE: 200, MESSAGE: '请求成功！' };
+  static readonly ERROR: CodeAndMsg = { CODE: 500, MESSAGE: '请求失败！' };
+  static readonly ParamsError: CodeAndMsg = { CODE: 400, MESSAGE: '参数错误！' };
 
   static readonly Forbidden: CodeAndMsg = { CODE: 403, MESSAGE: '没有权限执行此操作！' };
   static readonly NotFound: CodeAndMsg = { CODE: 404, MESSAGE: '找不到请求的资源！' };
@@ -22,7 +22,7 @@ export class ErrorCode {
 
   static readonly InvalidUserName: CodeAndMsg = {
     CODE: 1005,
-    MESSAGE: `昵称 格式不正确，需要是 ${UserConstants.USERNAME_MIN_LENGTH} 到 ${UserConstants.USERNAME_MAX_LENGTH} 个字符，只能包含英文、中文、下划线，不能包含空格！`,
+    MESSAGE: `用户名 格式不正确，需要是 ${UserConstants.USERNAME_MIN_LENGTH} 到 ${UserConstants.USERNAME_MAX_LENGTH} 个字符，只能包含英文、中文、下划线，不能包含空格！`,
   };
 
   static readonly InvalidPhone: CodeAndMsg = { CODE: 1006, MESSAGE: '无效的手机号！' };

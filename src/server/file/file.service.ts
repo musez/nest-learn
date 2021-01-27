@@ -14,7 +14,7 @@ export class FileService {
   ) {
   }
 
-  async insert(file): Promise<CreateFileDto> {
+  async insert(curUser, file): Promise<CreateFileDto> {
     return await this.fileRepository.save(file);
   }
 

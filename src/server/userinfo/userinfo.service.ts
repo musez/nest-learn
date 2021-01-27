@@ -7,6 +7,7 @@ import { CreateUserDto } from '../user/dto/create-user.dto';
 import { User } from '../user/entities/user.entity';
 import { Userinfo } from './entities/userinfo.entity';
 import { Utils } from '../../utils';
+import set = Reflect.set;
 
 @Injectable()
 export class UserinfoService {
@@ -16,22 +17,27 @@ export class UserinfoService {
   ) {
   }
 
-  async insert(createUserinfoDto: CreateUserinfoDto): Promise<CreateUserinfoDto> {
+  async insert(createUserinfoDto: CreateUserinfoDto, curUser?): Promise<CreateUserinfoDto> {
     return await this.userinfoRepository.save(createUserinfoDto);
   }
 
   async update(updateUserinfoDto: UpdateUserinfoDto): Promise<any> {
-    console.log('userinfo 2:',updateUserinfoDto);
-
     let { id } = updateUserinfoDto;
-    let isExist = await this.userinfoRepository.find({
-      where: {
-        userId: id,
-      },
-    });
-    if (Utils.isEmpty(isExist)) {
-      throw new BadRequestException(`数据 userId：${id} 不存在！`);
-    }
     return await this.userinfoRepository.update(id, updateUserinfoDto);
+  }
+
+  async updateByUserId(userId: string, updateUserinfoDto: UpdateUserinfoDto): Promise<any> {
+    return await this.userinfoRepository.createQueryBuilder('userinfo')
+      .update(Userinfo)
+      .set({
+        provinceId: updateUserinfoDto.provinceId,
+        cityId: updateUserinfoDto.cityId,
+        districtId: updateUserinfoDto.districtId,
+        address: updateUserinfoDto.address,
+      })
+      .where('userId = :userId', {
+        userId: userId,
+      })
+      .execute();
   }
 }

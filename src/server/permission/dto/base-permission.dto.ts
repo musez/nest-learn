@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, IsInt, MaxLength } from 'class-validator';
+import { IsNotEmpty, IsString, IsInt, MaxLength, IsUUID } from 'class-validator';
 import { Transform } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { BaseConstants } from '../../../constants/constants';
@@ -6,6 +6,7 @@ import { BaseConstants } from '../../../constants/constants';
 export class BasePermissionDto {
   @ApiProperty({ description: '主键 id', example: '' })
   @IsNotEmpty({ message: '主键 id 不能为空' })
+  @IsUUID('all')
   readonly id: string;
 
   @ApiProperty({ description: '名称', example: '' })
@@ -28,24 +29,24 @@ export class BasePermissionDto {
   readonly uri: string;
 
   @ApiPropertyOptional({ description: '权限路由 PATH', example: '' })
-  readonly routerPath: string;
+  readonly routerPath?: string;
 
   @ApiPropertyOptional({ description: '权限路由 NAME', example: '' })
-  readonly routerName: string;
+  readonly routerName?: string;
 
   @ApiPropertyOptional({ description: '权限路由 REDIRECT', example: '' })
-  readonly routerRedirect: string;
+  readonly routerRedirect?: string;
 
   @ApiPropertyOptional({ description: '权限路由 COMPONENT', example: '' })
-  readonly routerComponent: string;
+  readonly routerComponent?: string;
 
   @ApiPropertyOptional({ description: '权限路由 HIDDEN（0：不隐藏；1：隐藏；）', example: 0 })
   @Transform(routerHidden => Number.parseInt(routerHidden))
   @IsInt({ message: '权限路由 HIDDEN 必须为数字！' })
-  readonly routerHidden: number;
+  readonly routerHidden?: number;
 
   @ApiPropertyOptional({ description: '权限路由 TITLE', example: '' })
-  readonly routerTitle: string;
+  readonly routerTitle?: string;
 
   @ApiPropertyOptional({ description: '权限路由 ICON', example: '' })
   readonly routerIcon: string;
@@ -53,10 +54,10 @@ export class BasePermissionDto {
   @ApiPropertyOptional({ description: '权限路由 SORT', example: 0 })
   @Transform(routerSort => Number.parseInt(routerSort))
   @IsInt({ message: '权限路由 SORT 必须为数字！' })
-  readonly routerSort: number;
+  readonly routerSort?: number;
 
   @ApiPropertyOptional({ description: '父 id', example: null })
-  readonly parentId: string;
+  readonly parentId?: string;
 
   @ApiProperty({ description: '状态（0：禁用；1：启用）', example: 0 })
   @Transform(status => Number.parseInt(status))

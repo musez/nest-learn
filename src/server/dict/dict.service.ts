@@ -16,7 +16,7 @@ export class DictService {
   ) {
   }
 
-  async insert(createDictDto: CreateDictDto) {
+  async insert(curUser, createDictDto: CreateDictDto) {
     return await this.dictRepository.save(createDictDto);
   }
 
@@ -54,11 +54,11 @@ export class DictService {
     });
   }
 
-  async update(updateDictDto: UpdateDictDto): Promise<any> {
+  async update(updateDictDto: UpdateDictDto, curUser?): Promise<any> {
     let { id, dictItems } = updateDictDto;
 
     let isExist = await this.dictRepository.findOne(id);
-    if (Utils.isEmpty(isExist)) {
+    if (Utils.isNil(isExist)) {
       throw new BadRequestException(`数据 id：${id} 不存在！`);
     }
 
@@ -87,7 +87,7 @@ export class DictService {
   async deleteById(baseFindByIdDto: BaseFindByIdDto): Promise<void> {
     let { id } = baseFindByIdDto;
     let isExist = await this.dictRepository.findOne(id);
-    if (Utils.isEmpty(isExist)) {
+    if (Utils.isNil(isExist)) {
       throw new BadRequestException(`数据 id：${id} 不存在！`);
     }
 

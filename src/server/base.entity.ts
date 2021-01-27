@@ -22,7 +22,6 @@ export abstract class BaseEntity {
     this.updateBy = undefined;
   }
 
-
   @PrimaryGeneratedColumn('uuid', { comment: '主键 id' })
   id: string;
 

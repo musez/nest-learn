@@ -3,6 +3,6 @@ import { IsNotEmpty, IsString, IsInt, IsUUID, MaxLength } from 'class-validator'
 import { BasePageDto } from '../../base.dto';
 
 export class LimitArticleDto extends PartialType(BasePageDto) {
-  @ApiPropertyOptional({ description: '标题', })
-  readonly title: string;
+  @ApiPropertyOptional({ description: '标题' })
+  readonly title?: string;
 }

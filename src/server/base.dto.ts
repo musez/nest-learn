@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, IsInt, IsEmail } from 'class-validator';
+import { IsNotEmpty, IsString, IsInt, IsEmail, IsUUID } from 'class-validator';
 import { Transform } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
@@ -17,6 +17,7 @@ export class BasePageDto {
 export class BaseFindByIdDto {
   @ApiProperty({ description: '主键 id', example: '' })
   @IsNotEmpty({ message: '主键 id 不能为空' })
+  @IsUUID('all')
   readonly id: string;
 }
 

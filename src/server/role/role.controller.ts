@@ -24,7 +24,6 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { Role } from './entities/role.entity';
 import { LimitRoleDto } from './dto/limit-role.dto';
 import { BaseFindByIdDto } from '../base.dto';
-import { ParseIntPipe } from '../../common/pipe/parse-int.pipe';
 import { BindRolePermissionDto } from './dto/bind-role-permission.dto';
 import { CurUser } from '../../common/decorators/user.decorator';
 
@@ -40,56 +39,56 @@ export class RoleController {
   @Post('add')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '添加' })
-  async add(@CurUser() user, @Body() createRoleDto: CreateRoleDto) {
-    return this.roleService.insert(createRoleDto);
+  async add(@CurUser() curUser, @Body() createRoleDto: CreateRoleDto) {
+    return this.roleService.insert(createRoleDto, curUser);
   }
 
   @Get('findList')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '获取列表' })
-  async findList(@CurUser() user, @Query() query): Promise<Role[]> {
+  async findList(@CurUser() curUser, @Query() query): Promise<Role[]> {
     return await this.roleService.selectList(query);
   }
 
   @Get('findListPage')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '获取列表（分页）' })
-  async findListPage(@CurUser() user, @Query() query: LimitRoleDto): Promise<any> {
+  async findListPage(@CurUser() curUser, @Query() query: LimitRoleDto): Promise<any> {
     return await this.roleService.selectListPage(query);
   }
 
   @Get('findById')
   @ApiOperation({ summary: '获取详情（主键 id）' })
   @UseGuards(JwtAuthGuard)
-  async findById(@CurUser() user, @Query() baseFindByIdDto: BaseFindByIdDto): Promise<Role> {
+  async findById(@CurUser() curUser, @Query() baseFindByIdDto: BaseFindByIdDto): Promise<Role> {
     return await this.roleService.selectById(baseFindByIdDto);
   }
 
   @Post('modify')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '修改' })
-  async modify(@CurUser() user, @Body() updateRoleDto: UpdateRoleDto): Promise<any> {
-    return this.roleService.update(updateRoleDto);
+  async modify(@CurUser() curUser, @Body() updateRoleDto: UpdateRoleDto): Promise<any> {
+    return this.roleService.update(updateRoleDto, curUser);
   }
 
   @Post('remove')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '删除' })
-  async remove(@CurUser() user, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
+  async remove(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
     return await this.roleService.deleteById(baseFindByIdDto);
   }
 
   @Get('getPermissions')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '获取角色权限' })
-  async findPermissionsByRoleId(@CurUser() user, @Query() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
+  async findPermissionsByRoleId(@CurUser() curUser, @Query() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
     return await this.roleService.selectPermissionsByRoleId(baseFindByIdDto);
   }
 
   @Post('bindPermissions')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '绑定角色权限' })
-  async bindPermissions(@CurUser() user, @Body() bindRolePermissionDto: BindRolePermissionDto): Promise<any> {
+  async bindPermissions(@CurUser() curUser, @Body() bindRolePermissionDto: BindRolePermissionDto): Promise<any> {
     return await this.roleService.bindPermissions(bindRolePermissionDto);
   }
 }

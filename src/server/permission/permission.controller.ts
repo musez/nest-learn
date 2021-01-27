@@ -12,7 +12,6 @@ import { UpdatePermissionDto } from './dto/update-permission.dto';
 import { Permission } from './entities/permission.entity';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { BaseFindByIdDto, BasePageDto } from '../base.dto';
-import { ParseIntPipe } from '../../common/pipe/parse-int.pipe';
 import { LimitPermissionDto } from './dto/limit-permission.dto';
 import { CurUser } from '../../common/decorators/user.decorator';
 
@@ -26,21 +25,21 @@ export class PermissionController {
   @Post('add')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '添加' })
-  async add(@CurUser() user, @Body() createPermissionDto: CreatePermissionDto) {
-    return this.permissionService.insert(createPermissionDto);
+  async add(@CurUser() curUser, @Body() createPermissionDto: CreatePermissionDto) {
+    return this.permissionService.insert(createPermissionDto, curUser);
   }
 
   @Get('findList')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '获取列表' })
-  findList(@CurUser() user) {
+  findList(@CurUser() curUser) {
     return this.permissionService.selectList();
   }
 
   @Get('findListPage')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '获取列表（分页）' })
-  findListPage(@CurUser() user, @Query() limitPermissionDto: LimitPermissionDto) {
+  findListPage(@CurUser() curUser, @Query() limitPermissionDto: LimitPermissionDto) {
     return this.permissionService.selectListPage(limitPermissionDto);
   }
 
@@ -48,7 +47,7 @@ export class PermissionController {
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '获取列表（父 id）' })
   @ApiQuery({ name: 'parentId', description: '父 id', required: false })
-  findListByPId(@CurUser() user, @Query('parentId') parentId: string) {
+  findListByPId(@CurUser() curUser, @Query('parentId') parentId: string) {
     return this.permissionService.selectListByPId(parentId);
   }
 
@@ -63,21 +62,21 @@ export class PermissionController {
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '获取树（父 id）' })
   @ApiQuery({ name: 'parentId', description: '父 id', required: false })
-  findTreeByPId(@CurUser() user, @Query('parentId') parentId: string) {
+  findTreeByPId(@CurUser() curUser, @Query('parentId') parentId: string) {
     return this.permissionService.selectTreeByPId(parentId);
   }
 
   @Get('findById')
   @ApiOperation({ summary: '获取详情（主键 id）' })
   @UseGuards(JwtAuthGuard)
-  async findById(@CurUser() user, @Query() baseFindByIdDto: BaseFindByIdDto): Promise<Permission> {
+  async findById(@CurUser() curUser, @Query() baseFindByIdDto: BaseFindByIdDto): Promise<Permission> {
     return await this.permissionService.selectById(baseFindByIdDto);
   }
 
   @Post('modify')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '修改' })
-  async modify(@CurUser() user, @Body() updatePermissionDto: UpdatePermissionDto): Promise<any> {
-    return this.permissionService.update(updatePermissionDto);
+  async modify(@CurUser() curUser, @Body() updatePermissionDto: UpdatePermissionDto): Promise<any> {
+    return this.permissionService.update(updatePermissionDto, curUser);
   }
 }

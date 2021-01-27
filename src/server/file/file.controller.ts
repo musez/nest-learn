@@ -60,8 +60,8 @@ export class FileController {
     },
   })
   @UseInterceptors(FileInterceptor('file'))
-  UploadedFile(@CurUser() user, @UploadedFile() file, @Body() body) {
-    if (Utils.isEmpty(file)) {
+  UploadedFile(@CurUser() curUser, @UploadedFile() file, @Body() body) {
+    if (Utils.isNil(file)) {
       throw new BadRequestException(`文件不能为空！`);
     }
 
@@ -84,7 +84,7 @@ export class FileController {
     fileEntity.size = file.size;
     fileEntity.fileUrl = `${file.destination}/${file.filename}`;
 
-    return this.fileService.insert(fileEntity);
+    return this.fileService.insert(fileEntity, curUser);
   }
 
   @Post('uploads')
@@ -119,8 +119,8 @@ export class FileController {
   }, {
     name: 'description', maxCount: 1,
   }]))
-  UploadedFiles(@CurUser() user, @UploadedFiles() files, @Body() body) {
-    if (Utils.isEmpty(files.files)) {
+  UploadedFiles(@CurUser() curUser, @UploadedFiles() files, @Body() body) {
+    if (Utils.isNil(files.files)) {
       throw new BadRequestException(`文件不能为空！`);
     }
 
@@ -156,7 +156,7 @@ export class FileController {
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '获取文件（主键 id）' })
   @ApiQuery({ name: 'id', description: '主键 id', required: true })
-  findById(@CurUser() user, @Query() baseFindByIdDto: BaseFindByIdDto) {
+  findById(@CurUser() curUser, @Query() baseFindByIdDto: BaseFindByIdDto) {
     return this.fileService.selectById(baseFindByIdDto);
   }
 

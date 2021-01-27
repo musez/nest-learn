@@ -15,7 +15,7 @@ export class PermissionService {
   ) {
   }
 
-  async insert(createPermissionDto: CreatePermissionDto): Promise<Permission> {
+  async insert(curUser, createPermissionDto: CreatePermissionDto): Promise<Permission> {
     let { parentId, ...result } = createPermissionDto;
 
     let child = new Permission();
@@ -43,14 +43,14 @@ export class PermissionService {
     let offset = (page - 1) * limit;
 
 
-    if (Utils.isEmpty(name)) {
+    if (Utils.isNil(name)) {
       name = '';
     }
 
     let res = [];
     if (parentId) {
       let isExist = await this.permissionRepository.findOne(parentId);
-      if (Utils.isEmpty(isExist)) {
+      if (Utils.isNil(isExist)) {
         throw new BadRequestException(`数据 parentId：${parentId} 不存在！`);
       }
 
@@ -83,7 +83,7 @@ export class PermissionService {
 
   async selectListByPId(parentId: string): Promise<Permission[]> {
     let isExist = await this.permissionRepository.findOne(parentId);
-    if (Utils.isEmpty(isExist)) {
+    if (Utils.isNil(isExist)) {
       throw new BadRequestException(`数据 parentId：${parentId} 不存在！`);
     }
 
@@ -98,7 +98,7 @@ export class PermissionService {
   async selectTreeByPId(parentId: string): Promise<any> {
     if (parentId) {
       let isExist = await this.permissionRepository.findOne(parentId);
-      if (Utils.isEmpty(isExist)) {
+      if (Utils.isNil(isExist)) {
         throw new BadRequestException(`数据 parentId：${parentId} 不存在！`);
       }
 
@@ -113,7 +113,7 @@ export class PermissionService {
     return await this.permissionRepository.findOne(id);
   }
 
-  async update(updatePermissionDto: UpdatePermissionDto) {
+  async update(updatePermissionDto: UpdatePermissionDto, curUser?) {
     let { id, parentId, ...result } = updatePermissionDto;
 
     let child = new Permission();
@@ -127,7 +127,7 @@ export class PermissionService {
     }
 
     let isExist = await this.permissionRepository.findOne(id);
-    if (Utils.isEmpty(isExist)) {
+    if (Utils.isNil(isExist)) {
       throw new BadRequestException(`数据 id：${id} 不存在！`);
     }
 

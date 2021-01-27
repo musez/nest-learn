@@ -21,11 +21,11 @@ import { ArticleService } from './article.service';
 import { CreateArticleDto } from './dto/create-article.dto';
 import { UpdateArticleDto } from './dto/update-article.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { ParseIntPipe } from '../../common/pipe/parse-int.pipe';
 import { BaseFindByIdDto } from '../base.dto';
 import { Article } from './entities/article.entity';
 import { LimitArticleDto } from './dto/limit-article.dto';
 import { CurUser } from '../../common/decorators/user.decorator';
+import { SearchArticleDto } from './dto/search-article.dto';
 
 @Controller('article')
 @ApiTags('文章')
@@ -37,42 +37,42 @@ export class ArticleController {
   @Post('add')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '添加' })
-  async add(@CurUser() user, @Body() createArticleDto: CreateArticleDto) {
-    return this.articleService.insert(createArticleDto);
+  async add(@CurUser() curUser, @Body() createArticleDto: CreateArticleDto) {
+    return this.articleService.insert(createArticleDto, curUser);
   }
 
   @Get('findList')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '获取列表' })
-  async findList(@CurUser() user, @Query() query): Promise<Article[]> {
+  async findList(@CurUser() curUser, @Query() query: SearchArticleDto): Promise<Article[]> {
     return await this.articleService.selectList(query);
   }
 
   @Get('findListPage')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '获取列表（分页）' })
-  async findListPage(@CurUser() user, @Query() query: LimitArticleDto): Promise<any> {
+  async findListPage(@CurUser() curUser, @Query() query: LimitArticleDto): Promise<any> {
     return await this.articleService.selectListPage(query);
   }
 
   @Get('findById')
   @ApiOperation({ summary: '获取详情（主键 id）' })
   @UseGuards(JwtAuthGuard)
-  async findById(@CurUser() user, @Query() baseFindByIdDto: BaseFindByIdDto): Promise<Article> {
+  async findById(@CurUser() curUser, @Query() baseFindByIdDto: BaseFindByIdDto): Promise<Article> {
     return await this.articleService.selectById(baseFindByIdDto);
   }
 
   @Post('modify')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '修改' })
-  async modify(@CurUser() user, @Body() updateArticleDto: UpdateArticleDto): Promise<any> {
-    return this.articleService.update(updateArticleDto);
+  async modify(@CurUser() curUser, @Body() updateArticleDto: UpdateArticleDto): Promise<any> {
+    return this.articleService.update(updateArticleDto, curUser);
   }
 
   @Post('remove')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '删除' })
-  async remove(@CurUser() user, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
+  async remove(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
     return await this.articleService.deleteById(baseFindByIdDto);
   }
 }

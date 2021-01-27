@@ -15,14 +15,14 @@ export class ArticleService {
   ) {
   }
 
-  async insert(createArticleDto: CreateArticleDto): Promise<CreateArticleDto> {
+  async insert(curUser, createArticleDto: CreateArticleDto): Promise<CreateArticleDto> {
     return await this.articleRepository.save(createArticleDto);
   }
 
   async selectList(query): Promise<Article[]> {
     let { title } = query;
 
-    if (Utils.isEmpty(title)) {
+    if (Utils.isNil(title)) {
       title = '';
     }
 
@@ -39,7 +39,7 @@ export class ArticleService {
     limit = limit ? limit : 10;
     let offset = (page - 1) * limit;
 
-    if (Utils.isEmpty(title)) {
+    if (Utils.isNil(title)) {
       title = '';
     }
 
@@ -63,11 +63,11 @@ export class ArticleService {
     return await this.articleRepository.findOne(id);
   }
 
-  async update(updateArticleDto: UpdateArticleDto): Promise<void> {
+  async update(updateArticleDto: UpdateArticleDto, curUser?): Promise<void> {
     let { id } = updateArticleDto;
 
     let isExist = await this.articleRepository.findOne(id);
-    if (Utils.isEmpty(isExist)) {
+    if (Utils.isNil(isExist)) {
       throw new BadRequestException(`数据 id：${id} 不存在！`);
     }
 
@@ -80,7 +80,7 @@ export class ArticleService {
   async deleteById(baseFindByIdDto: BaseFindByIdDto): Promise<void> {
     let { id } = baseFindByIdDto;
     let isExist = await this.articleRepository.findOne(id);
-    if (Utils.isEmpty(isExist)) {
+    if (Utils.isNil(isExist)) {
       throw new BadRequestException(`数据 id：${id} 不存在！`);
     }
 

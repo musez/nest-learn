@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, IsInt, MaxLength } from 'class-validator';
+import { IsNotEmpty, IsString, IsInt, MaxLength, IsUUID } from 'class-validator';
 import { Transform } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { BaseConstants } from '../../../constants/constants';
@@ -6,6 +6,7 @@ import { BaseConstants } from '../../../constants/constants';
 export class BaseArticleDto {
   @ApiProperty({ description: '主键 id', example: '' })
   @IsNotEmpty({ message: '主键 id 不能为空' })
+  @IsUUID('all')
   readonly id: string;
 
   @ApiProperty({ description: '标题', example: '' })
@@ -49,38 +50,38 @@ export class BaseArticleDto {
   @ApiPropertyOptional({ description: '权重', default: 0 })
   @Transform(weight => Number.parseInt(weight))
   @IsInt({ message: '权重为数字！' })
-  readonly weight: number;
+  readonly weight?: number;
 
   @ApiPropertyOptional({ description: '内容', example: '' })
-  readonly content: string;
+  readonly content?: string;
 
   @ApiPropertyOptional({ description: '发布时间' })
-  readonly publicTime: Date;
+  readonly publicTime?: Date;
 
   @ApiPropertyOptional({ description: '浏览量', example: 0 })
   @Transform(browseCount => Number.parseInt(browseCount))
   @IsInt({ message: '浏览量为数字！' })
-  readonly browseCount: number;
+  readonly browseCount?: number;
 
   @ApiPropertyOptional({ description: '点赞量', example: 0 })
   @Transform(linkCount => Number.parseInt(linkCount))
   @IsInt({ message: '点赞量为数字！' })
-  readonly linkCount: number;
+  readonly linkCount?: number;
 
   @ApiPropertyOptional({ description: '收藏量', example: 0 })
   @Transform(collectCount => Number.parseInt(collectCount))
   @IsInt({ message: '收藏量为数字！' })
-  readonly collectCount: number;
+  readonly collectCount?: number;
 
   @ApiPropertyOptional({ description: '分享量', example: 0 })
   @Transform(shareCount => Number.parseInt(shareCount))
   @IsInt({ message: '分享量为数字！' })
-  readonly shareCount: number;
+  readonly shareCount?: number;
 
   @ApiPropertyOptional({ description: '评论量', example: 0 })
   @Transform(commentCount => Number.parseInt(commentCount))
   @IsInt({ message: '评论量为数字！' })
-  readonly commentCount: number;
+  readonly commentCount?: number;
 
   @ApiProperty({ description: '状态（0：禁用；1：启用）', example: 0 })
   @Transform(status => Number.parseInt(status))
