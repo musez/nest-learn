@@ -16,6 +16,7 @@ export class DictItem extends BaseEntity {
     this.itemValue = undefined;
     this.sort = undefined;
     this.dict = undefined;
+    this.parentId = undefined;
   }
 
   @Column('varchar', { comment: '字典项名称', length: 50 })
@@ -26,6 +27,9 @@ export class DictItem extends BaseEntity {
 
   @Column({ comment: '排序', default: () => 0 })
   sort: number;
+
+  @Column({ comment: '父 id' })
+  parentId: string;
 
   @ManyToOne((type) => Dict, (dict) => dict.dictItems)
   dict: Dict;

@@ -22,6 +22,7 @@ import { UserRoleModule } from './server/user-role/user-role.module';
 import { ArticleModule } from './server/article/article.module';
 import { CacheModule } from './server/cache/cache.module';
 import { CaptchaModule } from './server/captcha/captcha.module';
+import { MenuModule } from './server/menu/menu.module';
 
 @Module({
   imports: [
@@ -61,6 +62,7 @@ import { CaptchaModule } from './server/captcha/captcha.module';
     RoleModule,
     GroupRoleModule,
     PermissionModule,
+    MenuModule,
     RolePermissionModule,
     ArticleModule,
     DictModule,

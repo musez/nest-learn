@@ -8,6 +8,7 @@ import { DictItem } from './entities/dict-item.entity';
   imports: [TypeOrmModule.forFeature([DictItem])],
   controllers: [DictItemController],
   providers: [DictItemService],
+  exports: [DictItemService],// 把这个服务抛出，给其他模块使用
 })
 export class DictItemModule {
 }

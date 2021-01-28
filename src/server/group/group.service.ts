@@ -23,8 +23,11 @@ export class GroupService {
   ) {
   }
 
-  async insert(curUser, CreateGroupDto: CreateGroupDto): Promise<CreateGroupDto> {
-    return await this.groupRepository.save(CreateGroupDto);
+  async insert(createGroupDto: CreateGroupDto, curUser?): Promise<CreateGroupDto> {
+    let group = new Group();
+    group = Utils.dto2entity(createGroupDto, group);
+    group.createBy = curUser.id;
+    return await this.groupRepository.save(group);
   }
 
   async selectList(query): Promise<Group[]> {
@@ -78,9 +81,10 @@ export class GroupService {
     }
 
     let group = new Group();
-    Utils.dto2entity(updateGroupDto, group);
+    group = Utils.dto2entity(updateGroupDto, group);
+    group.updateBy = curUser.id;
 
-    await this.groupRepository.save(updateGroupDto);
+    await this.groupRepository.save(group);
   }
 
   async deleteById(baseFindByIdDto: BaseFindByIdDto): Promise<void> {

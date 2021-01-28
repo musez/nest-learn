@@ -26,8 +26,11 @@ export class RoleService {
   ) {
   }
 
-  async insert(curUser, createRoleDto: CreateRoleDto): Promise<CreateRoleDto> {
-    return await this.roleRepository.save(createRoleDto);
+  async insert(createRoleDto: CreateRoleDto, curUser?): Promise<CreateRoleDto> {
+    let role = new Role();
+    role = Utils.dto2entity(createRoleDto, role);
+    role.createBy = curUser.id;
+    return await this.roleRepository.save(role);
   }
 
   async selectList(query): Promise<Role[]> {
@@ -83,9 +86,10 @@ export class RoleService {
     }
 
     let role = new Role();
-    Utils.dto2entity(updateRoleDto, role);
+    role = Utils.dto2entity(updateRoleDto, role);
+    role.updateBy = curUser.id;
 
-    await this.roleRepository.save(updateRoleDto);
+    await this.roleRepository.save(role);
   }
 
   async deleteById(baseFindByIdDto: BaseFindByIdDto): Promise<void> {

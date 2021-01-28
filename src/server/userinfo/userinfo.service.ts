@@ -6,8 +6,8 @@ import { UpdateUserinfoDto } from './dto/update-userinfo.dto';
 import { CreateUserDto } from '../user/dto/create-user.dto';
 import { User } from '../user/entities/user.entity';
 import { Userinfo } from './entities/userinfo.entity';
+import { BaseFindByIdDto } from '../base.dto';
 import { Utils } from '../../utils';
-import set = Reflect.set;
 
 @Injectable()
 export class UserinfoService {
@@ -17,7 +17,7 @@ export class UserinfoService {
   ) {
   }
 
-  async insert(createUserinfoDto: CreateUserinfoDto, curUser?): Promise<CreateUserinfoDto> {
+  async insert(createUserinfoDto: CreateUserinfoDto): Promise<CreateUserinfoDto> {
     return await this.userinfoRepository.save(createUserinfoDto);
   }
 
@@ -39,5 +39,29 @@ export class UserinfoService {
         userId: userId,
       })
       .execute();
+  }
+
+  async deleteByUserId(userId: string): Promise<any> {
+    let res = await this.userinfoRepository.createQueryBuilder()
+      .delete()
+      .from(Userinfo)
+      .where('userId = :userId', {
+        userId: userId,
+      })
+      .execute();
+
+    return res;
+  }
+
+  async deleteByUserIds(userIds: string): Promise<any> {
+    let res = await this.userinfoRepository.createQueryBuilder()
+      .delete()
+      .from(Userinfo)
+      .where('userId in (:userIds)', {
+        userIds: userIds,
+      })
+      .execute();
+
+    return res;
   }
 }

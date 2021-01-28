@@ -14,6 +14,9 @@ export class BaseDictItemDto {
   @ApiProperty({ description: '字典项值', example: '字典项值1' })
   readonly itemValue: string;
 
+  @ApiProperty({ description: '父 id' })
+  readonly parentId: string;
+
   @ApiPropertyOptional({ description: '排序', example: 0 })
   @Transform(sort => Number.parseInt(sort))
   @IsInt({ message: '排序必须为数字！' })

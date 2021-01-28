@@ -14,11 +14,29 @@ export class BasePageDto {
   readonly limit?: number;
 }
 
+export class BaseModifyStatusByIdsDto {
+  @ApiProperty({ description: '主键 ids', example: '' })
+  @IsNotEmpty({ message: '主键 ids 不能为空' })
+  readonly ids: string;
+
+  @ApiProperty({ description: '状态', example: 1 })
+  @IsNotEmpty({ message: '状态不能为空' })
+  @Transform(status => Number.parseInt(status))
+  @IsInt({ message: '排序必须为数字！' })
+  readonly status: number;
+}
+
 export class BaseFindByIdDto {
   @ApiProperty({ description: '主键 id', example: '' })
   @IsNotEmpty({ message: '主键 id 不能为空' })
   @IsUUID('all')
   readonly id: string;
+}
+
+export class BaseFindByIdsDto {
+  @ApiProperty({ description: '主键 ids', example: '' })
+  @IsNotEmpty({ message: '主键 ids 不能为空' })
+  readonly ids: string;
 }
 
 export class BaseFindByPIdDto {

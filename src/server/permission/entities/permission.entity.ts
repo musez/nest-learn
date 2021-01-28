@@ -24,12 +24,6 @@ export enum PermissionType {
   FIELD = 1,
 }
 
-// 权限路由 HIDDEN
-export enum PermissionHiddenType {
-  SHOW = 0,
-  HIDDEN = 1,
-}
-
 @Entity('permission')
 @Tree('closure-table')
 export class Permission extends BaseEntity {
@@ -40,14 +34,6 @@ export class Permission extends BaseEntity {
     this.type = undefined;
     this.code = undefined;
     this.uri = undefined;
-    this.routerPath = undefined;
-    this.routerName = undefined;
-    this.routerRedirect = undefined;
-    this.routerComponent = undefined;
-    this.routerHidden = undefined;
-    this.routerTitle = undefined;
-    this.routerIcon = undefined;
-    this.routerSort = undefined;
     this.children = undefined;
     this.parent = undefined;
     this.roles = undefined;
@@ -64,30 +50,6 @@ export class Permission extends BaseEntity {
 
   @Column({ comment: '权限 URI 规则', length: 50 })
   uri: string;
-
-  @Column({ comment: '权限路由 PATH', length: 50, nullable: true })
-  routerPath: string;
-
-  @Column({ comment: '权限路由 NAME', length: 50, nullable: true })
-  routerName: string;
-
-  @Column({ comment: '权限路由 REDIRECT', length: 50, nullable: true })
-  routerRedirect: string;
-
-  @Column({ comment: '权限路由 COMPONENT', length: 50, nullable: true })
-  routerComponent: string;
-
-  @Column('tinyint', { comment: '权限路由 HIDDEN（0：显示；1：隐藏；）', nullable: true })
-  routerHidden: PermissionHiddenType;
-
-  @Column({ comment: '权限路由 TITLE', length: 50, nullable: true })
-  routerTitle: string;
-
-  @Column({ comment: '权限路由 ICON', length: 50, nullable: true })
-  routerIcon: string;
-
-  @Column({ comment: '权限路由 SORT', default: 0, nullable: true })
-  routerSort: number;
 
   @TreeChildren({ cascade: true })
   children: Permission[];

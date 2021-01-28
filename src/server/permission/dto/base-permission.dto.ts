@@ -28,34 +28,6 @@ export class BasePermissionDto {
   @IsNotEmpty({ message: '权限 URI 规则不能为空！' })
   readonly uri: string;
 
-  @ApiPropertyOptional({ description: '权限路由 PATH', example: '' })
-  readonly routerPath?: string;
-
-  @ApiPropertyOptional({ description: '权限路由 NAME', example: '' })
-  readonly routerName?: string;
-
-  @ApiPropertyOptional({ description: '权限路由 REDIRECT', example: '' })
-  readonly routerRedirect?: string;
-
-  @ApiPropertyOptional({ description: '权限路由 COMPONENT', example: '' })
-  readonly routerComponent?: string;
-
-  @ApiPropertyOptional({ description: '权限路由 HIDDEN（0：不隐藏；1：隐藏；）', example: 0 })
-  @Transform(routerHidden => Number.parseInt(routerHidden))
-  @IsInt({ message: '权限路由 HIDDEN 必须为数字！' })
-  readonly routerHidden?: number;
-
-  @ApiPropertyOptional({ description: '权限路由 TITLE', example: '' })
-  readonly routerTitle?: string;
-
-  @ApiPropertyOptional({ description: '权限路由 ICON', example: '' })
-  readonly routerIcon: string;
-
-  @ApiPropertyOptional({ description: '权限路由 SORT', example: 0 })
-  @Transform(routerSort => Number.parseInt(routerSort))
-  @IsInt({ message: '权限路由 SORT 必须为数字！' })
-  readonly routerSort?: number;
-
   @ApiPropertyOptional({ description: '父 id', example: null })
   readonly parentId?: string;
 

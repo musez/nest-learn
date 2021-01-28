@@ -21,7 +21,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { Group } from '../group/entities/group.entity';
 import { LimitUserDto } from './dto/limit-user.dto';
-import { BaseFindByIdDto } from '../base.dto';
+import { BaseFindByIdDto, BaseModifyStatusByIdsDto } from '../base.dto';
 import { CreateGroupDto } from '../group/dto/create-group.dto';
 import { BindUserGroupDto } from './dto/bind-user-group.dto';
 import { BindUserRoleDto } from '../user-role/dto/bind-user-role.dto';
@@ -73,6 +73,13 @@ export class UserController {
   @ApiOperation({ summary: '修改' })
   async modify(@CurUser() curUser, @Body() updateUserDto: UpdateUserDto): Promise<any> {
     return this.userService.update(updateUserDto, curUser);
+  }
+
+  @Post('modifyStatus')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: '修改状态' })
+  async modifyStatus(@CurUser() curUser, @Body() baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto): Promise<any> {
+    return this.userService.updateStatus(baseModifyStatusByIdsDto, curUser);
   }
 
   @Post('remove')

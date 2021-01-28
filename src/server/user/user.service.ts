@@ -7,7 +7,7 @@ import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { Userinfo } from '../userinfo/entities/userinfo.entity';
-import { BaseFindByIdDto } from '../base.dto';
+import { BaseFindByIdDto, BaseModifyStatusByIdsDto } from '../base.dto';
 import { BindUserGroupDto } from './dto/bind-user-group.dto';
 import { UserGroupService } from '../user-group/user-group.service';
 import { CreateGroupRoleDto } from '../group-role/dto/create-group-role.dto';
@@ -176,6 +176,16 @@ export class UserService {
     await this.userinfoService.updateByUserId(id, userinfo);
   }
 
+  async updateStatus(baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto, curUser?): Promise<any> {
+    let { ids, status } = baseModifyStatusByIdsDto;
+
+    return this.userRepository.createQueryBuilder()
+      .update(User)
+      .set({ status: status, updateBy: curUser.id })
+      .where('id in (:ids)', { ids: ids })
+      .execute();
+  }
+
   async deleteById(baseFindByIdDto: BaseFindByIdDto): Promise<void> {
     let { id } = baseFindByIdDto;
     let isExist = await this.userRepository.findOne(id);
@@ -183,7 +193,8 @@ export class UserService {
       throw new BadRequestException(`数据 id：${id} 不存在！`);
     }
 
-    await this.userRepository.remove(isExist);
+    this.userRepository.remove(isExist);
+    await this.userinfoService.deleteByUserId(id);
   }
 
   async bindGroups(bindUserGroupDto: BindUserGroupDto): Promise<void> {

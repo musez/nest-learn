@@ -28,30 +28,7 @@ export class DictController {
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '添加' })
   async create(@CurUser() curUser, @Body() createDictDto: CreateDictDto) {
-    let { dictItems } = createDictDto;
-    let dict = new Dict();
-
-    for (let key in createDictDto) {
-      if (!Utils.isNil(createDictDto[key])) {
-        dict[key] = createDictDto[key];
-      }
-    }
-
-    if (dictItems) {
-      for (const key in dictItems) {
-        let dictItem = new DictItem();
-
-        for (const itemKey in dictItems[key]) {
-          if (dictItems[key][itemKey]) {
-            dictItem[itemKey] = dictItems[key][itemKey];
-          }
-        }
-        dictItem.dict = dict;
-      }
-    }
-    let result = await this.dictService.insert(dict, curUser);
-
-    return result;
+    return await this.dictService.insert(createDictDto, curUser);
   }
 
   @Get('findList')
@@ -66,6 +43,20 @@ export class DictController {
   @ApiOperation({ summary: '获取列表（分页）' })
   async findListPage(@CurUser() curUser, @Query() basePageDto: BasePageDto): Promise<any> {
     return await this.dictService.selectListPage(basePageDto);
+  }
+
+  @Get('findDictItemList')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: '获取列表（字典项）' })
+  async findDictItemList(@CurUser() curUser): Promise<Dict[]> {
+    return await this.dictService.selectDictItemList();
+  }
+
+  @Get('findDictItemListPage')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: '获取列表（字典项）（分页）' })
+  async findDictItemListPage(@CurUser() curUser, @Query() basePageDto: BasePageDto): Promise<any> {
+    return await this.dictService.selectDictItemListPage(basePageDto);
   }
 
   @Get('findById')
