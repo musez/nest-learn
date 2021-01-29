@@ -16,17 +16,17 @@ export enum DictType {
 export class Dict extends BaseEntity {
   constructor() {
     super();
-    this.dictCode = undefined;
     this.dictName = undefined;
+    this.dictCode = undefined;
     this.type = undefined;
     this.dictItems = undefined;
   }
 
   @Column('varchar', { comment: '字典名称', length: 50 })
-  dictCode: string;
+  dictName: string;
 
   @Column('varchar', { comment: '字典编码', length: 50 })
-  dictName: string;
+  dictCode: string;
 
   @Column('tinyint', { comment: '字典类型（0：string；1：number；）', nullable: true, default: DictType.TEXT })
   type: DictType;

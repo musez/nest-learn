@@ -16,6 +16,8 @@ import { User } from '../user/entities/user.entity';
 import { DictItem } from '../dict-item/entities/dict-item.entity';
 import { BaseFindByIdDto, BasePageDto } from '../base.dto';
 import { CurUser } from '../../common/decorators/user.decorator';
+import { SearchDictDto } from './dto/search-dict.dto';
+import { LimitDictDto } from './dto/limit-dict.dto';
 
 @ApiTags('字典')
 @Controller('dict')
@@ -34,35 +36,35 @@ export class DictController {
   @Get('findList')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '获取列表' })
-  async findList(@CurUser() curUser): Promise<Dict[]> {
-    return await this.dictService.selectList();
+  async findList(@Query() searchDictDto: SearchDictDto): Promise<Dict[]> {
+    return await this.dictService.selectList(searchDictDto);
   }
 
   @Get('findListPage')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '获取列表（分页）' })
-  async findListPage(@CurUser() curUser, @Query() basePageDto: BasePageDto): Promise<any> {
-    return await this.dictService.selectListPage(basePageDto);
+  async findListPage(@Query() limitDictDto: LimitDictDto): Promise<any> {
+    return await this.dictService.selectListPage(limitDictDto);
   }
 
   @Get('findDictItemList')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '获取列表（字典项）' })
-  async findDictItemList(@CurUser() curUser): Promise<Dict[]> {
+  async findDictItemList(): Promise<Dict[]> {
     return await this.dictService.selectDictItemList();
   }
 
   @Get('findDictItemListPage')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '获取列表（字典项）（分页）' })
-  async findDictItemListPage(@CurUser() curUser, @Query() basePageDto: BasePageDto): Promise<any> {
+  async findDictItemListPage(@Query() basePageDto: BasePageDto): Promise<any> {
     return await this.dictService.selectDictItemListPage(basePageDto);
   }
 
   @Get('findById')
   @ApiOperation({ summary: '获取详情（主键 id）' })
   @UseGuards(JwtAuthGuard)
-  async findById(@CurUser() curUser, @Query() baseFindByIdDto: BaseFindByIdDto): Promise<Dict> {
+  async findById(@Query() baseFindByIdDto: BaseFindByIdDto): Promise<Dict> {
     return await this.dictService.selectById(baseFindByIdDto);
   }
 

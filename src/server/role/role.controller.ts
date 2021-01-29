@@ -26,6 +26,7 @@ import { LimitRoleDto } from './dto/limit-role.dto';
 import { BaseFindByIdDto } from '../base.dto';
 import { BindRolePermissionDto } from './dto/bind-role-permission.dto';
 import { CurUser } from '../../common/decorators/user.decorator';
+import { SearchRoleDto } from './dto/search-role.dto';
 
 @Controller('role')
 @ApiTags('角色')
@@ -46,21 +47,21 @@ export class RoleController {
   @Get('findList')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '获取列表' })
-  async findList(@CurUser() curUser, @Query() query): Promise<Role[]> {
-    return await this.roleService.selectList(query);
+  async findList(@Query() searchRoleDto: SearchRoleDto): Promise<Role[]> {
+    return await this.roleService.selectList(searchRoleDto);
   }
 
   @Get('findListPage')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '获取列表（分页）' })
-  async findListPage(@CurUser() curUser, @Query() query: LimitRoleDto): Promise<any> {
-    return await this.roleService.selectListPage(query);
+  async findListPage(@Query() limitRoleDto: LimitRoleDto): Promise<any> {
+    return await this.roleService.selectListPage(limitRoleDto);
   }
 
   @Get('findById')
   @ApiOperation({ summary: '获取详情（主键 id）' })
   @UseGuards(JwtAuthGuard)
-  async findById(@CurUser() curUser, @Query() baseFindByIdDto: BaseFindByIdDto): Promise<Role> {
+  async findById(@Query() baseFindByIdDto: BaseFindByIdDto): Promise<Role> {
     return await this.roleService.selectById(baseFindByIdDto);
   }
 

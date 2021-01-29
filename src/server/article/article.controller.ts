@@ -44,21 +44,21 @@ export class ArticleController {
   @Get('findList')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '获取列表' })
-  async findList(@CurUser() curUser, @Query() query: SearchArticleDto): Promise<Article[]> {
-    return await this.articleService.selectList(query);
+  async findList(@Query() searchArticleDto: SearchArticleDto): Promise<Article[]> {
+    return await this.articleService.selectList(searchArticleDto);
   }
 
   @Get('findListPage')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '获取列表（分页）' })
-  async findListPage(@CurUser() curUser, @Query() query: LimitArticleDto): Promise<any> {
-    return await this.articleService.selectListPage(query);
+  async findListPage(@Query() limitArticleDto: LimitArticleDto): Promise<any> {
+    return await this.articleService.selectListPage(limitArticleDto);
   }
 
   @Get('findById')
   @ApiOperation({ summary: '获取详情（主键 id）' })
   @UseGuards(JwtAuthGuard)
-  async findById(@CurUser() curUser, @Query() baseFindByIdDto: BaseFindByIdDto): Promise<Article> {
+  async findById(@Query() baseFindByIdDto: BaseFindByIdDto): Promise<Article> {
     return await this.articleService.selectById(baseFindByIdDto);
   }
 

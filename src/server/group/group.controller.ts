@@ -32,6 +32,7 @@ import { LimitGroupDto } from './dto/limit-group.dto';
 import { BindUserGroupDto } from '../user/dto/bind-user-group.dto';
 import { BindGroupRoleDto } from '../group-role/dto/bind-group-role.dto';
 import { CurUser } from '../../common/decorators/user.decorator';
+import { SearchGroupDto } from './dto/search-group.dto';
 
 @Controller('group')
 @ApiTags('用户组')
@@ -50,22 +51,22 @@ export class GroupController {
   @Get('findList')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '获取列表' })
-  async findList(@CurUser() curUser, @Query() query): Promise<Group[]> {
-    return await this.groupService.selectList(query);
+  async findList(@Query() searchGroupDto: SearchGroupDto): Promise<Group[]> {
+    return await this.groupService.selectList(searchGroupDto);
   }
 
   @Get('findListPage')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '获取列表（分页）' })
-  async findListPage(@CurUser() curUser, @Query() limitGroupDto: LimitGroupDto): Promise<any> {
+  async findListPage(@Query() limitGroupDto: LimitGroupDto): Promise<any> {
     return await this.groupService.selectListPage(limitGroupDto);
   }
 
   @Get('findById')
   @ApiOperation({ summary: '获取详情（主键 id）' })
   @UseGuards(JwtAuthGuard)
-  async findById(@CurUser() curUser, @Query('id') id: string): Promise<Group> {
-    return await this.groupService.selectById(id);
+  async findById(@Query('id') baseFindByIdDto: BaseFindByIdDto): Promise<Group> {
+    return await this.groupService.selectById(baseFindByIdDto);
   }
 
   @Post('modify')

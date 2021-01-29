@@ -13,6 +13,7 @@ import { GroupRoleService } from '../group-role/group-role.service';
 import { GroupRole } from '../group-role/entities/group-role.entity';
 import { BindGroupRoleDto } from '../group-role/dto/bind-group-role.dto';
 import { CreateGroupRoleDto } from '../group-role/dto/create-group-role.dto';
+import { LimitGroupDto } from './dto/limit-group.dto';
 
 @Injectable()
 export class GroupService {
@@ -44,8 +45,8 @@ export class GroupService {
     });
   }
 
-  async selectListPage(query): Promise<any> {
-    let { page, limit, name } = query;
+  async selectListPage(limitGroupDto: LimitGroupDto): Promise<any> {
+    let { page, limit, name } = limitGroupDto;
     page = page ? page : 1;
     limit = limit ? limit : 10;
     let offset = (page - 1) * limit;
@@ -69,8 +70,8 @@ export class GroupService {
     };
   }
 
-  async selectById(id: string): Promise<Group> {
-    return await this.groupRepository.findOne(id);
+  async selectById(baseFindByIdDto: BaseFindByIdDto): Promise<Group> {
+    return await this.groupRepository.findOne(baseFindByIdDto);
   }
 
   async update(updateGroupDto: UpdateGroupDto, curUser?): Promise<void> {

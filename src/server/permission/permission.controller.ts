@@ -14,6 +14,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { BaseFindByIdDto, BasePageDto } from '../base.dto';
 import { LimitPermissionDto } from './dto/limit-permission.dto';
 import { CurUser } from '../../common/decorators/user.decorator';
+import { SearchPermissionDto } from './dto/search-permission.dto';
 
 @Controller('permission')
 @ApiTags('权限')
@@ -32,14 +33,14 @@ export class PermissionController {
   @Get('findList')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '获取列表' })
-  findList(@CurUser() curUser) {
-    return this.permissionService.selectList();
+  async findList(@Query() searchPermissionDto: SearchPermissionDto) {
+    return this.permissionService.selectList(searchPermissionDto);
   }
 
   @Get('findListPage')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '获取列表（分页）' })
-  findListPage(@CurUser() curUser, @Query() limitPermissionDto: LimitPermissionDto) {
+  async findListPage(@Query() limitPermissionDto: LimitPermissionDto) {
     return this.permissionService.selectListPage(limitPermissionDto);
   }
 
@@ -47,7 +48,7 @@ export class PermissionController {
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '获取列表（父 id）' })
   @ApiQuery({ name: 'parentId', description: '父 id', required: false })
-  findListByPId(@CurUser() curUser, @Query('parentId') parentId: string) {
+  async findListByPId(@Query('parentId') parentId: string) {
     return this.permissionService.selectListByPId(parentId);
   }
 
@@ -62,14 +63,14 @@ export class PermissionController {
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '获取树（父 id）' })
   @ApiQuery({ name: 'parentId', description: '父 id', required: false })
-  findTreeByPId(@CurUser() curUser, @Query('parentId') parentId: string) {
+  findTreeByPId(@Query('parentId') parentId: string) {
     return this.permissionService.selectTreeByPId(parentId);
   }
 
   @Get('findById')
   @ApiOperation({ summary: '获取详情（主键 id）' })
   @UseGuards(JwtAuthGuard)
-  async findById(@CurUser() curUser, @Query() baseFindByIdDto: BaseFindByIdDto): Promise<Permission> {
+  async findById(@Query() baseFindByIdDto: BaseFindByIdDto): Promise<Permission> {
     return await this.permissionService.selectById(baseFindByIdDto);
   }
 

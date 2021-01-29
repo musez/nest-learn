@@ -4,6 +4,8 @@ import { Repository, Like } from 'typeorm';
 import { Utils } from './../../utils/index';
 import { Area } from './entities/area.entity';
 import { BaseFindByIdDto, BaseFindByPIdDto } from '../base.dto';
+import { LimitAreaDto } from './dto/limit-area.dto';
+import { SearchAreaDto } from './dto/search-area.dto';
 
 @Injectable()
 export class AreaService {
@@ -13,8 +15,8 @@ export class AreaService {
   ) {
   }
 
-  async selectList(query): Promise<Area[]> {
-    let { areaName } = query;
+  async selectList(limitAreaDto: LimitAreaDto): Promise<Area[]> {
+    let { areaName } = limitAreaDto;
 
     if (Utils.isNil(areaName)) {
       return [];
@@ -27,8 +29,8 @@ export class AreaService {
     });
   }
 
-  async selectListPage(query): Promise<any> {
-    let { page, limit, areaName } = query;
+  async selectListPage(limitAreaDto: LimitAreaDto): Promise<any> {
+    let { page, limit, areaName } = limitAreaDto;
     page = page ? page : 1;
     limit = limit ? limit : 10;
     let offset = (page - 1) * limit;

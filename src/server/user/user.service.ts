@@ -19,6 +19,9 @@ import { UserRole } from '../user-role/entities/user-role.entity';
 import { UserRoleService } from '../user-role/user-role.service';
 import { UserinfoService } from '../userinfo/userinfo.service';
 import { ErrorCode } from '../../constants/error';
+import { SearchAreaDto } from '../area/dto/search-area.dto';
+import { SearchUserDto } from './dto/search-user.dto';
+import { LimitUserDto } from './dto/limit-user.dto';
 
 @Injectable()
 export class UserService {
@@ -37,15 +40,15 @@ export class UserService {
     else return null;
   }
 
-  async incrementLoginCount(id: string): Promise<any> {
-    let isExist = await this.userRepository.findOne(id, {
+  async incrementLoginCount(baseFindByIdDto: BaseFindByIdDto): Promise<any> {
+    let isExist = await this.userRepository.findOne(baseFindByIdDto, {
       select: ['id'],
     });
     if (!isExist) {
       // throw new BadRequestException(`数据 id：${id} 不存在！`);
       throw new BadRequestException({
         code: ErrorCode.ParamsError.CODE,
-        msg: `数据 id：${id} 不存在！`,
+        msg: `数据 id：${baseFindByIdDto} 不存在！`,
       });
     }
 
@@ -90,8 +93,8 @@ export class UserService {
     return createUserDto;
   }
 
-  async selectList(query): Promise<User[]> {
-    let { userName } = query;
+  async selectList(searchUserDto: SearchUserDto): Promise<User[]> {
+    let { userName } = searchUserDto;
 
     if (Utils.isNil(userName)) {
       userName = '';
@@ -105,8 +108,8 @@ export class UserService {
     });
   }
 
-  async selectListPage(query): Promise<any> {
-    let { page, limit, userName, mobile } = query;
+  async selectListPage(limitUserDto: LimitUserDto): Promise<any> {
+    let { page, limit, userName, mobile } = limitUserDto;
     page = page ? page : 1;
     limit = limit ? limit : 10;
     let offset = (page - 1) * limit;
@@ -251,10 +254,10 @@ export class UserService {
     return await this.userRoleService.selectByUserId(baseFindByIdDto);
   }
 
-  async selectPermissionsByUserId(id: string): Promise<any> {
-    let isExist = await this.userRepository.findOne(id);
+  async selectPermissionsByUserId(baseFindByIdDto: BaseFindByIdDto): Promise<any> {
+    let isExist = await this.userRepository.findOne(baseFindByIdDto);
     if (Utils.isNil(isExist)) {
-      throw new BadRequestException(`数据 id：${id} 不存在！`);
+      throw new BadRequestException(`数据 id：${baseFindByIdDto} 不存在！`);
     }
 
     let res1 = await this.userRepository.query(`
@@ -265,7 +268,7 @@ export class UserService {
         inner join cms_nest.group g on gr.groupId = g.id
         inner join cms_nest.user_group ug on g.id = ug.groupId
         inner join cms_nest.user u on u.id = ug.userId
-        where u.id = '${id}'
+        where u.id = '${baseFindByIdDto}'
         `);
 
     let res2 = await this.userRepository.query(`
@@ -275,7 +278,7 @@ export class UserService {
         inner join cms_nest.role r on rp.roleId = r.id
         inner join cms_nest.user_role ur on r.id = ur.roleId
         inner join cms_nest.user u on u.id = ur.userId
-        where u.id = '${id}'
+        where u.id = '${baseFindByIdDto}'
         `);
 
     let res = Utils.assign(isExist, {

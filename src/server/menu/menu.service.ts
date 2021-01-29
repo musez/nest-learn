@@ -18,7 +18,6 @@ export class MenuService {
   ) {
   }
 
-
   async insert(createMenuDto: CreateMenuDto, curUser?): Promise<CreateMenuDto> {
     let role = new Menu();
     role = Utils.dto2entity(createMenuDto, role);
@@ -40,8 +39,8 @@ export class MenuService {
     });
   }
 
-  async selectListPage(query: LimitMenuDto): Promise<any> {
-    let { page, limit, name } = query;
+  async selectListPage(limitMenuDto: LimitMenuDto): Promise<any> {
+    let { page, limit, name } = limitMenuDto;
     page = page ? page : 1;
     limit = limit ? limit : 10;
     let offset = (page - 1) * limit;

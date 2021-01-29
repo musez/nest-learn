@@ -15,6 +15,7 @@ import { LimitPermissionDto } from '../permission/dto/limit-permission.dto';
 import { BaseFindByIdDto } from '../base.dto';
 import { Menu } from './entities/menu.entity';
 import { SearchMenuDto } from './dto/search-menu.dto';
+import { LimitMenuDto } from './dto/limit-menu.dto';
 
 @Controller('menu')
 @ApiTags('菜单')
@@ -26,28 +27,28 @@ export class MenuController {
   @Post('add')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '添加' })
-  async add(@CurUser() curUser, @Body() createPermissionDto: CreateMenuDto) {
-    return this.menuService.insert(createPermissionDto, curUser);
+  async add(@CurUser() curUser, @Body() createMenuDto: CreateMenuDto) {
+    return this.menuService.insert(createMenuDto, curUser);
   }
 
   @Get('findList')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '获取列表' })
-  findList(@CurUser() curUser, @Body() searchMenuDto: SearchMenuDto) {
+  async findList(@Query() searchMenuDto: SearchMenuDto) {
     return this.menuService.selectList(searchMenuDto);
   }
 
   @Get('findListPage')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '获取列表（分页）' })
-  findListPage(@CurUser() curUser, @Query() limitPermissionDto: LimitPermissionDto) {
-    return this.menuService.selectListPage(limitPermissionDto);
+  async findListPage(@Query() limitMenuDto: LimitMenuDto) {
+    return this.menuService.selectListPage(limitMenuDto);
   }
 
   @Get('findById')
   @ApiOperation({ summary: '获取详情（主键 id）' })
   @UseGuards(JwtAuthGuard)
-  async findById(@CurUser() curUser, @Query() baseFindByIdDto: BaseFindByIdDto): Promise<Menu> {
+  async findById(@Query() baseFindByIdDto: BaseFindByIdDto): Promise<Menu> {
     return await this.menuService.selectById(baseFindByIdDto);
   }
 

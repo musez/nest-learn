@@ -27,39 +27,39 @@ export class AreaController {
   @Get('findList')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '获取列表（默认返回 []）' })
-  async findList(@CurUser() curUser, @Query() searchAreaDto: SearchAreaDto): Promise<Area[]> {
+  async findList(@Query() searchAreaDto: SearchAreaDto): Promise<Area[]> {
     return await this.areaService.selectList(searchAreaDto);
   }
 
   @Get('findListPage')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '获取列表（分页）' })
-  async findListPage(@CurUser() curUser, @Query() limitAreaDto: LimitAreaDto): Promise<any> {
+  async findListPage(@Query() limitAreaDto: LimitAreaDto): Promise<any> {
     return await this.areaService.selectListPage(limitAreaDto);
   }
 
   @Get('findListByPId')
   @ApiOperation({ summary: '获取列表（父 id）' })
-  findListByPId(@CurUser() curUser, @Query() baseFindByPIdDto: BaseFindByPIdDto): Promise<any> {
+  async findListByPId(@Query() baseFindByPIdDto: BaseFindByPIdDto): Promise<any> {
     return this.areaService.selectListByPId(baseFindByPIdDto);
   }
 
   @Get('findTree')
   @ApiOperation({ summary: '获取树' })
-  findTree(@CurUser() curUser): Promise<any> {
+  async findTree(@CurUser() curUser): Promise<any> {
     return this.areaService.selectTree();
   }
 
   @Get('findTreeByPId')
   @ApiOperation({ summary: '获取树（父 id）' })
-  findTreeByPId(@CurUser() curUser, @Query() baseFindByPIdDto: BaseFindByPIdDto): Promise<any> {
+  async findTreeByPId(@Query() baseFindByPIdDto: BaseFindByPIdDto): Promise<any> {
     return this.areaService.selectTreeByPId(baseFindByPIdDto);
   }
 
   @Get('findById')
   @ApiOperation({ summary: '获取详情（主键 id）' })
   @UseGuards(JwtAuthGuard)
-  async findById(@CurUser() curUser, @Query() baseFindByIdDto: BaseFindByIdDto): Promise<Area> {
+  async findById(@Query() baseFindByIdDto: BaseFindByIdDto): Promise<Area> {
     return await this.areaService.selectById(baseFindByIdDto);
   }
 }

@@ -6,6 +6,8 @@ import { UpdatePermissionDto } from './dto/update-permission.dto';
 import { Permission } from './entities/permission.entity';
 import { CreatePermissionDto } from './dto/create-permission.dto';
 import { BaseFindByIdDto } from '../base.dto';
+import { SearchPermissionDto } from './dto/search-permission.dto';
+import { LimitPermissionDto } from './dto/limit-permission.dto';
 
 @Injectable()
 export class PermissionService {
@@ -15,7 +17,7 @@ export class PermissionService {
   ) {
   }
 
-  async insert(curUser, createPermissionDto: CreatePermissionDto): Promise<Permission> {
+  async insert(createPermissionDto: CreatePermissionDto, curUser?): Promise<Permission> {
     let { parentId, ...result } = createPermissionDto;
 
     let child = new Permission();
@@ -31,17 +33,16 @@ export class PermissionService {
     return await this.permissionRepository.save(child);
   }
 
-  async selectList(): Promise<Permission[]> {
+  async selectList(searchPermissionDto: SearchPermissionDto): Promise<Permission[]> {
     return await this.permissionRepository.find();
   }
 
-  async selectListPage(query): Promise<any> {
-    let { page, limit, parentId, name } = query;
+  async selectListPage(limitPermissionDto: LimitPermissionDto): Promise<any> {
+    let { page, limit, parentId, name } = limitPermissionDto;
 
     page = page ? page : 1;
     limit = limit ? limit : 10;
     let offset = (page - 1) * limit;
-
 
     if (Utils.isNil(name)) {
       name = '';

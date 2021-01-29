@@ -6,6 +6,8 @@ import { CreateArticleDto } from './dto/create-article.dto';
 import { UpdateArticleDto } from './dto/update-article.dto';
 import { BaseFindByIdDto } from '../base.dto';
 import { Article } from './entities/article.entity';
+import { SearchArticleDto } from './dto/search-article.dto';
+import { LimitArticleDto } from './dto/limit-article.dto';
 
 @Injectable()
 export class ArticleService {
@@ -19,8 +21,8 @@ export class ArticleService {
     return await this.articleRepository.save(createArticleDto);
   }
 
-  async selectList(query): Promise<Article[]> {
-    let { title } = query;
+  async selectList(searchArticleDto: SearchArticleDto): Promise<Article[]> {
+    let { title } = searchArticleDto;
 
     if (Utils.isNil(title)) {
       title = '';
@@ -33,8 +35,8 @@ export class ArticleService {
     });
   }
 
-  async selectListPage(query): Promise<any> {
-    let { page, limit, title } = query;
+  async selectListPage(limitArticleDto: LimitArticleDto): Promise<any> {
+    let { page, limit, title } = limitArticleDto;
     page = page ? page : 1;
     limit = limit ? limit : 10;
     let offset = (page - 1) * limit;

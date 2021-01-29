@@ -156,7 +156,7 @@ export class FileController {
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '获取文件（主键 id）' })
   @ApiQuery({ name: 'id', description: '主键 id', required: true })
-  findById(@CurUser() curUser, @Query() baseFindByIdDto: BaseFindByIdDto) {
+  findById( @Query() baseFindByIdDto: BaseFindByIdDto) {
     return this.fileService.selectById(baseFindByIdDto);
   }
 

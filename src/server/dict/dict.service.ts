@@ -1,13 +1,15 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, Like } from 'typeorm';
 import { Utils } from './../../utils/index';
 import { CreateDictDto } from './dto/create-dict.dto';
 import { UpdateDictDto } from './dto/update-dict.dto';
 import { Dict } from './entities/dict.entity';
 import { DictItem } from '../dict-item/entities/dict-item.entity';
-import { BaseFindByIdDto } from '../base.dto';
+import { BaseFindByIdDto, BasePageDto } from '../base.dto';
 import { DictItemService } from '../dict-item/dict-item.service';
+import { SearchDictDto } from './dto/search-dict.dto';
+import { LimitDictDto } from './dto/limit-dict.dto';
 
 @Injectable()
 export class DictService {
@@ -45,12 +47,22 @@ export class DictService {
     return await this.dictItemService.insertBatch(dictItemList);
   }
 
-  async selectList(): Promise<Dict[]> {
-    return await this.dictRepository.find();
+  async selectList(searchDictDto: SearchDictDto): Promise<Dict[]> {
+    let { dictName } = searchDictDto;
+
+    if (Utils.isNil(dictName)) {
+      dictName = '';
+    }
+
+    return await this.dictRepository.find({
+      where: {
+        dictName: Like(`%${dictName}%`),
+      },
+    });
   }
 
-  async selectListPage(query): Promise<any> {
-    let { page, limit } = query;
+  async selectListPage(limitDictDto: LimitDictDto): Promise<any> {
+    let { page, limit } = limitDictDto;
     page = page ? page : 1;
     limit = limit ? limit : 10;
     let offset = (page - 1) * limit;
@@ -75,8 +87,8 @@ export class DictService {
     });
   }
 
-  async selectDictItemListPage(query): Promise<any> {
-    let { page, limit } = query;
+  async selectDictItemListPage(basePageDto: BasePageDto): Promise<any> {
+    let { page, limit } = basePageDto;
     page = page ? page : 1;
     limit = limit ? limit : 10;
     let offset = (page - 1) * limit;

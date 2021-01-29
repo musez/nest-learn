@@ -16,6 +16,8 @@ import { CreateGroupRoleDto } from '../group-role/dto/create-group-role.dto';
 import { BindRolePermissionDto } from './dto/bind-role-permission.dto';
 import { CreateRolePermissionDto } from '../role-permission/dto/create-role-permission.dto';
 import { RolePermissionService } from '../role-permission/role-permission.service';
+import { SearchRoleDto } from './dto/search-role.dto';
+import { LimitRoleDto } from './dto/limit-role.dto';
 
 @Injectable()
 export class RoleService {
@@ -33,8 +35,8 @@ export class RoleService {
     return await this.roleRepository.save(role);
   }
 
-  async selectList(query): Promise<Role[]> {
-    let { name } = query;
+  async selectList(searchRoleDto: SearchRoleDto): Promise<Role[]> {
+    let { name } = searchRoleDto;
 
     if (Utils.isNil(name)) {
       name = '';
@@ -47,8 +49,8 @@ export class RoleService {
     });
   }
 
-  async selectListPage(query): Promise<any> {
-    let { page, limit, name } = query;
+  async selectListPage(limitRoleDto: LimitRoleDto): Promise<any> {
+    let { page, limit, name } = limitRoleDto;
     page = page ? page : 1;
     limit = limit ? limit : 10;
     let offset = (page - 1) * limit;

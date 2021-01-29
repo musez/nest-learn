@@ -48,7 +48,7 @@ export class UserController {
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(ClassSerializerInterceptor)
   @ApiOperation({ summary: '获取列表' })
-  async findList(@CurUser() curUser, @Query()searchUserDto: SearchUserDto): Promise<User[]> {
+  async findList(@Query() searchUserDto: SearchUserDto): Promise<User[]> {
     return await this.userService.selectList(searchUserDto);
   }
 
@@ -56,7 +56,7 @@ export class UserController {
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(ClassSerializerInterceptor)
   @ApiOperation({ summary: '获取列表（分页）' })
-  async findListPage(@CurUser() curUser, @Query() limitUserDto: LimitUserDto): Promise<any> {
+  async findListPage(@Query() limitUserDto: LimitUserDto): Promise<any> {
     return await this.userService.selectListPage(limitUserDto);
   }
 
@@ -64,7 +64,7 @@ export class UserController {
   @UseInterceptors(ClassSerializerInterceptor)
   @ApiOperation({ summary: '获取详情（主键 id）' })
   @UseGuards(JwtAuthGuard)
-  async findById(@CurUser() curUser, @Query() baseFindByIdDto: BaseFindByIdDto): Promise<User> {
+  async findById(@Query() baseFindByIdDto: BaseFindByIdDto): Promise<User> {
     return await this.userService.selectById(baseFindByIdDto);
   }
 
