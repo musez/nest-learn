@@ -6,11 +6,16 @@ import {
   UpdateDateColumn,
   BeforeInsert,
   JoinTable,
+  JoinColumn,
   ManyToMany,
   OneToMany,
+  ManyToOne,
   BeforeUpdate,
 } from 'typeorm';
 import { BaseEntity } from '../../base.entity';
+import { Group } from '../../group/entities/group.entity';
+import { Role } from '../../role/entities/role.entity';
+import { ArticleCat } from '../../article-cat/entities/article-cat.entity';
 
 // 媒体类型
 export enum ArticleType {
@@ -96,4 +101,7 @@ export class Article extends BaseEntity {
 
   @Column('int', { comment: '评论量', default: () => 0 })
   commentCount: number;
+
+  @OneToMany(type => ArticleCat, cat => cat.articles)
+  cats: ArticleCat[];
 }

@@ -23,6 +23,8 @@ import { ArticleModule } from './server/article/article.module';
 import { CacheModule } from './server/cache/cache.module';
 import { CaptchaModule } from './server/captcha/captcha.module';
 import { MenuModule } from './server/menu/menu.module';
+import { ArticleCatModule } from './server/article-cat/article-cat.module';
+import { ArticleDataCatModule } from './server/article-data-cat/article-data-cat.module';
 
 @Module({
   imports: [
@@ -65,6 +67,8 @@ import { MenuModule } from './server/menu/menu.module';
     MenuModule,
     RolePermissionModule,
     ArticleModule,
+    ArticleCatModule,
+    ArticleDataCatModule,
     DictModule,
     DictItemModule,
     AreaModule,
