@@ -45,11 +45,11 @@ export class ArticleService {
       title = '';
     }
 
-    let res = await this.articleRepository.createQueryBuilder('article')
+    let res = await this.articleRepository.createQueryBuilder()
       .skip(offset)
       .take(limit)
-      .orderBy('article.createTime', 'ASC')
-      .where('article.title like :title', { title: `%${title}%` })
+      .orderBy('createTime', 'ASC')
+      .where('title like :title', { title: `%${title}%` })
       .getManyAndCount();
 
     return {

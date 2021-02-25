@@ -12,7 +12,7 @@ import { UpdateMenuDto } from './dto/update-menu.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurUser } from '../../common/decorators/user.decorator';
 import { LimitPermissionDto } from '../permission/dto/limit-permission.dto';
-import { BaseFindByIdDto } from '../base.dto';
+import { BaseFindByIdDto, BaseFindByPIdDto } from '../base.dto';
 import { Menu } from './entities/menu.entity';
 import { SearchMenuDto } from './dto/search-menu.dto';
 import { LimitMenuDto } from './dto/limit-menu.dto';
@@ -39,10 +39,28 @@ export class MenuController {
   }
 
   @Get('findListPage')
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '获取列表（分页）' })
   async findListPage(@Query() limitMenuDto: LimitMenuDto) {
     return this.menuService.selectListPage(limitMenuDto);
+  }
+
+  @Get('findListByPId')
+  @ApiOperation({ summary: '获取列表（父 id）' })
+  async findListByPId(@Query() baseFindByPIdDto: BaseFindByPIdDto): Promise<any> {
+    return this.menuService.selectListByPId(baseFindByPIdDto);
+  }
+
+  @Get('findTree')
+  @ApiOperation({ summary: '获取树' })
+  async findTree(@CurUser() curUser): Promise<any> {
+    return this.menuService.selectTree();
+  }
+
+  @Get('findTreeByPId')
+  @ApiOperation({ summary: '获取树（父 id）' })
+  async findTreeByPId(@Query() baseFindByPIdDto: BaseFindByPIdDto): Promise<any> {
+    return this.menuService.selectTreeByPId(baseFindByPIdDto);
   }
 
   @Get('findById')

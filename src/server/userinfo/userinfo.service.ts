@@ -27,7 +27,7 @@ export class UserinfoService {
   }
 
   async updateByUserId(id: string, updateUserinfoDto: UpdateUserinfoDto): Promise<any> {
-    return await this.userinfoRepository.createQueryBuilder('userinfo')
+    return await this.userinfoRepository.createQueryBuilder()
       .update(Userinfo)
       .set({
         provinceId: updateUserinfoDto.provinceId,

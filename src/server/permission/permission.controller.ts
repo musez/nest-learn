@@ -37,19 +37,19 @@ export class PermissionController {
     return this.permissionService.selectList(searchPermissionDto);
   }
 
-  @Get('findListPage')
-  @UseGuards(JwtAuthGuard)
-  @ApiOperation({ summary: '获取列表（分页）' })
-  async findListPage(@Query() limitPermissionDto: LimitPermissionDto) {
-    return this.permissionService.selectListPage(limitPermissionDto);
-  }
-
   @Get('findListByPId')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '获取列表（父 id）' })
   @ApiQuery({ name: 'parentId', description: '父 id', required: false })
   async findListByPId(@Query('parentId') parentId: string) {
     return this.permissionService.selectListByPId(parentId);
+  }
+
+  @Get('findListPage')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: '获取列表（分页）' })
+  async findListPage(@Query() limitPermissionDto: LimitPermissionDto) {
+    return this.permissionService.selectListPage(limitPermissionDto);
   }
 
   @Get('findTree')

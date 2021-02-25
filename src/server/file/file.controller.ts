@@ -60,19 +60,19 @@ export class FileController {
     },
   })
   @UseInterceptors(FileInterceptor('file'))
-  UploadedFile(@CurUser() curUser, @UploadedFile() file, @Body() body) {
+  upload(@CurUser() curUser, @UploadedFile() file, @Body() body) {
     if (Utils.isNil(file)) {
       throw new BadRequestException(`文件不能为空！`);
     }
 
-    const writeStream = createWriteStream(join(__dirname, '../../../', 'uploads', `${file.originalname}`));
-
+    // const writeStream = createWriteStream(join(__dirname, '../../../', 'uploads', `${file.originalname}`));
     // 将 16 进制写入地址
     // writeStream.write(file.buffer);
 
     // 获取 body 中的文本参数
     let { description, extId } = body;
     let fileEntity = new File();
+
     fileEntity.extId = extId;
     fileEntity.description = description;
     fileEntity.originalName = file.originalname;
@@ -119,7 +119,7 @@ export class FileController {
   }, {
     name: 'description', maxCount: 1,
   }]))
-  UploadedFiles(@CurUser() curUser, @UploadedFiles() files, @Body() body) {
+  uploads(@CurUser() curUser, @UploadedFiles() files, @Body() body) {
     if (Utils.isNil(files.files)) {
       throw new BadRequestException(`文件不能为空！`);
     }
@@ -129,7 +129,7 @@ export class FileController {
     let filesEntity = [];
 
     for (const file of files.files) {
-      const writeStream = createWriteStream(join(__dirname, '../../../', 'uploads', `${file.originalname}`));
+      // const writeStream = createWriteStream(join(__dirname, '../../../', 'uploads', `${file.originalname}`));
       // 将 16 进制写入地址
       // writeStream.write(file.buffer);
 
@@ -166,5 +166,12 @@ export class FileController {
   @ApiQuery({ name: 'extId', description: '关联 id', required: true })
   findByExtId(@Query('extId') extId: string) {
     return this.fileService.selectByExtId(extId);
+  }
+
+  @Post('remove')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: '删除' })
+  async remove(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
+    return await this.fileService.deleteById(baseFindByIdDto);
   }
 }

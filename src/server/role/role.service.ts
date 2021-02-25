@@ -59,11 +59,11 @@ export class RoleService {
       name = '';
     }
 
-    let res = await this.roleRepository.createQueryBuilder('role')
+    let res = await this.roleRepository.createQueryBuilder()
       .skip(offset)
       .take(limit)
-      .orderBy('role.createTime', 'ASC')
-      .where('role.name like :name', { name: `%${name}%` })
+      .orderBy('createTime', 'ASC')
+      .where('name like :name', { name: `%${name}%` })
       .getManyAndCount();
 
     return {

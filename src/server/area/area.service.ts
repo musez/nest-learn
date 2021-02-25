@@ -30,20 +30,30 @@ export class AreaService {
   }
 
   async selectListPage(limitAreaDto: LimitAreaDto): Promise<any> {
-    let { page, limit, areaName } = limitAreaDto;
+    let { page, limit, parentId, areaName } = limitAreaDto;
     page = page ? page : 1;
     limit = limit ? limit : 10;
     let offset = (page - 1) * limit;
 
-    if (Utils.isNil(areaName)) {
-      areaName = '';
+    let queryConditionList = [];
+    let parentIds = [];
+    if (!Utils.isNil(parentId)) {
+      parentIds = await this.selectChildrenIdsRecursive(parentId);
+      queryConditionList.push('parentId in (:parentIds)');
     }
+    if (!Utils.isNil(areaName)) {
+      queryConditionList.push('areaName = :areaName');
+    }
+    let queryCondition = queryConditionList.join(' AND ');
 
-    let res = await this.areaRepository.createQueryBuilder('area')
+    let res = await this.areaRepository.createQueryBuilder()
+      .where(queryCondition, {
+        parentId: parentIds,
+        areaName: `%${areaName}%`,
+      })
       .skip(offset)
       .take(limit)
-      .orderBy('area.createTime', 'ASC')
-      .where('area.areaName like :areaName', { areaName: `%${areaName}%` })
+      .orderBy('createTime', 'ASC')
       .getManyAndCount();
 
     return {
@@ -92,6 +102,23 @@ export class AreaService {
 
       return result;
     }
+  }
+
+  async selectChildrenIdsRecursive(id): Promise<any> {
+    let list = [];
+    let childList = await this.areaRepository.find({
+      where: {
+        parentId: id,
+      },
+    });
+
+    for (const item of childList) {
+      let obj = { ...item };
+      await this.selectChildrenIdsRecursive(item.id);
+      list.push(obj.id);
+    }
+
+    return list;
   }
 
   async selectChildrenRecursive(id): Promise<any> {

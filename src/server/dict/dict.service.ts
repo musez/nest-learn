@@ -67,8 +67,8 @@ export class DictService {
     limit = limit ? limit : 10;
     let offset = (page - 1) * limit;
 
-    let res = await this.dictRepository.createQueryBuilder('dict')
-      .orderBy('dict.createTime', 'ASC')
+    let res = await this.dictRepository.createQueryBuilder()
+      .orderBy('createTime', 'ASC')
       .skip(offset)
       .take(limit)
       .getManyAndCount();
@@ -93,9 +93,9 @@ export class DictService {
     limit = limit ? limit : 10;
     let offset = (page - 1) * limit;
 
-    let res = await this.dictRepository.createQueryBuilder('dict')
-      .innerJoinAndSelect('dict.dictItems', 'dictItems')
-      .orderBy('dict.createTime', 'ASC')
+    let res = await this.dictRepository.createQueryBuilder()
+      .innerJoinAndSelect('dictItems', 'dictItems')
+      .orderBy('createTime', 'ASC')
       .skip(offset)
       .take(limit)
       .getManyAndCount();

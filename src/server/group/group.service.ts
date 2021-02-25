@@ -55,11 +55,11 @@ export class GroupService {
       name = '';
     }
 
-    let res = await this.groupRepository.createQueryBuilder('user_group')
+    let res = await this.groupRepository.createQueryBuilder()
       .skip(offset)
       .take(limit)
-      .orderBy('user_group.createTime', 'ASC')
-      .where('user_group.name like :name', { name: `%${name}%` })
+      .orderBy('createTime', 'ASC')
+      .where('name like :name', { name: `%${name}%` })
       .getManyAndCount();
 
     return {

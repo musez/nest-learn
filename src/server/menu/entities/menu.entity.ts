@@ -35,6 +35,7 @@ export class Menu extends BaseEntity {
     this.routerTitle = undefined;
     this.routerIcon = undefined;
     this.routerSort = undefined;
+    this.parentId = undefined;
   }
 
   @Column('varchar', { comment: '名称', length: 50 })
@@ -64,6 +65,6 @@ export class Menu extends BaseEntity {
   @Column({ comment: '权限路由 SORT', default: 0, nullable: true })
   routerSort: number;
 
-  @Column({ comment: '父 id' })
+  @Column({ comment: '父 id', nullable: true })
   parentId: string;
 }

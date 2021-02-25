@@ -46,11 +46,11 @@ export class ArticleCatService {
       catName = '';
     }
 
-    let res = await this.articleCatRepository.createQueryBuilder('article_cat')
+    let res = await this.articleCatRepository.createQueryBuilder()
       .skip(offset)
       .take(limit)
-      .orderBy('article_cat.createTime', 'ASC')
-      .where('article_cat.title like :catName', { title: `%${catName}%` })
+      .orderBy('createTime', 'ASC')
+      .where('title like :catName', { title: `%${catName}%` })
       .getManyAndCount();
 
     return {

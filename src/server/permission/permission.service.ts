@@ -56,7 +56,7 @@ export class PermissionService {
       }
 
       res = await this.permissionRepository.createDescendantsQueryBuilder('permission', 'permissionClosure', isExist)
-        .andWhere('name like :name', {
+        .andWhere('permission.name like :name', {
           name: `%${name}%`,
         })
         .skip(offset)
@@ -64,13 +64,13 @@ export class PermissionService {
         .orderBy('permission.createTime', 'ASC')
         .getManyAndCount();
     } else {
-      res = await this.permissionRepository.createQueryBuilder('permission')
+      res = await this.permissionRepository.createQueryBuilder()
         .andWhere('name like :name', {
           name: `%${name}%`,
         })
         .skip(offset)
         .take(limit)
-        .orderBy('permission.createTime', 'ASC')
+        .orderBy('createTime', 'ASC')
         .getManyAndCount();
     }
 

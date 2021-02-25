@@ -115,10 +115,10 @@ export class UserService {
     let offset = (page - 1) * limit;
 
     let queryConditionList = [];
-    if (userName) {
-      queryConditionList.push('user.userName like :userName');
+    if (!Utils.isNil(userName)) {
+      queryConditionList.push('user.userName LIKE :userName');
     }
-    if (mobile) {
+    if (!Utils.isNil(mobile)) {
       queryConditionList.push('user.mobile = :mobile');
     }
     let queryCondition = queryConditionList.join(' AND ');

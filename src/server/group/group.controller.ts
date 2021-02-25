@@ -65,7 +65,7 @@ export class GroupController {
   @Get('findById')
   @ApiOperation({ summary: '获取详情（主键 id）' })
   @UseGuards(JwtAuthGuard)
-  async findById(@Query('id') baseFindByIdDto: BaseFindByIdDto): Promise<Group> {
+  async findById(@Query() baseFindByIdDto: BaseFindByIdDto): Promise<Group> {
     return await this.groupService.selectById(baseFindByIdDto);
   }
 
