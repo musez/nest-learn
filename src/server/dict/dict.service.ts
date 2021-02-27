@@ -20,6 +20,9 @@ export class DictService {
   ) {
   }
 
+  /**
+   * 添加
+   */
   async insert(createDictDto: CreateDictDto, curUser?) {
     let { dictItems } = createDictDto;
 
@@ -47,10 +50,13 @@ export class DictService {
     return await this.dictItemService.insertBatch(dictItemList);
   }
 
+  /**
+   * 获取列表
+   */
   async selectList(searchDictDto: SearchDictDto): Promise<Dict[]> {
     let { dictName } = searchDictDto;
 
-    if (Utils.isNil(dictName)) {
+    if (Utils.isBlank(dictName)) {
       dictName = '';
     }
 
@@ -61,16 +67,30 @@ export class DictService {
     });
   }
 
+  /**
+   * 获取列表（分页）
+   */
   async selectListPage(limitDictDto: LimitDictDto): Promise<any> {
-    let { page, limit } = limitDictDto;
+    let { page, limit, dictName } = limitDictDto;
     page = page ? page : 1;
     limit = limit ? limit : 10;
     let offset = (page - 1) * limit;
 
+    let queryConditionList = [];
+
+    if (!Utils.isBlank(dictName)) {
+      queryConditionList.push('dictName LIKE :dictName');
+    }
+
+    let queryCondition = queryConditionList.join(' AND ');
+
     let res = await this.dictRepository.createQueryBuilder()
-      .orderBy('createTime', 'ASC')
+      .where(queryCondition, {
+        dictName: `%${dictName}%`,
+      })
       .skip(offset)
       .take(limit)
+      .orderBy('createTime', 'ASC')
       .getManyAndCount();
 
     return {
@@ -108,6 +128,9 @@ export class DictService {
     };
   }
 
+  /**
+   * 获取详情（主键 id）
+   */
   async selectById(baseFindByIdDto: BaseFindByIdDto): Promise<Dict> {
     let { id } = baseFindByIdDto;
     return await this.dictRepository.findOne(id, {
@@ -115,6 +138,9 @@ export class DictService {
     });
   }
 
+  /**
+   * 修改
+   */
   async update(updateDictDto: UpdateDictDto, curUser?): Promise<any> {
     let { id, dictItems } = updateDictDto;
 
@@ -145,6 +171,9 @@ export class DictService {
     return result;
   }
 
+  /**
+   * 删除
+   */
   async deleteById(baseFindByIdDto: BaseFindByIdDto): Promise<void> {
     let { id } = baseFindByIdDto;
     let isExist = await this.dictRepository.findOne(id);

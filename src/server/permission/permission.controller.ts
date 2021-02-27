@@ -11,7 +11,7 @@ import { CreatePermissionDto } from './dto/create-permission.dto';
 import { UpdatePermissionDto } from './dto/update-permission.dto';
 import { Permission } from './entities/permission.entity';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { BaseFindByIdDto, BasePageDto } from '../base.dto';
+import { BaseFindByIdDto, BaseFindByPIdDto, BasePageDto } from '../base.dto';
 import { LimitPermissionDto } from './dto/limit-permission.dto';
 import { CurUser } from '../../common/decorators/user.decorator';
 import { SearchPermissionDto } from './dto/search-permission.dto';
@@ -37,14 +37,6 @@ export class PermissionController {
     return this.permissionService.selectList(searchPermissionDto);
   }
 
-  @Get('findListByPId')
-  @UseGuards(JwtAuthGuard)
-  @ApiOperation({ summary: '获取列表（父 id）' })
-  @ApiQuery({ name: 'parentId', description: '父 id', required: false })
-  async findListByPId(@Query('parentId') parentId: string) {
-    return this.permissionService.selectListByPId(parentId);
-  }
-
   @Get('findListPage')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '获取列表（分页）' })
@@ -55,16 +47,9 @@ export class PermissionController {
   @Get('findTree')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '获取树' })
-  findTree() {
-    return this.permissionService.selectTree();
-  }
-
-  @Get('findTreeByPId')
-  @UseGuards(JwtAuthGuard)
-  @ApiOperation({ summary: '获取树（父 id）' })
   @ApiQuery({ name: 'parentId', description: '父 id', required: false })
-  findTreeByPId(@Query('parentId') parentId: string) {
-    return this.permissionService.selectTreeByPId(parentId);
+  findTree(@Query() baseFindByPIdDto: BaseFindByPIdDto) {
+    return this.permissionService.selectTree(baseFindByPIdDto);
   }
 
   @Get('findById')
@@ -79,5 +64,12 @@ export class PermissionController {
   @ApiOperation({ summary: '修改' })
   async modify(@CurUser() curUser, @Body() updatePermissionDto: UpdatePermissionDto): Promise<any> {
     return this.permissionService.update(updatePermissionDto, curUser);
+  }
+
+  @Post('remove')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: '删除' })
+  async remove(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
+    return await this.permissionService.deleteById(baseFindByIdDto);
   }
 }

@@ -3,6 +3,9 @@ import { IsNotEmpty, IsString, IsInt, IsUUID, MaxLength } from 'class-validator'
 import { BasePageDto } from '../../base.dto';
 
 export class LimitArticleCatDto extends PartialType(BasePageDto) {
+  @ApiPropertyOptional({ description: '父 id' })
+  readonly parentId?: string;
+
   @ApiPropertyOptional({ description: '栏目名称' })
   readonly catName?: string;
 }

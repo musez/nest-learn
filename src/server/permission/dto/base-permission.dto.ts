@@ -14,7 +14,7 @@ export class BasePermissionDto {
   @MaxLength(BaseConstants.NAME_MAX_LENGTH, { message: '名称不能大于 $constraint1 位！' })
   readonly name: string;
 
-  @ApiProperty({ description: '权限类别（1：导航；2：页面；3：操作；4：字段）' })
+  @ApiProperty({ description: '权限类别（1：目录；2：菜单；3：操作；4：字段）' })
   @IsNotEmpty({ message: '权限类别不能为空！' })
   @Transform(type => Number.parseInt(type))
   @IsInt({ message: '权限类别必须为数字！' })

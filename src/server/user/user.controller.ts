@@ -105,14 +105,14 @@ export class UserController {
 
   @Post('bindRoles')
   @UseGuards(JwtAuthGuard)
-  @ApiOperation({ summary: '绑定用户组' })
+  @ApiOperation({ summary: '绑定角色' })
   async bindRoles(@CurUser() curUser, @Body() bindUserRoleDto: BindUserRoleDto): Promise<any> {
     return await this.userService.bindRoles(bindUserRoleDto);
   }
 
   @Get('getRoles')
   @UseGuards(JwtAuthGuard)
-  @ApiOperation({ summary: '获取用户组' })
+  @ApiOperation({ summary: '获取角色' })
   async findRolesByUserId(@CurUser() curUser, @Query() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
     return await this.userService.selectRolesByUserId(baseFindByIdDto);
   }

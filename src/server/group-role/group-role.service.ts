@@ -13,6 +13,9 @@ export class GroupRoleService {
   ) {
   }
 
+  /**
+   * 添加
+   */
   async insert(createGroupRoleDto: CreateGroupRoleDto[]): Promise<CreateGroupRoleDto[]> {
     return await this.groupRoleRepository.save(createGroupRoleDto);
   }

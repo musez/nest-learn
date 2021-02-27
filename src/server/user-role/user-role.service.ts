@@ -16,6 +16,9 @@ export class UserRoleService {
   ) {
   }
 
+  /**
+   * 添加
+   */
   async insert(createUserRoleDto: CreateUserRoleDto[]): Promise<CreateUserRoleDto[]> {
     return await this.userRoleRepository.save(createUserRoleDto);
   }

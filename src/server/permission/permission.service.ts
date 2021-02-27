@@ -5,7 +5,7 @@ import { Utils } from './../../utils/index';
 import { UpdatePermissionDto } from './dto/update-permission.dto';
 import { Permission } from './entities/permission.entity';
 import { CreatePermissionDto } from './dto/create-permission.dto';
-import { BaseFindByIdDto } from '../base.dto';
+import { BaseFindByIdDto, BaseFindByPIdDto } from '../base.dto';
 import { SearchPermissionDto } from './dto/search-permission.dto';
 import { LimitPermissionDto } from './dto/limit-permission.dto';
 
@@ -13,10 +13,13 @@ import { LimitPermissionDto } from './dto/limit-permission.dto';
 export class PermissionService {
   constructor(
     @InjectRepository(Permission)
-    private readonly permissionRepository: TreeRepository<Permission>,
+    private readonly permissionRepository: Repository<Permission>,
   ) {
   }
 
+  /**
+   * 添加
+   */
   async insert(createPermissionDto: CreatePermissionDto, curUser?): Promise<Permission> {
     let { parentId, ...result } = createPermissionDto;
 
@@ -25,18 +28,47 @@ export class PermissionService {
       child[key] = result[key];
     }
 
-    let parent = await this.permissionRepository.findOne(parentId);
-    if (parent) {
-      child.parent = parent;
-    }
+    // let parent = await this.permissionRepository.findOne(parentId);
+    // if (parent) {
+    //   child.parent = parent;
+    // }
 
     return await this.permissionRepository.save(child);
   }
 
+  /**
+   * 获取列表
+   */
   async selectList(searchPermissionDto: SearchPermissionDto): Promise<Permission[]> {
-    return await this.permissionRepository.find();
+    let { parentId, name } = searchPermissionDto;
+
+    let queryConditionList = [];
+
+    let parentIds = [];
+    if (!Utils.isBlank(parentId)) {
+      parentIds = await this.selectChildrenIdsRecursive(parentId);
+      queryConditionList.push('parentId IN (:...parentIds)');
+    }
+
+    if (!Utils.isBlank(name)) {
+      queryConditionList.push('name LIKE :name');
+    }
+
+    let queryCondition = queryConditionList.join(' AND ');
+
+    let res = await this.permissionRepository.createQueryBuilder()
+      .orderBy('createTime', 'ASC')
+      .where(queryCondition, {
+        parentIds: parentIds,
+        name: `%${name}%`,
+      })
+      .getMany();
+    return res;
   }
 
+  /**
+   * 获取列表（分页）
+   */
   async selectListPage(limitPermissionDto: LimitPermissionDto): Promise<any> {
     let { page, limit, parentId, name } = limitPermissionDto;
 
@@ -44,35 +76,26 @@ export class PermissionService {
     limit = limit ? limit : 10;
     let offset = (page - 1) * limit;
 
-    if (Utils.isNil(name)) {
-      name = '';
+    let queryConditionList = [];
+    let parentIds = [];
+    if (!Utils.isBlank(parentId)) {
+      parentIds = await this.selectChildrenIdsRecursive(parentId);
+      queryConditionList.push('parentId IN (:...parentIds)');
     }
-
-    let res = [];
-    if (parentId) {
-      let isExist = await this.permissionRepository.findOne(parentId);
-      if (Utils.isNil(isExist)) {
-        throw new BadRequestException(`数据 parentId：${parentId} 不存在！`);
-      }
-
-      res = await this.permissionRepository.createDescendantsQueryBuilder('permission', 'permissionClosure', isExist)
-        .andWhere('permission.name like :name', {
-          name: `%${name}%`,
-        })
-        .skip(offset)
-        .take(limit)
-        .orderBy('permission.createTime', 'ASC')
-        .getManyAndCount();
-    } else {
-      res = await this.permissionRepository.createQueryBuilder()
-        .andWhere('name like :name', {
-          name: `%${name}%`,
-        })
-        .skip(offset)
-        .take(limit)
-        .orderBy('createTime', 'ASC')
-        .getManyAndCount();
+    if (!Utils.isBlank(name)) {
+      queryConditionList.push('name LIKE :name');
     }
+    let queryCondition = queryConditionList.join(' AND ');
+
+    let res = await this.permissionRepository.createQueryBuilder()
+      .where(queryCondition, {
+        parentIds: parentIds,
+        name: `%${name}%`,
+      })
+      .skip(offset)
+      .take(limit)
+      .orderBy('createTime', 'ASC')
+      .getManyAndCount();
 
     return {
       list: res[0],
@@ -82,38 +105,85 @@ export class PermissionService {
     };
   }
 
-  async selectListByPId(parentId: string): Promise<Permission[]> {
-    let isExist = await this.permissionRepository.findOne(parentId);
-    if (Utils.isNil(isExist)) {
-      throw new BadRequestException(`数据 parentId：${parentId} 不存在！`);
+  /**
+   * 递归查询（ids）
+   */
+  async selectChildrenIdsRecursive(id): Promise<any> {
+    let list = [];
+    list.push(id);
+    let childList = await this.permissionRepository.find({
+      where: {
+        parentId: id,
+      },
+    });
+
+    for (const item of childList) {
+      let obj = { ...item };
+      await this.selectChildrenIdsRecursive(item.id);
+      list.push(obj.id);
     }
 
-    return await this.permissionRepository.createDescendantsQueryBuilder('permission', 'permissionClosure', isExist)
-      .getMany();
+    return list;
   }
 
-  async selectTree(): Promise<Permission[]> {
-    return await this.permissionRepository.findTrees();
-  }
+  /**
+   * 获取树
+   */
+  async selectTree(baseFindByPIdDto: BaseFindByPIdDto): Promise<Permission[]> {
+    let { parentId } = baseFindByPIdDto;
 
-  async selectTreeByPId(parentId: string): Promise<any> {
-    if (parentId) {
-      let isExist = await this.permissionRepository.findOne(parentId);
-      if (Utils.isNil(isExist)) {
-        throw new BadRequestException(`数据 parentId：${parentId} 不存在！`);
-      }
-
-      return await this.permissionRepository.findDescendantsTree(isExist);
+    if (Utils.isBlank(parentId)) {
+      let res = await this.permissionRepository.find();
+      return Utils.construct(res, {
+        id: 'id',
+        pid: 'parentId',
+        children: 'children',
+      });
     } else {
-      return await this.permissionRepository.findTrees();
+      let result = await this.selectChildrenRecursive(parentId);
+
+      return result;
     }
   }
 
+  /**
+   * 递归查询（id）
+   */
+  async selectChildrenRecursive(id): Promise<any> {
+    let list = [];
+    let childList = await this.permissionRepository.find({
+      where: {
+        parentId: id,
+      },
+    });
+
+    for (const item of childList) {
+      let obj = { ...item };
+      let child = await this.selectChildrenRecursive(item.id);
+      if (child.length > 0) {
+        obj['children'] = child;
+        obj['hasChildren'] = true;
+      } else {
+        obj['children'] = [];
+        obj['hasChildren'] = false;
+      }
+      list.push(obj);
+    }
+
+    return list;
+  }
+
+  /**
+   * 获取详情（主键 id）
+   */
   async selectById(baseFindByIdDto: BaseFindByIdDto): Promise<Permission> {
     let { id } = baseFindByIdDto;
     return await this.permissionRepository.findOne(id);
   }
 
+  /**
+   * 修改
+   */
   async update(updatePermissionDto: UpdatePermissionDto, curUser?) {
     let { id, parentId, ...result } = updatePermissionDto;
 
@@ -122,10 +192,10 @@ export class PermissionService {
       child[key] = result[key];
     }
 
-    let parent = await this.permissionRepository.findOne(parentId);
-    if (parent) {
-      child.parent = parent;
-    }
+    // let parent = await this.permissionRepository.findOne(parentId);
+    // if (parent) {
+    //   child.parent = parent;
+    // }
 
     let isExist = await this.permissionRepository.findOne(id);
     if (Utils.isNil(isExist)) {
@@ -133,5 +203,18 @@ export class PermissionService {
     }
 
     return await this.permissionRepository.save(isExist);
+  }
+
+  /**
+   * 删除
+   */
+  async deleteById(baseFindByIdDto: BaseFindByIdDto): Promise<void> {
+    let { id } = baseFindByIdDto;
+    let isExist = await this.permissionRepository.findOne(id);
+    if (Utils.isNil(isExist)) {
+      throw new BadRequestException(`数据 id：${id} 不存在！`);
+    }
+
+    await this.permissionRepository.remove(isExist);
   }
 }

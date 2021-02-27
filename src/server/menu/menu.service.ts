@@ -9,7 +9,6 @@ import { BaseFindByIdDto, BaseFindByPIdDto } from '../base.dto';
 import { Menu } from './entities/menu.entity';
 import { SearchMenuDto } from './dto/search-menu.dto';
 import { LimitMenuDto } from './dto/limit-menu.dto';
-import { Area } from '../area/entities/area.entity';
 
 @Injectable()
 export class MenuService {
@@ -19,6 +18,9 @@ export class MenuService {
   ) {
   }
 
+  /**
+   * 添加
+   */
   async insert(createMenuDto: CreateMenuDto, curUser?): Promise<CreateMenuDto> {
     let role = new Menu();
     role = Utils.dto2entity(createMenuDto, role);
@@ -26,20 +28,39 @@ export class MenuService {
     return await this.menuRepository.save(role);
   }
 
+  /**
+   * 获取列表
+   */
   async selectList(searchMenuDto: SearchMenuDto): Promise<Menu[]> {
-    let { name } = searchMenuDto;
+    let { parentId, name } = searchMenuDto;
 
-    if (Utils.isNil(name)) {
-      name = '';
+    let queryConditionList = [];
+
+    let parentIds = [];
+    if (!Utils.isBlank(parentId)) {
+      parentIds = await this.selectChildrenIdsRecursive(parentId);
+      queryConditionList.push('parentId IN (:...parentIds)');
     }
+
+    if (!Utils.isBlank(name)) {
+      queryConditionList.push('name LIKE :name');
+    }
+
+    let queryCondition = queryConditionList.join(' AND ');
 
     let res = await this.menuRepository.createQueryBuilder()
       .orderBy('createTime', 'ASC')
-      .where('name like :name', { name: `%${name}%` })
+      .where(queryCondition, {
+        parentIds: parentIds,
+        name: `%${name}%`,
+      })
       .getMany();
     return res;
   }
 
+  /**
+   * 获取列表（分页）
+   */
   async selectListPage(limitMenuDto: LimitMenuDto): Promise<any> {
     let { page, limit, parentId, name } = limitMenuDto;
     page = page ? page : 1;
@@ -48,11 +69,11 @@ export class MenuService {
 
     let queryConditionList = [];
     let parentIds = [];
-    if (!Utils.isNil(parentId)) {
+    if (!Utils.isBlank(parentId)) {
       parentIds = await this.selectChildrenIdsRecursive(parentId);
       queryConditionList.push('menu.parentId IN (:...parentIds)');
     }
-    if (!Utils.isNil(name)) {
+    if (!Utils.isBlank(name)) {
       queryConditionList.push('menu.name LIKE :name');
     }
     let queryCondition = queryConditionList.join(' AND ');
@@ -77,6 +98,9 @@ export class MenuService {
     };
   }
 
+  /**
+   * 递归查询（ids）
+   */
   async selectChildrenIdsRecursive(id): Promise<any> {
     let list = [];
     list.push(id);
@@ -95,33 +119,13 @@ export class MenuService {
     return list;
   }
 
-  async selectListByPId(baseFindByPIdDto: BaseFindByPIdDto): Promise<Menu[]> {
+  /**
+   * 获取树
+   */
+  async selectTree(baseFindByPIdDto: BaseFindByPIdDto): Promise<any> {
     let { parentId } = baseFindByPIdDto;
 
-    if (Utils.isNil(parentId)) {
-      parentId = '-1';
-    }
-
-    return await this.menuRepository.find({
-      where: {
-        parentId: parentId,
-      },
-    });
-  }
-
-  async selectTree(): Promise<any> {
-    let res = await this.menuRepository.find();
-    return Utils.construct(res, {
-      id: 'id',
-      pid: 'parentId',
-      children: 'children',
-    });
-  }
-
-  async selectTreeByPId(baseFindByPIdDto: BaseFindByPIdDto): Promise<any> {
-    let { parentId } = baseFindByPIdDto;
-
-    if (Utils.isNil(parentId)) {
+    if (Utils.isBlank(parentId)) {
       let res = await this.menuRepository.find();
       return Utils.construct(res, {
         id: 'id',
@@ -135,6 +139,9 @@ export class MenuService {
     }
   }
 
+  /**
+   * 递归查询（id）
+   */
   async selectChildrenRecursive(id): Promise<any> {
     let list = [];
     let childList = await this.menuRepository.find({
@@ -159,11 +166,17 @@ export class MenuService {
     return list;
   }
 
+  /**
+   * 获取详情（主键 id）
+   */
   async selectById(baseFindByIdDto: BaseFindByIdDto): Promise<Menu> {
     let { id } = baseFindByIdDto;
     return await this.menuRepository.findOne(id);
   }
 
+  /**
+   * 修改
+   */
   async update(updateMenuDto: UpdateMenuDto, curUser?): Promise<void> {
     let { id } = updateMenuDto;
 
@@ -179,6 +192,9 @@ export class MenuService {
     await this.menuRepository.save(role);
   }
 
+  /**
+   * 删除
+   */
   async deleteById(baseFindByIdDto: BaseFindByIdDto): Promise<void> {
     let { id } = baseFindByIdDto;
     let isExist = await this.menuRepository.findOne(id);

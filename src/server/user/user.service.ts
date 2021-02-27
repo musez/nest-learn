@@ -55,6 +55,9 @@ export class UserService {
     return await this.userRepository.increment(isExist, 'loginCount', 1);
   }
 
+  /**
+   * 添加
+   */
   async insert(createUserDto: CreateUserDto, curUser?): Promise<CreateUserDto> {
     let { userName } = createUserDto;
 
@@ -73,16 +76,16 @@ export class UserService {
     user.createBy = curUser.id;
 
     let userinfo = new Userinfo();
-    if (!Utils.isNil(createUserDto.provinceId)) {
+    if (!Utils.isBlank(createUserDto.provinceId)) {
       userinfo.provinceId = createUserDto.provinceId;
     }
-    if (!Utils.isNil(createUserDto.cityId)) {
+    if (!Utils.isBlank(createUserDto.cityId)) {
       userinfo.cityId = createUserDto.cityId;
     }
-    if (!Utils.isNil(createUserDto.districtId)) {
+    if (!Utils.isBlank(createUserDto.districtId)) {
       userinfo.districtId = createUserDto.districtId;
     }
-    if (!Utils.isNil(createUserDto.address)) {
+    if (!Utils.isBlank(createUserDto.address)) {
       userinfo.address = createUserDto.address;
     }
     // userinfo = Utils.dto2entity(createUserDto, userinfo);
@@ -93,10 +96,13 @@ export class UserService {
     return createUserDto;
   }
 
+  /**
+   * 获取列表
+   */
   async selectList(searchUserDto: SearchUserDto): Promise<User[]> {
     let { userName } = searchUserDto;
 
-    if (Utils.isNil(userName)) {
+    if (Utils.isBlank(userName)) {
       userName = '';
     }
 
@@ -108,6 +114,9 @@ export class UserService {
     });
   }
 
+  /**
+   * 获取列表（分页）
+   */
   async selectListPage(limitUserDto: LimitUserDto): Promise<any> {
     let { page, limit, userName, mobile } = limitUserDto;
     page = page ? page : 1;
@@ -115,12 +124,13 @@ export class UserService {
     let offset = (page - 1) * limit;
 
     let queryConditionList = [];
-    if (!Utils.isNil(userName)) {
+    if (!Utils.isBlank(userName)) {
       queryConditionList.push('user.userName LIKE :userName');
     }
-    if (!Utils.isNil(mobile)) {
+    if (!Utils.isBlank(mobile)) {
       queryConditionList.push('user.mobile = :mobile');
     }
+
     let queryCondition = queryConditionList.join(' AND ');
 
     let res = await this.userRepository.createQueryBuilder('user')
@@ -142,11 +152,17 @@ export class UserService {
     };
   }
 
+  /**
+   * 获取详情（主键 id）
+   */
   async selectById(baseFindByIdDto: BaseFindByIdDto): Promise<User> {
     let { id } = baseFindByIdDto;
     return await this.userRepository.findOne(id, { relations: ['userinfo'] });
   }
 
+  /**
+   * 修改
+   */
   async update(updateUserDto: UpdateUserDto, curUser?): Promise<void> {
     let { id } = updateUserDto;
 
@@ -161,16 +177,16 @@ export class UserService {
 
     let userinfo = new Userinfo();
     // userinfo = Utils.dto2entity(updateUserDto, userinfo);
-    if (!Utils.isNil(updateUserDto.provinceId)) {
+    if (!Utils.isBlank(updateUserDto.provinceId)) {
       userinfo.provinceId = updateUserDto.provinceId;
     }
-    if (!Utils.isNil(updateUserDto.cityId)) {
+    if (!Utils.isBlank(updateUserDto.cityId)) {
       userinfo.cityId = updateUserDto.cityId;
     }
-    if (!Utils.isNil(updateUserDto.districtId)) {
+    if (!Utils.isBlank(updateUserDto.districtId)) {
       userinfo.districtId = updateUserDto.districtId;
     }
-    if (!Utils.isNil(updateUserDto.address)) {
+    if (!Utils.isBlank(updateUserDto.address)) {
       userinfo.address = updateUserDto.address;
     }
     userinfo.user = user;// 联接两者
@@ -179,6 +195,9 @@ export class UserService {
     await this.userinfoService.updateByUserId(id, userinfo);
   }
 
+  /**
+   * 修改状态
+   */
   async updateStatus(baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto, curUser?): Promise<any> {
     let { ids, status } = baseModifyStatusByIdsDto;
 
@@ -189,6 +208,9 @@ export class UserService {
       .execute();
   }
 
+  /**
+   * 删除
+   */
   async deleteById(baseFindByIdDto: BaseFindByIdDto): Promise<void> {
     let { id } = baseFindByIdDto;
     let isExist = await this.userRepository.findOne(id);

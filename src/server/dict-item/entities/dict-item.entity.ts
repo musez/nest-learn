@@ -28,7 +28,7 @@ export class DictItem extends BaseEntity {
   @Column({ comment: '排序', default: () => 0 })
   sort: number;
 
-  @Column({ comment: '父 id' })
+  @Column({ comment: '父 id', nullable: true })
   parentId: string;
 
   @ManyToOne((type) => Dict, (dict) => dict.dictItems)

@@ -39,21 +39,15 @@ export class AreaController {
   }
 
   @Get('findListByPId')
-  @ApiOperation({ summary: '获取列表（父 id）' })
+  @ApiOperation({ summary: '获取子代列表（父 id）' })
   async findListByPId(@Query() baseFindByPIdDto: BaseFindByPIdDto): Promise<any> {
-    return this.areaService.selectListByPId(baseFindByPIdDto);
+    return this.areaService.findListByPId(baseFindByPIdDto);
   }
 
   @Get('findTree')
   @ApiOperation({ summary: '获取树' })
-  async findTree(@CurUser() curUser): Promise<any> {
-    return this.areaService.selectTree();
-  }
-
-  @Get('findTreeByPId')
-  @ApiOperation({ summary: '获取树（父 id）' })
-  async findTreeByPId(@Query() baseFindByPIdDto: BaseFindByPIdDto): Promise<any> {
-    return this.areaService.selectTreeByPId(baseFindByPIdDto);
+  async findTree(@Query() baseFindByPIdDto: BaseFindByPIdDto): Promise<any> {
+    return this.areaService.selectTree(baseFindByPIdDto);
   }
 
   @Get('findById')

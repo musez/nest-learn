@@ -16,6 +16,9 @@ export class RolePermissionService {
   ) {
   }
 
+  /**
+   * 添加
+   */
   async insert(createRolePermissionDto: CreateRolePermissionDto[]): Promise<CreateRolePermissionDto[]> {
     return await this.rolePermissionRepository.save(createRolePermissionDto);
   }

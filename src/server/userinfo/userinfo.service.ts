@@ -17,15 +17,24 @@ export class UserinfoService {
   ) {
   }
 
+  /**
+   * 添加（批量）
+   */
   async insert(createUserinfoDto: CreateUserinfoDto): Promise<CreateUserinfoDto> {
     return await this.userinfoRepository.save(createUserinfoDto);
   }
 
+  /**
+   * 修改
+   */
   async update(updateUserinfoDto: UpdateUserinfoDto): Promise<any> {
     let { id } = updateUserinfoDto;
     return await this.userinfoRepository.update(id, updateUserinfoDto);
   }
 
+  /**
+   * 修改（userId）
+   */
   async updateByUserId(id: string, updateUserinfoDto: UpdateUserinfoDto): Promise<any> {
     return await this.userinfoRepository.createQueryBuilder()
       .update(Userinfo)
@@ -41,6 +50,9 @@ export class UserinfoService {
       .execute();
   }
 
+  /**
+   * 删除
+   */
   async deleteByUserId(id: string): Promise<any> {
     let res = await this.userinfoRepository.createQueryBuilder()
       .delete()
@@ -53,6 +65,9 @@ export class UserinfoService {
     return res;
   }
 
+  /**
+   * 删除（ids）
+   */
   async deleteByUserIds(baseFindByIdsDto: BaseFindByIdsDto): Promise<any> {
     let res = await this.userinfoRepository.createQueryBuilder()
       .delete()

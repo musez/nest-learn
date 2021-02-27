@@ -39,28 +39,16 @@ export class MenuController {
   }
 
   @Get('findListPage')
-  // @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '获取列表（分页）' })
   async findListPage(@Query() limitMenuDto: LimitMenuDto) {
     return this.menuService.selectListPage(limitMenuDto);
   }
 
-  @Get('findListByPId')
-  @ApiOperation({ summary: '获取列表（父 id）' })
-  async findListByPId(@Query() baseFindByPIdDto: BaseFindByPIdDto): Promise<any> {
-    return this.menuService.selectListByPId(baseFindByPIdDto);
-  }
-
   @Get('findTree')
   @ApiOperation({ summary: '获取树' })
-  async findTree(@CurUser() curUser): Promise<any> {
-    return this.menuService.selectTree();
-  }
-
-  @Get('findTreeByPId')
-  @ApiOperation({ summary: '获取树（父 id）' })
-  async findTreeByPId(@Query() baseFindByPIdDto: BaseFindByPIdDto): Promise<any> {
-    return this.menuService.selectTreeByPId(baseFindByPIdDto);
+  async findTree(@Query() baseFindByPIdDto: BaseFindByPIdDto): Promise<any> {
+    return this.menuService.selectTree(baseFindByPIdDto);
   }
 
   @Get('findById')
@@ -75,5 +63,12 @@ export class MenuController {
   @ApiOperation({ summary: '修改' })
   async modify(@CurUser() curUser, @Body() updateMenuDto: UpdateMenuDto): Promise<any> {
     return this.menuService.update(updateMenuDto, curUser);
+  }
+
+  @Post('remove')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: '删除' })
+  async remove(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
+    return await this.menuService.deleteById(baseFindByIdDto);
   }
 }

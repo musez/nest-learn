@@ -15,14 +15,23 @@ export class FileService {
   ) {
   }
 
+  /**
+   * 添加
+   */
   async insert(file, curUser?): Promise<CreateFileDto> {
     return await this.fileRepository.save(file);
   }
 
+  /**
+   * 添加（批量）
+   */
   async batchInsert(files, curUser?): Promise<CreateFileDto[]> {
     return await this.fileRepository.save(files);
   }
 
+  /**
+   * 获取详情（主键 id）
+   */
   async selectById(baseFindByIdDto: BaseFindByIdDto): Promise<CreateFileDto> {
     let { id } = baseFindByIdDto;
     return await this.fileRepository.findOne(id);
@@ -32,6 +41,9 @@ export class FileService {
     return await this.fileRepository.find({ extId: extId });
   }
 
+  /**
+   * 删除
+   */
   async deleteById(baseFindByIdDto: BaseFindByIdDto): Promise<void> {
     let { id } = baseFindByIdDto;
     let isExist = await this.fileRepository.findOne(id);

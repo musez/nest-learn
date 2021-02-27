@@ -28,6 +28,9 @@ export class RoleService {
   ) {
   }
 
+  /**
+   * 添加
+   */
   async insert(createRoleDto: CreateRoleDto, curUser?): Promise<CreateRoleDto> {
     let role = new Role();
     role = Utils.dto2entity(createRoleDto, role);
@@ -35,10 +38,13 @@ export class RoleService {
     return await this.roleRepository.save(role);
   }
 
+  /**
+   * 获取列表
+   */
   async selectList(searchRoleDto: SearchRoleDto): Promise<Role[]> {
     let { name } = searchRoleDto;
 
-    if (Utils.isNil(name)) {
+    if (Utils.isBlank(name)) {
       name = '';
     }
 
@@ -49,13 +55,16 @@ export class RoleService {
     });
   }
 
+  /**
+   * 获取列表（分页）
+   */
   async selectListPage(limitRoleDto: LimitRoleDto): Promise<any> {
     let { page, limit, name } = limitRoleDto;
     page = page ? page : 1;
     limit = limit ? limit : 10;
     let offset = (page - 1) * limit;
 
-    if (Utils.isNil(name)) {
+    if (Utils.isBlank(name)) {
       name = '';
     }
 
@@ -74,11 +83,17 @@ export class RoleService {
     };
   }
 
+  /**
+   * 获取详情（主键 id）
+   */
   async selectById(baseFindByIdDto: BaseFindByIdDto): Promise<Role> {
     let { id } = baseFindByIdDto;
     return await this.roleRepository.findOne(id);
   }
 
+  /**
+   * 修改
+   */
   async update(updateRoleDto: UpdateRoleDto, curUser?): Promise<void> {
     let { id } = updateRoleDto;
 
@@ -94,6 +109,9 @@ export class RoleService {
     await this.roleRepository.save(role);
   }
 
+  /**
+   * 删除
+   */
   async deleteById(baseFindByIdDto: BaseFindByIdDto): Promise<void> {
     let { id } = baseFindByIdDto;
     let isExist = await this.roleRepository.findOne(id);

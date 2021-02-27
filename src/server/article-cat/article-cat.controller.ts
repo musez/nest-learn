@@ -24,7 +24,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurUser } from '../../common/decorators/user.decorator';
 import { Article } from '../article/entities/article.entity';
 import { LimitArticleDto } from '../article/dto/limit-article.dto';
-import { BaseFindByIdDto } from '../base.dto';
+import { BaseFindByIdDto, BaseFindByPIdDto } from '../base.dto';
 import { ArticleCat } from './entities/article-cat.entity';
 import { LimitArticleCatDto } from './dto/limit-article-cat.dto';
 import { BaseArticleCatDto } from './dto/base-article-cat.dto';
@@ -56,6 +56,14 @@ export class ArticleCatController {
   @ApiOperation({ summary: '获取列表（分页）' })
   async findListPage(@Query() limitArticleCatDto: LimitArticleCatDto): Promise<any> {
     return await this.articleCatService.selectListPage(limitArticleCatDto);
+  }
+
+  @Get('findTree')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: '获取树' })
+  @ApiQuery({ name: 'parentId', description: '父 id', required: false })
+  findTree(@Query() baseFindByPIdDto: BaseFindByPIdDto) {
+    return this.articleCatService.selectTree(baseFindByPIdDto);
   }
 
   @Get('findById')

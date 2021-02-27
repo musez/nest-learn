@@ -18,6 +18,9 @@ export class CaptchaService {
   constructor(private readonly cacheService: CacheService) {
   }
 
+  /**
+   * 生成验证码
+   */
   getCaptcha(): { data: any, text: string } {
     const captcha: { data: any, text: string } = svgCaptcha.create({
       size: 4,
@@ -27,6 +30,9 @@ export class CaptchaService {
     return captcha;
   }
 
+  /**
+   * 缓存到 redis
+   */
   async insertCaptcha(captchaId, captchaText): Promise<any> {
     return await this.cacheService.set('captcha', {
       captchaId,
@@ -34,6 +40,9 @@ export class CaptchaService {
     });
   }
 
+  /**
+   * 从 redis 获取
+   */
   async selectCaptcha(): Promise<any> {
     return await this.cacheService.get('captcha');
   }

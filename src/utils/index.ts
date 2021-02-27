@@ -17,6 +17,14 @@ export class Utils {
     return e;
   }
 
+  static isBlank(a) {
+    return a === '' || a === null || a === undefined;
+  }
+
+  static isNotBlank(a) {
+    return this.isBlank(a);
+  }
+
   static isEmpty(...args) {
     return _.isEmpty(...args);
   }

@@ -25,7 +25,7 @@ export enum PermissionType {
 }
 
 @Entity('permission')
-@Tree('closure-table')
+// @Tree('closure-table')
 export class Permission extends BaseEntity {
   constructor() {
     super();
@@ -34,15 +34,16 @@ export class Permission extends BaseEntity {
     this.type = undefined;
     this.code = undefined;
     this.uri = undefined;
-    this.children = undefined;
-    this.parent = undefined;
+    this.parentId = undefined;
+    // this.children = undefined;
+    // this.parent = undefined;
     this.roles = undefined;
   }
 
   @Column('varchar', { comment: '名称', length: 50 })
   name: string;
 
-  @Column('tinyint', { comment: '权限类别（1：导航；2：页面；3：操作；4：字段）' })
+  @Column('tinyint', { comment: '权限类别（1：目录；2：菜单；3：操作；4：字段）' })
   type: PermissionType;
 
   @Column({ comment: '权限 CODE 代码', length: 50 })
@@ -51,11 +52,14 @@ export class Permission extends BaseEntity {
   @Column({ comment: '权限 URI 规则', length: 50 })
   uri: string;
 
-  @TreeChildren({ cascade: true })
-  children: Permission[];
+  @Column({ comment: '父 id', nullable: true })
+  parentId: string;
 
-  @TreeParent()
-  parent: Permission;
+  // @TreeChildren({ cascade: true })
+  // children: Permission[];
+  //
+  // @TreeParent()
+  // parent: Permission;
 
   @OneToMany(type => Role, role => role.permissions)
   roles: Role[];

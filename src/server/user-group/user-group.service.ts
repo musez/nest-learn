@@ -18,6 +18,9 @@ export class UserGroupService {
   ) {
   }
 
+  /**
+   * 添加
+   */
   async insert(createUserGroupDto: CreateUserGroupDto[]): Promise<CreateUserGroupDto[]> {
     return await this.userGroupRepository.save(createUserGroupDto);
   }

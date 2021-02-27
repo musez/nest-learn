@@ -24,6 +24,9 @@ export class GroupService {
   ) {
   }
 
+  /**
+   * 添加
+   */
   async insert(createGroupDto: CreateGroupDto, curUser?): Promise<CreateGroupDto> {
     let group = new Group();
     group = Utils.dto2entity(createGroupDto, group);
@@ -31,10 +34,13 @@ export class GroupService {
     return await this.groupRepository.save(group);
   }
 
+  /**
+   * 获取列表
+   */
   async selectList(query): Promise<Group[]> {
     let { name } = query;
 
-    if (Utils.isNil(name)) {
+    if (Utils.isBlank(name)) {
       name = '';
     }
 
@@ -45,13 +51,16 @@ export class GroupService {
     });
   }
 
+  /**
+   * 获取列表（分页）
+   */
   async selectListPage(limitGroupDto: LimitGroupDto): Promise<any> {
     let { page, limit, name } = limitGroupDto;
     page = page ? page : 1;
     limit = limit ? limit : 10;
     let offset = (page - 1) * limit;
 
-    if (Utils.isNil(name)) {
+    if (Utils.isBlank(name)) {
       name = '';
     }
 
@@ -70,10 +79,16 @@ export class GroupService {
     };
   }
 
+  /**
+   * 获取详情（主键 id）
+   */
   async selectById(baseFindByIdDto: BaseFindByIdDto): Promise<Group> {
     return await this.groupRepository.findOne(baseFindByIdDto);
   }
 
+  /**
+   * 修改
+   */
   async update(updateGroupDto: UpdateGroupDto, curUser?): Promise<void> {
     let { id } = updateGroupDto;
     let isExist = await this.groupRepository.findOne(id);
@@ -88,6 +103,9 @@ export class GroupService {
     await this.groupRepository.save(group);
   }
 
+  /**
+   * 删除
+   */
   async deleteById(baseFindByIdDto: BaseFindByIdDto): Promise<void> {
     let { id } = baseFindByIdDto;
     let isExist = await this.groupRepository.findOne(id);

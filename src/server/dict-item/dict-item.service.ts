@@ -13,6 +13,9 @@ export class DictItemService {
   ) {
   }
 
+  /**
+   * 添加（批量）
+   */
   async insertBatch(createUserinfoDto: CreateDictItemDto[]): Promise<CreateDictItemDto[]> {
     return await this.dictItemRepository.save(createUserinfoDto);
   }
