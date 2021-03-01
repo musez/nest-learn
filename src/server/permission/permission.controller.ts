@@ -59,17 +59,17 @@ export class PermissionController {
     return await this.permissionService.selectById(baseFindByIdDto);
   }
 
-  @Post('modify')
+  @Post('update')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '修改' })
-  async modify(@CurUser() curUser, @Body() updatePermissionDto: UpdatePermissionDto): Promise<any> {
+  async update(@CurUser() curUser, @Body() updatePermissionDto: UpdatePermissionDto): Promise<any> {
     return this.permissionService.update(updatePermissionDto, curUser);
   }
 
-  @Post('remove')
+  @Post('delete')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '删除' })
-  async remove(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
+  async delete(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
     return await this.permissionService.deleteById(baseFindByIdDto);
   }
 }

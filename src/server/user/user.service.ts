@@ -218,10 +218,13 @@ export class UserService {
       throw new BadRequestException(`数据 id：${id} 不存在！`);
     }
 
-    this.userRepository.remove(isExist);
+    this.userRepository.delete(isExist);
     await this.userinfoService.deleteByUserId(id);
   }
 
+  /**
+   * 绑定用户组
+   */
   async bindGroups(bindUserGroupDto: BindUserGroupDto): Promise<void> {
     let { id, groups } = bindUserGroupDto;
     let isExist = await this.userRepository.findOne(id);
@@ -240,6 +243,9 @@ export class UserService {
     await this.userGroupService.insert(userGroupList);
   }
 
+  /**
+   * 获取用户组
+   */
   async selectGroupsByUserId(baseFindByIdDto: BaseFindByIdDto): Promise<UserGroup[]> {
     let isExist = await this.userRepository.findOne(baseFindByIdDto);
     if (Utils.isNil(isExist)) {
@@ -249,6 +255,9 @@ export class UserService {
     return await this.userGroupService.selectByUserId(baseFindByIdDto);
   }
 
+  /**
+   * 绑定角色
+   */
   async bindRoles(bindUserRoleDto: BindUserRoleDto): Promise<void> {
     let { id, roles } = bindUserRoleDto;
     let isExist = await this.userRepository.findOne(id);
@@ -267,6 +276,9 @@ export class UserService {
     await this.userRoleService.insert(userGroupList);
   }
 
+  /**
+   * 获取角色
+   */
   async selectRolesByUserId(baseFindByIdDto: BaseFindByIdDto): Promise<UserRole[]> {
     let isExist = await this.userRepository.findOne(baseFindByIdDto);
     if (Utils.isNil(isExist)) {
@@ -282,7 +294,7 @@ export class UserService {
       throw new BadRequestException(`数据 id：${baseFindByIdDto} 不存在！`);
     }
 
-    let res1 = await this.userRepository.query(`
+    let permissions1 = await this.userRepository.query(`
         select p.* from cms_nest.permission p
         inner join cms_nest.role_permission rp on p.id = rp.permissionId
         inner join cms_nest.role r on rp.roleId = r.id
@@ -293,7 +305,7 @@ export class UserService {
         where u.id = '${baseFindByIdDto}'
         `);
 
-    let res2 = await this.userRepository.query(`
+    let permissions2 = await this.userRepository.query(`
         select p.*
         from cms_nest.permission p
         inner join cms_nest.role_permission rp on p.id = rp.permissionId
@@ -304,7 +316,7 @@ export class UserService {
         `);
 
     let res = Utils.assign(isExist, {
-      permission: Utils.uniqBy(Utils.concat(res1, res2), 'id'),
+      permissions: Utils.uniqBy(Utils.concat(permissions1, permissions2), 'id'),
     });
 
     return res;

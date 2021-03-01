@@ -119,7 +119,7 @@ export class RoleService {
       throw new BadRequestException(`数据 id：${id} 不存在！`);
     }
 
-    await this.roleRepository.remove(isExist);
+    await this.roleRepository.delete(isExist);
   }
 
   async selectPermissionsByRoleId(baseFindByIdDto: BaseFindByIdDto): Promise<RolePermission[]> {

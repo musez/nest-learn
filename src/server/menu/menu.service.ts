@@ -202,6 +202,6 @@ export class MenuService {
       throw new BadRequestException(`数据 id：${id} 不存在！`);
     }
 
-    await this.menuRepository.remove(isExist);
+    await this.menuRepository.delete(isExist);
   }
 }

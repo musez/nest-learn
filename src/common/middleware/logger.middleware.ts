@@ -3,7 +3,6 @@ import { Request, Response } from 'express';
 import { Logger } from '../../utils/log4js';
 
 @Injectable()
-@Injectable()
 export class LoggerMiddleware implements NestMiddleware {
   use(req: Request, res: Response, next: () => void) {
     const code = res.statusCode; // 响应状态码

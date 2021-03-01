@@ -200,6 +200,6 @@ export class ArticleCatService {
       throw new BadRequestException(`数据 id：${id} 不存在！`);
     }
 
-    await this.articleCatRepository.remove(isExist);
+    await this.articleCatRepository.delete(isExist);
   }
 }

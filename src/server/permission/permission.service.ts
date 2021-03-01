@@ -215,6 +215,6 @@ export class PermissionService {
       throw new BadRequestException(`数据 id：${id} 不存在！`);
     }
 
-    await this.permissionRepository.remove(isExist);
+    await this.permissionRepository.delete(isExist);
   }
 }

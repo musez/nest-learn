@@ -113,7 +113,7 @@ export class GroupService {
       throw new BadRequestException(`数据 id：${baseFindByIdDto} 不存在！`);
     }
 
-    await this.groupRepository.remove(isExist);
+    await this.groupRepository.delete(isExist);
   }
 
   async selectRolesByGroupId(baseFindByIdDto: BaseFindByIdDto): Promise<GroupRole[]> {

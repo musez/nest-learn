@@ -51,6 +51,6 @@ export class FileService {
       throw new BadRequestException(`数据 id：${id} 不存在！`);
     }
 
-    await this.fileRepository.remove(isExist);
+    await this.fileRepository.delete(isExist);
   }
 }

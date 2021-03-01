@@ -73,17 +73,17 @@ export class ArticleCatController {
     return await this.articleCatService.selectById(baseFindByIdDto);
   }
 
-  @Post('modify')
+  @Post('update')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '修改' })
-  async modify(@CurUser() curUser, @Body() updateArticleCatDto: UpdateArticleCatDto): Promise<any> {
+  async update(@CurUser() curUser, @Body() updateArticleCatDto: UpdateArticleCatDto): Promise<any> {
     return this.articleCatService.update(updateArticleCatDto, curUser);
   }
 
-  @Post('remove')
+  @Post('delete')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '删除' })
-  async remove(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
+  async delete(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
     return await this.articleCatService.deleteById(baseFindByIdDto);
   }
 }

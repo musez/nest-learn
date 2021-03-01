@@ -181,6 +181,6 @@ export class DictService {
       throw new BadRequestException(`数据 id：${id} 不存在！`);
     }
 
-    await this.dictRepository.remove(isExist);
+    await this.dictRepository.delete(isExist);
   }
 }

@@ -62,17 +62,17 @@ export class ArticleController {
     return await this.articleService.selectById(baseFindByIdDto);
   }
 
-  @Post('modify')
+  @Post('update')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '修改' })
-  async modify(@CurUser() curUser, @Body() updateArticleDto: UpdateArticleDto): Promise<any> {
+  async update(@CurUser() curUser, @Body() updateArticleDto: UpdateArticleDto): Promise<any> {
     return this.articleService.update(updateArticleDto, curUser);
   }
 
-  @Post('remove')
+  @Post('delete')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '删除' })
-  async remove(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
+  async delete(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
     return await this.articleService.deleteById(baseFindByIdDto);
   }
 }

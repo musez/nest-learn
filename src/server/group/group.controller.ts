@@ -69,17 +69,17 @@ export class GroupController {
     return await this.groupService.selectById(baseFindByIdDto);
   }
 
-  @Post('modify')
+  @Post('update')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '修改' })
-  async modify(@CurUser() curUser, @Body() updateGroupDto: UpdateGroupDto): Promise<any> {
+  async update(@CurUser() curUser, @Body() updateGroupDto: UpdateGroupDto): Promise<any> {
     return this.groupService.update(updateGroupDto, curUser);
   }
 
-  @Post('remove')
+  @Post('delete')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '删除' })
-  async remove(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
+  async delete(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
     return await this.groupService.deleteById(baseFindByIdDto);
   }
 

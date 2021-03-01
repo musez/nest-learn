@@ -65,17 +65,17 @@ export class RoleController {
     return await this.roleService.selectById(baseFindByIdDto);
   }
 
-  @Post('modify')
+  @Post('update')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '修改' })
-  async modify(@CurUser() curUser, @Body() updateRoleDto: UpdateRoleDto): Promise<any> {
+  async update(@CurUser() curUser, @Body() updateRoleDto: UpdateRoleDto): Promise<any> {
     return this.roleService.update(updateRoleDto, curUser);
   }
 
-  @Post('remove')
+  @Post('delete')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '删除' })
-  async remove(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
+  async delete(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
     return await this.roleService.deleteById(baseFindByIdDto);
   }
 

@@ -68,17 +68,17 @@ export class DictController {
     return await this.dictService.selectById(baseFindByIdDto);
   }
 
-  @Post('modify')
+  @Post('update')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '修改' })
-  async modify(@CurUser() curUser, @Body() updateDictDto: UpdateDictDto): Promise<any> {
+  async update(@CurUser() curUser, @Body() updateDictDto: UpdateDictDto): Promise<any> {
     return this.dictService.update(updateDictDto, curUser);
   }
 
-  @Post('remove')
+  @Post('delete')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '删除' })
-  async remove(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
+  async delete(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
     return await this.dictService.deleteById(baseFindByIdDto);
   }
 }

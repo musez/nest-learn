@@ -68,24 +68,24 @@ export class UserController {
     return await this.userService.selectById(baseFindByIdDto);
   }
 
-  @Post('modify')
+  @Post('update')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '修改' })
-  async modify(@CurUser() curUser, @Body() updateUserDto: UpdateUserDto): Promise<any> {
+  async update(@CurUser() curUser, @Body() updateUserDto: UpdateUserDto): Promise<any> {
     return this.userService.update(updateUserDto, curUser);
   }
 
-  @Post('modifyStatus')
+  @Post('updateStatus')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '修改状态' })
-  async modifyStatus(@CurUser() curUser, @Body() baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto): Promise<any> {
+  async updateStatus(@CurUser() curUser, @Body() baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto): Promise<any> {
     return this.userService.updateStatus(baseModifyStatusByIdsDto, curUser);
   }
 
-  @Post('remove')
+  @Post('delete')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '删除' })
-  async remove(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
+  async delete(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
     return await this.userService.deleteById(baseFindByIdDto);
   }
 
