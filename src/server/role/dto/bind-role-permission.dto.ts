@@ -4,5 +4,5 @@ import { BaseFindByIdDto } from '../../base.dto';
 
 export class BindRolePermissionDto extends PartialType(BaseFindByIdDto) {
   @ApiProperty({ description: '权限', example: [{ id: '' }] })
-  readonly permissions: BaseFindByIdDto[];
+  readonly permissions: string[];
 }

@@ -46,8 +46,8 @@ export class DictService {
       }
     }
 
-    await this.dictRepository.save(dict);
-    return await this.dictItemService.insertBatch(dictItemList);
+    return await this.dictRepository.save(dict);
+    // return await this.dictItemService.insertBatch(dictItemList);
   }
 
   /**
@@ -56,15 +56,20 @@ export class DictService {
   async selectList(searchDictDto: SearchDictDto): Promise<Dict[]> {
     let { dictName } = searchDictDto;
 
-    if (Utils.isBlank(dictName)) {
-      dictName = '';
+    let queryConditionList = [];
+
+    if (!Utils.isBlank(dictName)) {
+      queryConditionList.push('dictName LIKE :dictName');
     }
 
-    return await this.dictRepository.find({
-      where: {
-        dictName: Like(`%${dictName}%`),
-      },
-    });
+    let queryCondition = queryConditionList.join(' AND ');
+
+    return await this.dictRepository.createQueryBuilder()
+      .where(queryCondition, {
+        dictName: `%${dictName}%`,
+      })
+      .orderBy('createTime', 'ASC')
+      .getMany();
   }
 
   /**

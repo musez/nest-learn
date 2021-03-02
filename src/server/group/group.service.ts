@@ -40,15 +40,20 @@ export class GroupService {
   async selectList(query): Promise<Group[]> {
     let { name } = query;
 
-    if (Utils.isBlank(name)) {
-      name = '';
+    let queryConditionList = [];
+
+    if (!Utils.isBlank(name)) {
+      queryConditionList.push('name LIKE :name');
     }
 
-    return await this.groupRepository.find({
-      where: {
-        name: Like(`%${name}%`),
-      },
-    });
+    let queryCondition = queryConditionList.join(' AND ');
+
+    return await this.groupRepository.createQueryBuilder()
+      .where(queryCondition, {
+        name: `%${name}%`,
+      })
+      .orderBy('createTime', 'ASC')
+      .getMany();
   }
 
   /**
@@ -60,15 +65,21 @@ export class GroupService {
     limit = limit ? limit : 10;
     let offset = (page - 1) * limit;
 
-    if (Utils.isBlank(name)) {
-      name = '';
+    let queryConditionList = [];
+
+    if (!Utils.isBlank(name)) {
+      queryConditionList.push('name LIKE :name');
     }
 
+    let queryCondition = queryConditionList.join(' AND ');
+
     let res = await this.groupRepository.createQueryBuilder()
+      .where(queryCondition, {
+        name: `%${name}%`,
+      })
       .skip(offset)
       .take(limit)
       .orderBy('createTime', 'ASC')
-      .where('name like :name', { name: `%${name}%` })
       .getManyAndCount();
 
     return {
@@ -136,7 +147,7 @@ export class GroupService {
     for (let i = 0, len = roles.length; i < len; i++) {
       let createGroupRoleDto = new CreateGroupRoleDto();
       createGroupRoleDto.groupId = id;
-      createGroupRoleDto.roleId = roles[i].id;
+      createGroupRoleDto.roleId = roles[i];
       userGroupList.push(createGroupRoleDto);
     }
 

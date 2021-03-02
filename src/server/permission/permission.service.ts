@@ -57,11 +57,11 @@ export class PermissionService {
     let queryCondition = queryConditionList.join(' AND ');
 
     let res = await this.permissionRepository.createQueryBuilder()
-      .orderBy('createTime', 'ASC')
       .where(queryCondition, {
         parentIds: parentIds,
         name: `%${name}%`,
       })
+      .orderBy('createTime', 'ASC')
       .getMany();
     return res;
   }

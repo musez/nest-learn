@@ -30,15 +30,20 @@ export class ArticleService {
   async selectList(searchArticleDto: SearchArticleDto): Promise<Article[]> {
     let { title } = searchArticleDto;
 
-    if (Utils.isBlank(title)) {
-      title = '';
+    let queryConditionList = [];
+
+    if (!Utils.isBlank(title)) {
+      queryConditionList.push('title LIKE :title');
     }
 
-    return await this.articleRepository.find({
-      where: {
-        title: Like(`%${title}%`),
-      },
-    });
+    let queryCondition = queryConditionList.join(' AND ');
+
+    return await this.articleRepository.createQueryBuilder()
+      .where(queryCondition, {
+        title: `%${title}%`,
+      })
+      .orderBy('createTime', 'ASC')
+      .getMany();
   }
 
   /**
@@ -50,15 +55,21 @@ export class ArticleService {
     limit = limit ? limit : 10;
     let offset = (page - 1) * limit;
 
-    if (Utils.isBlank(title)) {
-      title = '';
+    let queryConditionList = [];
+
+    if (!Utils.isBlank(title)) {
+      queryConditionList.push('title LIKE :title');
     }
 
+    let queryCondition = queryConditionList.join(' AND ');
+
     let res = await this.articleRepository.createQueryBuilder()
+      .where(queryCondition, {
+        title: `%${title}%`,
+      })
       .skip(offset)
       .take(limit)
       .orderBy('createTime', 'ASC')
-      .where('title like :title', { title: `%${title}%` })
       .getManyAndCount();
 
     return {

@@ -44,3 +44,8 @@ export class BaseFindByPIdDto {
   readonly parentId: string;
 }
 
+export class BaseIdsDto {
+  @ApiPropertyOptional({ description: 'ids', example: [] })
+  readonly ids: [];
+}
+

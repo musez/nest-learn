@@ -100,25 +100,42 @@ export class UserService {
    * 获取列表
    */
   async selectList(searchUserDto: SearchUserDto): Promise<User[]> {
-    let { userName } = searchUserDto;
+    let { userName, name, userType, mobile, email } = searchUserDto;
 
-    if (Utils.isBlank(userName)) {
-      userName = '';
+    let queryConditionList = [];
+
+    if (!Utils.isBlank(userName)) {
+      queryConditionList.push('user.userName LIKE :userName');
     }
+    if (!Utils.isBlank(name)) {
+      queryConditionList.push('user.name LIKE :name');
+    }
+    if (!Utils.isBlank(userType)) {
+      queryConditionList.push('user.userType = :userType');
+    }
+    if (!Utils.isBlank(mobile)) {
+      queryConditionList.push('user.mobile = :mobile');
+    }
+    if (!Utils.isBlank(email)) {
+      queryConditionList.push('user.email = :email');
+    }
+    let queryCondition = queryConditionList.join(' AND ');
 
-    return await this.userRepository.find({
-      relations: ['userinfo'],
-      where: {
-        userName: Like(`%${userName}%`),
-      },
-    });
+    return await this.userRepository.createQueryBuilder('user')
+      .leftJoinAndSelect('user.userinfo', 'userinfo')
+      .where(queryCondition, {
+        userName: `%${userName}%`,
+        mobile: mobile,
+      })
+      .orderBy('user.createTime', 'ASC')
+      .getMany();
   }
 
   /**
    * 获取列表（分页）
    */
   async selectListPage(limitUserDto: LimitUserDto): Promise<any> {
-    let { page, limit, userName, mobile } = limitUserDto;
+    let { page, limit, userName, name, userType, mobile, email } = limitUserDto;
     page = page ? page : 1;
     limit = limit ? limit : 10;
     let offset = (page - 1) * limit;
@@ -127,10 +144,18 @@ export class UserService {
     if (!Utils.isBlank(userName)) {
       queryConditionList.push('user.userName LIKE :userName');
     }
+    if (!Utils.isBlank(name)) {
+      queryConditionList.push('user.name LIKE :name');
+    }
+    if (!Utils.isBlank(userType)) {
+      queryConditionList.push('user.userType = :userType');
+    }
     if (!Utils.isBlank(mobile)) {
       queryConditionList.push('user.mobile = :mobile');
     }
-
+    if (!Utils.isBlank(email)) {
+      queryConditionList.push('user.email = :email');
+    }
     let queryCondition = queryConditionList.join(' AND ');
 
     let res = await this.userRepository.createQueryBuilder('user')
@@ -236,7 +261,7 @@ export class UserService {
     for (let i = 0, len = groups.length; i < len; i++) {
       let createUserGroupDto = new CreateUserGroupDto();
       createUserGroupDto.userId = id;
-      createUserGroupDto.groupId = groups[i].id;
+      createUserGroupDto.groupId = groups[i];
       userGroupList.push(createUserGroupDto);
     }
 
@@ -269,7 +294,7 @@ export class UserService {
     for (let i = 0, len = roles.length; i < len; i++) {
       let createUserRoleDto = new CreateUserRoleDto();
       createUserRoleDto.userId = id;
-      createUserRoleDto.roleId = roles[i].id;
+      createUserRoleDto.roleId = roles[i];
       userGroupList.push(createUserRoleDto);
     }
 
@@ -288,6 +313,9 @@ export class UserService {
     return await this.userRoleService.selectByUserId(baseFindByIdDto);
   }
 
+  /**
+   * 获取权限
+   */
   async selectPermissionsByUserId(baseFindByIdDto: BaseFindByIdDto): Promise<any> {
     let isExist = await this.userRepository.findOne(baseFindByIdDto);
     if (Utils.isNil(isExist)) {

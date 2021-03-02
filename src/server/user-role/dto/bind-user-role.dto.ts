@@ -3,6 +3,6 @@ import { ApiProperty, ApiPropertyOptional, PickType, PartialType } from '@nestjs
 import { BaseFindByIdDto } from '../../base.dto';
 
 export class BindUserRoleDto extends PartialType(BaseFindByIdDto) {
-  @ApiProperty({ description: '角色',  example: [{ id: '' }] })
-  readonly roles: BaseFindByIdDto[];
+  @ApiProperty({ description: '角色', example: [] })
+  readonly roles: string[];
 }

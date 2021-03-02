@@ -44,15 +44,21 @@ export class RoleService {
   async selectList(searchRoleDto: SearchRoleDto): Promise<Role[]> {
     let { name } = searchRoleDto;
 
-    if (Utils.isBlank(name)) {
-      name = '';
+    let queryConditionList = [];
+
+    if (!Utils.isBlank(name)) {
+      queryConditionList.push('name LIKE :name');
     }
 
-    return await this.roleRepository.find({
-      where: {
-        name: Like(`%${name}%`),
-      },
-    });
+    let queryCondition = queryConditionList.join(' AND ');
+
+    return await this.roleRepository.createQueryBuilder()
+      .where(queryCondition, {
+        name: `%${name}%`,
+      })
+      .orderBy('createTime', 'ASC')
+      .getMany();
+    ;
   }
 
   /**
@@ -122,6 +128,9 @@ export class RoleService {
     await this.roleRepository.delete(isExist);
   }
 
+  /**
+   * 获取权限
+   */
   async selectPermissionsByRoleId(baseFindByIdDto: BaseFindByIdDto): Promise<RolePermission[]> {
     let isExist = await this.roleRepository.findOne(baseFindByIdDto);
     if (Utils.isNil(isExist)) {
@@ -131,6 +140,9 @@ export class RoleService {
     return await this.rolePermissionService.selectByRoleId(baseFindByIdDto);
   }
 
+  /**
+   * 绑定权限
+   */
   async bindPermissions(bindRolePermissionDto: BindRolePermissionDto): Promise<void> {
     let { id, permissions } = bindRolePermissionDto;
     let isExist = await this.roleRepository.findOne(id);
@@ -142,7 +154,7 @@ export class RoleService {
     for (let i = 0, len = permissions.length; i < len; i++) {
       let createRolePermissionDto = new CreateRolePermissionDto();
       createRolePermissionDto.roleId = id;
-      createRolePermissionDto.permissionId = permissions[i].id;
+      createRolePermissionDto.permissionId = permissions[i];
       userGroupList.push(createRolePermissionDto);
     }
 
