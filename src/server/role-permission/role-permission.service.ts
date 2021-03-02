@@ -23,9 +23,12 @@ export class RolePermissionService {
     return await this.rolePermissionRepository.save(createRolePermissionDto);
   }
 
+  /**
+   * 获取权限
+   */
   async selectByRoleId(baseFindByIdDto: BaseFindByIdDto): Promise<RolePermission[]> {
     return await this.rolePermissionRepository.find({
-      relations: ['permission'],
+      // relations: ['permission'],
       where: {
         roleId: baseFindByIdDto,
       },

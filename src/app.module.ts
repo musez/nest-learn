@@ -41,7 +41,7 @@ import { ArticleDataCatModule } from './server/article-data-cat/article-data-cat
       // charset: 'utf8mb4',
       multipleStatements: true,
       dropSchema: false,
-      synchronize: false, // 是否自动将实体类同步到数据库
+      synchronize: true, // 是否自动将实体类同步到数据库
       logging: true,
       cli: {
         migrationsDir: 'database/migration/default',

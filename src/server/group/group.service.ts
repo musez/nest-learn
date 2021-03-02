@@ -127,6 +127,9 @@ export class GroupService {
     await this.groupRepository.delete(isExist);
   }
 
+  /**
+   * 获取角色
+   */
   async selectRolesByGroupId(baseFindByIdDto: BaseFindByIdDto): Promise<GroupRole[]> {
     let isExist = await this.groupRepository.findOne(baseFindByIdDto);
     if (Utils.isNil(isExist)) {
@@ -136,6 +139,9 @@ export class GroupService {
     return await this.groupRoleService.selectByGroupId(baseFindByIdDto);
   }
 
+  /**
+   * 绑定角色
+   */
   async bindRoles(bindGroupRoleDto: BindGroupRoleDto): Promise<void> {
     let { id, roles } = bindGroupRoleDto;
     let isExist = await this.groupRepository.findOne(id);

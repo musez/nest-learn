@@ -20,9 +20,12 @@ export class GroupRoleService {
     return await this.groupRoleRepository.save(createGroupRoleDto);
   }
 
+  /**
+   * 获取用户组
+   */
   async selectByGroupId(baseFindByIdDto: BaseFindByIdDto): Promise<GroupRole[]> {
     return await this.groupRoleRepository.find({
-      relations: ['role'],
+      // relations: ['role'],
       where: {
         groupId: baseFindByIdDto,
       },

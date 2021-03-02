@@ -202,7 +202,7 @@ export class PermissionService {
       throw new BadRequestException(`数据 id：${id} 不存在！`);
     }
 
-    return await this.permissionRepository.save(isExist);
+    return await this.permissionRepository.save(child);
   }
 
   /**

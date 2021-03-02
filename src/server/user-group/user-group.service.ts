@@ -25,9 +25,12 @@ export class UserGroupService {
     return await this.userGroupRepository.save(createUserGroupDto);
   }
 
+  /**
+   * 获取用户组
+   */
   async selectByUserId(baseFindByIdDto: BaseFindByIdDto): Promise<UserGroup[]> {
     return await this.userGroupRepository.find({
-      relations: ['group'],
+      // relations: ['group'],
       where: {
         userId: baseFindByIdDto,
       },

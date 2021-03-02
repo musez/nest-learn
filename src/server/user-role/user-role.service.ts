@@ -23,9 +23,12 @@ export class UserRoleService {
     return await this.userRoleRepository.save(createUserRoleDto);
   }
 
+  /**
+   * 获取角色
+   */
   async selectByUserId(baseFindByIdDto: BaseFindByIdDto): Promise<UserRole[]> {
     return await this.userRoleRepository.find({
-      relations: ['role'],
+      // relations: ['role'],
       where: {
         userId: baseFindByIdDto,
       },
