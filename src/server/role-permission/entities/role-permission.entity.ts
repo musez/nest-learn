@@ -1,9 +1,8 @@
 import { Entity, PrimaryGeneratedColumn, JoinColumn, ManyToOne, Column } from 'typeorm';
-import { Group } from '../../group/entities/group.entity';
 import { Role } from '../../role/entities/role.entity';
 import { Permission } from '../../permission/entities/permission.entity';
 
-@Entity('role_permission')
+@Entity('sys_role_permission')
 export class RolePermission {
   constructor() {
     this.id = undefined;

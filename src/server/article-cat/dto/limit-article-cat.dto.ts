@@ -6,6 +6,11 @@ export class LimitArticleCatDto extends PartialType(BasePageDto) {
   @ApiPropertyOptional({ description: '父 id' })
   readonly parentId?: string;
 
+  @ApiPropertyOptional({ description: '查询类型（0：子代；1：所有后代）', example: 0 })
+  // @Transform(kinship => Number.parseInt(kinship))
+  // @IsInt({ message: '查询类型必须为数字！' })
+  readonly kinship?: number;
+
   @ApiPropertyOptional({ description: '栏目名称' })
   readonly catName?: string;
 }

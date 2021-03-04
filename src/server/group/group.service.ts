@@ -6,9 +6,6 @@ import { CreateGroupDto } from './dto/create-group.dto';
 import { UpdateGroupDto } from './dto/update-group.dto';
 import { Group } from './entities/group.entity';
 import { BaseFindByIdDto } from '../base.dto';
-import { BindUserGroupDto } from '../user/dto/bind-user-group.dto';
-import { CreateUserGroupDto } from '../user-group/dto/create-user-group.dto';
-import { UserGroup } from '../user-group/entities/user-group.entity';
 import { GroupRoleService } from '../group-role/group-role.service';
 import { GroupRole } from '../group-role/entities/group-role.entity';
 import { BindGroupRoleDto } from '../group-role/dto/bind-group-role.dto';
@@ -124,7 +121,11 @@ export class GroupService {
       throw new BadRequestException(`数据 id：${baseFindByIdDto} 不存在！`);
     }
 
-    await this.groupRepository.delete(isExist);
+    // await this.groupRepository.delete(isExist);
+    await this.groupRepository.createQueryBuilder().delete()
+      .from(Group)
+      .where('id = :id', { id: id })
+      .execute();
   }
 
   /**

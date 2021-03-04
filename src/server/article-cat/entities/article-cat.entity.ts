@@ -17,15 +17,16 @@ import { Article } from '../../article/entities/article.entity';
 export class ArticleCat extends BaseEntity {
   constructor() {
     super();
-    this.catName = undefined;
+
     this.parentId = undefined;
+    this.catName = undefined;
   }
+
+  @Column({ comment: '父 id', nullable: true })
+  parentId: string;
 
   @Column('varchar', { comment: '栏目名称', length: 255 })
   catName: string;
-
-  @Column({ comment: '父 id' })
-  parentId: string;
 
   @OneToMany(type => Article, article => article.cats)
   articles: Article[];

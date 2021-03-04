@@ -10,7 +10,6 @@ import { Userinfo } from '../userinfo/entities/userinfo.entity';
 import { BaseFindByIdDto, BaseModifyStatusByIdsDto } from '../base.dto';
 import { BindUserGroupDto } from './dto/bind-user-group.dto';
 import { UserGroupService } from '../user-group/user-group.service';
-import { CreateGroupRoleDto } from '../group-role/dto/create-group-role.dto';
 import { CreateUserGroupDto } from '../user-group/dto/create-user-group.dto';
 import { UserGroup } from '../user-group/entities/user-group.entity';
 import { BindUserRoleDto } from '../user-role/dto/bind-user-role.dto';
@@ -18,8 +17,6 @@ import { CreateUserRoleDto } from '../user-role/dto/create-user-role.dto';
 import { UserRole } from '../user-role/entities/user-role.entity';
 import { UserRoleService } from '../user-role/user-role.service';
 import { UserinfoService } from '../userinfo/userinfo.service';
-import { ErrorCode } from '../../constants/error';
-import { SearchAreaDto } from '../area/dto/search-area.dto';
 import { SearchUserDto } from './dto/search-user.dto';
 import { LimitUserDto } from './dto/limit-user.dto';
 
@@ -45,11 +42,11 @@ export class UserService {
       select: ['id'],
     });
     if (!isExist) {
-      // throw new BadRequestException(`数据 id：${id} 不存在！`);
-      throw new BadRequestException({
-        code: ErrorCode.ParamsError.CODE,
-        msg: `数据 id：${baseFindByIdDto} 不存在！`,
-      });
+      throw new BadRequestException(`数据 id：${baseFindByIdDto} 不存在！`);
+      // throw new BadRequestException({
+      //   code: ErrorCode.ParamsError.CODE,
+      //   msg: `数据 id：${baseFindByIdDto} 不存在！`,
+      // });
     }
 
     return await this.userRepository.increment(isExist, 'loginCount', 1);
@@ -323,23 +320,23 @@ export class UserService {
     }
 
     let permissions1 = await this.userRepository.query(`
-        select p.* from cms_nest.permission p
-        inner join cms_nest.role_permission rp on p.id = rp.permissionId
-        inner join cms_nest.role r on rp.roleId = r.id
-        inner join cms_nest.group_role gr on r.id = gr.roleId
-        inner join cms_nest.group g on gr.groupId = g.id
-        inner join cms_nest.user_group ug on g.id = ug.groupId
-        inner join cms_nest.user u on u.id = ug.userId
+        select p.* from cms_nest.sys_permission p
+        inner join cms_nest.sys_role_permission rp on p.id = rp.permissionId
+        inner join cms_nest.sys_role r on rp.roleId = r.id
+        inner join cms_nest.sys_group_role gr on r.id = gr.roleId
+        inner join cms_nest.sys_group g on gr.groupId = g.id
+        inner join cms_nest.sys_user_group ug on g.id = ug.groupId
+        inner join cms_nest.sys_user u on u.id = ug.userId
         where u.id = '${baseFindByIdDto}'
         `);
 
     let permissions2 = await this.userRepository.query(`
         select p.*
-        from cms_nest.permission p
-        inner join cms_nest.role_permission rp on p.id = rp.permissionId
-        inner join cms_nest.role r on rp.roleId = r.id
-        inner join cms_nest.user_role ur on r.id = ur.roleId
-        inner join cms_nest.user u on u.id = ur.userId
+        from cms_nest.sys_permission p
+        inner join cms_nest.sys_role_permission rp on p.id = rp.permissionId
+        inner join cms_nest.sys_role r on rp.roleId = r.id
+        inner join cms_nest.sys_user_role ur on r.id = ur.roleId
+        inner join cms_nest.sys_user u on u.id = ur.userId
         where u.id = '${baseFindByIdDto}'
         `);
 

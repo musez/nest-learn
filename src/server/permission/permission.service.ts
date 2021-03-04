@@ -40,14 +40,24 @@ export class PermissionService {
    * 获取列表
    */
   async selectList(searchPermissionDto: SearchPermissionDto): Promise<Permission[]> {
-    let { parentId, name } = searchPermissionDto;
+    let { parentId, kinship, name } = searchPermissionDto;
+
+    kinship = kinship ? kinship : 0;
 
     let queryConditionList = [];
 
-    let parentIds = [];
+    let parentIds = null;
     if (!Utils.isBlank(parentId)) {
-      parentIds = await this.selectChildrenIdsRecursive(parentId);
-      queryConditionList.push('parentId IN (:...parentIds)');
+      if (kinship === 0) {
+        parentIds = parentId;
+        queryConditionList.push('parentId = :parentIds');
+      } else {
+        parentIds = await this.selectChildrenIdsRecursive(parentId);
+        queryConditionList.push('parentId IN (:...parentIds)');
+      }
+    } else {
+      parentIds = '';
+      queryConditionList.push('parentId = :parentIds');
     }
 
     if (!Utils.isBlank(name)) {
@@ -215,6 +225,11 @@ export class PermissionService {
       throw new BadRequestException(`数据 id：${id} 不存在！`);
     }
 
-    await this.permissionRepository.delete(isExist);
+    // await this.permissionRepository.delete(isExist);
+    await this.permissionRepository.createQueryBuilder()
+      .delete()
+      .from(Permission)
+      .where('id = :id', { id: id })
+      .execute();
   }
 }

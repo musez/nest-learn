@@ -7,7 +7,7 @@ import {
 } from 'typeorm';
 import { User } from '../../user/entities/user.entity';
 
-@Entity('userinfo')
+@Entity('sys_userinfo')
 export class Userinfo {
   constructor() {
     this.id = undefined;

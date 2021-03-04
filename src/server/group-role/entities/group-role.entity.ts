@@ -2,7 +2,7 @@ import { Entity, PrimaryGeneratedColumn, JoinColumn, ManyToOne, Column } from 't
 import { Group } from '../../group/entities/group.entity';
 import { Role } from '../../role/entities/role.entity';
 
-@Entity('group_role')
+@Entity('sys_group_role')
 export class GroupRole {
   constructor() {
     this.id = undefined;

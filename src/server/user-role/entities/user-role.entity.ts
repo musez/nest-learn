@@ -2,7 +2,7 @@ import { Entity, PrimaryGeneratedColumn, JoinColumn, ManyToOne, Column } from 't
 import { Role } from '../../role/entities/role.entity';
 import { User } from '../../user/entities/user.entity';
 
-@Entity('user_role')
+@Entity('sys_user_role')
 export class UserRole {
   constructor() {
     this.id = undefined;

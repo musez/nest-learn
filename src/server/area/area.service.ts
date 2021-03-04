@@ -5,7 +5,6 @@ import { Utils } from './../../utils/index';
 import { Area } from './entities/area.entity';
 import { BaseFindByIdDto, BaseFindByPIdDto } from '../base.dto';
 import { LimitAreaDto } from './dto/limit-area.dto';
-import { SearchAreaDto } from './dto/search-area.dto';
 
 @Injectable()
 export class AreaService {
@@ -110,7 +109,7 @@ export class AreaService {
   /**
    * 获取列表（父 id）
    */
-  async findListByPId(baseFindByPIdDto: BaseFindByPIdDto): Promise<Area[]> {
+  async selectListByPId(baseFindByPIdDto: BaseFindByPIdDto): Promise<Area[]> {
     let { parentId } = baseFindByPIdDto;
 
     if (Utils.isBlank(parentId)) {

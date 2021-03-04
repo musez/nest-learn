@@ -31,7 +31,7 @@ export enum SexType {
   MALE = 2,
 }
 
-@Entity('user')
+@Entity('sys_user')
 export class User extends BaseEntity {
   constructor() {
     super();

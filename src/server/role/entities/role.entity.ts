@@ -16,7 +16,7 @@ import { User } from '../../user/entities/user.entity';
 import { Permission } from '../../permission/entities/permission.entity';
 import { Group } from '../../group/entities/group.entity';
 
-@Entity('role')
+@Entity('sys_role')
 export class Role extends BaseEntity {
   constructor() {
     super();

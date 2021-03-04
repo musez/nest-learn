@@ -186,6 +186,11 @@ export class DictService {
       throw new BadRequestException(`数据 id：${id} 不存在！`);
     }
 
-    await this.dictRepository.delete(isExist);
+    // await this.dictRepository.delete(isExist);
+    await this.dictRepository.createQueryBuilder()
+      .delete()
+      .from(Dict)
+      .where('id = :id', { id: id })
+      .execute();
   }
 }

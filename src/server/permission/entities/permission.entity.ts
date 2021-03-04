@@ -24,21 +24,20 @@ export enum PermissionType {
   FIELD = 1,
 }
 
-@Entity('permission')
-// @Tree('closure-table')
+@Entity('sys_permission')
 export class Permission extends BaseEntity {
   constructor() {
     super();
 
+    this.parentId = undefined;
     this.name = undefined;
     this.type = undefined;
     this.code = undefined;
-    this.uri = undefined;
-    this.parentId = undefined;
-    // this.children = undefined;
-    // this.parent = undefined;
     this.roles = undefined;
   }
+
+  @Column({ comment: '父 id', nullable: true })
+  parentId: string;
 
   @Column('varchar', { comment: '名称', length: 50 })
   name: string;
@@ -48,18 +47,6 @@ export class Permission extends BaseEntity {
 
   @Column({ comment: '权限 CODE 代码', length: 50 })
   code: string;
-
-  @Column({ comment: '权限 URI 规则', length: 50 })
-  uri: string;
-
-  @Column({ comment: '父 id', nullable: true })
-  parentId: string;
-
-  // @TreeChildren({ cascade: true })
-  // children: Permission[];
-  //
-  // @TreeParent()
-  // parent: Permission;
 
   @OneToMany(type => Role, role => role.permissions)
   roles: Role[];

@@ -21,22 +21,30 @@ export enum PermissionHiddenType {
   HIDDEN = 1,
 }
 
-@Entity('menu')
+@Entity('sys_menu')
 export class Menu extends BaseEntity {
   constructor() {
     super();
 
-    this.name = undefined;
-    this.routerPath = undefined;
-    this.routerName = undefined;
-    this.routerRedirect = undefined;
+    this.parentId = undefined;
+    // this.name = undefined;
+    // this.routerPath = undefined;
+    // this.routerName = undefined;
+    // this.routerRedirect = undefined;
     this.routerComponent = undefined;
     this.routerHidden = undefined;
     this.routerTitle = undefined;
     this.routerIcon = undefined;
     this.routerSort = undefined;
-    this.parentId = undefined;
+    this.code = undefined;
+    // this.routerUri = undefined;+
+    //  +组件地址
+    //  +按钮名称
+    //  +权限标识
   }
+
+  @Column({ comment: '父 id', nullable: true })
+  parentId: string;
 
   @Column('varchar', { comment: '名称', length: 50 })
   name: string;
@@ -65,6 +73,6 @@ export class Menu extends BaseEntity {
   @Column({ comment: '权限路由 SORT', default: 0, nullable: true })
   routerSort: number;
 
-  @Column({ comment: '父 id', nullable: true })
-  parentId: string;
+  @Column({ comment: '权限 CODE 代码', length: 50 })
+  code: string;
 }

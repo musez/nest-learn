@@ -4,7 +4,6 @@ import { Connection } from 'typeorm';
 import { RedisModule } from 'nestjs-redis';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { LoggerMiddleware } from './common/middleware/logger.middleware';
 import { AuthModule } from './server/auth/auth.module';
 import { UserModule } from './server/user/user.module';
 import { UserinfoModule } from './server/userinfo/userinfo.module';
@@ -25,6 +24,8 @@ import { CaptchaModule } from './server/captcha/captcha.module';
 import { MenuModule } from './server/menu/menu.module';
 import { ArticleCatModule } from './server/article-cat/article-cat.module';
 import { ArticleDataCatModule } from './server/article-data-cat/article-data-cat.module';
+import { OrgModule } from './server/org/org.module';
+import { PostModule } from './server/post/post.module';
 
 @Module({
   imports: [
@@ -66,13 +67,15 @@ import { ArticleDataCatModule } from './server/article-data-cat/article-data-cat
     PermissionModule,
     MenuModule,
     RolePermissionModule,
-    ArticleModule,
-    ArticleCatModule,
-    ArticleDataCatModule,
+    OrgModule,
+    PostModule,
     DictModule,
     DictItemModule,
     AreaModule,
     FileModule,
+    ArticleModule,
+    ArticleCatModule,
+    ArticleDataCatModule,
   ],
   controllers: [AppController],
   providers: [AppService],

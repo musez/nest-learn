@@ -14,7 +14,6 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { Area } from './entities/area.entity';
 import { LimitAreaDto } from './dto/limit-area.dto';
 import { BaseFindByIdDto, BaseFindByPIdDto } from '../base.dto';
-import { CurUser } from '../../common/decorators/user.decorator';
 import { SearchAreaDto } from './dto/search-area.dto';
 
 @Controller('area')
@@ -41,7 +40,7 @@ export class AreaController {
   @Get('findListByPId')
   @ApiOperation({ summary: '获取子代列表（父 id）' })
   async findListByPId(@Query() baseFindByPIdDto: BaseFindByPIdDto): Promise<any> {
-    return this.areaService.findListByPId(baseFindByPIdDto);
+    return this.areaService.selectListByPId(baseFindByPIdDto);
   }
 
   @Get('findTree')

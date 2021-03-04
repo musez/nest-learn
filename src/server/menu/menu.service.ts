@@ -3,7 +3,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Like } from 'typeorm';
 import { CreateMenuDto } from './dto/create-menu.dto';
 import { UpdateMenuDto } from './dto/update-menu.dto';
-import { Permission } from '../permission/entities/permission.entity';
 import { Utils } from '../../utils';
 import { BaseFindByIdDto, BaseFindByPIdDto } from '../base.dto';
 import { Menu } from './entities/menu.entity';
@@ -32,20 +31,29 @@ export class MenuService {
    * 获取列表
    */
   async selectList(searchMenuDto: SearchMenuDto): Promise<Menu[]> {
-    let { parentId, name } = searchMenuDto;
+    let { parentId, kinship, name } = searchMenuDto;
+
+    kinship = kinship ? kinship : 0;
 
     let queryConditionList = [];
 
-    let parentIds = [];
+    let parentIds = null;
     if (!Utils.isBlank(parentId)) {
-      parentIds = await this.selectChildrenIdsRecursive(parentId);
-      queryConditionList.push('parentId IN (:...parentIds)');
+      if (kinship === 0) {
+        parentIds = parentId;
+        queryConditionList.push('parentId = :parentIds');
+      } else {
+        parentIds = await this.selectChildrenIdsRecursive(parentId);
+        queryConditionList.push('parentId IN (:...parentIds)');
+      }
+    } else {
+      parentIds = '';
+      queryConditionList.push('parentId = :parentIds');
     }
 
     if (!Utils.isBlank(name)) {
       queryConditionList.push('name LIKE :name');
     }
-
     let queryCondition = queryConditionList.join(' AND ');
 
     let res = await this.menuRepository.createQueryBuilder()
@@ -202,6 +210,11 @@ export class MenuService {
       throw new BadRequestException(`数据 id：${id} 不存在！`);
     }
 
-    await this.menuRepository.delete(isExist);
+    // await this.menuRepository.delete(isExist);
+    await this.menuRepository.createQueryBuilder()
+      .delete()
+      .from(Menu)
+      .where('id = :id', { id: id })
+      .execute();
   }
 }

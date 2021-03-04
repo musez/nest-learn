@@ -4,15 +4,9 @@ import { Repository, Like } from 'typeorm';
 import { Utils } from './../../utils/index';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
-import { Group } from '../group/entities/group.entity';
 import { Role } from './entities/role.entity';
 import { BaseFindByIdDto } from '../base.dto';
-import { GroupRole } from '../group-role/entities/group-role.entity';
-import { BindUserGroupDto } from '../user/dto/bind-user-group.dto';
-import { CreateUserGroupDto } from '../user-group/dto/create-user-group.dto';
 import { RolePermission } from '../role-permission/entities/role-permission.entity';
-import { BindGroupRoleDto } from '../group-role/dto/bind-group-role.dto';
-import { CreateGroupRoleDto } from '../group-role/dto/create-group-role.dto';
 import { BindRolePermissionDto } from './dto/bind-role-permission.dto';
 import { CreateRolePermissionDto } from '../role-permission/dto/create-role-permission.dto';
 import { RolePermissionService } from '../role-permission/role-permission.service';
@@ -125,7 +119,12 @@ export class RoleService {
       throw new BadRequestException(`数据 id：${id} 不存在！`);
     }
 
-    await this.roleRepository.delete(isExist);
+    // await this.roleRepository.delete(isExist);
+    await this.roleRepository.createQueryBuilder()
+      .delete()
+      .from(Role)
+      .where('id = :id', { id: id })
+      .execute();
   }
 
   /**

@@ -115,6 +115,11 @@ export class ArticleService {
       throw new BadRequestException(`数据 id：${id} 不存在！`);
     }
 
-    await this.articleRepository.delete(isExist);
+    // await this.articleRepository.delete(isExist);
+    await this.articleRepository.createQueryBuilder()
+      .delete()
+      .from(Article)
+      .where('id = :id', { id: id })
+      .execute();
   }
 }

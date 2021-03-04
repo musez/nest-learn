@@ -12,7 +12,7 @@ export enum DictType {
   NUM = 1,
 }
 
-@Entity('dict')
+@Entity('sys_dict')
 export class Dict extends BaseEntity {
   constructor() {
     super();

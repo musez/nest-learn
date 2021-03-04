@@ -10,7 +10,7 @@ import {
 } from 'typeorm';
 import { BaseEntity } from '../../base.entity';
 
-@Entity('file')
+@Entity('sys_file')
 export class File extends BaseEntity {
   constructor() {
     super();

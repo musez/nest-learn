@@ -6,7 +6,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-@Entity('area')
+@Entity('sys_area')
 export class Area {
   constructor() {
     this.id = undefined;

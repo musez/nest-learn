@@ -2,7 +2,6 @@ import { Injectable, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateFileDto } from './dto/create-file.dto';
-import { UpdateFileDto } from './dto/update-file.dto';
 import { File } from './entities/file.entity';
 import { BaseFindByIdDto } from '../base.dto';
 import { Utils } from '../../utils';
@@ -51,6 +50,11 @@ export class FileService {
       throw new BadRequestException(`数据 id：${id} 不存在！`);
     }
 
-    await this.fileRepository.delete(isExist);
+    // await this.fileRepository.delete(isExist);
+    await this.fileRepository.createQueryBuilder()
+      .delete()
+      .from(File)
+      .where('id = :id', { id: id })
+      .execute();
   }
 }

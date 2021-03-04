@@ -24,13 +24,6 @@ export class BasePermissionDto {
   @IsNotEmpty({ message: '权限 CODE 代码不能为空！' })
   readonly code: string;
 
-  @ApiProperty({ description: '权限 URI 规则', example: '' })
-  @IsNotEmpty({ message: '权限 URI 规则不能为空！' })
-  readonly uri: string;
-
-  @ApiPropertyOptional({ description: '父 id', example: null })
-  readonly parentId?: string;
-
   @ApiProperty({ description: '状态（0：禁用；1：启用）', example: 0 })
   @Transform(status => Number.parseInt(status))
   @IsInt({ message: '状态必须为数字！' })
@@ -39,4 +32,7 @@ export class BasePermissionDto {
   @ApiPropertyOptional({ description: '描述', example: '' })
   @MaxLength(BaseConstants.DESCRIPTION_MAX_LENGTH, { message: '描述不能大于 $constraint1 位！' })
   readonly description?: string;
+
+  @ApiPropertyOptional({ description: '父 id', example: null })
+  readonly parentId?: string;
 }

@@ -9,7 +9,6 @@ import { Utils } from '../../utils';
 import { BaseFindByIdDto, BaseFindByPIdDto } from '../base.dto';
 import { SearchArticleCatDto } from './dto/search-article-cat.dto';
 import { LimitArticleCatDto } from './dto/limit-article-cat.dto';
-import { Permission } from '../permission/entities/permission.entity';
 
 @Injectable()
 export class ArticleCatService {
@@ -23,6 +22,9 @@ export class ArticleCatService {
    * 添加
    */
   async insert(createArticleCatDto: CreateArticleCatDto, curUser?): Promise<CreateArticleCatDto> {
+    let articleCat = new ArticleCat();
+    articleCat = Utils.dto2entity(createArticleCatDto, articleCat);
+    articleCat.createBy = curUser.id;
     return await this.articleCatRepository.save(createArticleCatDto);
   }
 
@@ -30,14 +32,22 @@ export class ArticleCatService {
    * 获取列表
    */
   async selectList(searchArticleCatDto: SearchArticleCatDto): Promise<ArticleCat[]> {
-    let { parentId, catName } = searchArticleCatDto;
+    let { parentId, kinship, catName } = searchArticleCatDto;
 
     let queryConditionList = [];
 
-    let parentIds = [];
+    let parentIds = null;
     if (!Utils.isBlank(parentId)) {
-      parentIds = await this.selectChildrenIdsRecursive(parentId);
-      queryConditionList.push('parentId IN (:...parentIds)');
+      if (kinship === 0) {
+        parentIds = parentId;
+        queryConditionList.push('parentId = :parentIds');
+      } else {
+        parentIds = await this.selectChildrenIdsRecursive(parentId);
+        queryConditionList.push('parentId IN (:...parentIds)');
+      }
+    } else {
+      parentIds = '';
+      queryConditionList.push('parentId = :parentIds');
     }
 
     if (!Utils.isBlank(catName)) {
@@ -60,7 +70,7 @@ export class ArticleCatService {
    * 获取列表（分页）
    */
   async selectListPage(limitArticleCatDto: LimitArticleCatDto): Promise<any> {
-    let { page, limit, parentId,catName } = limitArticleCatDto;
+    let { page, limit, parentId, catName } = limitArticleCatDto;
     page = page ? page : 1;
     limit = limit ? limit : 10;
     let offset = (page - 1) * limit;
@@ -121,7 +131,7 @@ export class ArticleCatService {
   /**
    * 获取树
    */
-  async selectTree(baseFindByPIdDto: BaseFindByPIdDto): Promise<Permission[]> {
+  async selectTree(baseFindByPIdDto: BaseFindByPIdDto): Promise<ArticleCat[]> {
     let { parentId } = baseFindByPIdDto;
 
     if (Utils.isBlank(parentId)) {
@@ -200,6 +210,11 @@ export class ArticleCatService {
       throw new BadRequestException(`数据 id：${id} 不存在！`);
     }
 
-    await this.articleCatRepository.delete(isExist);
+    // await this.articleCatRepository.delete(isExist);
+    await this.articleCatRepository.createQueryBuilder()
+      .delete()
+      .from(ArticleCat)
+      .where('id = :id', { id: id })
+      .execute();
   }
 }
