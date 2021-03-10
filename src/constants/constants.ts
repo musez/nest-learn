@@ -14,3 +14,7 @@ export class UserConstants {
   static readonly NAME_MAX_LENGTH: number = 20;
   static readonly ADDRESS_MAX_LENGTH: number = 50;
 }
+
+export class OrgConstants {
+  static readonly ORG_LEVEL_MAX_LENGTH: number = 100;
+}

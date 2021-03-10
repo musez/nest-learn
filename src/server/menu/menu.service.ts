@@ -47,8 +47,7 @@ export class MenuService {
         queryConditionList.push('parentId IN (:...parentIds)');
       }
     } else {
-      parentIds = '';
-      queryConditionList.push('parentId = :parentIds');
+      queryConditionList.push('parentId IS NULL');
     }
 
     if (!Utils.isBlank(name)) {
@@ -197,7 +196,7 @@ export class MenuService {
     role = Utils.dto2entity(updateMenuDto, role);
     role.updateBy = curUser.id;
 
-    await this.menuRepository.save(role);
+    await this.menuRepository.update(id, role);
   }
 
   /**

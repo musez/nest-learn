@@ -41,7 +41,7 @@ export class Org extends BaseEntity {
   @Column('varchar', { comment: '机构简称', length: 50 })
   shortName: string;
 
-  @Column('tinyint', { comment: '机构类型（0：机构；1：部门；' })
+  @Column('tinyint', { comment: '机构类型（0：机构；1：部门；)' })
   orgType: OrgType;
 
   @Column('varchar', { comment: '机构级次码', length: 100 })

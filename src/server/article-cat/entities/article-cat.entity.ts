@@ -13,7 +13,7 @@ import {
 import { BaseEntity } from '../../base.entity';
 import { Article } from '../../article/entities/article.entity';
 
-@Entity('article_cat')
+@Entity('cms_article_cat')
 export class ArticleCat extends BaseEntity {
   constructor() {
     super();

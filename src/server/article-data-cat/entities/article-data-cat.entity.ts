@@ -2,7 +2,7 @@ import { Entity, PrimaryGeneratedColumn, JoinColumn, ManyToOne, Column } from 't
 import { Article } from '../../article/entities/article.entity';
 import { ArticleCat } from '../../article-cat/entities/article-cat.entity';
 
-@Entity('article_data_cat')
+@Entity('cms_article_data_cat')
 export class ArticleDataCat {
   @PrimaryGeneratedColumn('uuid', { comment: '主键 id' })
   id: string;

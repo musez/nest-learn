@@ -46,8 +46,7 @@ export class ArticleCatService {
         queryConditionList.push('parentId IN (:...parentIds)');
       }
     } else {
-      parentIds = '';
-      queryConditionList.push('parentId = :parentIds');
+      queryConditionList.push('parentId IS NULL');
     }
 
     if (!Utils.isBlank(catName)) {
@@ -197,7 +196,7 @@ export class ArticleCatService {
     let article = new Article();
     Utils.dto2entity(updateArticleCatDto, article);
 
-    await this.articleCatRepository.save(article);
+    await this.articleCatRepository.update(id, article);
   }
 
   /**

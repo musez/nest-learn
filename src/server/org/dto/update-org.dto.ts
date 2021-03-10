@@ -1,4 +1,10 @@
-import { PartialType } from '@nestjs/mapped-types';
+import { IsNotEmpty, IsString, IsInt, IsEmail, IsUUID } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional, PartialType } from '@nestjs/swagger';
 import { CreateOrgDto } from './create-org.dto';
 
-export class UpdateOrgDto extends PartialType(CreateOrgDto) {}
+export class UpdateOrgDto extends PartialType(CreateOrgDto) {
+  @ApiProperty({ description: '主键 id', example: '' })
+  @IsNotEmpty({ message: '主键 id 不能为空' })
+  @IsUUID('all')
+  readonly id: string;
+}

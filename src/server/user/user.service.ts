@@ -320,7 +320,8 @@ export class UserService {
     }
 
     let permissions1 = await this.userRepository.query(`
-        select p.* from cms_nest.sys_permission p
+        select p.*
+        from cms_nest.sys_permission p
         inner join cms_nest.sys_role_permission rp on p.id = rp.permissionId
         inner join cms_nest.sys_role r on rp.roleId = r.id
         inner join cms_nest.sys_group_role gr on r.id = gr.roleId
@@ -340,8 +341,37 @@ export class UserService {
         where u.id = '${baseFindByIdDto}'
         `);
 
+    let role1 = await this.userRepository.query(`
+       select r.*
+        from cms_nest.sys_role r
+        inner join cms_nest.sys_group_role gr on r.id = gr.roleId
+        inner join cms_nest.sys_group g on gr.groupId = g.id
+        inner join cms_nest.sys_user_group ug on g.id = ug.groupId
+        inner join cms_nest.sys_user u on u.id = ug.userId
+        where u.id  = '${baseFindByIdDto}'
+        `);
+
+    let role2 = await this.userRepository.query(`
+       select r.*
+        from cms_nest.sys_role r
+        inner join cms_nest.sys_user_role ur on r.id = ur.roleId
+        inner join cms_nest.sys_user u on u.id = ur.userId
+        where u.id =  '${baseFindByIdDto}'
+        `);
+
+    let group1 = await this.userRepository.query(`
+       select g.*
+        from cms_nest.sys_group g
+        inner join cms_nest.sys_user_group ug on g.id = ug.groupId
+        inner join cms_nest.sys_user u on u.id = ug.userId
+        where u.id =  '${baseFindByIdDto}'
+        `);
+
+
     let res = Utils.assign(isExist, {
       permissions: Utils.uniqBy(Utils.concat(permissions1, permissions2), 'id'),
+      roles: Utils.uniqBy(Utils.concat(role1, role2), 'id'),
+      groups: group1,
     });
 
     return res;

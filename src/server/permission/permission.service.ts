@@ -56,8 +56,7 @@ export class PermissionService {
         queryConditionList.push('parentId IN (:...parentIds)');
       }
     } else {
-      parentIds = '';
-      queryConditionList.push('parentId = :parentIds');
+      queryConditionList.push('parentId IS NULL');
     }
 
     if (!Utils.isBlank(name)) {
@@ -212,7 +211,7 @@ export class PermissionService {
       throw new BadRequestException(`数据 id：${id} 不存在！`);
     }
 
-    return await this.permissionRepository.save(child);
+    return await this.permissionRepository.update(id, child);
   }
 
   /**

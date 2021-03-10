@@ -15,7 +15,7 @@ import { Exclude } from 'class-transformer';
 import { BaseEntity } from '../../base.entity';
 
 @Entity('sys_post')
-export class Post extends BaseEntity {
+export class SysPost extends BaseEntity {
   constructor() {
     super();
 

@@ -108,7 +108,7 @@ export class GroupService {
     group = Utils.dto2entity(updateGroupDto, group);
     group.updateBy = curUser.id;
 
-    await this.groupRepository.save(group);
+    await this.groupRepository.update(id, group);
   }
 
   /**

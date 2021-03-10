@@ -27,7 +27,7 @@ export enum ArticleType {
   AUDIO = 5,
 }
 
-@Entity('article')
+@Entity('cms_article')
 export class Article extends BaseEntity {
   constructor() {
     super();

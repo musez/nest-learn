@@ -102,7 +102,7 @@ export class ArticleService {
     let article = new Article();
     Utils.dto2entity(updateArticleDto, article);
 
-    await this.articleRepository.save(article);
+    await this.articleRepository.update(id, article);
   }
 
   /**

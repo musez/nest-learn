@@ -106,7 +106,7 @@ export class RoleService {
     role = Utils.dto2entity(updateRoleDto, role);
     role.updateBy = curUser.id;
 
-    await this.roleRepository.save(role);
+    await this.roleRepository.update(id, role);
   }
 
   /**

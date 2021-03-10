@@ -9,6 +9,9 @@ export class BaseArticleCatDto {
     @IsUUID('all')
     readonly id: string;
 
+    @ApiPropertyOptional({ description: '父 id', example: null })
+    readonly parentId?: string;
+
     @ApiProperty({ description: '栏目名称', example: '' })
     @IsNotEmpty({ message: '栏目名称不能为空！' })
     @MaxLength(255, { message: '栏目名称不能大于 255 位！' })
@@ -22,7 +25,4 @@ export class BaseArticleCatDto {
     @ApiPropertyOptional({ description: '描述', example: '' })
     @MaxLength(BaseConstants.DESCRIPTION_MAX_LENGTH, { message: '描述不能大于 $constraint1 位！' })
     readonly description?: string;
-
-    @ApiPropertyOptional({ description: '父 id', example: null })
-    readonly parentId?: string;
 }

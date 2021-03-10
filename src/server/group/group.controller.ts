@@ -29,10 +29,9 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { Group } from './entities/group.entity';
 import { BaseFindByIdDto, BasePageDto } from '../base.dto';
 import { LimitGroupDto } from './dto/limit-group.dto';
-import { BindUserGroupDto } from '../user/dto/bind-user-group.dto';
+import { SearchGroupDto } from './dto/search-group.dto';
 import { BindGroupRoleDto } from '../group-role/dto/bind-group-role.dto';
 import { CurUser } from '../../common/decorators/user.decorator';
-import { SearchGroupDto } from './dto/search-group.dto';
 
 @Controller('group')
 @ApiTags('用户组')

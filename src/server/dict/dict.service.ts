@@ -171,7 +171,7 @@ export class DictService {
       }
     }
 
-    let result = await this.dictRepository.save(updateDictDto);
+    let result = await this.dictRepository.update(id, updateDictDto);
 
     return result;
   }
