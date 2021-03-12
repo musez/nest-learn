@@ -6,7 +6,7 @@ import {
 } from 'typeorm';
 
 // 状态类型
-export enum statusType {
+export enum StatusType {
   ENABLE = 1,
   DISABLE = 0,
 }
@@ -25,8 +25,8 @@ export abstract class BaseEntity {
   @PrimaryGeneratedColumn('uuid', { comment: '主键 id' })
   id: string;
 
-  @Column('tinyint', { comment: '状态（0：禁用；1：启用）', default: statusType.ENABLE })
-  status: statusType;
+  @Column('tinyint', { comment: '状态（0：禁用；1：启用）', default: StatusType.ENABLE })
+  status: StatusType;
 
   @Column('text', { comment: '描述', nullable: true })
   description: string;
@@ -36,16 +36,10 @@ export abstract class BaseEntity {
 
   @Column({ comment: '创建人 id', nullable: true })
   createBy: string;
-  // @OneToOne(() => User)
-  // @JoinColumn()
-  // createBy: User;
 
   @UpdateDateColumn({ comment: '最后更新时间', type: 'datetime' , nullable: true})
   updateTime: Date;
 
   @Column({ comment: '修改人 id', nullable: true })
   updateBy: string;
-  // @OneToOne(() => User)
-  // @JoinColumn()
-  // updateBy: User;
 }

@@ -61,10 +61,6 @@ export class UserService {
     let isExist = await this.userRepository.findOne({ userName: userName });
     if (isExist) {
       throw new BadRequestException(`用户名：${userName} 已存在！`);
-      // throw new BadRequestException({
-      //   code: ErrorCode.UserNameExists.CODE,
-      //   msg: `用户名：${userName} 已存在！`,
-      // });
     }
 
     let user = new User();

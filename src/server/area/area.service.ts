@@ -5,6 +5,7 @@ import { Utils } from './../../utils/index';
 import { Area } from './entities/area.entity';
 import { BaseFindByIdDto, BaseFindByPIdDto } from '../base.dto';
 import { LimitAreaDto } from './dto/limit-area.dto';
+import { Permission } from '../permission/entities/permission.entity';
 
 @Injectable()
 export class AreaService {
@@ -38,13 +39,18 @@ export class AreaService {
 
     let queryCondition = queryConditionList.join(' AND ');
 
-    let res = await this.areaRepository.createQueryBuilder()
+    let res = await this.areaRepository.createQueryBuilder('a')
+      .select(['a.*'])
+      .addSelect(subQuery  =>
+        subQuery .select('COUNT(*)')
+          .from(Permission, 'subA')
+          .where('subA.parentId = a.id'), 'hasChildren')
       .orderBy('createTime', 'ASC')
       .where(queryCondition, {
         parentIds: parentIds,
         areaName: `%${areaName}%`,
       })
-      .getMany();
+      .getRawMany();
     return res;
   }
 

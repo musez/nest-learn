@@ -14,4 +14,7 @@ export class LimitPermissionDto extends PartialType(BasePageDto) {
 
   @ApiPropertyOptional({ description: '名称' })
   readonly name?: string;
+
+  @ApiPropertyOptional({ description: '类型' })
+  type?: Number | Array<Number>;
 }

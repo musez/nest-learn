@@ -30,14 +30,18 @@ export class BaseArticleDto {
   @MaxLength(100, { message: '关键字不能大于 100 位！' })
   readonly keywords?: string;
 
-  @ApiProperty({ description: '媒体类型（1：文本；2：链接；3：图片；4：组图；5：视频；6：音频）', default: 0 })
+  @ApiProperty({ description: '媒体类型（1：文本；2：链接；3：组图；4：视频；5：音频）', default: 0 })
   @Transform(type => Number.parseInt(type))
   @IsInt({ message: '媒体类型为数字！' })
   readonly type: number;
 
   @ApiPropertyOptional({ description: '缩略图', example: '' })
   @MaxLength(255, { message: '缩略图不能大于 255 位！' })
-  readonly thumbUrl?: string;
+  readonly thumbId?: string;
+
+  @ApiPropertyOptional({ description: '附件', example: '' })
+  @MaxLength(255, { message: '附件不能大于 255 位！' })
+  readonly fileId?: string;
 
   @ApiPropertyOptional({ description: '链接地址' })
   @MaxLength(255, { message: '链接地址不能大于 255 位！' })
@@ -45,7 +49,7 @@ export class BaseArticleDto {
 
   @ApiPropertyOptional({ description: '媒体地址', example: '' })
   @MaxLength(255, { message: '媒体地址不能大于 255 位！' })
-  readonly mediaUrl?: string;
+  readonly mediaId?: string;
 
   @ApiPropertyOptional({ description: '权重', default: 0 })
   @Transform(weight => Number.parseInt(weight))
@@ -78,10 +82,20 @@ export class BaseArticleDto {
   @IsInt({ message: '分享量为数字！' })
   readonly shareCount?: number;
 
+  @ApiPropertyOptional({ description: '允许评论', example: 0 })
+  @Transform(isComment => Number.parseInt(isComment))
+  @IsInt({ message: '评论量为数字！' })
+  readonly isComment?: number;
+
   @ApiPropertyOptional({ description: '评论量', example: 0 })
   @Transform(commentCount => Number.parseInt(commentCount))
-  @IsInt({ message: '评论量为数字！' })
+  @IsInt({ message: '允许评论为数字！' })
   readonly commentCount?: number;
+
+  @ApiProperty({ description: '状态（0：未发布；1：发布；2：草稿；3：回收站））', example: 0 })
+  @Transform(articleStatus => Number.parseInt(articleStatus))
+  @IsInt({ message: '状态必须为数字！' })
+  readonly articleStatus?: number;
 
   @ApiProperty({ description: '状态（0：禁用；1：启用）', example: 0 })
   @Transform(status => Number.parseInt(status))

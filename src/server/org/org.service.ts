@@ -8,6 +8,7 @@ import { Utils } from '../../utils';
 import { SearchOrgDto } from './dto/search-org.dto';
 import { LimitOrgDto } from './dto/limit-org.dto';
 import { BaseFindByIdDto, BaseFindByPIdDto } from '../base.dto';
+import { Permission } from '../permission/entities/permission.entity';
 
 @Injectable()
 export class OrgService {
@@ -55,13 +56,18 @@ export class OrgService {
     }
     let queryCondition = queryConditionList.join(' AND ');
 
-    let res = await this.orgRepository.createQueryBuilder()
+    let res = await this.orgRepository.createQueryBuilder('o')
+      .select(['o.*'])
+      .addSelect(subQuery  =>
+        subQuery .select('COUNT(*)')
+          .from(Permission, 'subO')
+          .where('subO.parentId = o.id'), 'hasChildren')
       .orderBy('createTime', 'ASC')
       .where(queryCondition, {
         parentIds: parentIds,
         name: `%${name}%`,
       })
-      .getMany();
+      .getRawMany();
     return res;
   }
 
@@ -191,11 +197,11 @@ export class OrgService {
       throw new BadRequestException(`数据 id：${id} 不存在！`);
     }
 
-    let role = new Org();
-    role = Utils.dto2entity(updateOrgDto, role);
-    role.updateBy = curUser.id;
+    let org = new Org();
+    org = Utils.dto2entity(updateOrgDto, org);
+    org.updateBy = curUser.id;
 
-    await this.orgRepository.update(id, role);
+    await this.orgRepository.update(id, org);
   }
 
   /**

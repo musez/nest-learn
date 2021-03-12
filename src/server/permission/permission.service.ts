@@ -28,11 +28,6 @@ export class PermissionService {
       child[key] = result[key];
     }
 
-    // let parent = await this.permissionRepository.findOne(parentId);
-    // if (parent) {
-    //   child.parent = parent;
-    // }
-
     return await this.permissionRepository.save(child);
   }
 
@@ -40,7 +35,7 @@ export class PermissionService {
    * 获取列表
    */
   async selectList(searchPermissionDto: SearchPermissionDto): Promise<Permission[]> {
-    let { parentId, kinship, name } = searchPermissionDto;
+    let { parentId, kinship, name, type } = searchPermissionDto;
 
     kinship = kinship ? kinship : 0;
 
@@ -63,15 +58,30 @@ export class PermissionService {
       queryConditionList.push('name LIKE :name');
     }
 
+    if (!Utils.isBlank(type)) {
+      if (Array.isArray(type)) {
+        queryConditionList.push('type IN (:...type)');
+      } else {
+        queryConditionList.push('type = type');
+      }
+    }
+
     let queryCondition = queryConditionList.join(' AND ');
 
-    let res = await this.permissionRepository.createQueryBuilder()
+    let res = await this.permissionRepository.createQueryBuilder('p')
+      .select(['p.*'])
+      .addSelect(subQuery =>
+        subQuery.select('COUNT(*)')
+          .from(Permission, 'subP')
+          .where('subP.parentId = p.id'), 'hasChildren')
       .where(queryCondition, {
         parentIds: parentIds,
         name: `%${name}%`,
+        type: type,
       })
       .orderBy('createTime', 'ASC')
-      .getMany();
+      .getRawMany();
+
     return res;
   }
 

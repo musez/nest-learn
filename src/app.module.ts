@@ -21,7 +21,6 @@ import { UserRoleModule } from './server/user-role/user-role.module';
 import { ArticleModule } from './server/article/article.module';
 import { CacheModule } from './server/cache/cache.module';
 import { CaptchaModule } from './server/captcha/captcha.module';
-import { MenuModule } from './server/menu/menu.module';
 import { ArticleCatModule } from './server/article-cat/article-cat.module';
 import { ArticleDataCatModule } from './server/article-data-cat/article-data-cat.module';
 import { OrgModule } from './server/org/org.module';
@@ -65,7 +64,6 @@ import { PostModule } from './server/post/post.module';
     RoleModule,
     GroupRoleModule,
     PermissionModule,
-    MenuModule,
     RolePermissionModule,
     OrgModule,
     PostModule,

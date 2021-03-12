@@ -1,3 +1,4 @@
+import { IsNotEmpty, IsString, IsInt, MaxLength, IsUUID } from 'class-validator';
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -15,14 +16,19 @@ import {
 } from 'typeorm';
 import { BaseEntity } from '../../base.entity';
 import { Role } from '../../role/entities/role.entity';
-import { PermissionHiddenType } from '../../menu/entities/menu.entity';
+import { BaseConstants } from '../../../constants/constants';
 
 // 权限类别
 export enum PermissionType {
   NAVIGATION = 0,
   PAGE = 1,
-  ACTION = 1,
-  FIELD = 1,
+  ACTION = 2,
+  FIELD = 3,
+}
+
+export enum PermissionHiddenType {
+  ENABLE = 1,
+  DISABLE = 0,
 }
 
 @Entity('sys_permission')
@@ -37,7 +43,7 @@ export class Permission extends BaseEntity {
     this.routerComponent = undefined;
     this.routerHidden = undefined;
     this.routerIcon = undefined;
-    this.routerSort = undefined;
+    this.sort = undefined;
     this.routerPath = undefined;
     this.roles = undefined;
   }
@@ -46,6 +52,8 @@ export class Permission extends BaseEntity {
   parentId: string;
 
   @Column('varchar', { comment: '名称', length: 50 })
+  @IsNotEmpty({ message: '名称不能为空！' })
+  @MaxLength(BaseConstants.NAME_MAX_LENGTH, { message: '名称不能大于 $constraint1 位！' })
   name: string;
 
   @Column('tinyint', { comment: '权限类别（1：目录；2：菜单；3：操作；4：字段；5：数据）' })
@@ -53,6 +61,9 @@ export class Permission extends BaseEntity {
 
   @Column({ comment: '权限 CODE 代码', length: 50 })
   code: string;
+
+  @Column({ comment: '权限 SORT', default: 0, nullable: true })
+  sort: number;
 
   @Column({ comment: '权限路由 COMPONENT', length: 50, nullable: true })
   routerComponent: string;
@@ -62,9 +73,6 @@ export class Permission extends BaseEntity {
 
   @Column({ comment: '权限路由 ICON', length: 50, nullable: true })
   routerIcon: string;
-
-  @Column({ comment: '权限路由 SORT', default: 0, nullable: true })
-  routerSort: number;
 
   @Column({ comment: '权限路由 PATH', length: 50, nullable: true })
   routerPath: string;

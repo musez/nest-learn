@@ -9,6 +9,7 @@ import { Utils } from '../../utils';
 import { BaseFindByIdDto, BaseFindByPIdDto } from '../base.dto';
 import { SearchArticleCatDto } from './dto/search-article-cat.dto';
 import { LimitArticleCatDto } from './dto/limit-article-cat.dto';
+import { Permission } from '../permission/entities/permission.entity';
 
 @Injectable()
 export class ArticleCatService {
@@ -55,13 +56,18 @@ export class ArticleCatService {
 
     let queryCondition = queryConditionList.join(' AND ');
 
-    let res = await this.articleCatRepository.createQueryBuilder()
+    let res = await this.articleCatRepository.createQueryBuilder('ac')
+      .select(['ac.*'])
+      .addSelect(subQuery =>
+        subQuery.select('COUNT(*)')
+          .from(Permission, 'subAC')
+          .where('subAC.parentId = ac.id'), 'hasChildren')
       .orderBy('createTime', 'ASC')
       .where(queryCondition, {
         parentIds: parentIds,
         catName: `%${catName}%`,
       })
-      .getMany();
+      .getRawMany();
     return res;
   }
 
@@ -193,10 +199,10 @@ export class ArticleCatService {
       throw new BadRequestException(`数据 id：${id} 不存在！`);
     }
 
-    let article = new Article();
-    Utils.dto2entity(updateArticleCatDto, article);
+    let articleCat = new ArticleCat();
+    articleCat = Utils.dto2entity(updateArticleCatDto, articleCat);
 
-    await this.articleCatRepository.update(id, article);
+    await this.articleCatRepository.update(id, articleCat);
   }
 
   /**

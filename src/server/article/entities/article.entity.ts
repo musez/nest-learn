@@ -27,6 +27,20 @@ export enum ArticleType {
   AUDIO = 5,
 }
 
+// 允许评论
+export enum IsCommentType {
+  ENABLE = 1,
+  DISABLE = 0,
+}
+
+// 状态类型
+export enum StatusType {
+  UNPUBLISH,
+  PUBLISH = 1,
+  DRAFT = 2,
+  RECYCLE = 3
+}
+
 @Entity('cms_article')
 export class Article extends BaseEntity {
   constructor() {
@@ -38,17 +52,21 @@ export class Article extends BaseEntity {
     this.source = undefined;
     this.keywords = undefined;
     this.type = undefined;
-    this.thumbUrl = undefined;
+    this.thumbId = undefined;
+    this.fileId = undefined;
     this.contentUrl = undefined;
-    this.mediaUrl = undefined;
+    this.mediaId = undefined;
     this.weight = undefined;
     this.content = undefined;
     this.publicTime = undefined;
+    this.publicBy = undefined;
     this.browseCount = undefined;
     this.linkCount = undefined;
     this.collectCount = undefined;
     this.shareCount = undefined;
+    this.isComment = undefined;
     this.commentCount = undefined;
+    this.articleStatus = undefined;
   }
 
   @Column('varchar', { comment: '标题', length: 255 })
@@ -66,17 +84,20 @@ export class Article extends BaseEntity {
   @Column('varchar', { comment: '关键字（多个使用逗号“，”分隔）', length: 100, nullable: true })
   keywords: string;
 
-  @Column('tinyint', { comment: '媒体类型（1：文本；2：链接；3：图片；4：组图；5：视频；6：音频）' })
+  @Column('tinyint', { comment: '媒体类型（1：文本；2：链接；3：组图；4：视频；5：音频）' })
   type: ArticleType;
 
   @Column('varchar', { comment: '缩略图', length: 255, nullable: true })
-  thumbUrl: string;
+  thumbId: string;
+
+  @Column('varchar', { comment: '附件', length: 255, nullable: true })
+  fileId: string;
 
   @Column('varchar', { comment: '链接地址', length: 255, nullable: true })
   contentUrl: string;
 
   @Column('varchar', { comment: '媒体地址', length: 255, nullable: true })
-  mediaUrl: string;
+  mediaId: string;
 
   @Column('int', { comment: '权重', nullable: true })
   weight: number;
@@ -86,6 +107,9 @@ export class Article extends BaseEntity {
 
   @Column('datetime', { comment: '发布时间', nullable: true })
   publicTime: Date;
+
+  @Column({ comment: '发布人 id', nullable: true })
+  publicBy: string;
 
   @Column('int', { comment: '浏览量', default: () => 0 })
   browseCount: number;
@@ -99,8 +123,14 @@ export class Article extends BaseEntity {
   @Column('int', { comment: '分享量', default: () => 0 })
   shareCount: number;
 
+  @Column('tinyint', { comment: '允许评论', default: IsCommentType.ENABLE })
+  isComment: IsCommentType;
+
   @Column('int', { comment: '评论量', default: () => 0 })
   commentCount: number;
+
+  @Column('tinyint', { comment: '状态（0：未发布；1：发布；2：草稿；3：回收站）', default: StatusType.PUBLISH })
+  articleStatus: StatusType;
 
   @OneToMany(type => ArticleCat, cat => cat.articles)
   cats: ArticleCat[];

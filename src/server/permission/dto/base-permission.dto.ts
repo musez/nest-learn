@@ -27,6 +27,11 @@ export class BasePermissionDto {
   @IsNotEmpty({ message: '权限 CODE 代码不能为空！' })
   readonly code: string;
 
+  @ApiPropertyOptional({ description: '权限路由 SORT', example: 0 })
+  @Transform(sort => Number.parseInt(sort))
+  @IsInt({ message: '权限路由 SORT 必须为数字！' })
+  readonly sort?: number;
+
   @ApiPropertyOptional({ description: '权限路由 COMPONENT', example: '' })
   readonly routerComponent?: string;
 
@@ -37,11 +42,6 @@ export class BasePermissionDto {
 
   @ApiPropertyOptional({ description: '权限路由 ICON', example: '' })
   readonly routerIcon: string;
-
-  @ApiPropertyOptional({ description: '权限路由 SORT', example: 0 })
-  @Transform(routerSort => Number.parseInt(routerSort))
-  @IsInt({ message: '权限路由 SORT 必须为数字！' })
-  readonly routerSort?: number;
 
   @ApiPropertyOptional({ description: '权限路由 PATH', example: '' })
   readonly routerPath?: string;

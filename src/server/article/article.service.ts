@@ -28,7 +28,7 @@ export class ArticleService {
    * 获取列表
    */
   async selectList(searchArticleDto: SearchArticleDto): Promise<Article[]> {
-    let { title } = searchArticleDto;
+    let { title, type, articleStatus } = searchArticleDto;
 
     let queryConditionList = [];
 
@@ -36,11 +36,21 @@ export class ArticleService {
       queryConditionList.push('title LIKE :title');
     }
 
+    if (!Utils.isBlank(type)) {
+      queryConditionList.push('type = :type');
+    }
+
+    if (!Utils.isBlank(articleStatus)) {
+      queryConditionList.push('articleStatus = :articleStatus');
+    }
+
     let queryCondition = queryConditionList.join(' AND ');
 
     return await this.articleRepository.createQueryBuilder()
       .where(queryCondition, {
         title: `%${title}%`,
+        type: `%${type}%`,
+        articleStatus: `%${articleStatus}%`,
       })
       .orderBy('createTime', 'ASC')
       .getMany();
@@ -50,7 +60,7 @@ export class ArticleService {
    * 获取列表（分页）
    */
   async selectListPage(limitArticleDto: LimitArticleDto): Promise<any> {
-    let { page, limit, title } = limitArticleDto;
+    let { page, limit, title, type, articleStatus } = limitArticleDto;
     page = page ? page : 1;
     limit = limit ? limit : 10;
     let offset = (page - 1) * limit;
@@ -61,11 +71,21 @@ export class ArticleService {
       queryConditionList.push('title LIKE :title');
     }
 
+    if (!Utils.isBlank(type)) {
+      queryConditionList.push('type = :type');
+    }
+
+    if (!Utils.isBlank(articleStatus)) {
+      queryConditionList.push('articleStatus = :articleStatus');
+    }
+
     let queryCondition = queryConditionList.join(' AND ');
 
     let res = await this.articleRepository.createQueryBuilder()
       .where(queryCondition, {
         title: `%${title}%`,
+        type: `%${type}%`,
+        articleStatus: `%${articleStatus}%`,
       })
       .skip(offset)
       .take(limit)
@@ -89,18 +109,32 @@ export class ArticleService {
   }
 
   /**
+   * 是否存在（主键 id）
+   */
+  async isExist(baseFindByIdDto: BaseFindByIdDto): Promise<Boolean> {
+    let { id } = baseFindByIdDto;
+
+    let isExist = await this.articleRepository.findOne(id);
+    if (Utils.isNil(isExist)) {
+      throw false;
+    } else {
+      return true;
+    }
+  }
+
+  /**
    * 修改
    */
   async update(updateArticleDto: UpdateArticleDto, curUser?): Promise<void> {
     let { id } = updateArticleDto;
 
-    let isExist = await this.articleRepository.findOne(id);
-    if (Utils.isNil(isExist)) {
-      throw new BadRequestException(`数据 id：${id} 不存在！`);
-    }
+    // let isExist = await this.articleRepository.findOne(id);
+    // if (Utils.isNil(isExist)) {
+    //   throw new BadRequestException(`数据 id：${id} 不存在！`);
+    // }
 
     let article = new Article();
-    Utils.dto2entity(updateArticleDto, article);
+    article = Utils.dto2entity(updateArticleDto, article);
 
     await this.articleRepository.update(id, article);
   }
@@ -110,10 +144,10 @@ export class ArticleService {
    */
   async deleteById(baseFindByIdDto: BaseFindByIdDto): Promise<void> {
     let { id } = baseFindByIdDto;
-    let isExist = await this.articleRepository.findOne(id);
-    if (Utils.isNil(isExist)) {
-      throw new BadRequestException(`数据 id：${id} 不存在！`);
-    }
+    // let isExist = await this.articleRepository.findOne(id);
+    // if (Utils.isNil(isExist)) {
+    //   throw new BadRequestException(`数据 id：${id} 不存在！`);
+    // }
 
     // await this.articleRepository.delete(isExist);
     await this.articleRepository.createQueryBuilder()

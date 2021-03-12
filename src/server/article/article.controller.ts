@@ -66,6 +66,12 @@ export class ArticleController {
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '修改' })
   async update(@CurUser() curUser, @Body() updateArticleDto: UpdateArticleDto): Promise<any> {
+    let { id } = updateArticleDto;
+    let isExist = await this.articleService.isExist(updateArticleDto);
+    if (!isExist) {
+      throw new BadRequestException(`数据 id：${id} 不存在！`);
+    }
+
     return this.articleService.update(updateArticleDto, curUser);
   }
 
@@ -73,6 +79,37 @@ export class ArticleController {
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '删除' })
   async delete(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
+    let { id } = baseFindByIdDto;
+    let isExist = await this.articleService.isExist(baseFindByIdDto);
+
+    if (!isExist) {
+      throw new BadRequestException(`数据 id：${id} 不存在！`);
+    }
+
     return await this.articleService.deleteById(baseFindByIdDto);
+  }
+
+  @Post('clearRecycle')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: '清空回收站' })
+  async clearRecycle(@CurUser() curUser, @Body() updateArticleDto: UpdateArticleDto): Promise<any> {
+    // TODO
+    return null;
+  }
+
+  @Post('inRecycle')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: '移入回收站' })
+  async inRecycle(@CurUser() curUser, @Body() updateArticleDto: UpdateArticleDto): Promise<any> {
+    // TODO
+    return null;
+  }
+
+  @Post('outRecycle')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: '移出回收站' })
+  async outRecycle(@CurUser() curUser, @Body() updateArticleDto: UpdateArticleDto): Promise<any> {
+    // TODO
+    return null;
   }
 }
