@@ -99,13 +99,6 @@ export class BaseArticleDto {
   @ApiProperty({ description: '状态（0：未发布；1：发布；2：草稿；3：回收站）', example: 0 })
   @IsDefined({ message: '状态不能为空！' })
   @IsNotEmpty({ message: '状态不能为空！' })
-  @Transform(articleStatus => Number.parseInt(articleStatus))
-  @IsInt({ message: '状态必须为数字！' })
-  readonly articleStatus?: number;
-
-  @ApiProperty({ description: '状态（0：禁用；1：启用）', example: 0 })
-  @IsDefined({ message: '状态不能为空！' })
-  @IsNotEmpty({ message: '状态不能为空！' })
   @Transform(status => Number.parseInt(status))
   @IsInt({ message: '状态必须为数字！' })
   readonly status?: number;

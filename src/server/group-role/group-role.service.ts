@@ -39,7 +39,7 @@ export class GroupRoleService {
   async deleteByGroupId(id: string): Promise<any> {
     return await this.groupRoleRepository.createQueryBuilder()
       .delete()
-      .from(UserRole)
+      .from(GroupRole)
       .where('groupId = :id', { id: id })
       .execute();
   }

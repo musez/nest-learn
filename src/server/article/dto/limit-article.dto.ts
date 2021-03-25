@@ -10,5 +10,5 @@ export class LimitArticleDto extends PartialType(BasePageDto) {
   readonly type?: number;
 
   @ApiPropertyOptional({ description: '状态（0：未发布；1：发布；2：草稿；3：回收站）' })
-  readonly articleStatus?: number;
+  readonly status?: number;
 }

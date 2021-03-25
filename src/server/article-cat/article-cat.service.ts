@@ -60,7 +60,7 @@ export class ArticleCatService {
       .select(['ac.*'])
       .addSelect(subQuery =>
         subQuery.select('COUNT(*)')
-          .from(Permission, 'subAC')
+          .from(ArticleCat, 'subAC')
           .where('subAC.parentId = ac.id'), 'hasChildren')
       .orderBy('createTime', 'ASC')
       .where(queryCondition, {

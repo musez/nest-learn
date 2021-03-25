@@ -60,13 +60,13 @@ export class OrgService {
       .select(['o.*'])
       .addSelect(subQuery  =>
         subQuery .select('COUNT(*)')
-          .from(Permission, 'subO')
+          .from(Org, 'subO')
           .where('subO.parentId = o.id'), 'hasChildren')
-      .orderBy('createTime', 'ASC')
       .where(queryCondition, {
         parentIds: parentIds,
         name: `%${name}%`,
       })
+      .orderBy('createTime', 'ASC')
       .getRawMany();
     return res;
   }

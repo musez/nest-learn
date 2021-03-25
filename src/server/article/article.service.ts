@@ -28,7 +28,7 @@ export class ArticleService {
    * 获取列表
    */
   async selectList(searchArticleDto: SearchArticleDto): Promise<Article[]> {
-    let { title, type, articleStatus } = searchArticleDto;
+    let { title, type, status } = searchArticleDto;
 
     let queryConditionList = [];
 
@@ -40,8 +40,8 @@ export class ArticleService {
       queryConditionList.push('type = :type');
     }
 
-    if (!Utils.isBlank(articleStatus)) {
-      queryConditionList.push('articleStatus = :articleStatus');
+    if (!Utils.isBlank(status)) {
+      queryConditionList.push('status = :status');
     }
 
     let queryCondition = queryConditionList.join(' AND ');
@@ -49,8 +49,8 @@ export class ArticleService {
     return await this.articleRepository.createQueryBuilder()
       .where(queryCondition, {
         title: `%${title}%`,
-        type: `%${type}%`,
-        articleStatus: `%${articleStatus}%`,
+        type: type,
+        status: status,
       })
       .orderBy('createTime', 'ASC')
       .getMany();
@@ -60,7 +60,7 @@ export class ArticleService {
    * 获取列表（分页）
    */
   async selectListPage(limitArticleDto: LimitArticleDto): Promise<any> {
-    let { page, limit, title, type, articleStatus } = limitArticleDto;
+    let { page, limit, title, type, status } = limitArticleDto;
     page = page ? page : 1;
     limit = limit ? limit : 10;
     let offset = (page - 1) * limit;
@@ -75,8 +75,8 @@ export class ArticleService {
       queryConditionList.push('type = :type');
     }
 
-    if (!Utils.isBlank(articleStatus)) {
-      queryConditionList.push('articleStatus = :articleStatus');
+    if (!Utils.isBlank(status)) {
+      queryConditionList.push('status = :status');
     }
 
     let queryCondition = queryConditionList.join(' AND ');
@@ -84,8 +84,8 @@ export class ArticleService {
     let res = await this.articleRepository.createQueryBuilder()
       .where(queryCondition, {
         title: `%${title}%`,
-        type: `%${type}%`,
-        articleStatus: `%${articleStatus}%`,
+        type: type,
+        status: status,
       })
       .skip(offset)
       .take(limit)

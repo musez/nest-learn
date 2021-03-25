@@ -56,7 +56,7 @@ export class Article extends BaseEntity {
     this.shareCount = undefined;
     this.isComment = undefined;
     this.commentCount = undefined;
-    // this.articleStatus = undefined;
+    this.status = undefined;
   }
 
   @Column('varchar', { comment: '标题', length: 255 })
