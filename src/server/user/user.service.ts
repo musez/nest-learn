@@ -7,7 +7,7 @@ import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { Userinfo } from '../userinfo/entities/userinfo.entity';
-import { BaseFindByIdDto, BaseModifyStatusByIdsDto } from '../base.dto';
+import { BaseFindByIdDto, BaseFindByIdsDto, BaseModifyStatusByIdsDto } from '../base.dto';
 import { BindUserGroupDto } from './dto/bind-user-group.dto';
 import { UserGroupService } from '../user-group/user-group.service';
 import { CreateUserGroupDto } from '../user-group/dto/create-user-group.dto';
@@ -38,31 +38,17 @@ export class UserService {
   }
 
   async incrementLoginCount(baseFindByIdDto: BaseFindByIdDto): Promise<any> {
-    let isExist = await this.userRepository.findOne(baseFindByIdDto, {
+    let userEntity = await this.userRepository.findOne(baseFindByIdDto, {
       select: ['id'],
     });
-    if (!isExist) {
-      throw new BadRequestException(`数据 id：${baseFindByIdDto} 不存在！`);
-      // throw new BadRequestException({
-      //   code: ErrorCode.ParamsError.CODE,
-      //   msg: `数据 id：${baseFindByIdDto} 不存在！`,
-      // });
-    }
 
-    return await this.userRepository.increment(isExist, 'loginCount', 1);
+    return await this.userRepository.increment(userEntity, 'loginCount', 1);
   }
 
   /**
    * 添加
    */
   async insert(createUserDto: CreateUserDto, curUser?): Promise<CreateUserDto> {
-    let { userName } = createUserDto;
-
-    let isExist = await this.userRepository.findOne({ userName: userName });
-    if (isExist) {
-      throw new BadRequestException(`用户名：${userName} 已存在！`);
-    }
-
     let user = new User();
     user = Utils.dto2entity(createUserDto, user);
     user.userPwd = crypto.createHmac('sha256', '888888').digest('hex');
@@ -118,7 +104,10 @@ export class UserService {
       .leftJoinAndSelect('user.userinfo', 'userinfo')
       .where(queryCondition, {
         userName: `%${userName}%`,
+        name: `%${name}%`,
+        userType: userType,
         mobile: mobile,
+        email: email,
       })
       .orderBy('user.createTime', 'ASC')
       .getMany();
@@ -155,7 +144,10 @@ export class UserService {
       .leftJoinAndSelect('user.userinfo', 'userinfo')
       .where(queryCondition, {
         userName: `%${userName}%`,
+        name: `%${name}%`,
+        userType: userType,
         mobile: mobile,
+        email: email,
       })
       .skip(offset)
       .take(limit)
@@ -179,15 +171,34 @@ export class UserService {
   }
 
   /**
+   * 是否存在（主键 id）
+   */
+  async isExistId(id: string): Promise<Boolean> {
+    let isExist = await this.userRepository.findOne(id);
+    if (Utils.isNil(isExist)) {
+      throw false;
+    } else {
+      return true;
+    }
+  }
+
+  /**
+   * 是否存在（用户名）
+   */
+  async isExistUserName(userName: string): Promise<Boolean> {
+    let isExist = await this.userRepository.findOne({ userName: userName });
+    if (Utils.isNil(isExist)) {
+      throw false;
+    } else {
+      return true;
+    }
+  }
+
+  /**
    * 修改
    */
   async update(updateUserDto: UpdateUserDto, curUser?): Promise<void> {
     let { id } = updateUserDto;
-
-    let isExist = await this.userRepository.findOne(id);
-    if (Utils.isNil(isExist)) {
-      throw new BadRequestException(`数据 id：${id} 不存在！`);
-    }
 
     let user = new User();
     user = Utils.dto2entity(updateUserDto, user);
@@ -231,13 +242,19 @@ export class UserService {
    */
   async deleteById(baseFindByIdDto: BaseFindByIdDto): Promise<void> {
     let { id } = baseFindByIdDto;
-    let isExist = await this.userRepository.findOne(id);
-    if (Utils.isNil(isExist)) {
-      throw new BadRequestException(`数据 id：${id} 不存在！`);
-    }
 
-    this.userRepository.delete(isExist);
+    this.userRepository.delete(id);
     await this.userinfoService.deleteByUserId(id);
+  }
+
+  /**
+   * 删除（多个）
+   */
+  async deleteByIds(baseFindByIdsDto: BaseFindByIdsDto): Promise<void> {
+    let { ids } = baseFindByIdsDto;
+
+    this.userRepository.delete(ids);
+    await this.userinfoService.deleteByUserId(ids);
   }
 
   /**
@@ -245,10 +262,6 @@ export class UserService {
    */
   async bindGroups(bindUserGroupDto: BindUserGroupDto): Promise<void> {
     let { id, groups } = bindUserGroupDto;
-    let isExist = await this.userRepository.findOne(id);
-    if (Utils.isNil(isExist)) {
-      throw new BadRequestException(`数据 id：${id} 不存在！`);
-    }
 
     let userGroupList = [];
     for (let i = 0, len = groups.length; i < len; i++) {
@@ -257,19 +270,14 @@ export class UserService {
       createUserGroupDto.groupId = groups[i];
       userGroupList.push(createUserGroupDto);
     }
-
-    await this.userGroupService.insert(userGroupList);
+    await this.userGroupService.deleteByUserId(id)
+    await this.userGroupService.insertBatch(userGroupList);
   }
 
   /**
    * 获取用户组
    */
   async selectGroupsByUserId(baseFindByIdDto: BaseFindByIdDto): Promise<UserGroup[]> {
-    let isExist = await this.userRepository.findOne(baseFindByIdDto);
-    if (Utils.isNil(isExist)) {
-      throw new BadRequestException(`数据 id：${baseFindByIdDto} 不存在！`);
-    }
-
     return await this.userGroupService.selectByUserId(baseFindByIdDto);
   }
 
@@ -278,10 +286,6 @@ export class UserService {
    */
   async bindRoles(bindUserRoleDto: BindUserRoleDto): Promise<void> {
     let { id, roles } = bindUserRoleDto;
-    let isExist = await this.userRepository.findOne(id);
-    if (Utils.isNil(isExist)) {
-      throw new BadRequestException(`数据 id：${id} 不存在！`);
-    }
 
     let userGroupList = [];
     for (let i = 0, len = roles.length; i < len; i++) {
@@ -291,18 +295,14 @@ export class UserService {
       userGroupList.push(createUserRoleDto);
     }
 
-    await this.userRoleService.insert(userGroupList);
+    await this.userRoleService.deleteByUserId(id)
+    await this.userRoleService.insertBatch(userGroupList);
   }
 
   /**
    * 获取角色
    */
   async selectRolesByUserId(baseFindByIdDto: BaseFindByIdDto): Promise<UserRole[]> {
-    let isExist = await this.userRepository.findOne(baseFindByIdDto);
-    if (Utils.isNil(isExist)) {
-      throw new BadRequestException(`数据 id：${baseFindByIdDto} 不存在！`);
-    }
-
     return await this.userRoleService.selectByUserId(baseFindByIdDto);
   }
 
@@ -310,10 +310,7 @@ export class UserService {
    * 获取权限
    */
   async selectPermissionsByUserId(baseFindByIdDto: BaseFindByIdDto): Promise<any> {
-    let isExist = await this.userRepository.findOne(baseFindByIdDto);
-    if (Utils.isNil(isExist)) {
-      throw new BadRequestException(`数据 id：${baseFindByIdDto} 不存在！`);
-    }
+    let userEntity = await this.selectById(baseFindByIdDto);
 
     let permissions1 = await this.userRepository.query(`
         select p.*
@@ -364,7 +361,7 @@ export class UserService {
         `);
 
 
-    let res = Utils.assign(isExist, {
+    let res = Utils.assign(userEntity, {
       permissions: Utils.uniqBy(Utils.concat(permissions1, permissions2), 'id'),
       roles: Utils.uniqBy(Utils.concat(role1, role2), 'id'),
       groups: group1,

@@ -71,6 +71,12 @@ export class OrgController {
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '修改' })
   async update(@CurUser() curUser, @Body() updateOrgDto: UpdateOrgDto): Promise<any> {
+    let { id } = updateOrgDto;
+    let isExistId = await this.orgService.isExistId(id);
+
+    if (!isExistId) {
+      throw new BadRequestException(`数据 id：${id} 不存在！`);
+    }
     return this.orgService.update(updateOrgDto, curUser);
   }
 
@@ -78,6 +84,13 @@ export class OrgController {
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '删除' })
   async delete(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
+    let { id } = baseFindByIdDto;
+    let isExistId = await this.orgService.isExistId(id);
+
+    if (!isExistId) {
+      throw new BadRequestException(`数据 id：${id} 不存在！`);
+    }
+
     return await this.orgService.deleteById(baseFindByIdDto);
   }
 }

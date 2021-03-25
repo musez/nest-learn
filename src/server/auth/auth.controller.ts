@@ -77,6 +77,12 @@ export class AuthController {
   @ApiOperation({ summary: '根据 token 获取权限' })
   async getPermissionsByToken(@CurUser() curUser): Promise<any> {
     let { id } = curUser;
+
+    let isExistId = await this.userService.isExistId(id);
+    if (!isExistId) {
+      throw new BadRequestException(`数据 id：${id} 不存在！`);
+    }
+
     return await this.userService.selectPermissionsByUserId(id);
   }
 }

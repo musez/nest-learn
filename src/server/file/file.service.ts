@@ -3,8 +3,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateFileDto } from './dto/create-file.dto';
 import { File } from './entities/file.entity';
-import { BaseFindByIdDto } from '../base.dto';
+import { BaseFindByIdDto, BasePageDto } from '../base.dto';
 import { Utils } from '../../utils';
+import { LimitArticleDto } from '../article/dto/limit-article.dto';
 
 @Injectable()
 export class FileService {
@@ -28,6 +29,38 @@ export class FileService {
     return await this.fileRepository.save(files);
   }
 
+
+  /**
+   * 获取列表（分页）
+   */
+  async selectListPage(basePageDto: BasePageDto): Promise<any> {
+    let { page, limit } = basePageDto;
+    page = page ? page : 1;
+    limit = limit ? limit : 10;
+    let offset = (page - 1) * limit;
+
+    let queryConditionList = [];
+
+    let queryCondition = queryConditionList.join(' AND ');
+
+    let res = await this.fileRepository.createQueryBuilder()
+      .where(queryCondition, {})
+      .skip(offset)
+      .take(limit)
+      .orderBy({
+        'createTime': 'ASC',
+      })
+      .getManyAndCount();
+
+    return {
+      list: res[0],
+      total: res[1],
+      page: page,
+      limit: limit,
+    };
+  }
+
+
   /**
    * 获取详情（主键 id）
    */
@@ -36,6 +69,21 @@ export class FileService {
     return await this.fileRepository.findOne(id);
   }
 
+  /**
+   * 是否存在（主键 id）
+   */
+  async isExistId(id: string): Promise<Boolean> {
+    let isExist = await this.fileRepository.findOne(id);
+    if (Utils.isNil(isExist)) {
+      throw false;
+    } else {
+      return true;
+    }
+  }
+
+  /**
+   * 获取（extId）
+   */
   async selectByExtId(extId: string): Promise<CreateFileDto[]> {
     return await this.fileRepository.find({ extId: extId });
   }
@@ -45,12 +93,7 @@ export class FileService {
    */
   async deleteById(baseFindByIdDto: BaseFindByIdDto): Promise<void> {
     let { id } = baseFindByIdDto;
-    let isExist = await this.fileRepository.findOne(id);
-    if (Utils.isNil(isExist)) {
-      throw new BadRequestException(`数据 id：${id} 不存在！`);
-    }
 
-    // await this.fileRepository.delete(isExist);
     await this.fileRepository.createQueryBuilder()
       .delete()
       .from(File)

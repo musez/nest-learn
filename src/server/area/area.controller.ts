@@ -52,7 +52,7 @@ export class AreaController {
   @Get('findById')
   @ApiOperation({ summary: '获取详情（主键 id）' })
   @UseGuards(JwtAuthGuard)
-  async findById(@Query() baseFindByIdDto: BaseFindByIdDto): Promise<Area> {
-    return await this.areaService.selectById(baseFindByIdDto);
+  async findById(@Query() id: string): Promise<Area> {
+    return await this.areaService.selectById(id);
   }
 }

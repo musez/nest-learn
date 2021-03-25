@@ -12,12 +12,10 @@ import {
   ManyToOne,
   BeforeUpdate,
 } from 'typeorm';
-import { BaseEntity } from '../../base.entity';
-import { Group } from '../../group/entities/group.entity';
-import { Role } from '../../role/entities/role.entity';
+import { BaseEntity, StatusType } from '../../base.entity';
 import { ArticleCat } from '../../article-cat/entities/article-cat.entity';
 
-// 媒体类型
+// 文章类型
 export enum ArticleType {
   TEXT = 0,
   LINK = 1,
@@ -31,14 +29,6 @@ export enum ArticleType {
 export enum IsCommentType {
   ENABLE = 1,
   DISABLE = 0,
-}
-
-// 状态类型
-export enum StatusType {
-  UNPUBLISH,
-  PUBLISH = 1,
-  DRAFT = 2,
-  RECYCLE = 3
 }
 
 @Entity('cms_article')
@@ -66,7 +56,7 @@ export class Article extends BaseEntity {
     this.shareCount = undefined;
     this.isComment = undefined;
     this.commentCount = undefined;
-    this.articleStatus = undefined;
+    // this.articleStatus = undefined;
   }
 
   @Column('varchar', { comment: '标题', length: 255 })
@@ -84,7 +74,7 @@ export class Article extends BaseEntity {
   @Column('varchar', { comment: '关键字（多个使用逗号“，”分隔）', length: 100, nullable: true })
   keywords: string;
 
-  @Column('tinyint', { comment: '媒体类型（1：文本；2：链接；3：组图；4：视频；5：音频）' })
+  @Column('tinyint', { comment: '文章类型（1：文本；2：链接；3：组图；4：视频；5：音频）' })
   type: ArticleType;
 
   @Column('varchar', { comment: '缩略图', length: 255, nullable: true })
@@ -129,8 +119,8 @@ export class Article extends BaseEntity {
   @Column('int', { comment: '评论量', default: () => 0 })
   commentCount: number;
 
-  @Column('tinyint', { comment: '状态（0：未发布；1：发布；2：草稿；3：回收站）', default: StatusType.PUBLISH })
-  articleStatus: StatusType;
+  @Column('tinyint', { comment: '状态（0：未发布；1：发布；2：草稿；3：回收站）', default: StatusType.ENABLE })
+  status: StatusType;
 
   @OneToMany(type => ArticleCat, cat => cat.articles)
   cats: ArticleCat[];

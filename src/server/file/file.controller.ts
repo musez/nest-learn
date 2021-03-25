@@ -25,8 +25,9 @@ import { CreateFileDto } from './dto/create-file.dto';
 import { UpdateFileDto } from './dto/update-file.dto';
 import { File } from './entities/file.entity';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { BaseFindByIdDto } from '../base.dto';
+import { BaseFindByIdDto, BasePageDto } from '../base.dto';
 import { CurUser } from '../../common/decorators/user.decorator';
+import { LimitArticleDto } from '../article/dto/limit-article.dto';
 
 @Controller('file')
 @ApiTags('文件')
@@ -152,6 +153,13 @@ export class FileController {
     return this.fileService.batchInsert(filesEntity);
   }
 
+  @Get('findListPage')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: '获取列表（分页）' })
+  findListPage(@Query() basePageDto: BasePageDto) {
+    return this.fileService.selectListPage(basePageDto);
+  }
+
   @Get('findById')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '获取文件（主键 id）' })
@@ -172,6 +180,13 @@ export class FileController {
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '删除' })
   async delete(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
+    let { id } = baseFindByIdDto;
+    let isExistId = await this.fileService.isExistId(id);
+
+    if (!isExistId) {
+      throw new BadRequestException(`数据 id：${id} 不存在！`);
+    }
+
     return await this.fileService.deleteById(baseFindByIdDto);
   }
 }

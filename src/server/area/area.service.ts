@@ -41,8 +41,8 @@ export class AreaService {
 
     let res = await this.areaRepository.createQueryBuilder('a')
       .select(['a.*'])
-      .addSelect(subQuery  =>
-        subQuery .select('COUNT(*)')
+      .addSelect(subQuery =>
+        subQuery.select('COUNT(*)')
           .from(Permission, 'subA')
           .where('subA.parentId = a.id'), 'hasChildren')
       .orderBy('createTime', 'ASC')
@@ -179,8 +179,7 @@ export class AreaService {
   /**
    * 获取详情（主键 id）
    */
-  async selectById(baseFindByIdDto: BaseFindByIdDto): Promise<Area> {
-    let { id } = baseFindByIdDto;
+  async selectById(id: string): Promise<Area> {
     return await this.areaRepository.findOne(id);
   }
 }

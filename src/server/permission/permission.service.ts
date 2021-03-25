@@ -79,7 +79,10 @@ export class PermissionService {
         name: `%${name}%`,
         type: type,
       })
-      .orderBy('createTime', 'ASC')
+      .orderBy({
+        'sort': 'ASC',
+        'createTime': 'DESC',
+      })
       .getRawMany();
 
     return res;
@@ -113,7 +116,10 @@ export class PermissionService {
       })
       .skip(offset)
       .take(limit)
-      .orderBy('createTime', 'ASC')
+      .orderBy({
+        'sort': 'ASC',
+        'createTime': 'DESC',
+      })
       .getManyAndCount();
 
     return {
@@ -201,6 +207,18 @@ export class PermissionService {
   }
 
   /**
+   * 是否存在（主键 id）
+   */
+  async isExistId(id: string): Promise<Boolean> {
+    let isExist = await this.permissionRepository.findOne(id);
+    if (Utils.isNil(isExist)) {
+      throw false;
+    } else {
+      return true;
+    }
+  }
+
+  /**
    * 修改
    */
   async update(updatePermissionDto: UpdatePermissionDto, curUser?) {
@@ -211,16 +229,6 @@ export class PermissionService {
       child[key] = result[key];
     }
 
-    // let parent = await this.permissionRepository.findOne(parentId);
-    // if (parent) {
-    //   child.parent = parent;
-    // }
-
-    let isExist = await this.permissionRepository.findOne(id);
-    if (Utils.isNil(isExist)) {
-      throw new BadRequestException(`数据 id：${id} 不存在！`);
-    }
-
     return await this.permissionRepository.update(id, child);
   }
 
@@ -229,12 +237,7 @@ export class PermissionService {
    */
   async deleteById(baseFindByIdDto: BaseFindByIdDto): Promise<void> {
     let { id } = baseFindByIdDto;
-    let isExist = await this.permissionRepository.findOne(id);
-    if (Utils.isNil(isExist)) {
-      throw new BadRequestException(`数据 id：${id} 不存在！`);
-    }
 
-    // await this.permissionRepository.delete(isExist);
     await this.permissionRepository.createQueryBuilder()
       .delete()
       .from(Permission)

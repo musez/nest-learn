@@ -4,6 +4,7 @@ import { Repository, Like } from 'typeorm';
 import { CreateGroupRoleDto } from './dto/create-group-role.dto';
 import { BaseFindByIdDto } from '../base.dto';
 import { GroupRole } from './entities/group-role.entity';
+import { UserRole } from '../user-role/entities/user-role.entity';
 
 @Injectable()
 export class GroupRoleService {
@@ -16,7 +17,7 @@ export class GroupRoleService {
   /**
    * 添加
    */
-  async insert(createGroupRoleDto: CreateGroupRoleDto[]): Promise<CreateGroupRoleDto[]> {
+  async insertBatch(createGroupRoleDto: CreateGroupRoleDto[]): Promise<CreateGroupRoleDto[]> {
     return await this.groupRoleRepository.save(createGroupRoleDto);
   }
 
@@ -30,5 +31,16 @@ export class GroupRoleService {
         groupId: baseFindByIdDto,
       },
     });
+  }
+
+  /**
+   * 删除用户组
+   */
+  async deleteByGroupId(id: string): Promise<any> {
+    return await this.groupRoleRepository.createQueryBuilder()
+      .delete()
+      .from(UserRole)
+      .where('groupId = :id', { id: id })
+      .execute();
   }
 }

@@ -9,6 +9,7 @@ import { User } from '../user/entities/user.entity';
 import { Userinfo } from '../userinfo/entities/userinfo.entity';
 import { CreateGroupDto } from '../group/dto/create-group.dto';
 import { BaseFindByIdDto } from '../base.dto';
+import { UserRole } from '../user-role/entities/user-role.entity';
 
 @Injectable()
 export class UserGroupService {
@@ -21,7 +22,7 @@ export class UserGroupService {
   /**
    * 添加
    */
-  async insert(createUserGroupDto: CreateUserGroupDto[]): Promise<CreateUserGroupDto[]> {
+  async insertBatch(createUserGroupDto: CreateUserGroupDto[]): Promise<CreateUserGroupDto[]> {
     return await this.userGroupRepository.save(createUserGroupDto);
   }
 
@@ -35,5 +36,16 @@ export class UserGroupService {
         userId: baseFindByIdDto,
       },
     });
+  }
+
+  /**
+   * 删除用户组
+   */
+  async deleteByUserId(id: string): Promise<any> {
+    return await this.userGroupRepository.createQueryBuilder()
+      .delete()
+      .from(UserRole)
+      .where('userId = :id', { id: id })
+      .execute();
   }
 }

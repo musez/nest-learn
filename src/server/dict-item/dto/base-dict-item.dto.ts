@@ -1,21 +1,32 @@
-import { IsNotEmpty, IsString, IsInt, IsEmail, MinLength, MaxLength, IsUUID } from 'class-validator';
+import { IsDefined, IsNotEmpty, IsString, IsInt, IsEmail, MinLength, MaxLength, IsUUID } from 'class-validator';
 import { Transform } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class BaseDictItemDto {
-  @ApiProperty({ description: '主键 id', example: '' })
-  @IsNotEmpty({ message: '主键 id 不能为空' })
+  @ApiProperty({ description: '主键 id', example: null })
+  @IsDefined({ message: '主键 id 不能为空！' })
+  @IsNotEmpty({ message: '主键 id 不能为空！' })
   @IsUUID('all')
   readonly id: string;
 
+  @ApiProperty({ description: '父 id' })
+  @IsDefined({ message: '父 id 不能为空！' })
+  @IsNotEmpty({ message: '父 id 不能为空！' })
+  @IsUUID('all')
+  readonly parentId: string;
+
   @ApiProperty({ description: '字典项名称', example: '字典项名称1' })
+  @IsDefined({ message: '字典项名称不能为空！' })
+  @IsNotEmpty({ message: '字典项名称不能为空！' })
   readonly itemText: string;
 
   @ApiProperty({ description: '字典项值', example: '字典项值1' })
+  @IsDefined({ message: '字典项值不能为空！' })
+  @IsNotEmpty({ message: '字典项值不能为空！' })
   readonly itemValue: string;
 
-  @ApiProperty({ description: '父 id' })
-  readonly parentId: string;
+  @ApiPropertyOptional({ description: '默认值（0：否；1：是）', example: null })
+  readonly defaultValue?: number;
 
   @ApiPropertyOptional({ description: '排序', example: 0 })
   @Transform(sort => Number.parseInt(sort))

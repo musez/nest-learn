@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Query, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Query, UseGuards, BadRequestException } from '@nestjs/common';
 import {
   ApiTags,
   ApiQuery,
@@ -18,12 +18,16 @@ import { BaseFindByIdDto, BasePageDto } from '../base.dto';
 import { CurUser } from '../../common/decorators/user.decorator';
 import { SearchDictDto } from './dto/search-dict.dto';
 import { LimitDictDto } from './dto/limit-dict.dto';
+import { DictItemService } from '../dict-item/dict-item.service';
 
 @ApiTags('字典')
 @Controller('dict')
 @ApiBasicAuth()
 export class DictController {
-  constructor(private readonly dictService: DictService) {
+  constructor(
+    private readonly dictService: DictService,
+    private readonly dictItemService: DictItemService,
+  ) {
   }
 
   @Post('add')
@@ -47,19 +51,20 @@ export class DictController {
     return await this.dictService.selectListPage(limitDictDto);
   }
 
-  @Get('findDictItemList')
-  @UseGuards(JwtAuthGuard)
-  @ApiOperation({ summary: '获取列表（字典项）' })
-  async findDictItemList(): Promise<Dict[]> {
-    return await this.dictService.selectDictItemList();
-  }
+  // @Get('findDictItemList')
+  // @UseGuards(JwtAuthGuard)
+  // @ApiOperation({ summary: '获取列表（字典项）' })
+  // async findDictItemList(): Promise<DictItem[]> {
+  //   // return await this.dictService.selectDictItemList();
+  //   return [];
+  // }
 
-  @Get('findDictItemListPage')
-  @UseGuards(JwtAuthGuard)
-  @ApiOperation({ summary: '获取列表（字典项）（分页）' })
-  async findDictItemListPage(@Query() basePageDto: BasePageDto): Promise<any> {
-    return await this.dictService.selectDictItemListPage(basePageDto);
-  }
+  // @Get('findDictItemListPage')
+  // @UseGuards(JwtAuthGuard)
+  // @ApiOperation({ summary: '获取列表（字典项）（分页）' })
+  // async findDictItemListPage(@Query() basePageDto: BasePageDto): Promise<any> {
+  //   return await this.dictService.selectDictItemListPage(basePageDto);
+  // }
 
   @Get('findById')
   @ApiOperation({ summary: '获取详情（主键 id）' })
@@ -72,6 +77,13 @@ export class DictController {
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '修改' })
   async update(@CurUser() curUser, @Body() updateDictDto: UpdateDictDto): Promise<any> {
+    let { id } = updateDictDto;
+    let isExistId = await this.dictService.isExistId(id);
+
+    if (!isExistId) {
+      throw new BadRequestException(`数据 id：${id} 不存在！`);
+    }
+
     return this.dictService.update(updateDictDto, curUser);
   }
 
@@ -79,6 +91,20 @@ export class DictController {
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '删除' })
   async delete(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
+    let { id } = baseFindByIdDto;
+    let isExistId = await this.dictService.isExistId(id);
+
+    if (!isExistId) {
+      throw new BadRequestException(`数据 id：${id} 不存在！`);
+    }
+
     return await this.dictService.deleteById(baseFindByIdDto);
+  }
+
+  @Get('findDictItemById')
+  @ApiOperation({ summary: '获取字典详情（主键 id）' })
+  @UseGuards(JwtAuthGuard)
+  async findDictItemById(@Query() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
+    return await this.dictItemService.selectDictItemById(baseFindByIdDto);
   }
 }

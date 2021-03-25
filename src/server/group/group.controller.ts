@@ -72,6 +72,13 @@ export class GroupController {
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '修改' })
   async update(@CurUser() curUser, @Body() updateGroupDto: UpdateGroupDto): Promise<any> {
+    let { id } = updateGroupDto;
+    let isExistId = await this.groupService.isExistId(id);
+
+    if (!isExistId) {
+      throw new BadRequestException(`数据 id：${id} 不存在！`);
+    }
+
     return this.groupService.update(updateGroupDto, curUser);
   }
 
@@ -79,6 +86,13 @@ export class GroupController {
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '删除' })
   async delete(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
+    let { id } = baseFindByIdDto;
+    let isExistId = await this.groupService.isExistId(id);
+
+    if (!isExistId) {
+      throw new BadRequestException(`数据 id：${id} 不存在！`);
+    }
+
     return await this.groupService.deleteById(baseFindByIdDto);
   }
 
@@ -86,6 +100,13 @@ export class GroupController {
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '获取用户组角色' })
   async findRolesByGroupId(@CurUser() curUser, @Query() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
+    let { id } = baseFindByIdDto;
+    let isExistId = await this.groupService.isExistId(id);
+
+    if (!isExistId) {
+      throw new BadRequestException(`数据 id：${id} 不存在！`);
+    }
+
     return await this.groupService.selectRolesByGroupId(baseFindByIdDto);
   }
 
@@ -93,6 +114,13 @@ export class GroupController {
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '绑定用户组角色' })
   async bindRoles(@CurUser() curUser, @Body() bindGroupRoleDto: BindGroupRoleDto): Promise<any> {
+    let { id } = bindGroupRoleDto;
+    let isExistId = await this.groupService.isExistId(id);
+
+    if (!isExistId) {
+      throw new BadRequestException(`数据 id：${id} 不存在！`);
+    }
+
     return await this.groupService.bindRoles(bindGroupRoleDto);
   }
 }

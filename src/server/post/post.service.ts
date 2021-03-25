@@ -48,7 +48,10 @@ export class PostService {
       .where(queryCondition, {
         name: `%${name}%`,
       })
-      .orderBy('createTime', 'ASC')
+      .orderBy({
+        'sort': 'ASC',
+        'createTime': 'DESC',
+      })
       .getMany();
   }
 
@@ -75,7 +78,10 @@ export class PostService {
       })
       .skip(offset)
       .take(limit)
-      .orderBy('createTime', 'ASC')
+      .orderBy({
+        'sort': 'ASC',
+        'createTime': 'DESC',
+      })
       .getManyAndCount();
 
     return {
@@ -91,6 +97,18 @@ export class PostService {
    */
   async selectById(baseFindByIdDto: BaseFindByIdDto): Promise<SysPost> {
     return await this.postRepository.findOne(baseFindByIdDto);
+  }
+
+  /**
+   * 是否存在（主键 id）
+   */
+  async isExistId(id: string): Promise<Boolean> {
+    let isExist = await this.postRepository.findOne(id);
+    if (Utils.isNil(isExist)) {
+      throw false;
+    } else {
+      return true;
+    }
   }
 
   /**

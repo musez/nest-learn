@@ -21,7 +21,7 @@ import { ArticleService } from './article.service';
 import { CreateArticleDto } from './dto/create-article.dto';
 import { UpdateArticleDto } from './dto/update-article.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { BaseFindByIdDto } from '../base.dto';
+import { BaseFindByIdDto, BaseFindByIdsDto, BaseModifyStatusByIdsDto } from '../base.dto';
 import { Article } from './entities/article.entity';
 import { LimitArticleDto } from './dto/limit-article.dto';
 import { CurUser } from '../../common/decorators/user.decorator';
@@ -67,8 +67,8 @@ export class ArticleController {
   @ApiOperation({ summary: '修改' })
   async update(@CurUser() curUser, @Body() updateArticleDto: UpdateArticleDto): Promise<any> {
     let { id } = updateArticleDto;
-    let isExist = await this.articleService.isExist(updateArticleDto);
-    if (!isExist) {
+    let isExistId = await this.articleService.isExistId(id);
+    if (!isExistId) {
       throw new BadRequestException(`数据 id：${id} 不存在！`);
     }
 
@@ -80,36 +80,35 @@ export class ArticleController {
   @ApiOperation({ summary: '删除' })
   async delete(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
     let { id } = baseFindByIdDto;
-    let isExist = await this.articleService.isExist(baseFindByIdDto);
+    let isExistId = await this.articleService.isExistId(id);
 
-    if (!isExist) {
+    if (!isExistId) {
       throw new BadRequestException(`数据 id：${id} 不存在！`);
     }
 
     return await this.articleService.deleteById(baseFindByIdDto);
   }
 
-  @Post('clearRecycle')
-  @UseGuards(JwtAuthGuard)
-  @ApiOperation({ summary: '清空回收站' })
-  async clearRecycle(@CurUser() curUser, @Body() updateArticleDto: UpdateArticleDto): Promise<any> {
-    // TODO
-    return null;
-  }
-
   @Post('inRecycle')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '移入回收站' })
-  async inRecycle(@CurUser() curUser, @Body() updateArticleDto: UpdateArticleDto): Promise<any> {
-    // TODO
-    return null;
+  async inRecycle(@CurUser() curUser, @Body() baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto): Promise<any> {
+    baseModifyStatusByIdsDto.status = 3;
+    return await this.articleService.updateRecycle(baseModifyStatusByIdsDto, curUser);
   }
 
   @Post('outRecycle')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '移出回收站' })
-  async outRecycle(@CurUser() curUser, @Body() updateArticleDto: UpdateArticleDto): Promise<any> {
-    // TODO
-    return null;
+  async outRecycle(@CurUser() curUser, @Body() baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto): Promise<any> {
+    baseModifyStatusByIdsDto.status = 2;
+    return await this.articleService.updateRecycle(baseModifyStatusByIdsDto, curUser);
+  }
+
+  @Post('clearRecycle')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: '清空回收站' })
+  async clearRecycle(@CurUser() curUser, @Body() baseFindByIdsDto: BaseFindByIdsDto): Promise<any> {
+    return await this.articleService.clearRecycle(baseFindByIdsDto);
   }
 }

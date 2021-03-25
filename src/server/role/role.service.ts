@@ -64,15 +64,21 @@ export class RoleService {
     limit = limit ? limit : 10;
     let offset = (page - 1) * limit;
 
-    if (Utils.isBlank(name)) {
-      name = '';
+    let queryConditionList = [];
+
+    if (!Utils.isBlank(name)) {
+      queryConditionList.push('name LIKE :name');
     }
 
+    let queryCondition = queryConditionList.join(' AND ');
+
     let res = await this.roleRepository.createQueryBuilder()
+      .where(queryCondition, {
+        name: `%${name}%`,
+      })
       .skip(offset)
       .take(limit)
       .orderBy('createTime', 'ASC')
-      .where('name like :name', { name: `%${name}%` })
       .getManyAndCount();
 
     return {
@@ -92,15 +98,22 @@ export class RoleService {
   }
 
   /**
+   * 是否存在（主键 id）
+   */
+  async isExistId(id: string): Promise<Boolean> {
+    let isExist = await this.roleRepository.findOne(id);
+    if (Utils.isNil(isExist)) {
+      throw false;
+    } else {
+      return true;
+    }
+  }
+
+  /**
    * 修改
    */
   async update(updateRoleDto: UpdateRoleDto, curUser?): Promise<void> {
     let { id } = updateRoleDto;
-
-    let isExist = await this.roleRepository.findOne(id);
-    if (Utils.isNil(isExist)) {
-      throw new BadRequestException(`数据 id：${id} 不存在！`);
-    }
 
     let role = new Role();
     role = Utils.dto2entity(updateRoleDto, role);
@@ -114,12 +127,7 @@ export class RoleService {
    */
   async deleteById(baseFindByIdDto: BaseFindByIdDto): Promise<void> {
     let { id } = baseFindByIdDto;
-    let isExist = await this.roleRepository.findOne(id);
-    if (Utils.isNil(isExist)) {
-      throw new BadRequestException(`数据 id：${id} 不存在！`);
-    }
 
-    // await this.roleRepository.delete(isExist);
     await this.roleRepository.createQueryBuilder()
       .delete()
       .from(Role)
@@ -131,11 +139,6 @@ export class RoleService {
    * 获取权限
    */
   async selectPermissionsByRoleId(baseFindByIdDto: BaseFindByIdDto): Promise<RolePermission[]> {
-    let isExist = await this.roleRepository.findOne(baseFindByIdDto);
-    if (Utils.isNil(isExist)) {
-      throw new BadRequestException(`数据 id：${baseFindByIdDto} 不存在！`);
-    }
-
     return await this.rolePermissionService.selectByRoleId(baseFindByIdDto);
   }
 
@@ -144,10 +147,6 @@ export class RoleService {
    */
   async bindPermissions(bindRolePermissionDto: BindRolePermissionDto): Promise<void> {
     let { id, permissions } = bindRolePermissionDto;
-    let isExist = await this.roleRepository.findOne(id);
-    if (Utils.isNil(isExist)) {
-      throw new BadRequestException(`数据 id：${id} 不存在！`);
-    }
 
     let userGroupList = [];
     for (let i = 0, len = permissions.length; i < len; i++) {
@@ -157,6 +156,7 @@ export class RoleService {
       userGroupList.push(createRolePermissionDto);
     }
 
-    await this.rolePermissionService.insert(userGroupList);
+    await this.rolePermissionService.deleteByRoleId(id);
+    await this.rolePermissionService.insertBatch(userGroupList);
   }
 }

@@ -7,6 +7,7 @@ import { UserGroup } from '../user-group/entities/user-group.entity';
 import { CreateUserGroupDto } from '../user-group/dto/create-user-group.dto';
 import { BaseFindByIdDto } from '../base.dto';
 import { UserRole } from './entities/user-role.entity';
+import { Article } from '../article/entities/article.entity';
 
 @Injectable()
 export class UserRoleService {
@@ -19,7 +20,7 @@ export class UserRoleService {
   /**
    * 添加
    */
-  async insert(createUserRoleDto: CreateUserRoleDto[]): Promise<CreateUserRoleDto[]> {
+  async insertBatch(createUserRoleDto: CreateUserRoleDto[]): Promise<CreateUserRoleDto[]> {
     return await this.userRoleRepository.save(createUserRoleDto);
   }
 
@@ -33,5 +34,16 @@ export class UserRoleService {
         userId: baseFindByIdDto,
       },
     });
+  }
+
+  /**
+   * 删除角色
+   */
+  async deleteByUserId(id: string): Promise<any> {
+    return await this.userRoleRepository.createQueryBuilder()
+      .delete()
+      .from(UserRole)
+      .where('userId = :id', { id: id })
+      .execute();
   }
 }

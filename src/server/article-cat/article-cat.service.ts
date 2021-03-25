@@ -189,15 +189,22 @@ export class ArticleCatService {
   }
 
   /**
+   * 是否存在（主键 id）
+   */
+  async isExistId(id: string): Promise<Boolean> {
+    let isExist = await this.articleCatRepository.findOne(id);
+    if (Utils.isNil(isExist)) {
+      throw false;
+    } else {
+      return true;
+    }
+  }
+
+  /**
    * 修改
    */
   async update(updateArticleCatDto: UpdateArticleCatDto, curUser?): Promise<void> {
     let { id } = updateArticleCatDto;
-
-    let isExist = await this.articleCatRepository.findOne(id);
-    if (Utils.isNil(isExist)) {
-      throw new BadRequestException(`数据 id：${id} 不存在！`);
-    }
 
     let articleCat = new ArticleCat();
     articleCat = Utils.dto2entity(updateArticleCatDto, articleCat);
@@ -210,10 +217,6 @@ export class ArticleCatService {
    */
   async deleteById(baseFindByIdDto: BaseFindByIdDto): Promise<void> {
     let { id } = baseFindByIdDto;
-    let isExist = await this.articleCatRepository.findOne(id);
-    if (Utils.isNil(isExist)) {
-      throw new BadRequestException(`数据 id：${id} 不存在！`);
-    }
 
     // await this.articleCatRepository.delete(isExist);
     await this.articleCatRepository.createQueryBuilder()

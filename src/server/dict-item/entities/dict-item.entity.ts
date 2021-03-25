@@ -7,6 +7,12 @@ import {
 import { BaseEntity } from '../../base.entity';
 import { Dict } from '../../dict/entities/dict.entity';
 
+// 状态类型
+export enum DefaultType {
+  NOT_DEFAULT,
+  DEFAULT = 1,
+}
+
 @Entity('sys_dict_item')
 export class DictItem extends BaseEntity {
   constructor() {
@@ -15,6 +21,7 @@ export class DictItem extends BaseEntity {
     this.parentId = undefined;
     this.itemText = undefined;
     this.itemValue = undefined;
+    this.defaultValue = undefined;
     this.sort = undefined;
     this.dict = undefined;
   }
@@ -27,6 +34,9 @@ export class DictItem extends BaseEntity {
 
   @Column('varchar', { comment: '字典项值', length: 50 })
   itemValue: string;
+
+  @Column('tinyint', { comment: '默认值（0：否；1：是）' })
+  defaultValue: DefaultType;
 
   @Column({ comment: '排序', default: () => 0 })
   sort: number;

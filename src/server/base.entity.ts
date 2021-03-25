@@ -7,8 +7,10 @@ import {
 
 // 状态类型
 export enum StatusType {
-  ENABLE = 1,
-  DISABLE = 0,
+  ENABLE = 1,// 启用或发布
+  DISABLE = 0,// 禁用或未发布
+  DRAFT = 2,
+  RECYCLE = 3
 }
 
 export abstract class BaseEntity {
@@ -37,7 +39,7 @@ export abstract class BaseEntity {
   @Column({ comment: '创建人 id', nullable: true })
   createBy: string;
 
-  @UpdateDateColumn({ comment: '最后更新时间', type: 'datetime' , nullable: true})
+  @UpdateDateColumn({ comment: '最后更新时间', type: 'datetime', nullable: true })
   updateTime: Date;
 
   @Column({ comment: '修改人 id', nullable: true })

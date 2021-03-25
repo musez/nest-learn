@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, IsInt, IsEmail, IsUUID } from 'class-validator';
+import { IsDefined, IsNotEmpty, IsString, IsInt, IsEmail, IsUUID } from 'class-validator';
 import { Transform } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
@@ -15,32 +15,36 @@ export class BasePageDto {
 }
 
 export class BaseModifyStatusByIdsDto {
-  @ApiProperty({ description: '主键 ids', example: '' })
-  @IsNotEmpty({ message: '主键 ids 不能为空' })
+  @ApiProperty({ description: '主键 ids', example: null })
+  @IsDefined({ message: '主键 ids 不能为空！' })
+  @IsNotEmpty({ message: '主键 ids 不能为空！' })
   readonly ids: string;
 
   @ApiProperty({ description: '状态', example: 1 })
+  @IsDefined({ message: '状态不能为空！' })
   @IsNotEmpty({ message: '状态不能为空' })
   @Transform(status => Number.parseInt(status))
   @IsInt({ message: '排序必须为数字！' })
-  readonly status: number;
+  status: number;
 }
 
 export class BaseFindByIdDto {
-  @ApiProperty({ description: '主键 id', example: '' })
-  @IsNotEmpty({ message: '主键 id 不能为空' })
+  @ApiProperty({ description: '主键 id', example: null })
+  @IsDefined({ message: '主键 id 不能为空！' })
+  @IsNotEmpty({ message: '主键 id 不能为空！' })
   @IsUUID('all')
   readonly id: string;
 }
 
 export class BaseFindByIdsDto {
-  @ApiProperty({ description: '主键 ids', example: '' })
+  @ApiProperty({ description: '主键 ids', example: null })
+  @IsDefined({ message: '主键 ids 不能为空！' })
   @IsNotEmpty({ message: '主键 ids 不能为空' })
   readonly ids: string;
 }
 
 export class BaseFindByPIdDto {
-  @ApiPropertyOptional({ description: 'parentId', example: '' })
+  @ApiPropertyOptional({ description: 'parentId', example: null })
   readonly parentId: string;
 }
 

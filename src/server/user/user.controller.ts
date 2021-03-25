@@ -8,6 +8,7 @@ import {
   UseInterceptors,
   UsePipes,
   ClassSerializerInterceptor,
+  BadRequestException,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -41,6 +42,13 @@ export class UserController {
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '添加' })
   async add(@CurUser() curUser, @Body() createUserDto: CreateUserDto): Promise<CreateUserDto> {
+    let { userName } = createUserDto;
+
+    let isExistUserName = await this.userService.isExistUserName(userName);
+    if (isExistUserName) {
+      throw new BadRequestException(`用户名：${userName} 已存在！`);
+    }
+
     return this.userService.insert(createUserDto, curUser);
   }
 
@@ -72,6 +80,13 @@ export class UserController {
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '修改' })
   async update(@CurUser() curUser, @Body() updateUserDto: UpdateUserDto): Promise<any> {
+    let { id } = updateUserDto;
+
+    let isExistId = await this.userService.isExistId(id);
+    if (!isExistId) {
+      throw new BadRequestException(`数据 id：${id} 不存在！`);
+    }
+
     return this.userService.update(updateUserDto, curUser);
   }
 
@@ -86,6 +101,13 @@ export class UserController {
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '删除' })
   async delete(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
+    let { id } = baseFindByIdDto;
+
+    let isExistId = await this.userService.isExistId(id);
+    if (!isExistId) {
+      throw new BadRequestException(`数据 id：${id} 不存在！`);
+    }
+
     return await this.userService.deleteById(baseFindByIdDto);
   }
 
@@ -93,6 +115,12 @@ export class UserController {
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '绑定用户组' })
   async bindGroups(@CurUser() curUser, @Body() bindUserGroupDto: BindUserGroupDto): Promise<any> {
+    let { id } = bindUserGroupDto;
+
+    let isExistId = await this.userService.isExistId(id);
+    if (!isExistId) {
+      throw new BadRequestException(`数据 id：${id} 不存在！`);
+    }
     return await this.userService.bindGroups(bindUserGroupDto);
   }
 
@@ -100,6 +128,12 @@ export class UserController {
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '获取用户组' })
   async findGroupsByUserId(@CurUser() curUser, @Query() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
+    let { id } = baseFindByIdDto;
+
+    let isExistId = await this.userService.isExistId(id);
+    if (!isExistId) {
+      throw new BadRequestException(`数据 id：${id} 不存在！`);
+    }
     return await this.userService.selectGroupsByUserId(baseFindByIdDto);
   }
 
@@ -107,6 +141,12 @@ export class UserController {
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '绑定角色' })
   async bindRoles(@CurUser() curUser, @Body() bindUserRoleDto: BindUserRoleDto): Promise<any> {
+    let { id } = bindUserRoleDto;
+
+    let isExistId = await this.userService.isExistId(id);
+    if (!isExistId) {
+      throw new BadRequestException(`数据 id：${id} 不存在！`);
+    }
     return await this.userService.bindRoles(bindUserRoleDto);
   }
 
@@ -114,6 +154,13 @@ export class UserController {
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '获取角色' })
   async findRolesByUserId(@CurUser() curUser, @Query() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
+    let { id } = baseFindByIdDto;
+
+    let isExistId = await this.userService.isExistId(id);
+    if (!isExistId) {
+      throw new BadRequestException(`数据 id：${id} 不存在！`);
+    }
+
     return await this.userService.selectRolesByUserId(baseFindByIdDto);
   }
 }

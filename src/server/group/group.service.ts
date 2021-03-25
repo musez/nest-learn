@@ -95,14 +95,22 @@ export class GroupService {
   }
 
   /**
+   * 是否存在（主键 id）
+   */
+  async isExistId(id: string): Promise<Boolean> {
+    let isExist = await this.groupRepository.findOne(id);
+    if (Utils.isNil(isExist)) {
+      throw false;
+    } else {
+      return true;
+    }
+  }
+
+  /**
    * 修改
    */
   async update(updateGroupDto: UpdateGroupDto, curUser?): Promise<void> {
     let { id } = updateGroupDto;
-    let isExist = await this.groupRepository.findOne(id);
-    if (Utils.isNil(isExist)) {
-      throw new BadRequestException(`数据 id：${id} 不存在！`);
-    }
 
     let group = new Group();
     group = Utils.dto2entity(updateGroupDto, group);
@@ -116,12 +124,7 @@ export class GroupService {
    */
   async deleteById(baseFindByIdDto: BaseFindByIdDto): Promise<void> {
     let { id } = baseFindByIdDto;
-    let isExist = await this.groupRepository.findOne(id);
-    if (Utils.isNil(isExist)) {
-      throw new BadRequestException(`数据 id：${baseFindByIdDto} 不存在！`);
-    }
 
-    // await this.groupRepository.delete(isExist);
     await this.groupRepository.createQueryBuilder().delete()
       .from(Group)
       .where('id = :id', { id: id })
@@ -132,11 +135,6 @@ export class GroupService {
    * 获取角色
    */
   async selectRolesByGroupId(baseFindByIdDto: BaseFindByIdDto): Promise<GroupRole[]> {
-    let isExist = await this.groupRepository.findOne(baseFindByIdDto);
-    if (Utils.isNil(isExist)) {
-      throw new BadRequestException(`数据 id：${baseFindByIdDto} 不存在！`);
-    }
-
     return await this.groupRoleService.selectByGroupId(baseFindByIdDto);
   }
 
@@ -145,10 +143,6 @@ export class GroupService {
    */
   async bindRoles(bindGroupRoleDto: BindGroupRoleDto): Promise<void> {
     let { id, roles } = bindGroupRoleDto;
-    let isExist = await this.groupRepository.findOne(id);
-    if (Utils.isNil(isExist)) {
-      throw new BadRequestException(`数据 id：${id} 不存在！`);
-    }
 
     let userGroupList = [];
     for (let i = 0, len = roles.length; i < len; i++) {
@@ -158,6 +152,7 @@ export class GroupService {
       userGroupList.push(createGroupRoleDto);
     }
 
-    await this.groupRoleService.insert(userGroupList);
+    await this.groupRoleService.deleteByGroupId(id);
+    await this.groupRoleService.insertBatch(userGroupList);
   }
 }

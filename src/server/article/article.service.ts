@@ -4,7 +4,7 @@ import { Repository, Like } from 'typeorm';
 import { Utils } from './../../utils/index';
 import { CreateArticleDto } from './dto/create-article.dto';
 import { UpdateArticleDto } from './dto/update-article.dto';
-import { BaseFindByIdDto } from '../base.dto';
+import { BaseFindByIdDto, BaseFindByIdsDto, BaseModifyStatusByIdsDto } from '../base.dto';
 import { Article } from './entities/article.entity';
 import { SearchArticleDto } from './dto/search-article.dto';
 import { LimitArticleDto } from './dto/limit-article.dto';
@@ -111,9 +111,7 @@ export class ArticleService {
   /**
    * 是否存在（主键 id）
    */
-  async isExist(baseFindByIdDto: BaseFindByIdDto): Promise<Boolean> {
-    let { id } = baseFindByIdDto;
-
+  async isExistId(id: string): Promise<Boolean> {
     let isExist = await this.articleRepository.findOne(id);
     if (Utils.isNil(isExist)) {
       throw false;
@@ -128,11 +126,6 @@ export class ArticleService {
   async update(updateArticleDto: UpdateArticleDto, curUser?): Promise<void> {
     let { id } = updateArticleDto;
 
-    // let isExist = await this.articleRepository.findOne(id);
-    // if (Utils.isNil(isExist)) {
-    //   throw new BadRequestException(`数据 id：${id} 不存在！`);
-    // }
-
     let article = new Article();
     article = Utils.dto2entity(updateArticleDto, article);
 
@@ -144,16 +137,38 @@ export class ArticleService {
    */
   async deleteById(baseFindByIdDto: BaseFindByIdDto): Promise<void> {
     let { id } = baseFindByIdDto;
-    // let isExist = await this.articleRepository.findOne(id);
-    // if (Utils.isNil(isExist)) {
-    //   throw new BadRequestException(`数据 id：${id} 不存在！`);
-    // }
 
     // await this.articleRepository.delete(isExist);
     await this.articleRepository.createQueryBuilder()
       .delete()
       .from(Article)
       .where('id = :id', { id: id })
+      .execute();
+  }
+
+  /**
+   * 回收站状态修改
+   */
+  async updateRecycle(baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto, curUser?): Promise<void> {
+    let { ids, status } = baseModifyStatusByIdsDto;
+
+    await this.articleRepository.createQueryBuilder()
+      .update(Article)
+      .set({ status: status, updateBy: curUser.id })
+      .where('id in (:ids)', { ids: ids })
+      .execute();
+  }
+
+  /**
+   * 清空回收站
+   */
+  async clearRecycle(baseFindByIdsDto: BaseFindByIdsDto): Promise<void> {
+    let { ids } = baseFindByIdsDto;
+
+    await this.articleRepository.createQueryBuilder()
+      .delete()
+      .from(Article)
+      .where('id in (:ids)', { ids: ids })
       .execute();
   }
 }

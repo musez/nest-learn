@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Query, Body, Put, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Query, Body, Put, Param, Delete, UseGuards, BadRequestException } from '@nestjs/common';
 import {
   ApiTags,
   ApiBasicAuth,
@@ -53,6 +53,12 @@ export class PostController {
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '修改' })
   async update(@CurUser() curUser, @Body() updatePostDto: UpdatePostDto): Promise<any> {
+    let { id } = updatePostDto;
+    let isExistId = await this.postService.isExistId(id);
+
+    if (!isExistId) {
+      throw new BadRequestException(`数据 id：${id} 不存在！`);
+    }
     return this.postService.update(updatePostDto, curUser);
   }
 
@@ -60,6 +66,12 @@ export class PostController {
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '删除' })
   async delete(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
+    let { id } = baseFindByIdDto;
+    let isExistId = await this.postService.isExistId(id);
+
+    if (!isExistId) {
+      throw new BadRequestException(`数据 id：${id} 不存在！`);
+    }
     return await this.postService.deleteById(baseFindByIdDto);
   }
 }

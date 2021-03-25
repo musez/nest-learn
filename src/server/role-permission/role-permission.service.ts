@@ -7,6 +7,7 @@ import { RolePermission } from './entities/role-permission.entity';
 import { CreateGroupRoleDto } from '../group-role/dto/create-group-role.dto';
 import { BaseFindByIdDto } from '../base.dto';
 import { GroupRole } from '../group-role/entities/group-role.entity';
+import { UserRole } from '../user-role/entities/user-role.entity';
 
 @Injectable()
 export class RolePermissionService {
@@ -19,7 +20,7 @@ export class RolePermissionService {
   /**
    * 添加
    */
-  async insert(createRolePermissionDto: CreateRolePermissionDto[]): Promise<CreateRolePermissionDto[]> {
+  async insertBatch(createRolePermissionDto: CreateRolePermissionDto[]): Promise<CreateRolePermissionDto[]> {
     return await this.rolePermissionRepository.save(createRolePermissionDto);
   }
 
@@ -33,5 +34,16 @@ export class RolePermissionService {
         roleId: baseFindByIdDto,
       },
     });
+  }
+
+  /**
+   * 删除用户组
+   */
+  async deleteByRoleId(id: string): Promise<any> {
+    return await this.rolePermissionRepository.createQueryBuilder()
+      .delete()
+      .from(UserRole)
+      .where('roleId = :id', { id: id })
+      .execute();
   }
 }

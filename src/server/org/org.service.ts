@@ -187,15 +187,22 @@ export class OrgService {
   }
 
   /**
+   * 是否存在（主键 id）
+   */
+  async isExistId(id: string): Promise<Boolean> {
+    let isExist = await this.orgRepository.findOne(id);
+    if (Utils.isNil(isExist)) {
+      throw false;
+    } else {
+      return true;
+    }
+  }
+
+  /**
    * 修改
    */
   async update(updateOrgDto: UpdateOrgDto, curUser?): Promise<void> {
     let { id } = updateOrgDto;
-
-    let isExist = await this.orgRepository.findOne(id);
-    if (Utils.isNil(isExist)) {
-      throw new BadRequestException(`数据 id：${id} 不存在！`);
-    }
 
     let org = new Org();
     org = Utils.dto2entity(updateOrgDto, org);
@@ -209,10 +216,6 @@ export class OrgService {
    */
   async deleteById(baseFindByIdDto: BaseFindByIdDto): Promise<void> {
     let { id } = baseFindByIdDto;
-    let isExist = await this.orgRepository.findOne(id);
-    if (Utils.isNil(isExist)) {
-      throw new BadRequestException(`数据 id：${id} 不存在！`);
-    }
 
     await this.orgRepository.createQueryBuilder()
       .delete()

@@ -69,6 +69,12 @@ export class RoleController {
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '修改' })
   async update(@CurUser() curUser, @Body() updateRoleDto: UpdateRoleDto): Promise<any> {
+    let { id } = updateRoleDto;
+    let isExistId = await this.roleService.isExistId(id);
+
+    if (!isExistId) {
+      throw new BadRequestException(`数据 id：${id} 不存在！`);
+    }
     return this.roleService.update(updateRoleDto, curUser);
   }
 
@@ -76,6 +82,12 @@ export class RoleController {
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '删除' })
   async delete(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
+    let { id } = baseFindByIdDto;
+    let isExistId = await this.roleService.isExistId(id);
+
+    if (!isExistId) {
+      throw new BadRequestException(`数据 id：${id} 不存在！`);
+    }
     return await this.roleService.deleteById(baseFindByIdDto);
   }
 
@@ -83,6 +95,12 @@ export class RoleController {
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '获取角色权限' })
   async findPermissionsByRoleId(@CurUser() curUser, @Query() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
+    let { id } = baseFindByIdDto;
+    let isExistId = await this.roleService.isExistId(id);
+
+    if (!isExistId) {
+      throw new BadRequestException(`数据 id：${id} 不存在！`);
+    }
     return await this.roleService.selectPermissionsByRoleId(baseFindByIdDto);
   }
 
@@ -90,6 +108,12 @@ export class RoleController {
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '绑定角色权限' })
   async bindPermissions(@CurUser() curUser, @Body() bindRolePermissionDto: BindRolePermissionDto): Promise<any> {
+    let { id } = bindRolePermissionDto;
+    let isExistId = await this.roleService.isExistId(id);
+
+    if (!isExistId) {
+      throw new BadRequestException(`数据 id：${id} 不存在！`);
+    }
     return await this.roleService.bindPermissions(bindRolePermissionDto);
   }
 }

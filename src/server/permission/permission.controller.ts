@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Query, Body, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Query, Body, UseGuards,BadRequestException } from '@nestjs/common';
 import {
   ApiTags,
   ApiQuery,
@@ -63,6 +63,12 @@ export class PermissionController {
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '修改' })
   async update(@CurUser() curUser, @Body() updatePermissionDto: UpdatePermissionDto): Promise<any> {
+    let { id } = updatePermissionDto;
+    let isExistId = await this.permissionService.isExistId(id);
+
+    if (!isExistId) {
+      throw new BadRequestException(`数据 id：${id} 不存在！`);
+    }
     return this.permissionService.update(updatePermissionDto, curUser);
   }
 
@@ -70,6 +76,12 @@ export class PermissionController {
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '删除' })
   async delete(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
+    let { id } = baseFindByIdDto;
+    let isExistId = await this.permissionService.isExistId(id);
+
+    if (!isExistId) {
+      throw new BadRequestException(`数据 id：${id} 不存在！`);
+    }
     return await this.permissionService.deleteById(baseFindByIdDto);
   }
 }

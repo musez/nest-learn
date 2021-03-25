@@ -14,7 +14,7 @@ import {
 import { Exclude } from 'class-transformer';
 import { BaseEntity } from '../../base.entity';
 
-// 媒体类型
+// 文章类型
 export enum OrgType {
   ORG = 0,
   DEPT = 1,

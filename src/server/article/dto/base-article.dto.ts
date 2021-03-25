@@ -1,45 +1,49 @@
-import { IsNotEmpty, IsString, IsInt, MaxLength, IsUUID } from 'class-validator';
+import { IsDefined, IsNotEmpty, IsString, IsInt, MaxLength, IsUUID } from 'class-validator';
 import { Transform } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { BaseConstants } from '../../../constants/constants';
 
 export class BaseArticleDto {
-  @ApiProperty({ description: '主键 id', example: '' })
-  @IsNotEmpty({ message: '主键 id 不能为空' })
+  @ApiProperty({ description: '主键 id', example: null })
+  @IsDefined({ message: '主键 id 不能为空！' })
+  @IsNotEmpty({ message: '主键 id 不能为空！' })
   @IsUUID('all')
   readonly id: string;
 
-  @ApiProperty({ description: '标题', example: '' })
+  @ApiProperty({ description: '标题', example: null })
+  @IsDefined({ message: '标题不能为空！' })
   @IsNotEmpty({ message: '标题不能为空！' })
   @MaxLength(255, { message: '标题不能大于 255 位！' })
   readonly title: string;
 
-  @ApiPropertyOptional({ description: '摘要', example: '' })
+  @ApiPropertyOptional({ description: '摘要', example: null })
   @MaxLength(255, { message: '摘要不能大于 255 位！' })
   readonly summary?: string;
 
-  @ApiPropertyOptional({ description: '作者', example: '' })
+  @ApiPropertyOptional({ description: '作者', example: null })
   @MaxLength(50, { message: '作者不能大于 50 位！' })
   readonly author?: string;
 
-  @ApiPropertyOptional({ description: '来源', example: '' })
+  @ApiPropertyOptional({ description: '来源', example: null })
   @MaxLength(50, { message: '来源不能大于 50 位！' })
   readonly source?: string;
 
-  @ApiPropertyOptional({ description: '关键字（多个使用逗号“，”分隔）', example: '' })
+  @ApiPropertyOptional({ description: '关键字（多个使用逗号“，”分隔）', example: null })
   @MaxLength(100, { message: '关键字不能大于 100 位！' })
   readonly keywords?: string;
 
-  @ApiProperty({ description: '媒体类型（1：文本；2：链接；3：组图；4：视频；5：音频）', default: 0 })
+  @ApiProperty({ description: '文章类型（1：文本；2：链接；3：组图；4：视频；5：音频）', default: 0 })
+  @IsDefined({ message: '文章类型不能为空！' })
+  @IsNotEmpty({ message: '文章类型不能为空！' })
   @Transform(type => Number.parseInt(type))
-  @IsInt({ message: '媒体类型为数字！' })
+  @IsInt({ message: '文章类型为数字！' })
   readonly type: number;
 
-  @ApiPropertyOptional({ description: '缩略图', example: '' })
+  @ApiPropertyOptional({ description: '缩略图', example: null })
   @MaxLength(255, { message: '缩略图不能大于 255 位！' })
   readonly thumbId?: string;
 
-  @ApiPropertyOptional({ description: '附件', example: '' })
+  @ApiPropertyOptional({ description: '附件', example: null })
   @MaxLength(255, { message: '附件不能大于 255 位！' })
   readonly fileId?: string;
 
@@ -47,7 +51,7 @@ export class BaseArticleDto {
   @MaxLength(255, { message: '链接地址不能大于 255 位！' })
   readonly contentUrl?: string;
 
-  @ApiPropertyOptional({ description: '媒体地址', example: '' })
+  @ApiPropertyOptional({ description: '媒体地址', example: null })
   @MaxLength(255, { message: '媒体地址不能大于 255 位！' })
   readonly mediaId?: string;
 
@@ -56,7 +60,7 @@ export class BaseArticleDto {
   @IsInt({ message: '权重为数字！' })
   readonly weight?: number;
 
-  @ApiPropertyOptional({ description: '内容', example: '' })
+  @ApiPropertyOptional({ description: '内容', example: null })
   readonly content?: string;
 
   @ApiPropertyOptional({ description: '发布时间' })
@@ -92,17 +96,21 @@ export class BaseArticleDto {
   @IsInt({ message: '允许评论为数字！' })
   readonly commentCount?: number;
 
-  @ApiProperty({ description: '状态（0：未发布；1：发布；2：草稿；3：回收站））', example: 0 })
+  @ApiProperty({ description: '状态（0：未发布；1：发布；2：草稿；3：回收站）', example: 0 })
+  @IsDefined({ message: '状态不能为空！' })
+  @IsNotEmpty({ message: '状态不能为空！' })
   @Transform(articleStatus => Number.parseInt(articleStatus))
   @IsInt({ message: '状态必须为数字！' })
   readonly articleStatus?: number;
 
   @ApiProperty({ description: '状态（0：禁用；1：启用）', example: 0 })
+  @IsDefined({ message: '状态不能为空！' })
+  @IsNotEmpty({ message: '状态不能为空！' })
   @Transform(status => Number.parseInt(status))
   @IsInt({ message: '状态必须为数字！' })
   readonly status?: number;
 
-  @ApiPropertyOptional({ description: '描述', example: '' })
+  @ApiPropertyOptional({ description: '描述', example: null })
   @MaxLength(BaseConstants.DESCRIPTION_MAX_LENGTH, { message: '描述不能大于 $constraint1 位！' })
   readonly description?: string;
 }
