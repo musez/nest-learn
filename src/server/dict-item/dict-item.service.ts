@@ -8,7 +8,8 @@ import { Utils } from '../../utils';
 import { LimitDictDto } from '../dict/dto/limit-dict.dto';
 import { SearchDictItemDto } from './dto/search-dict-item.dto';
 import { LimitDictItemDto } from './dto/limit-dict-item.dto';
-import { BaseFindByIdDto } from '../base.dto';
+import { BaseFindByIdDto, BaseFindByIdsDto } from '../base.dto';
+import { Dict } from '../dict/entities/dict.entity';
 
 @Injectable()
 export class DictItemService {
@@ -22,14 +23,26 @@ export class DictItemService {
    * 添加
    */
   async insert(createDictItemDto: CreateDictItemDto, curUser): Promise<CreateDictItemDto> {
-    return await this.dictItemRepository.save(createDictItemDto);
+    let dictItem = new DictItem();
+    dictItem = Utils.dto2entity(createDictItemDto, dictItem);
+    dictItem.createBy = curUser.id;
+    return await this.dictItemRepository.save(dictItem);
   }
 
   /**
    * 添加（批量）
    */
   async insertBatch(createDictItemDto: CreateDictItemDto[], curUser): Promise<CreateDictItemDto[]> {
-    return await this.dictItemRepository.save(createDictItemDto);
+    let dictItems = [];
+
+    createDictItemDto.forEach(item => {
+      let dictItem = new DictItem();
+      dictItem = Utils.dto2entity(item, dictItem);
+      dictItem.createBy = curUser.id;
+      dictItems.push(dictItem);
+    });
+
+    return await this.dictItemRepository.save(dictItems);
   }
 
   /**
@@ -103,8 +116,8 @@ export class DictItemService {
   /**
    * 获取列表
    */
-  async selectDictItemById(baseFindByIdDto: BaseFindByIdDto): Promise<DictItem[]> {
-    let {  id } = baseFindByIdDto;
+  async selectByDictId(baseFindByIdDto: BaseFindByIdDto): Promise<DictItem[]> {
+    let { id } = baseFindByIdDto;
 
     let queryConditionList = [];
 
@@ -123,5 +136,16 @@ export class DictItemService {
         'createTime': 'DESC',
       })
       .getMany();
+  }
+
+  /**
+   * 删除（字典 id）
+   */
+  async deleteByDictId(id: string): Promise<void> {
+    await this.dictItemRepository.createQueryBuilder()
+      .delete()
+      .from(DictItem)
+      .where('dictId = :id', { id: id })
+      .execute();
   }
 }

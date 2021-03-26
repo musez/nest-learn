@@ -16,6 +16,7 @@ export class DictService {
   constructor(
     @InjectRepository(Dict)
     private readonly dictRepository: Repository<Dict>,
+    private readonly dictItemService: DictItemService,
   ) {
   }
 
@@ -48,7 +49,7 @@ export class DictService {
       .where(queryCondition, {
         dictName: `%${dictName}%`,
       })
-      .orderBy('createTime', 'ASC')
+      .orderBy('createTime', 'DESC')
       .getMany();
   }
 
@@ -75,7 +76,7 @@ export class DictService {
       })
       .skip(offset)
       .take(limit)
-      .orderBy('createTime', 'ASC')
+      .orderBy('createTime', 'DESC')
       .getManyAndCount();
 
     return {
@@ -91,8 +92,7 @@ export class DictService {
    */
   async selectById(baseFindByIdDto: BaseFindByIdDto): Promise<Dict> {
     let { id } = baseFindByIdDto;
-    return await this.dictRepository.findOne(id, {
-    });
+    return await this.dictRepository.findOne(id, {});
   }
 
   /**
@@ -116,7 +116,6 @@ export class DictService {
     let dict = new Dict();
     dict = Utils.dto2entity(updateDictDto, dict);
     dict.updateBy = curUser.id;
-
     let result = await this.dictRepository.update(id, updateDictDto);
 
     return result;

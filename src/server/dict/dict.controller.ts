@@ -34,6 +34,11 @@ export class DictController {
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '添加' })
   async create(@CurUser() curUser, @Body() createDictDto: CreateDictDto) {
+    let { dictItems } = createDictDto;
+    if (dictItems && dictItems.length > 0) {
+      await this.dictItemService.insertBatch(dictItems, curUser);
+    }
+    delete createDictDto.dictItems;
     return await this.dictService.insert(createDictDto, curUser);
   }
 
@@ -51,21 +56,6 @@ export class DictController {
     return await this.dictService.selectListPage(limitDictDto);
   }
 
-  // @Get('findDictItemList')
-  // @UseGuards(JwtAuthGuard)
-  // @ApiOperation({ summary: '获取列表（字典项）' })
-  // async findDictItemList(): Promise<DictItem[]> {
-  //   // return await this.dictService.selectDictItemList();
-  //   return [];
-  // }
-
-  // @Get('findDictItemListPage')
-  // @UseGuards(JwtAuthGuard)
-  // @ApiOperation({ summary: '获取列表（字典项）（分页）' })
-  // async findDictItemListPage(@Query() basePageDto: BasePageDto): Promise<any> {
-  //   return await this.dictService.selectDictItemListPage(basePageDto);
-  // }
-
   @Get('findById')
   @ApiOperation({ summary: '获取详情（主键 id）' })
   @UseGuards(JwtAuthGuard)
@@ -77,13 +67,18 @@ export class DictController {
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '修改' })
   async update(@CurUser() curUser, @Body() updateDictDto: UpdateDictDto): Promise<any> {
-    let { id } = updateDictDto;
+    let { id, dictItems } = updateDictDto;
     let isExistId = await this.dictService.isExistId(id);
 
     if (!isExistId) {
       throw new BadRequestException(`数据 id：${id} 不存在！`);
     }
 
+    if (dictItems && dictItems.length > 0) {
+      await this.dictItemService.deleteByDictId(id);
+      await this.dictItemService.insertBatch(dictItems, curUser);
+    }
+    delete updateDictDto.dictItems;
     return this.dictService.update(updateDictDto, curUser);
   }
 
@@ -105,6 +100,6 @@ export class DictController {
   @ApiOperation({ summary: '获取字典详情（主键 id）' })
   @UseGuards(JwtAuthGuard)
   async findDictItemById(@Query() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
-    return await this.dictItemService.selectDictItemById(baseFindByIdDto);
+    return await this.dictItemService.selectByDictId(baseFindByIdDto);
   }
 }

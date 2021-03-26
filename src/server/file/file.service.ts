@@ -6,6 +6,7 @@ import { File } from './entities/file.entity';
 import { BaseFindByIdDto, BasePageDto } from '../base.dto';
 import { Utils } from '../../utils';
 import { LimitArticleDto } from '../article/dto/limit-article.dto';
+import { LimitFileDto } from './dto/limit-file.dto';
 
 @Injectable()
 export class FileService {
@@ -33,22 +34,28 @@ export class FileService {
   /**
    * 获取列表（分页）
    */
-  async selectListPage(basePageDto: BasePageDto): Promise<any> {
-    let { page, limit } = basePageDto;
+  async selectListPage(limitFileDto: LimitFileDto): Promise<any> {
+    let { page, limit, originalName } = limitFileDto;
     page = page ? page : 1;
     limit = limit ? limit : 10;
     let offset = (page - 1) * limit;
 
     let queryConditionList = [];
 
+    if (!Utils.isBlank(originalName)) {
+      queryConditionList.push('originalName LIKE :originalName');
+    }
+
     let queryCondition = queryConditionList.join(' AND ');
 
     let res = await this.fileRepository.createQueryBuilder()
-      .where(queryCondition, {})
+      .where(queryCondition, {
+        originalName: `%${originalName}%`,
+      })
       .skip(offset)
       .take(limit)
       .orderBy({
-        'createTime': 'ASC',
+        'createTime': 'DESC',
       })
       .getManyAndCount();
 

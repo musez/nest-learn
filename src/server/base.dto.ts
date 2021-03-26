@@ -1,14 +1,16 @@
-import { IsDefined, IsNotEmpty, IsString, IsInt, IsEmail, IsUUID } from 'class-validator';
+import { IsDefined, IsOptional, IsNotEmpty, IsString, IsInt, IsEmail, IsUUID } from 'class-validator';
 import { Transform } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class BasePageDto {
   @ApiPropertyOptional({ description: '当前页数', example: 1 })
+  @IsOptional()
   @Transform(page => Number.parseInt(page))
   @IsInt({ message: '当前页数必须为数字' })
   readonly page?: number;
 
   @ApiPropertyOptional({ description: '每页条数', example: 10 })
+  @IsOptional()
   @Transform(limit => Number.parseInt(limit))
   @IsInt({ message: '每页条数必须为数字' })
   readonly limit?: number;

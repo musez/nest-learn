@@ -1,4 +1,4 @@
-import { IsDefined, IsNotEmpty, IsString, IsInt, MaxLength, IsUUID } from 'class-validator';
+import { IsDefined, IsOptional, IsNotEmpty, IsString, IsInt, MaxLength, IsUUID } from 'class-validator';
 import { Transform } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { BaseConstants } from '../../../constants/constants';
@@ -32,6 +32,7 @@ export class BasePermissionDto {
   readonly code: string;
 
   @ApiPropertyOptional({ description: '权限路由 SORT', example: 0 })
+  @IsOptional()
   @Transform(sort => Number.parseInt(sort))
   @IsInt({ message: '权限路由 SORT 必须为数字！' })
   readonly sort?: number;
@@ -40,6 +41,7 @@ export class BasePermissionDto {
   readonly routerComponent?: string;
 
   @ApiPropertyOptional({ description: '权限路由 HIDDEN（0：不隐藏；1：隐藏；）', example: 0 })
+  @IsOptional()
   @Transform(routerHidden => Number.parseInt(routerHidden))
   @IsInt({ message: '权限路由 HIDDEN 必须为数字！' })
   readonly routerHidden?: number;
@@ -58,6 +60,7 @@ export class BasePermissionDto {
   readonly status?: number;
 
   @ApiPropertyOptional({ description: '描述', example: null })
+  @IsOptional()
   @MaxLength(BaseConstants.DESCRIPTION_MAX_LENGTH, { message: '描述不能大于 $constraint1 位！' })
   readonly description?: string;
 }

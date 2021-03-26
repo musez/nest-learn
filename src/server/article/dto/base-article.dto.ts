@@ -1,4 +1,4 @@
-import { IsDefined, IsNotEmpty, IsString, IsInt, MaxLength, IsUUID } from 'class-validator';
+import { IsDefined, IsOptional, IsNotEmpty, IsString, IsInt, MaxLength, IsUUID } from 'class-validator';
 import { Transform } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { BaseConstants } from '../../../constants/constants';
@@ -17,18 +17,22 @@ export class BaseArticleDto {
   readonly title: string;
 
   @ApiPropertyOptional({ description: '摘要', example: null })
+  @IsOptional()
   @MaxLength(255, { message: '摘要不能大于 255 位！' })
   readonly summary?: string;
 
   @ApiPropertyOptional({ description: '作者', example: null })
+  @IsOptional()
   @MaxLength(50, { message: '作者不能大于 50 位！' })
   readonly author?: string;
 
   @ApiPropertyOptional({ description: '来源', example: null })
+  @IsOptional()
   @MaxLength(50, { message: '来源不能大于 50 位！' })
   readonly source?: string;
 
   @ApiPropertyOptional({ description: '关键字（多个使用逗号“，”分隔）', example: null })
+  @IsOptional()
   @MaxLength(100, { message: '关键字不能大于 100 位！' })
   readonly keywords?: string;
 
@@ -40,22 +44,27 @@ export class BaseArticleDto {
   readonly type: number;
 
   @ApiPropertyOptional({ description: '缩略图', example: null })
+  @IsOptional()
   @MaxLength(255, { message: '缩略图不能大于 255 位！' })
   readonly thumbId?: string;
 
   @ApiPropertyOptional({ description: '附件', example: null })
-  @MaxLength(255, { message: '附件不能大于 255 位！' })
+  @IsOptional()
+  // @MaxLength(255, { message: '附件不能大于 255 位！' })
   readonly fileId?: string;
 
   @ApiPropertyOptional({ description: '链接地址' })
-  @MaxLength(255, { message: '链接地址不能大于 255 位！' })
+  @IsOptional()
+  // @MaxLength(255, { message: '链接地址不能大于 255 位！' })
   readonly contentUrl?: string;
 
   @ApiPropertyOptional({ description: '媒体地址', example: null })
-  @MaxLength(255, { message: '媒体地址不能大于 255 位！' })
+  @IsOptional()
+  // @MaxLength(255, { message: '媒体地址不能大于 255 位！' })
   readonly mediaId?: string;
 
   @ApiPropertyOptional({ description: '权重', default: 0 })
+  @IsOptional()
   @Transform(weight => Number.parseInt(weight))
   @IsInt({ message: '权重为数字！' })
   readonly weight?: number;
@@ -67,31 +76,37 @@ export class BaseArticleDto {
   readonly publicTime?: Date;
 
   @ApiPropertyOptional({ description: '浏览量', example: 0 })
+  @IsOptional()
   @Transform(browseCount => Number.parseInt(browseCount))
   @IsInt({ message: '浏览量为数字！' })
   readonly browseCount?: number;
 
   @ApiPropertyOptional({ description: '点赞量', example: 0 })
+  @IsOptional()
   @Transform(linkCount => Number.parseInt(linkCount))
   @IsInt({ message: '点赞量为数字！' })
   readonly linkCount?: number;
 
   @ApiPropertyOptional({ description: '收藏量', example: 0 })
+  @IsOptional()
   @Transform(collectCount => Number.parseInt(collectCount))
   @IsInt({ message: '收藏量为数字！' })
   readonly collectCount?: number;
 
   @ApiPropertyOptional({ description: '分享量', example: 0 })
+  @IsOptional()
   @Transform(shareCount => Number.parseInt(shareCount))
   @IsInt({ message: '分享量为数字！' })
   readonly shareCount?: number;
 
   @ApiPropertyOptional({ description: '允许评论', example: 0 })
+  @IsOptional()
   @Transform(isComment => Number.parseInt(isComment))
   @IsInt({ message: '评论量为数字！' })
   readonly isComment?: number;
 
   @ApiPropertyOptional({ description: '评论量', example: 0 })
+  @IsOptional()
   @Transform(commentCount => Number.parseInt(commentCount))
   @IsInt({ message: '允许评论为数字！' })
   readonly commentCount?: number;
@@ -104,6 +119,7 @@ export class BaseArticleDto {
   readonly status?: number;
 
   @ApiPropertyOptional({ description: '描述', example: null })
+  @IsOptional()
   @MaxLength(BaseConstants.DESCRIPTION_MAX_LENGTH, { message: '描述不能大于 $constraint1 位！' })
   readonly description?: string;
 }

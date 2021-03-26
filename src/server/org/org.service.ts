@@ -66,7 +66,7 @@ export class OrgService {
         parentIds: parentIds,
         name: `%${name}%`,
       })
-      .orderBy('createTime', 'ASC')
+      .orderBy('createTime', 'DESC')
       .getRawMany();
     return res;
   }
@@ -99,7 +99,7 @@ export class OrgService {
       })
       .skip(offset)
       .take(limit)
-      .orderBy('org.createTime', 'ASC')
+      .orderBy('org.createTime', 'DESC')
       .getManyAndCount();
 
     return {

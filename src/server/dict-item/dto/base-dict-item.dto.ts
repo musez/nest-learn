@@ -1,4 +1,14 @@
-import { IsDefined, IsNotEmpty, IsString, IsInt, IsEmail, MinLength, MaxLength, IsUUID } from 'class-validator';
+import {
+  IsDefined,
+  IsOptional,
+  IsNotEmpty,
+  IsString,
+  IsInt,
+  IsEmail,
+  MinLength,
+  MaxLength,
+  IsUUID,
+} from 'class-validator';
 import { Transform } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
@@ -29,6 +39,7 @@ export class BaseDictItemDto {
   readonly defaultValue?: number;
 
   @ApiPropertyOptional({ description: '排序', example: 0 })
+  @IsOptional()
   @Transform(sort => Number.parseInt(sort))
   @IsInt({ message: '排序必须为数字！' })
   readonly sort?: number;

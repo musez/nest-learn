@@ -109,7 +109,7 @@ export class UserService {
         mobile: mobile,
         email: email,
       })
-      .orderBy('user.createTime', 'ASC')
+      .orderBy('user.createTime', 'DESC')
       .getMany();
   }
 
@@ -151,7 +151,7 @@ export class UserService {
       })
       .skip(offset)
       .take(limit)
-      .orderBy('user.createTime', 'ASC')
+      .orderBy('user.createTime', 'DESC')
       .getManyAndCount();
 
     return {

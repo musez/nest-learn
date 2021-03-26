@@ -52,7 +52,7 @@ export class ArticleService {
         type: type,
         status: status,
       })
-      .orderBy('createTime', 'ASC')
+      .orderBy('createTime', 'DESC')
       .getMany();
   }
 
@@ -89,7 +89,7 @@ export class ArticleService {
       })
       .skip(offset)
       .take(limit)
-      .orderBy('createTime', 'ASC')
+      .orderBy('createTime', 'DESC')
       .getManyAndCount();
 
     return {

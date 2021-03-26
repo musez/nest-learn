@@ -49,7 +49,7 @@ export class GroupService {
       .where(queryCondition, {
         name: `%${name}%`,
       })
-      .orderBy('createTime', 'ASC')
+      .orderBy('createTime', 'DESC')
       .getMany();
   }
 
@@ -76,7 +76,7 @@ export class GroupService {
       })
       .skip(offset)
       .take(limit)
-      .orderBy('createTime', 'ASC')
+      .orderBy('createTime', 'DESC')
       .getManyAndCount();
 
     return {

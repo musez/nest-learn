@@ -1,4 +1,4 @@
-import { IsDefined, IsNotEmpty, IsString, IsInt, IsEmail, MinLength, MaxLength, IsUUID } from 'class-validator';
+import { IsDefined,IsOptional, IsNotEmpty, IsString, IsInt, IsEmail, MinLength, MaxLength, IsUUID } from 'class-validator';
 import { Transform } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { BaseConstants } from '../../../constants/constants';
@@ -22,6 +22,7 @@ export class BaseDictDto {
   readonly dictCode: string;
 
   @ApiPropertyOptional({ description: '字典类型（0：string；1：number；）', example: 0 })
+  @IsOptional()
   @Transform(type => Number.parseInt(type))
   @IsInt({ message: '字典类型为数字！' })
   readonly type?: number;
@@ -34,6 +35,7 @@ export class BaseDictDto {
   readonly status?: number;
 
   @ApiPropertyOptional({ description: '描述', example: null })
+  @IsOptional()
   @MaxLength(BaseConstants.DESCRIPTION_MAX_LENGTH, { message: '描述不能大于 $constraint1 位！' })
   readonly description?: string;
 }
