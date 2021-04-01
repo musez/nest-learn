@@ -19,6 +19,7 @@ import { UserRoleService } from '../user-role/user-role.service';
 import { UserinfoService } from '../userinfo/userinfo.service';
 import { SearchUserDto } from './dto/search-user.dto';
 import { LimitUserDto } from './dto/limit-user.dto';
+import { CryptoUtil } from '../../utils/crypto.util';
 
 @Injectable()
 export class UserService {
@@ -28,15 +29,22 @@ export class UserService {
     private readonly userinfoService: UserinfoService,
     private readonly userGroupService: UserGroupService,
     private readonly userRoleService: UserRoleService,
+    private readonly cryptoUtil: CryptoUtil,
   ) {
   }
 
+  /**
+   * 获取详情（name）
+   */
   async selectByName(userName: string): Promise<User | undefined> {
     const user = this.userRepository.findOne({ userName: userName });
     if (user) return user;
     else return null;
   }
 
+  /**
+   * 修改登录次数
+   */
   async incrementLoginCount(baseFindByIdDto: BaseFindByIdDto): Promise<any> {
     let userEntity = await this.userRepository.findOne(baseFindByIdDto, {
       select: ['id'],
@@ -49,9 +57,15 @@ export class UserService {
    * 添加
    */
   async insert(createUserDto: CreateUserDto, curUser?): Promise<CreateUserDto> {
+    let { userPwd } = createUserDto;
+
     let user = new User();
     user = Utils.dto2entity(createUserDto, user);
-    user.userPwd = crypto.createHmac('sha256', '888888').digest('hex');
+    if (Utils.isBlank(userPwd)) {
+      user.userPwd = this.cryptoUtil.encryptPassword('888888');
+    } else {
+      user.userPwd = this.cryptoUtil.encryptPassword(userPwd);
+    }
     user.createBy = curUser.id;
 
     let userinfo = new Userinfo();
@@ -270,7 +284,7 @@ export class UserService {
       createUserGroupDto.groupId = groups[i];
       userGroupList.push(createUserGroupDto);
     }
-    await this.userGroupService.deleteByUserId(id)
+    await this.userGroupService.deleteByUserId(id);
     await this.userGroupService.insertBatch(userGroupList);
   }
 
@@ -295,7 +309,7 @@ export class UserService {
       userGroupList.push(createUserRoleDto);
     }
 
-    await this.userRoleService.deleteByUserId(id)
+    await this.userRoleService.deleteByUserId(id);
     await this.userRoleService.insertBatch(userGroupList);
   }
 
@@ -307,7 +321,7 @@ export class UserService {
   }
 
   /**
-   * 获取权限
+   * 获取用户、用户组、角色、权限
    */
   async selectPermissionsByUserId(baseFindByIdDto: BaseFindByIdDto): Promise<any> {
     let userEntity = await this.selectById(baseFindByIdDto);
@@ -360,12 +374,42 @@ export class UserService {
         where u.id =  '${baseFindByIdDto}'
         `);
 
-
     let res = Utils.assign(userEntity, {
       permissions: Utils.uniqBy(Utils.concat(permissions1, permissions2), 'id'),
       roles: Utils.uniqBy(Utils.concat(role1, role2), 'id'),
       groups: group1,
     });
+
+    return res;
+  }
+
+  /**
+   * 获取权限
+   */
+  async selectAuthByUserId(baseFindByIdDto: BaseFindByIdDto): Promise<any> {
+    let permissions1 = await this.userRepository.query(`
+        select p.*
+        from cms_nest.sys_permission p
+        inner join cms_nest.sys_role_permission rp on p.id = rp.permissionId
+        inner join cms_nest.sys_role r on rp.roleId = r.id
+        inner join cms_nest.sys_group_role gr on r.id = gr.roleId
+        inner join cms_nest.sys_group g on gr.groupId = g.id
+        inner join cms_nest.sys_user_group ug on g.id = ug.groupId
+        inner join cms_nest.sys_user u on u.id = ug.userId
+        where u.id = '${baseFindByIdDto}'
+        `);
+
+    let permissions2 = await this.userRepository.query(`
+        select p.*
+        from cms_nest.sys_permission p
+        inner join cms_nest.sys_role_permission rp on p.id = rp.permissionId
+        inner join cms_nest.sys_role r on rp.roleId = r.id
+        inner join cms_nest.sys_user_role ur on r.id = ur.roleId
+        inner join cms_nest.sys_user u on u.id = ur.userId
+        where u.id = '${baseFindByIdDto}'
+        `);
+
+    let res = Utils.uniqBy(Utils.concat(permissions1, permissions2), 'id');
 
     return res;
   }

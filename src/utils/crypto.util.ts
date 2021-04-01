@@ -20,6 +20,8 @@ export class CryptoUtil {
    */
   checkPassword(password: string, encryptedPassword): boolean {
     const currentPass = this.encryptPassword(password);
+    console.log('检查登录密码是否正确:', password, currentPass, encryptedPassword);
+
     return currentPass === encryptedPassword;
   }
 }

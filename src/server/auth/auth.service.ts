@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as crypto from 'crypto';
+import { CryptoUtil } from './../../utils/crypto.util';
 import { UserService } from '../user/user.service';
 import { CaptchaService } from '../captcha/captcha.service';
 
@@ -10,6 +11,7 @@ export class AuthService {
     private readonly userService: UserService,
     private readonly jwtService: JwtService,
     private readonly captchaService: CaptchaService,
+    private readonly cryptoUtil: CryptoUtil,
   ) {
   }
 
@@ -21,8 +23,7 @@ export class AuthService {
   async validateUser(userName: string, userPwd: string): Promise<any> {
     const user = await this.userService.selectByName(userName);
     // 注：实际中的密码处理应通过加密措施
-    let userPwdCrypto = crypto.createHmac('sha256', userPwd).digest('hex');
-    if (user && user.userPwd === userPwdCrypto) {
+    if (user && this.cryptoUtil.checkPassword(userPwd, user.userPwd)) {
       const { userPwd, ...result } = user;
       return result;
     } else {

@@ -35,7 +35,7 @@ export class BaseUserDto {
   @IsNotEmpty({ message: '用户密码不能为空！' })
   @MinLength(UserConstants.PASSWORD_MIN_LENGTH, { message: '用户密码不能小于 $constraint1 位！' })
   @MaxLength(UserConstants.PASSWORD_MAX_LENGTH, { message: '用户密码不能大于 $constraint1 位！' })
-  readonly userPwd: string;
+  readonly userPwd?: string;
 
   @ApiProperty({ description: '用户类型（0：普通用户；1：管理员；2：超级管理员；）', example: 0 })
   @IsDefined({ message: '用户类型不能为空！' })

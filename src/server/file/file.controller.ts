@@ -30,8 +30,6 @@ import { File } from './entities/file.entity';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { BaseFindByIdDto, BasePageDto } from '../base.dto';
 import { CurUser } from '../../common/decorators/user.decorator';
-import { LimitArticleDto } from '../article/dto/limit-article.dto';
-import { CreateCaptchaDto } from '../captcha/dto/create-captcha.dto';
 
 @Controller('file')
 @ApiTags('文件')
@@ -88,6 +86,7 @@ export class FileController {
     fileEntity.path = file.path;
     fileEntity.size = file.size;
     fileEntity.fileUrl = `${file.destination}/${file.filename}`;
+    fileEntity.createBy = curUser.id;
 
     return this.fileService.insert(fileEntity, curUser);
   }
@@ -150,6 +149,7 @@ export class FileController {
       fileEntity.path = file.path;
       fileEntity.size = file.size;
       fileEntity.fileUrl = `${file.destination}/${file.filename}`;
+      fileEntity.createBy = curUser.id;
 
       filesEntity.push(fileEntity);
     }
@@ -183,7 +183,7 @@ export class FileController {
     // 格式必须为 binary 否则会出错
     let content = fs.readFileSync(file.fileUrl, 'binary');
     res.writeHead(200, 'Ok');
-    res.write(content, 'binary'); //格式必须为 binary，否则会出错
+    res.write(content, 'binary'); // 格式必须为 binary，否则会出错
     res.end();
   }
 

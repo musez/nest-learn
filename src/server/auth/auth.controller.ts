@@ -62,7 +62,12 @@ export class AuthController {
   @Post('register')
   @ApiOperation({ summary: '注册' })
   async register(@Body() registerUserDto: RegisterUserDto): Promise<CreateUserDto> {
-    let { userPwd, userPwdConfirm } = registerUserDto;
+    let { userName, userPwd, userPwdConfirm } = registerUserDto;
+
+    let isExistUserName = await this.userService.isExistUserName(userName);
+    if (isExistUserName) {
+      throw new BadRequestException(`用户名：${userName} 已存在！`);
+    }
 
     if (userPwd !== userPwdConfirm) {
       throw new BadRequestException('密码不一致！');
@@ -84,5 +89,20 @@ export class AuthController {
     }
 
     return await this.userService.selectPermissionsByUserId(id);
+  }
+
+  @Get('getAuthByToken')
+  @UseGuards(JwtAuthGuard)
+  @ApiBasicAuth()
+  @ApiOperation({ summary: '根据 token 获取用户、用户组、角色、权限' })
+  async getAuthByToken(@CurUser() curUser): Promise<any> {
+    let { id } = curUser;
+
+    let isExistId = await this.userService.isExistId(id);
+    if (!isExistId) {
+      throw new BadRequestException(`数据 id：${id} 不存在！`);
+    }
+
+    return await this.userService.selectAuthByUserId(id);
   }
 }
