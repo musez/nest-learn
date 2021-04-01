@@ -15,37 +15,40 @@ import { BaseFindByIdDto, BaseFindByPIdDto, BasePageDto } from '../base.dto';
 import { LimitPermissionDto } from './dto/limit-permission.dto';
 import { CurUser } from '../../common/decorators/user.decorator';
 import { SearchPermissionDto } from './dto/search-permission.dto';
+import { RolesGuard } from '../../common/guards/roles.guard';
+import { Permissions } from '../../common/decorators/permissions.decorator';
 
 @Controller('permission')
 @ApiTags('权限')
 @ApiBasicAuth()
+@UseGuards(JwtAuthGuard, RolesGuard)
 export class PermissionController {
   constructor(private readonly permissionService: PermissionService) {
   }
 
   @Post('add')
-  @UseGuards(JwtAuthGuard)
+  @Permissions('account:permission:add')
   @ApiOperation({ summary: '添加' })
   async add(@CurUser() curUser, @Body() createPermissionDto: CreatePermissionDto) {
     return this.permissionService.insert(createPermissionDto, curUser);
   }
 
   @Get('findList')
-  @UseGuards(JwtAuthGuard)
+  @Permissions('account:permission:findList')
   @ApiOperation({ summary: '获取列表' })
   async findList(@Query() searchPermissionDto: SearchPermissionDto) {
     return this.permissionService.selectList(searchPermissionDto);
   }
 
   @Get('findListPage')
-  @UseGuards(JwtAuthGuard)
+  @Permissions('account:permission:findListPage')
   @ApiOperation({ summary: '获取列表（分页）' })
   async findListPage(@Query() limitPermissionDto: LimitPermissionDto) {
     return this.permissionService.selectListPage(limitPermissionDto);
   }
 
   @Get('findTree')
-  @UseGuards(JwtAuthGuard)
+  @Permissions('account:permission:findTree')
   @ApiOperation({ summary: '获取树' })
   @ApiQuery({ name: 'parentId', description: '父 id', required: false })
   findTree(@Query() baseFindByPIdDto: BaseFindByPIdDto) {
@@ -53,14 +56,14 @@ export class PermissionController {
   }
 
   @Get('findById')
+  @Permissions('account:permission:findById')
   @ApiOperation({ summary: '获取详情（主键 id）' })
-  @UseGuards(JwtAuthGuard)
   async findById(@Query() baseFindByIdDto: BaseFindByIdDto): Promise<Permission> {
     return await this.permissionService.selectById(baseFindByIdDto);
   }
 
   @Post('update')
-  @UseGuards(JwtAuthGuard)
+  @Permissions('account:permission:update')
   @ApiOperation({ summary: '修改' })
   async update(@CurUser() curUser, @Body() updatePermissionDto: UpdatePermissionDto): Promise<any> {
     let { id } = updatePermissionDto;
@@ -73,7 +76,7 @@ export class PermissionController {
   }
 
   @Post('delete')
-  @UseGuards(JwtAuthGuard)
+  @Permissions('account:permission:delete')
   @ApiOperation({ summary: '删除' })
   async delete(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
     let { id } = baseFindByIdDto;

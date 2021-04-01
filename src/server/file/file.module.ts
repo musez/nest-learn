@@ -6,9 +6,11 @@ import dayjs = require('dayjs');
 import { FileService } from './file.service';
 import { FileController } from './file.controller';
 import { File } from './entities/file.entity';
+import { UserModule } from '../user/user.module';
 
 @Module({
   imports: [
+    UserModule,
     TypeOrmModule.forFeature([File]),
     MulterModule.register({
       storage: diskStorage({

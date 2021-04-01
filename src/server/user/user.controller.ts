@@ -28,10 +28,13 @@ import { BindUserGroupDto } from './dto/bind-user-group.dto';
 import { BindUserRoleDto } from '../user-role/dto/bind-user-role.dto';
 import { CurUser } from '../../common/decorators/user.decorator';
 import { SearchUserDto } from './dto/search-user.dto';
+import { Permissions } from '../../common/decorators/permissions.decorator';
+import { RolesGuard } from '../../common/guards/roles.guard';
 
 @ApiTags('用户')
 @Controller('user')
 @ApiBasicAuth()
+@UseGuards(JwtAuthGuard, RolesGuard)
 export class UserController {
   constructor(
     private readonly userService: UserService,
@@ -39,7 +42,6 @@ export class UserController {
   }
 
   @Post('add')
-  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '添加' })
   async add(@CurUser() curUser, @Body() createUserDto: CreateUserDto): Promise<CreateUserDto> {
     let { userName } = createUserDto;
@@ -53,31 +55,28 @@ export class UserController {
   }
 
   @Get('findList')
-  @UseGuards(JwtAuthGuard)
-  @UseInterceptors(ClassSerializerInterceptor)
+  @Permissions('account:user:findList')
   @ApiOperation({ summary: '获取列表' })
   async findList(@Query() searchUserDto: SearchUserDto): Promise<User[]> {
     return await this.userService.selectList(searchUserDto);
   }
 
   @Get('findListPage')
-  @UseGuards(JwtAuthGuard)
-  @UseInterceptors(ClassSerializerInterceptor)
+  @Permissions('account:user:findListPage')
   @ApiOperation({ summary: '获取列表（分页）' })
   async findListPage(@Query() limitUserDto: LimitUserDto): Promise<any> {
     return await this.userService.selectListPage(limitUserDto);
   }
 
   @Get('findById')
-  @UseInterceptors(ClassSerializerInterceptor)
+  @Permissions('account:user:findById')
   @ApiOperation({ summary: '获取详情（主键 id）' })
-  @UseGuards(JwtAuthGuard)
   async findById(@Query() baseFindByIdDto: BaseFindByIdDto): Promise<User> {
     return await this.userService.selectById(baseFindByIdDto);
   }
 
   @Post('update')
-  @UseGuards(JwtAuthGuard)
+  @Permissions('account:user:update')
   @ApiOperation({ summary: '修改' })
   async update(@CurUser() curUser, @Body() updateUserDto: UpdateUserDto): Promise<any> {
     let { id } = updateUserDto;
@@ -91,14 +90,14 @@ export class UserController {
   }
 
   @Post('updateStatus')
-  @UseGuards(JwtAuthGuard)
+  @Permissions('account:user:updateStatus')
   @ApiOperation({ summary: '修改状态' })
   async updateStatus(@CurUser() curUser, @Body() baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto): Promise<any> {
     return this.userService.updateStatus(baseModifyStatusByIdsDto, curUser);
   }
 
   @Post('delete')
-  @UseGuards(JwtAuthGuard)
+  @Permissions('account:user:delete')
   @ApiOperation({ summary: '删除' })
   async delete(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
     let { id } = baseFindByIdDto;
@@ -112,7 +111,7 @@ export class UserController {
   }
 
   @Post('bindGroups')
-  @UseGuards(JwtAuthGuard)
+  @Permissions('account:user:bindGroups')
   @ApiOperation({ summary: '绑定用户组' })
   async bindGroups(@CurUser() curUser, @Body() bindUserGroupDto: BindUserGroupDto): Promise<any> {
     let { id } = bindUserGroupDto;
@@ -125,7 +124,7 @@ export class UserController {
   }
 
   @Get('getGroups')
-  @UseGuards(JwtAuthGuard)
+  @Permissions('account:user:getGroups')
   @ApiOperation({ summary: '获取用户组' })
   async findGroupsByUserId(@CurUser() curUser, @Query() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
     let { id } = baseFindByIdDto;
@@ -138,7 +137,7 @@ export class UserController {
   }
 
   @Post('bindRoles')
-  @UseGuards(JwtAuthGuard)
+  @Permissions('account:user:bindRoles')
   @ApiOperation({ summary: '绑定角色' })
   async bindRoles(@CurUser() curUser, @Body() bindUserRoleDto: BindUserRoleDto): Promise<any> {
     let { id } = bindUserRoleDto;
@@ -151,7 +150,7 @@ export class UserController {
   }
 
   @Get('getRoles')
-  @UseGuards(JwtAuthGuard)
+  @Permissions('account:user:getRoles')
   @ApiOperation({ summary: '获取角色' })
   async findRolesByUserId(@CurUser() curUser, @Query() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
     let { id } = baseFindByIdDto;

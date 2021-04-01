@@ -30,16 +30,19 @@ import { File } from './entities/file.entity';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { BaseFindByIdDto, BasePageDto } from '../base.dto';
 import { CurUser } from '../../common/decorators/user.decorator';
+import { Permissions } from '../../common/decorators/permissions.decorator';
+import { RolesGuard } from '../../common/guards/roles.guard';
 
 @Controller('file')
 @ApiTags('文件')
 @ApiBasicAuth()
+@UseGuards(JwtAuthGuard, RolesGuard)
 export class FileController {
   constructor(private readonly fileService: FileService) {
   }
 
   @Post('upload')
-  @UseGuards(JwtAuthGuard)
+  @Permissions('system:file:upload')
   @ApiOperation({ summary: '文件上传（单）' })
   @ApiConsumes('multipart/form-data')
   @ApiBody({
@@ -92,7 +95,7 @@ export class FileController {
   }
 
   @Post('uploads')
-  @UseGuards(JwtAuthGuard)
+  @Permissions('system:file:uploads')
   @ApiOperation({ summary: '文件上传（多）' })
   @ApiConsumes('multipart/form-data')
   @ApiBody({
@@ -158,14 +161,14 @@ export class FileController {
   }
 
   @Get('findListPage')
-  @UseGuards(JwtAuthGuard)
+  @Permissions('system:file:findListPage')
   @ApiOperation({ summary: '获取列表（分页）' })
   findListPage(@Query() basePageDto: BasePageDto) {
     return this.fileService.selectListPage(basePageDto);
   }
 
   @Get('findById')
-  @UseGuards(JwtAuthGuard)
+  @Permissions('system:file:findById')
   @ApiOperation({ summary: '获取文件（主键 id）' })
   @ApiQuery({ name: 'id', description: '主键 id', required: true })
   findById(@Query() baseFindByIdDto: BaseFindByIdDto) {
@@ -188,7 +191,7 @@ export class FileController {
   }
 
   @Get('findByExtId')
-  @UseGuards(JwtAuthGuard)
+  @Permissions('system:file:findByExtId')
   @ApiOperation({ summary: '获取文件（关联 extId）' })
   @ApiQuery({ name: 'extId', description: '关联 id', required: true })
   findByExtId(@Query('extId') extId: string) {
@@ -196,7 +199,7 @@ export class FileController {
   }
 
   @Post('delete')
-  @UseGuards(JwtAuthGuard)
+  @Permissions('system:file:delete')
   @ApiOperation({ summary: '删除' })
   async delete(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
     let { id } = baseFindByIdDto;

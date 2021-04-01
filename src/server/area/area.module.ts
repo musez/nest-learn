@@ -3,10 +3,12 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AreaService } from './area.service';
 import { AreaController } from './area.controller';
 import { Area } from './entities/area.entity';
+import { UserModule } from '../user/user.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Area])],
+  imports: [UserModule, TypeOrmModule.forFeature([Area])],
   controllers: [AreaController],
-  providers: [AreaService]
+  providers: [AreaService],
 })
-export class AreaModule {}
+export class AreaModule {
+}

@@ -19,10 +19,13 @@ import { CurUser } from '../../common/decorators/user.decorator';
 import { SearchDictDto } from './dto/search-dict.dto';
 import { LimitDictDto } from './dto/limit-dict.dto';
 import { DictItemService } from '../dict-item/dict-item.service';
+import { Permissions } from '../../common/decorators/permissions.decorator';
+import { RolesGuard } from '../../common/guards/roles.guard';
 
 @ApiTags('字典')
 @Controller('dict')
 @ApiBasicAuth()
+@UseGuards(JwtAuthGuard, RolesGuard)
 export class DictController {
   constructor(
     private readonly dictService: DictService,
@@ -31,7 +34,7 @@ export class DictController {
   }
 
   @Post('add')
-  @UseGuards(JwtAuthGuard)
+  @Permissions('system:dict:add')
   @ApiOperation({ summary: '添加' })
   async create(@CurUser() curUser, @Body() createDictDto: CreateDictDto) {
     let { dictItems } = createDictDto;
@@ -43,28 +46,28 @@ export class DictController {
   }
 
   @Get('findList')
-  @UseGuards(JwtAuthGuard)
+  @Permissions('system:dict:findList')
   @ApiOperation({ summary: '获取列表' })
   async findList(@Query() searchDictDto: SearchDictDto): Promise<Dict[]> {
     return await this.dictService.selectList(searchDictDto);
   }
 
   @Get('findListPage')
-  @UseGuards(JwtAuthGuard)
+  @Permissions('system:dict:findListPage')
   @ApiOperation({ summary: '获取列表（分页）' })
   async findListPage(@Query() limitDictDto: LimitDictDto): Promise<any> {
     return await this.dictService.selectListPage(limitDictDto);
   }
 
   @Get('findById')
+  @Permissions('system:dict:findById')
   @ApiOperation({ summary: '获取详情（主键 id）' })
-  @UseGuards(JwtAuthGuard)
   async findById(@Query() baseFindByIdDto: BaseFindByIdDto): Promise<Dict> {
     return await this.dictService.selectById(baseFindByIdDto);
   }
 
   @Post('update')
-  @UseGuards(JwtAuthGuard)
+  @Permissions('system:dict:update')
   @ApiOperation({ summary: '修改' })
   async update(@CurUser() curUser, @Body() updateDictDto: UpdateDictDto): Promise<any> {
     let { id, dictItems } = updateDictDto;
@@ -83,7 +86,7 @@ export class DictController {
   }
 
   @Post('delete')
-  @UseGuards(JwtAuthGuard)
+  @Permissions('system:dict:delete')
   @ApiOperation({ summary: '删除' })
   async delete(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
     let { id } = baseFindByIdDto;
@@ -97,8 +100,8 @@ export class DictController {
   }
 
   @Get('findDictItemById')
+  @Permissions('system:dict:findDictItemById')
   @ApiOperation({ summary: '获取字典详情（主键 id）' })
-  @UseGuards(JwtAuthGuard)
   async findDictItemById(@Query() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
     return await this.dictItemService.selectByDictId(baseFindByIdDto);
   }

@@ -29,37 +29,40 @@ import { ArticleCat } from './entities/article-cat.entity';
 import { LimitArticleCatDto } from './dto/limit-article-cat.dto';
 import { BaseArticleCatDto } from './dto/base-article-cat.dto';
 import { SearchArticleCatDto } from './dto/search-article-cat.dto';
+import { RolesGuard } from '../../common/guards/roles.guard';
+import { Permissions } from '../../common/decorators/permissions.decorator';
 
 @Controller('articleCat')
 @ApiTags('文章栏目')
 @ApiBasicAuth()
+@UseGuards(JwtAuthGuard, RolesGuard)
 export class ArticleCatController {
   constructor(private readonly articleCatService: ArticleCatService) {
   }
 
   @Post('add')
-  @UseGuards(JwtAuthGuard)
+  @Permissions('cms:articleCat:add')
   @ApiOperation({ summary: '添加' })
   async add(@CurUser() curUser, @Body() createArticleCatDto: CreateArticleCatDto) {
     return this.articleCatService.insert(createArticleCatDto, curUser);
   }
 
   @Get('findList')
-  @UseGuards(JwtAuthGuard)
+  @Permissions('cms:articleCat:findList')
   @ApiOperation({ summary: '获取列表' })
   async findList(@Query() searchArticleCatDto: SearchArticleCatDto): Promise<ArticleCat[]> {
     return await this.articleCatService.selectList(searchArticleCatDto);
   }
 
   @Get('findListPage')
-  @UseGuards(JwtAuthGuard)
+  @Permissions('cms:articleCat:findListPage')
   @ApiOperation({ summary: '获取列表（分页）' })
   async findListPage(@Query() limitArticleCatDto: LimitArticleCatDto): Promise<any> {
     return await this.articleCatService.selectListPage(limitArticleCatDto);
   }
 
   @Get('findTree')
-  @UseGuards(JwtAuthGuard)
+  @Permissions('cms:articleCat:findTree')
   @ApiOperation({ summary: '获取树' })
   @ApiQuery({ name: 'parentId', description: '父 id', required: false })
   findTree(@Query() baseFindByPIdDto: BaseFindByPIdDto) {
@@ -67,21 +70,21 @@ export class ArticleCatController {
   }
 
   @Get('findById')
+  @Permissions('cms:articleCat:findById')
   @ApiOperation({ summary: '获取详情（主键 id）' })
-  @UseGuards(JwtAuthGuard)
   async findById(@Query() baseFindByIdDto: BaseFindByIdDto): Promise<ArticleCat> {
     return await this.articleCatService.selectById(baseFindByIdDto);
   }
 
   @Post('update')
-  @UseGuards(JwtAuthGuard)
+  @Permissions('cms:articleCat:update')
   @ApiOperation({ summary: '修改' })
   async update(@CurUser() curUser, @Body() updateArticleCatDto: UpdateArticleCatDto): Promise<any> {
     return this.articleCatService.update(updateArticleCatDto, curUser);
   }
 
   @Post('delete')
-  @UseGuards(JwtAuthGuard)
+  @Permissions('cms:articleCat:delete')
   @ApiOperation({ summary: '删除' })
   async delete(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
     let { id } = baseFindByIdDto;

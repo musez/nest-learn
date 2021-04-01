@@ -13,44 +13,47 @@ import { LimitPostDto } from './dto/limit-post.dto';
 import { SearchPostDto } from './dto/search-post.dto';
 import { BaseFindByIdDto } from '../base.dto';
 import { SysPost } from './entities/post.entity';
+import { RolesGuard } from '../../common/guards/roles.guard';
+import { Permissions } from '../../common/decorators/permissions.decorator';
 
 @Controller('post')
 @ApiTags('岗位')
 @ApiBasicAuth()
+@UseGuards(JwtAuthGuard, RolesGuard)
 export class PostController {
   constructor(private readonly postService: PostService) {
   }
 
   @Post('add')
-  @UseGuards(JwtAuthGuard)
+  @Permissions('account:post:add')
   @ApiOperation({ summary: '添加' })
   async add(@CurUser() curUser, @Body() createPostDto: CreatePostDto) {
     return this.postService.insert(createPostDto, curUser);
   }
 
   @Get('findList')
-  @UseGuards(JwtAuthGuard)
+  @Permissions('account:post:findList')
   @ApiOperation({ summary: '获取列表' })
   async findList(@Query() searchPostDto: SearchPostDto) {
     return await this.postService.selectList(searchPostDto);
   }
 
   @Get('findListPage')
-  @UseGuards(JwtAuthGuard)
+  @Permissions('account:post:findListPage')
   @ApiOperation({ summary: '获取列表（分页）' })
   async findListPage(@Query() limitPostDto: LimitPostDto): Promise<any> {
     return await this.postService.selectListPage(limitPostDto);
   }
 
   @Get('findById')
+  @Permissions('account:post:findById')
   @ApiOperation({ summary: '获取详情（主键 id）' })
-  @UseGuards(JwtAuthGuard)
   async findById(@Query() baseFindByIdDto: BaseFindByIdDto): Promise<SysPost> {
     return await this.postService.selectById(baseFindByIdDto);
   }
 
   @Post('update')
-  @UseGuards(JwtAuthGuard)
+  @Permissions('account:post:update')
   @ApiOperation({ summary: '修改' })
   async update(@CurUser() curUser, @Body() updatePostDto: UpdatePostDto): Promise<any> {
     let { id } = updatePostDto;
@@ -63,7 +66,7 @@ export class PostController {
   }
 
   @Post('delete')
-  @UseGuards(JwtAuthGuard)
+  @Permissions('account:post:delete')
   @ApiOperation({ summary: '删除' })
   async delete(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
     let { id } = baseFindByIdDto;

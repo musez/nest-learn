@@ -25,50 +25,54 @@ import { SearchOrgDto } from './dto/search-org.dto';
 import { Org } from './entities/org.entity';
 import { LimitOrgDto } from './dto/limit-org.dto';
 import { BaseFindByIdDto, BaseFindByPIdDto } from '../base.dto';
+import { RolesGuard } from '../../common/guards/roles.guard';
+import { Permissions } from '../../common/decorators/permissions.decorator';
 
 @Controller('org')
 @ApiTags('组织机构')
 @ApiBasicAuth()
+@UseGuards(JwtAuthGuard, RolesGuard)
 export class OrgController {
   constructor(private readonly orgService: OrgService) {
   }
 
   @Post('add')
-  @UseGuards(JwtAuthGuard)
+  @Permissions('account:org:add')
   @ApiOperation({ summary: '添加' })
   async add(@CurUser() curUser, @Body() createOrgDto: CreateOrgDto) {
     return this.orgService.insert(createOrgDto, curUser);
   }
 
   @Get('findList')
-  @UseGuards(JwtAuthGuard)
+  @Permissions('account:org:findList')
   @ApiOperation({ summary: '获取列表' })
   async findList(@Query() searchOrgDto: SearchOrgDto): Promise<Org[]> {
     return await this.orgService.selectList(searchOrgDto);
   }
 
   @Get('findListPage')
-  @UseGuards(JwtAuthGuard)
+  @Permissions('account:org:findListPage')
   @ApiOperation({ summary: '获取列表（分页）' })
   async findListPage(@Query() limitOrgDto: LimitOrgDto): Promise<any> {
     return await this.orgService.selectListPage(limitOrgDto);
   }
 
   @Get('findTree')
+  @Permissions('account:org:findTree')
   @ApiOperation({ summary: '获取树' })
   async findTree(@Query() baseFindByPIdDto: BaseFindByPIdDto): Promise<any> {
     return this.orgService.selectTree(baseFindByPIdDto);
   }
 
   @Get('findById')
+  @Permissions('account:org:findById')
   @ApiOperation({ summary: '获取详情（主键 id）' })
-  @UseGuards(JwtAuthGuard)
   async findById(@Query() baseFindByIdDto: BaseFindByIdDto): Promise<Org> {
     return await this.orgService.selectById(baseFindByIdDto);
   }
 
   @Post('update')
-  @UseGuards(JwtAuthGuard)
+  @Permissions('account:org:update')
   @ApiOperation({ summary: '修改' })
   async update(@CurUser() curUser, @Body() updateOrgDto: UpdateOrgDto): Promise<any> {
     let { id } = updateOrgDto;
@@ -81,7 +85,7 @@ export class OrgController {
   }
 
   @Post('delete')
-  @UseGuards(JwtAuthGuard)
+  @Permissions('account:org:delete')
   @ApiOperation({ summary: '删除' })
   async delete(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
     let { id } = baseFindByIdDto;

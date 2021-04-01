@@ -4,9 +4,10 @@ import { DictService } from './dict.service';
 import { DictController } from './dict.controller';
 import { Dict } from './entities/dict.entity';
 import { DictItemModule } from '../dict-item/dict-item.module';
+import { UserModule } from '../user/user.module';
 
 @Module({
-  imports: [DictItemModule, TypeOrmModule.forFeature([Dict])],
+  imports: [UserModule, DictItemModule, TypeOrmModule.forFeature([Dict])],
   controllers: [DictController],
   providers: [DictService],
 })
