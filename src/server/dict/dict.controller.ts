@@ -14,7 +14,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { Dict } from './entities/dict.entity';
 import { User } from '../user/entities/user.entity';
 import { DictItem } from '../dict-item/entities/dict-item.entity';
-import { BaseFindByIdDto, BasePageDto } from '../base.dto';
+import { BaseFindByIdDto, BaseFindByIdsDto, BasePageDto } from '../base.dto';
 import { CurUser } from '../../common/decorators/user.decorator';
 import { SearchDictDto } from './dto/search-dict.dto';
 import { LimitDictDto } from './dto/limit-dict.dto';
@@ -97,6 +97,13 @@ export class DictController {
     }
 
     return await this.dictService.deleteById(baseFindByIdDto);
+  }
+
+  @Post('deleteBatch')
+  @Permissions('system:dict:deleteBatch')
+  @ApiOperation({ summary: '删除（批量）' })
+  async deleteBatch(@CurUser() curUser, @Body() baseFindByIdsDto: BaseFindByIdsDto): Promise<any> {
+    return await this.dictService.deleteByIds(baseFindByIdsDto);
   }
 
   @Get('findDictItemById')

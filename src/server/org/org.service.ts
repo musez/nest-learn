@@ -7,8 +7,9 @@ import { Org } from './entities/org.entity';
 import { Utils } from '../../utils';
 import { SearchOrgDto } from './dto/search-org.dto';
 import { LimitOrgDto } from './dto/limit-org.dto';
-import { BaseFindByIdDto, BaseFindByPIdDto } from '../base.dto';
+import { BaseFindByIdDto, BaseFindByIdsDto, BaseFindByPIdDto } from '../base.dto';
 import { Permission } from '../permission/entities/permission.entity';
+import { Group } from '../group/entities/group.entity';
 
 @Injectable()
 export class OrgService {
@@ -58,8 +59,8 @@ export class OrgService {
 
     let res = await this.orgRepository.createQueryBuilder('o')
       .select(['o.*'])
-      .addSelect(subQuery  =>
-        subQuery .select('COUNT(*)')
+      .addSelect(subQuery =>
+        subQuery.select('COUNT(*)')
           .from(Org, 'subO')
           .where('subO.parentId = o.id'), 'hasChildren')
       .where(queryCondition, {
@@ -221,6 +222,19 @@ export class OrgService {
       .delete()
       .from(Org)
       .where('id = :id', { id: id })
+      .execute();
+  }
+
+  /**
+   * 删除（批量）
+   */
+  async deleteByIds(baseFindByIdsDto: BaseFindByIdsDto): Promise<void> {
+    let { ids } = baseFindByIdsDto;
+
+    await this.orgRepository.createQueryBuilder()
+      .delete()
+      .from(Org)
+      .where('id in (:ids)', { ids: ids })
       .execute();
   }
 }

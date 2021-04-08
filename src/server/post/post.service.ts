@@ -6,7 +6,8 @@ import { UpdatePostDto } from './dto/update-post.dto';
 import { SysPost } from './entities/post.entity';
 import { Utils } from '../../utils';
 import { LimitPostDto } from './dto/limit-post.dto';
-import { BaseFindByIdDto } from '../base.dto';
+import { BaseFindByIdDto, BaseFindByIdsDto } from '../base.dto';
+import { Permission } from '../permission/entities/permission.entity';
 
 @Injectable()
 export class PostService {
@@ -142,6 +143,19 @@ export class PostService {
     await this.postRepository.createQueryBuilder().delete()
       .from(SysPost)
       .where('id = :id', { id: id })
+      .execute();
+  }
+
+  /**
+   * 删除（批量）
+   */
+  async deleteByIds(baseFindByIdsDto: BaseFindByIdsDto): Promise<void> {
+    let { ids } = baseFindByIdsDto;
+
+    await this.postRepository.createQueryBuilder()
+      .delete()
+      .from(SysPost)
+      .where('id in (:ids)', { ids: ids })
       .execute();
   }
 }

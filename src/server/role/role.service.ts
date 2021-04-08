@@ -5,13 +5,14 @@ import { Utils } from './../../utils/index';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
 import { Role } from './entities/role.entity';
-import { BaseFindByIdDto } from '../base.dto';
+import { BaseFindByIdDto, BaseFindByIdsDto } from '../base.dto';
 import { RolePermission } from '../role-permission/entities/role-permission.entity';
 import { BindRolePermissionDto } from './dto/bind-role-permission.dto';
 import { CreateRolePermissionDto } from '../role-permission/dto/create-role-permission.dto';
 import { RolePermissionService } from '../role-permission/role-permission.service';
 import { SearchRoleDto } from './dto/search-role.dto';
 import { LimitRoleDto } from './dto/limit-role.dto';
+import { SysPost } from '../post/entities/post.entity';
 
 @Injectable()
 export class RoleService {
@@ -132,6 +133,19 @@ export class RoleService {
       .delete()
       .from(Role)
       .where('id = :id', { id: id })
+      .execute();
+  }
+
+  /**
+   * 删除（批量）
+   */
+  async deleteByIds(baseFindByIdsDto: BaseFindByIdsDto): Promise<void> {
+    let { ids } = baseFindByIdsDto;
+
+    await this.roleRepository.createQueryBuilder()
+      .delete()
+      .from(Role)
+      .where('id in (:ids)', { ids: ids })
       .execute();
   }
 

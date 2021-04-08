@@ -23,7 +23,7 @@ import { UpdateRoleDto } from './dto/update-role.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { Role } from './entities/role.entity';
 import { LimitRoleDto } from './dto/limit-role.dto';
-import { BaseFindByIdDto } from '../base.dto';
+import { BaseFindByIdDto, BaseFindByIdsDto } from '../base.dto';
 import { BindRolePermissionDto } from './dto/bind-role-permission.dto';
 import { CurUser } from '../../common/decorators/user.decorator';
 import { SearchRoleDto } from './dto/search-role.dto';
@@ -92,6 +92,13 @@ export class RoleController {
       throw new BadRequestException(`数据 id：${id} 不存在！`);
     }
     return await this.roleService.deleteById(baseFindByIdDto);
+  }
+
+  @Post('deleteBatch')
+  @Permissions('system:role:deleteBatch')
+  @ApiOperation({ summary: '删除（批量）' })
+  async deleteBatch(@CurUser() curUser, @Body() baseFindByIdsDto: BaseFindByIdsDto): Promise<any> {
+    return await this.roleService.deleteByIds(baseFindByIdsDto);
   }
 
   @Get('getPermissions')

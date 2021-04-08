@@ -27,7 +27,7 @@ import { CreateGroupDto } from './dto/create-group.dto';
 import { UpdateGroupDto } from './dto/update-group.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { Group } from './entities/group.entity';
-import { BaseFindByIdDto, BasePageDto } from '../base.dto';
+import { BaseFindByIdDto, BaseFindByIdsDto, BasePageDto } from '../base.dto';
 import { LimitGroupDto } from './dto/limit-group.dto';
 import { SearchGroupDto } from './dto/search-group.dto';
 import { BindGroupRoleDto } from '../group-role/dto/bind-group-role.dto';
@@ -97,6 +97,13 @@ export class GroupController {
     }
 
     return await this.groupService.deleteById(baseFindByIdDto);
+  }
+
+  @Post('deleteBatch')
+  @Permissions('system:group:deleteBatch')
+  @ApiOperation({ summary: '删除（批量）' })
+  async deleteBatch(@CurUser() curUser, @Body() baseFindByIdsDto: BaseFindByIdsDto): Promise<any> {
+    return await this.groupService.deleteByIds(baseFindByIdsDto);
   }
 
   @Get('getRoles')

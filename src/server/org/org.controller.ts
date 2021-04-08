@@ -24,7 +24,7 @@ import { CurUser } from '../../common/decorators/user.decorator';
 import { SearchOrgDto } from './dto/search-org.dto';
 import { Org } from './entities/org.entity';
 import { LimitOrgDto } from './dto/limit-org.dto';
-import { BaseFindByIdDto, BaseFindByPIdDto } from '../base.dto';
+import { BaseFindByIdDto, BaseFindByIdsDto, BaseFindByPIdDto } from '../base.dto';
 import { RolesGuard } from '../../common/guards/roles.guard';
 import { Permissions } from '../../common/decorators/permissions.decorator';
 
@@ -96,5 +96,12 @@ export class OrgController {
     }
 
     return await this.orgService.deleteById(baseFindByIdDto);
+  }
+
+  @Post('deleteBatch')
+  @Permissions('system:org:deleteBatch')
+  @ApiOperation({ summary: '删除（批量）' })
+  async deleteBatch(@CurUser() curUser, @Body() baseFindByIdsDto: BaseFindByIdsDto): Promise<any> {
+    return await this.orgService.deleteByIds(baseFindByIdsDto);
   }
 }

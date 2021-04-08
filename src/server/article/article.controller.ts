@@ -110,7 +110,7 @@ export class ArticleController {
 
   @Post('clearRecycle')
   @Permissions('cms:article:clearRecycle')
-  @ApiOperation({ summary: '清空回收站' })
+  @ApiOperation({ summary: '清空回收站/删除（批量）' })
   async clearRecycle(@CurUser() curUser, @Body() baseFindByIdsDto: BaseFindByIdsDto): Promise<any> {
     return await this.articleService.clearRecycle(baseFindByIdsDto);
   }

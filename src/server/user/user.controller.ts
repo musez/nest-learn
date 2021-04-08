@@ -22,7 +22,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { Group } from '../group/entities/group.entity';
 import { LimitUserDto } from './dto/limit-user.dto';
-import { BaseFindByIdDto, BaseModifyStatusByIdsDto } from '../base.dto';
+import { BaseFindByIdDto, BaseFindByIdsDto, BaseModifyStatusByIdsDto } from '../base.dto';
 import { CreateGroupDto } from '../group/dto/create-group.dto';
 import { BindUserGroupDto } from './dto/bind-user-group.dto';
 import { BindUserRoleDto } from '../user-role/dto/bind-user-role.dto';
@@ -108,6 +108,13 @@ export class UserController {
     }
 
     return await this.userService.deleteById(baseFindByIdDto);
+  }
+
+  @Post('deleteBatch')
+  @Permissions('system:user:deleteBatch')
+  @ApiOperation({ summary: '删除（批量）' })
+  async deleteBatch(@CurUser() curUser, @Body() baseFindByIdsDto: BaseFindByIdsDto): Promise<any> {
+    return await this.userService.deleteByIds(baseFindByIdsDto);
   }
 
   @Post('bindGroups')

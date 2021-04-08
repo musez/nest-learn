@@ -28,7 +28,7 @@ import { CreateFileDto } from './dto/create-file.dto';
 import { UpdateFileDto } from './dto/update-file.dto';
 import { File } from './entities/file.entity';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { BaseFindByIdDto, BasePageDto } from '../base.dto';
+import { BaseFindByIdDto, BaseFindByIdsDto, BasePageDto } from '../base.dto';
 import { CurUser } from '../../common/decorators/user.decorator';
 import { Permissions } from '../../common/decorators/permissions.decorator';
 import { RolesGuard } from '../../common/guards/roles.guard';
@@ -97,7 +97,7 @@ export class FileController {
 
   @Post('uploads')
   @Permissions('system:file:uploads')
-  @ApiOperation({ summary: '文件上传（多）' })
+  @ApiOperation({ summary: '文件上传（批量）' })
   @ApiConsumes('multipart/form-data')
   @ApiBody({
     schema: {
@@ -174,7 +174,7 @@ export class FileController {
 
   @Get('findById')
   @Permissions('system:file:findById')
-  @ApiOperation({ summary: '获取文件（主键 id）' })
+  @ApiOperation({ summary: '获取详情（主键 id）' })
   @ApiQuery({ name: 'id', description: '主键 id', required: true })
   findById(@Query() baseFindByIdDto: BaseFindByIdDto) {
     return this.fileService.selectById(baseFindByIdDto);
@@ -197,7 +197,7 @@ export class FileController {
 
   @Get('findByExtId')
   @Permissions('system:file:findByExtId')
-  @ApiOperation({ summary: '获取文件（关联 extId）' })
+  @ApiOperation({ summary: '获取列表（关联 extId）' })
   @ApiQuery({ name: 'extId', description: '关联 id', required: true })
   findByExtId(@Query('extId') extId: string) {
     return this.fileService.selectByExtId(extId);
@@ -215,5 +215,12 @@ export class FileController {
     }
 
     return await this.fileService.deleteById(baseFindByIdDto);
+  }
+
+  @Post('deleteBatch')
+  @Permissions('system:file:deleteBatch')
+  @ApiOperation({ summary: '删除（批量）' })
+  async deleteBatch(@CurUser() curUser, @Body() baseFindByIdsDto: BaseFindByIdsDto): Promise<any> {
+    return await this.fileService.deleteByIds(baseFindByIdsDto);
   }
 }

@@ -11,7 +11,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurUser } from '../../common/decorators/user.decorator';
 import { LimitPostDto } from './dto/limit-post.dto';
 import { SearchPostDto } from './dto/search-post.dto';
-import { BaseFindByIdDto } from '../base.dto';
+import { BaseFindByIdDto, BaseFindByIdsDto } from '../base.dto';
 import { SysPost } from './entities/post.entity';
 import { RolesGuard } from '../../common/guards/roles.guard';
 import { Permissions } from '../../common/decorators/permissions.decorator';
@@ -76,5 +76,12 @@ export class PostController {
       throw new BadRequestException(`数据 id：${id} 不存在！`);
     }
     return await this.postService.deleteById(baseFindByIdDto);
+  }
+
+  @Post('deleteBatch')
+  @Permissions('system:post:deleteBatch')
+  @ApiOperation({ summary: '删除（批量）' })
+  async deleteBatch(@CurUser() curUser, @Body() baseFindByIdsDto: BaseFindByIdsDto): Promise<any> {
+    return await this.postService.deleteByIds(baseFindByIdsDto);
   }
 }

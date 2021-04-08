@@ -3,10 +3,11 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateFileDto } from './dto/create-file.dto';
 import { File } from './entities/file.entity';
-import { BaseFindByIdDto, BasePageDto } from '../base.dto';
+import { BaseFindByIdDto, BaseFindByIdsDto, BasePageDto } from '../base.dto';
 import { Utils } from '../../utils';
 import { LimitArticleDto } from '../article/dto/limit-article.dto';
 import { LimitFileDto } from './dto/limit-file.dto';
+import { Article } from '../article/entities/article.entity';
 
 @Injectable()
 export class FileService {
@@ -35,7 +36,7 @@ export class FileService {
    * 获取列表（分页）
    */
   async selectListPage(limitFileDto: LimitFileDto): Promise<any> {
-    let { page, limit, originalName,fileDisName } = limitFileDto;
+    let { page, limit, originalName, fileDisName } = limitFileDto;
     page = page ? page : 1;
     limit = limit ? limit : 10;
     let offset = (page - 1) * limit;
@@ -93,7 +94,7 @@ export class FileService {
   }
 
   /**
-   * 获取（extId）
+   * 获取列表（extId）
    */
   async selectByExtId(extId: string): Promise<CreateFileDto[]> {
     return await this.fileRepository.find({ extId: extId });
@@ -109,6 +110,19 @@ export class FileService {
       .delete()
       .from(File)
       .where('id = :id', { id: id })
+      .execute();
+  }
+
+  /**
+   * 删除（批量）
+   */
+  async deleteByIds(baseFindByIdsDto: BaseFindByIdsDto): Promise<void> {
+    let { ids } = baseFindByIdsDto;
+
+    await this.fileRepository.createQueryBuilder()
+      .delete()
+      .from(File)
+      .where('id in (:ids)', { ids: ids })
       .execute();
   }
 }

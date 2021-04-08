@@ -11,7 +11,7 @@ import { CreatePermissionDto } from './dto/create-permission.dto';
 import { UpdatePermissionDto } from './dto/update-permission.dto';
 import { Permission } from './entities/permission.entity';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { BaseFindByIdDto, BaseFindByPIdDto, BasePageDto } from '../base.dto';
+import { BaseFindByIdDto, BaseFindByIdsDto, BaseFindByPIdDto, BasePageDto } from '../base.dto';
 import { LimitPermissionDto } from './dto/limit-permission.dto';
 import { CurUser } from '../../common/decorators/user.decorator';
 import { SearchPermissionDto } from './dto/search-permission.dto';
@@ -86,5 +86,12 @@ export class PermissionController {
       throw new BadRequestException(`数据 id：${id} 不存在！`);
     }
     return await this.permissionService.deleteById(baseFindByIdDto);
+  }
+
+  @Post('deleteBatch')
+  @Permissions('system:permission:deleteBatch')
+  @ApiOperation({ summary: '删除（批量）' })
+  async deleteBatch(@CurUser() curUser, @Body() baseFindByIdsDto: BaseFindByIdsDto): Promise<any> {
+    return await this.permissionService.deleteByIds(baseFindByIdsDto);
   }
 }

@@ -262,7 +262,7 @@ export class UserService {
   }
 
   /**
-   * 删除（多个）
+   * 删除（批量）
    */
   async deleteByIds(baseFindByIdsDto: BaseFindByIdsDto): Promise<void> {
     let { ids } = baseFindByIdsDto;

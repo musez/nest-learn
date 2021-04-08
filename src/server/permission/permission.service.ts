@@ -5,9 +5,10 @@ import { Utils } from './../../utils/index';
 import { UpdatePermissionDto } from './dto/update-permission.dto';
 import { Permission } from './entities/permission.entity';
 import { CreatePermissionDto } from './dto/create-permission.dto';
-import { BaseFindByIdDto, BaseFindByPIdDto } from '../base.dto';
+import { BaseFindByIdDto, BaseFindByIdsDto, BaseFindByPIdDto } from '../base.dto';
 import { SearchPermissionDto } from './dto/search-permission.dto';
 import { LimitPermissionDto } from './dto/limit-permission.dto';
+import { Org } from '../org/entities/org.entity';
 
 @Injectable()
 export class PermissionService {
@@ -242,6 +243,19 @@ export class PermissionService {
       .delete()
       .from(Permission)
       .where('id = :id', { id: id })
+      .execute();
+  }
+
+  /**
+   * 删除（批量）
+   */
+  async deleteByIds(baseFindByIdsDto: BaseFindByIdsDto): Promise<void> {
+    let { ids } = baseFindByIdsDto;
+
+    await this.permissionRepository.createQueryBuilder()
+      .delete()
+      .from(Permission)
+      .where('id in (:ids)', { ids: ids })
       .execute();
   }
 }

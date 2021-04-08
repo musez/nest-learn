@@ -5,12 +5,13 @@ import { Utils } from './../../utils/index';
 import { CreateGroupDto } from './dto/create-group.dto';
 import { UpdateGroupDto } from './dto/update-group.dto';
 import { Group } from './entities/group.entity';
-import { BaseFindByIdDto } from '../base.dto';
+import { BaseFindByIdDto, BaseFindByIdsDto } from '../base.dto';
 import { GroupRoleService } from '../group-role/group-role.service';
 import { GroupRole } from '../group-role/entities/group-role.entity';
 import { BindGroupRoleDto } from '../group-role/dto/bind-group-role.dto';
 import { CreateGroupRoleDto } from '../group-role/dto/create-group-role.dto';
 import { LimitGroupDto } from './dto/limit-group.dto';
+import { Dict } from '../dict/entities/dict.entity';
 
 @Injectable()
 export class GroupService {
@@ -128,6 +129,19 @@ export class GroupService {
     await this.groupRepository.createQueryBuilder().delete()
       .from(Group)
       .where('id = :id', { id: id })
+      .execute();
+  }
+
+  /**
+   * 删除（批量）
+   */
+  async deleteByIds(baseFindByIdsDto: BaseFindByIdsDto): Promise<void> {
+    let { ids } = baseFindByIdsDto;
+
+    await this.groupRepository.createQueryBuilder()
+      .delete()
+      .from(Group)
+      .where('id in (:ids)', { ids: ids })
       .execute();
   }
 
