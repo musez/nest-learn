@@ -10,7 +10,7 @@ export class Utils {
   static dto2entity(dto: any, entity: any): any {
     let e = {};
     for (const key in entity) {
-      if (dto.hasOwnProperty(key) && (dto[key] || dto[key] === 0)) {
+      if (dto.hasOwnProperty(key)) {
         e[key] = dto[key];
       }
     }

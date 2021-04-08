@@ -54,6 +54,9 @@ export class File extends BaseEntity {
   @Column({ comment: '文件地址', nullable: true })
   fileUrl: string;
 
+  @Column('varchar', { comment: '文件显示名称', nullable: true })
+  fileDisName: string;
+
   @Column('varchar', { comment: '关联 id', nullable: true })
   extId: string;
 }

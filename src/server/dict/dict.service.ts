@@ -101,7 +101,7 @@ export class DictService {
   async isExistId(id: string): Promise<Boolean> {
     let isExist = await this.dictRepository.findOne(id);
     if (Utils.isNil(isExist)) {
-      throw false;
+      return false;
     } else {
       return true;
     }

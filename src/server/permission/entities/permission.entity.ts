@@ -45,7 +45,7 @@ export class Permission extends BaseEntity {
     this.routerIcon = undefined;
     this.sort = undefined;
     this.routerPath = undefined;
-    this.roles = undefined;
+    // this.roles = undefined;
   }
 
   @Column({ comment: '父 id', nullable: true })

@@ -190,7 +190,7 @@ export class UserService {
   async isExistId(id: string): Promise<Boolean> {
     let isExist = await this.userRepository.findOne(id);
     if (Utils.isNil(isExist)) {
-      throw false;
+      return false;
     } else {
       return true;
     }
@@ -202,7 +202,7 @@ export class UserService {
   async isExistUserName(userName: string): Promise<Boolean> {
     let isExist = await this.userRepository.findOne({ userName: userName });
     if (Utils.isNil(isExist)) {
-      throw false;
+      return false;
     } else {
       return true;
     }

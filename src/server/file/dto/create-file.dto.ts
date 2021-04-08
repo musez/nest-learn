@@ -26,6 +26,9 @@ export class CreateFileDto {
   @ApiPropertyOptional({ description: '文件地址' })
   readonly fileUrl: string;
 
+  @ApiPropertyOptional({ description: '文件显示名称' })
+  readonly fileDisName: string;
+
   @ApiPropertyOptional({ description: '关联 id' })
   readonly extId: string;
 }

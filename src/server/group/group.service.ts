@@ -100,7 +100,7 @@ export class GroupService {
   async isExistId(id: string): Promise<Boolean> {
     let isExist = await this.groupRepository.findOne(id);
     if (Utils.isNil(isExist)) {
-      throw false;
+      return false;
     } else {
       return true;
     }
@@ -113,9 +113,9 @@ export class GroupService {
     let { id } = updateGroupDto;
 
     let group = new Group();
+    debugger
     group = Utils.dto2entity(updateGroupDto, group);
     group.updateBy = curUser.id;
-
     await this.groupRepository.update(id, group);
   }
 

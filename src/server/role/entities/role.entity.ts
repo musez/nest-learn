@@ -22,9 +22,9 @@ export class Role extends BaseEntity {
     super();
 
     this.name = undefined;
-    this.groups = undefined;
-    this.users = undefined;
-    this.permissions = undefined;
+    // this.groups = undefined;
+    // this.users = undefined;
+    // this.permissions = undefined;
   }
 
   @Column('varchar', { comment: '名称', length: 50 })

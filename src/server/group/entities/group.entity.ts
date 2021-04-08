@@ -23,8 +23,8 @@ export class Group extends BaseEntity {
     super();
 
     this.name = undefined;
-    this.users = undefined;
-    this.roles = undefined;
+    // this.users = undefined;
+    // this.roles = undefined;
   }
 
   @Column('varchar', { comment: '名称', length: 50 })

@@ -105,7 +105,7 @@ export class PostService {
   async isExistId(id: string): Promise<Boolean> {
     let isExist = await this.postRepository.findOne(id);
     if (Utils.isNil(isExist)) {
-      throw false;
+      return false;
     } else {
       return true;
     }

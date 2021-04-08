@@ -54,10 +54,15 @@ export class FileController {
           format: 'binary',
           description: '文件',
         },
+        fileDisName: {
+          type: 'string',
+          description: '文件显示名称',
+        },
         extId: {
           type: 'string',
           description: '关联 id',
         },
+
         description: {
           type: 'string',
           description: '描述',
@@ -70,10 +75,6 @@ export class FileController {
     if (Utils.isNil(file)) {
       throw new BadRequestException(`文件不能为空！`);
     }
-
-    // const writeStream = createWriteStream(join(__dirname, '../../../', 'uploads', `${file.originalname}`));
-    // 将 16 进制写入地址
-    // writeStream.write(file.buffer);
 
     // 获取 body 中的文本参数
     let { description, extId } = body;
@@ -107,6 +108,10 @@ export class FileController {
           format: 'binary',
           description: '文件',
         },
+        fileDisName: {
+          type: 'string',
+          description: '文件显示名称',
+        },
         extId: {
           type: 'string',
           description: '关联 id',
@@ -121,8 +126,9 @@ export class FileController {
   @UseInterceptors(FileFieldsInterceptor([{
     name: 'files', maxCount: 10,
   }, {
-    name: 'extId',
-    maxCount: 1,
+    name: 'fileDisName', maxCount: 10,
+  }, {
+    name: 'extId', maxCount: 1,
   }, {
     name: 'description', maxCount: 1,
   }]))
@@ -132,16 +138,15 @@ export class FileController {
     }
 
     // 获取 body 中的文本参数
-    let { description, extId } = body;
+    let { description, extId, fileDisName } = body;
     let filesEntity = [];
 
-    for (const file of files.files) {
-      // const writeStream = createWriteStream(join(__dirname, '../../../', 'uploads', `${file.originalname}`));
-      // 将 16 进制写入地址
-      // writeStream.write(file.buffer);
-
+    files.files.forEach((file, index) => {
       let fileEntity = new File();
 
+      if (fileDisName[index]) {
+        fileEntity.fileDisName = fileDisName[index];
+      }
       fileEntity.extId = extId;
       fileEntity.description = description;
       fileEntity.originalName = file.originalname;
@@ -155,7 +160,7 @@ export class FileController {
       fileEntity.createBy = curUser.id;
 
       filesEntity.push(fileEntity);
-    }
+    });
 
     return this.fileService.batchInsert(filesEntity);
   }

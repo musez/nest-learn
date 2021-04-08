@@ -114,7 +114,7 @@ export class ArticleService {
   async isExistId(id: string): Promise<Boolean> {
     let isExist = await this.articleRepository.findOne(id);
     if (Utils.isNil(isExist)) {
-      throw false;
+      return false;
     } else {
       return true;
     }

@@ -35,7 +35,7 @@ export class FileService {
    * 获取列表（分页）
    */
   async selectListPage(limitFileDto: LimitFileDto): Promise<any> {
-    let { page, limit, originalName } = limitFileDto;
+    let { page, limit, originalName,fileDisName } = limitFileDto;
     page = page ? page : 1;
     limit = limit ? limit : 10;
     let offset = (page - 1) * limit;
@@ -45,12 +45,16 @@ export class FileService {
     if (!Utils.isBlank(originalName)) {
       queryConditionList.push('originalName LIKE :originalName');
     }
+    if (!Utils.isBlank(fileDisName)) {
+      queryConditionList.push('fileDisName LIKE :fileDisName');
+    }
 
     let queryCondition = queryConditionList.join(' AND ');
 
     let res = await this.fileRepository.createQueryBuilder()
       .where(queryCondition, {
         originalName: `%${originalName}%`,
+        fileDisName: `%${fileDisName}%`,
       })
       .skip(offset)
       .take(limit)
@@ -82,7 +86,7 @@ export class FileService {
   async isExistId(id: string): Promise<Boolean> {
     let isExist = await this.fileRepository.findOne(id);
     if (Utils.isNil(isExist)) {
-      throw false;
+      return false;
     } else {
       return true;
     }

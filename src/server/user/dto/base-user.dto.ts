@@ -30,9 +30,10 @@ export class BaseUserDto {
   @MaxLength(UserConstants.USERNAME_MAX_LENGTH, { message: '名称不能大于 $constraint1 位！' })
   readonly userName: string;
 
-  @ApiProperty({ description: '密码', example: '888888' })
-  @IsDefined({ message: '用户密码不能为空！' })
-  @IsNotEmpty({ message: '用户密码不能为空！' })
+  @ApiPropertyOptional({ description: '密码', example: '888888' })
+  // @IsDefined({ message: '用户密码不能为空！' })
+  @IsOptional()
+  // @IsNotEmpty({ message: '用户密码不能为空！' })
   @MinLength(UserConstants.PASSWORD_MIN_LENGTH, { message: '用户密码不能小于 $constraint1 位！' })
   @MaxLength(UserConstants.PASSWORD_MAX_LENGTH, { message: '用户密码不能大于 $constraint1 位！' })
   readonly userPwd?: string;
@@ -57,9 +58,6 @@ export class BaseUserDto {
   readonly mobile?: string;
 
   @ApiPropertyOptional({ description: '邮箱', example: '123@qq.com' })
-  // @ValidateIf(obj => {
-  //   return obj && typeof obj.email !== 'undefined';
-  // })
   @IsOptional()
   @IsEmail()
   readonly email?: string;

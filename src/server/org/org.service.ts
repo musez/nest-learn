@@ -192,7 +192,7 @@ export class OrgService {
   async isExistId(id: string): Promise<Boolean> {
     let isExist = await this.orgRepository.findOne(id);
     if (Utils.isNil(isExist)) {
-      throw false;
+      return false;
     } else {
       return true;
     }

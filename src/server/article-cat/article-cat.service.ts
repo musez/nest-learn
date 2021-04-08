@@ -194,7 +194,7 @@ export class ArticleCatService {
   async isExistId(id: string): Promise<Boolean> {
     let isExist = await this.articleCatRepository.findOne(id);
     if (Utils.isNil(isExist)) {
-      throw false;
+      return false;
     } else {
       return true;
     }
