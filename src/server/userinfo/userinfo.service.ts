@@ -4,10 +4,8 @@ import { Repository } from 'typeorm';
 import { CreateUserinfoDto } from './dto/create-userinfo.dto';
 import { UpdateUserinfoDto } from './dto/update-userinfo.dto';
 import { CreateUserDto } from '../user/dto/create-user.dto';
-import { User } from '../user/entities/user.entity';
 import { Userinfo } from './entities/userinfo.entity';
 import { BaseFindByIdDto, BaseFindByIdsDto } from '../base.dto';
-import { Utils } from '../../utils';
 
 @Injectable()
 export class UserinfoService {

@@ -11,7 +11,6 @@ import { GroupRole } from '../group-role/entities/group-role.entity';
 import { BindGroupRoleDto } from '../group-role/dto/bind-group-role.dto';
 import { CreateGroupRoleDto } from '../group-role/dto/create-group-role.dto';
 import { LimitGroupDto } from './dto/limit-group.dto';
-import { Dict } from '../dict/entities/dict.entity';
 
 @Injectable()
 export class GroupService {

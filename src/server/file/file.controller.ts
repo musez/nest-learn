@@ -18,9 +18,6 @@ import {
   FilesInterceptor,
   FileFieldsInterceptor,
 } from '@nestjs/platform-express';
-import { join } from 'path';
-import { createWriteStream } from 'fs';
-
 const fs = require('fs');
 import { Utils } from './../../utils/index';
 import { FileService } from './file.service';
@@ -36,12 +33,12 @@ import { RolesGuard } from '../../common/guards/roles.guard';
 @Controller('file')
 @ApiTags('文件')
 @ApiBasicAuth()
-@UseGuards(JwtAuthGuard, RolesGuard)
 export class FileController {
   constructor(private readonly fileService: FileService) {
   }
 
   @Post('upload')
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Permissions('system:file:upload')
   @ApiOperation({ summary: '文件上传（单）' })
   @ApiConsumes('multipart/form-data')
@@ -62,7 +59,6 @@ export class FileController {
           type: 'string',
           description: '关联 id',
         },
-
         description: {
           type: 'string',
           description: '描述',
@@ -77,9 +73,10 @@ export class FileController {
     }
 
     // 获取 body 中的文本参数
-    let { description, extId } = body;
+    let { description, extId, fileDisName } = body;
     let fileEntity = new File();
 
+    fileEntity.fileDisName = fileDisName;
     fileEntity.extId = extId;
     fileEntity.description = description;
     fileEntity.originalName = file.originalname;
@@ -96,6 +93,7 @@ export class FileController {
   }
 
   @Post('uploads')
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Permissions('system:file:uploads')
   @ApiOperation({ summary: '文件上传（批量）' })
   @ApiConsumes('multipart/form-data')
@@ -166,6 +164,7 @@ export class FileController {
   }
 
   @Get('findListPage')
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Permissions('system:file:findListPage')
   @ApiOperation({ summary: '获取列表（分页）' })
   findListPage(@Query() basePageDto: BasePageDto) {
@@ -173,6 +172,7 @@ export class FileController {
   }
 
   @Get('findById')
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Permissions('system:file:findById')
   @ApiOperation({ summary: '获取详情（主键 id）' })
   @ApiQuery({ name: 'id', description: '主键 id', required: true })
@@ -196,6 +196,7 @@ export class FileController {
   }
 
   @Get('findByExtId')
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Permissions('system:file:findByExtId')
   @ApiOperation({ summary: '获取列表（关联 extId）' })
   @ApiQuery({ name: 'extId', description: '关联 id', required: true })
@@ -204,6 +205,7 @@ export class FileController {
   }
 
   @Post('delete')
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Permissions('system:file:delete')
   @ApiOperation({ summary: '删除' })
   async delete(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
@@ -218,6 +220,7 @@ export class FileController {
   }
 
   @Post('deleteBatch')
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Permissions('system:file:deleteBatch')
   @ApiOperation({ summary: '删除（批量）' })
   async deleteBatch(@CurUser() curUser, @Body() baseFindByIdsDto: BaseFindByIdsDto): Promise<any> {

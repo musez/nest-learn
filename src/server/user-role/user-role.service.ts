@@ -3,11 +3,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Like } from 'typeorm';
 import { CreateUserRoleDto } from './dto/create-user-role.dto';
 import { UpdateUserRoleDto } from './dto/update-user-role.dto';
-import { UserGroup } from '../user-group/entities/user-group.entity';
-import { CreateUserGroupDto } from '../user-group/dto/create-user-group.dto';
 import { BaseFindByIdDto } from '../base.dto';
 import { UserRole } from './entities/user-role.entity';
-import { Article } from '../article/entities/article.entity';
 
 @Injectable()
 export class UserRoleService {

@@ -3,6 +3,7 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
+  DeleteDateColumn,
 } from 'typeorm';
 
 // 状态类型
@@ -11,6 +12,12 @@ export enum StatusType {
   DISABLE = 0,// 禁用或未发布
   DRAFT = 2,
   RECYCLE = 3
+}
+
+// 删除类型
+export enum DeleteType {
+  DEFAULT = 0,// 未删除
+  DEL = 1,// 删除
 }
 
 export abstract class BaseEntity {
@@ -22,6 +29,9 @@ export abstract class BaseEntity {
     this.createBy = undefined;
     this.updateTime = undefined;
     this.updateBy = undefined;
+    this.deleteStatus = undefined;
+    this.deleteTime = undefined;
+    this.deleteBy = undefined;
   }
 
   @PrimaryGeneratedColumn('uuid', { comment: '主键 id' })
@@ -44,4 +54,13 @@ export abstract class BaseEntity {
 
   @Column({ comment: '修改人 id', nullable: true })
   updateBy: string;
+
+  @Column('tinyint', { comment: '删除状态（0：未删除；1：删除）', default: DeleteType.DEFAULT })
+  deleteStatus: DeleteType;
+
+  @DeleteDateColumn({ comment: '删除时间', type: 'datetime', nullable: true })
+  deleteTime: Date;
+
+  @Column({ comment: '删除人 id', nullable: true })
+  deleteBy: string;
 }

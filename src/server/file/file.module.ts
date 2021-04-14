@@ -15,7 +15,7 @@ import { UserModule } from '../user/user.module';
     MulterModule.register({
       storage: diskStorage({
         // 自定义路径
-        destination: `./uploads/${dayjs().format('YYYY-MM-DD')}`,
+        destination: `./uploads/${dayjs().format('YYYY')}/${dayjs().format('YYYY-MM-DD')}`,
         filename: (req, file, cb) => {
           // 自定义文件名
           // const filename = `${nuid.next()}.${file.mimetype.split('/')[1]}`;

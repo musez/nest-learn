@@ -6,14 +6,11 @@ import {
   ApiBasicAuth,
   ApiOperation,
 } from '@nestjs/swagger';
-import { Utils } from './../../utils/index';
 import { DictService } from './dict.service';
 import { CreateDictDto } from './dto/create-dict.dto';
 import { UpdateDictDto } from './dto/update-dict.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { Dict } from './entities/dict.entity';
-import { User } from '../user/entities/user.entity';
-import { DictItem } from '../dict-item/entities/dict-item.entity';
 import { BaseFindByIdDto, BaseFindByIdsDto, BasePageDto } from '../base.dto';
 import { CurUser } from '../../common/decorators/user.decorator';
 import { SearchDictDto } from './dto/search-dict.dto';

@@ -8,7 +8,6 @@ import { CreatePermissionDto } from './dto/create-permission.dto';
 import { BaseFindByIdDto, BaseFindByIdsDto, BaseFindByPIdDto } from '../base.dto';
 import { SearchPermissionDto } from './dto/search-permission.dto';
 import { LimitPermissionDto } from './dto/limit-permission.dto';
-import { Org } from '../org/entities/org.entity';
 
 @Injectable()
 export class PermissionService {

@@ -5,12 +5,10 @@ import { Utils } from './../../utils/index';
 import { CreateDictDto } from './dto/create-dict.dto';
 import { UpdateDictDto } from './dto/update-dict.dto';
 import { Dict } from './entities/dict.entity';
-import { DictItem } from '../dict-item/entities/dict-item.entity';
 import { BaseFindByIdDto, BaseFindByIdsDto, BasePageDto } from '../base.dto';
 import { DictItemService } from '../dict-item/dict-item.service';
 import { SearchDictDto } from './dto/search-dict.dto';
 import { LimitDictDto } from './dto/limit-dict.dto';
-import { File } from '../file/entities/file.entity';
 
 @Injectable()
 export class DictService {

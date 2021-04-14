@@ -22,16 +22,12 @@ import { CreateArticleCatDto } from './dto/create-article-cat.dto';
 import { UpdateArticleCatDto } from './dto/update-article-cat.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurUser } from '../../common/decorators/user.decorator';
-import { Article } from '../article/entities/article.entity';
-import { LimitArticleDto } from '../article/dto/limit-article.dto';
 import { BaseFindByIdDto, BaseFindByIdsDto, BaseFindByPIdDto } from '../base.dto';
 import { ArticleCat } from './entities/article-cat.entity';
 import { LimitArticleCatDto } from './dto/limit-article-cat.dto';
-import { BaseArticleCatDto } from './dto/base-article-cat.dto';
 import { SearchArticleCatDto } from './dto/search-article-cat.dto';
 import { RolesGuard } from '../../common/guards/roles.guard';
 import { Permissions } from '../../common/decorators/permissions.decorator';
-import { File } from '../file/entities/file.entity';
 
 @Controller('articleCat')
 @ApiTags('文章栏目')

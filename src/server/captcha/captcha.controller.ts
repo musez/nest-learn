@@ -5,7 +5,6 @@ import {
 } from '@nestjs/swagger';
 import { CaptchaService } from './captcha.service';
 import { CreateCaptchaDto } from './dto/create-captcha.dto';
-import { CacheService } from '../cache/cache.service';
 
 @ApiTags('验证码')
 @Controller('captcha')

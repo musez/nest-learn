@@ -4,10 +4,6 @@ import { Repository, Like } from 'typeorm';
 import { CreateUserGroupDto } from './dto/create-user-group.dto';
 import { UpdateUserGroupDto } from './dto/update-user-group.dto';
 import { UserGroup } from './entities/user-group.entity';
-import { CreateUserDto } from '../user/dto/create-user.dto';
-import { User } from '../user/entities/user.entity';
-import { Userinfo } from '../userinfo/entities/userinfo.entity';
-import { CreateGroupDto } from '../group/dto/create-group.dto';
 import { BaseFindByIdDto } from '../base.dto';
 import { UserRole } from '../user-role/entities/user-role.entity';
 

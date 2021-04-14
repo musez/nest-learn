@@ -7,7 +7,6 @@ import { SysPost } from './entities/post.entity';
 import { Utils } from '../../utils';
 import { LimitPostDto } from './dto/limit-post.dto';
 import { BaseFindByIdDto, BaseFindByIdsDto } from '../base.dto';
-import { Permission } from '../permission/entities/permission.entity';
 
 @Injectable()
 export class PostService {

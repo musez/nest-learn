@@ -2,6 +2,8 @@ import { Module, MiddlewareConsumer, RequestMethod } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Connection } from 'typeorm';
 import { RedisModule } from 'nestjs-redis';
+import { ConfigModule, ConfigService } from 'nestjs-config';
+import * as path from 'path';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './server/auth/auth.module';
@@ -28,28 +30,25 @@ import { PostModule } from './server/post/post.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot({
-      type: 'mysql',
-      host: 'localhost',
-      port: 3306,
-      username: 'root',
-      password: 'dmkj_wangyue',
-      database: 'cms_nest',
-      entities: [__dirname + '/**/*.entity{.ts,.js}'],
-      migrations: ['database/migration/**/*.ts'],
-      // timezone: 'UTC',
-      // charset: 'utf8mb4',
-      multipleStatements: true,
-      dropSchema: false,
-      synchronize: false, // 是否自动将实体类同步到数据库
-      logging: true,
-      cli: {
-        migrationsDir: 'database/migration/default',
+    ConfigModule.load(path.resolve(__dirname, 'config/**/!(*.d).config.{ts,js}'), {
+      path: path.resolve(__dirname, '..', '.env.development'),
+      modifyConfigName: name => name.replace('.config', ''),
+    }),
+    TypeOrmModule.forRootAsync({
+      useFactory: async (config: ConfigService) => {
+        return Object.assign({
+          entities: [__dirname + '/**/*.entity{.ts,.js}'],
+          migrations: ['database/migration/**/*.ts'],
+          cli: {
+            migrationsDir: 'database/migration/default',
+          },
+        }, config.get('mysql'));
       },
+      inject: [ConfigService],
     }),
     RedisModule.register({
-      port: 6379,
       host: '127.0.0.1',
+      port: 6379,
       password: '',
       db: 0,
     }),

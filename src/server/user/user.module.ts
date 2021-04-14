@@ -6,7 +6,6 @@ import { UserService } from './user.service';
 import { UserinfoModule } from '../userinfo/userinfo.module';
 import { UserGroupModule } from '../user-group/user-group.module';
 import { UserRoleModule } from '../user-role/user-role.module';
-import { JwtStrategy } from '../auth/strategies/jwt.strategy';
 import { CryptoUtil } from '../../utils/crypto.util';
 
 @Module({

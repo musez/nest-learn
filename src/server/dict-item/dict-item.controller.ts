@@ -11,7 +11,6 @@ import { CreateDictItemDto } from './dto/create-dict-item.dto';
 import { UpdateDictItemDto } from './dto/update-dict-item.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurUser } from '../../common/decorators/user.decorator';
-import { Dict } from '../dict/entities/dict.entity';
 import { LimitDictItemDto } from '../dict-item/dto/limit-dict-item.dto';
 import { SearchDictItemDto } from '../dict-item/dto/search-dict-item.dto';
 import { DictItem } from './entities/dict-item.entity';

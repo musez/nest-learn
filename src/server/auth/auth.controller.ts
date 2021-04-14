@@ -15,7 +15,6 @@ import {
   ApiBody,
   ApiOperation,
 } from '@nestjs/swagger';
-import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { RegisterUserDto } from '../user/dto/register-user.dto';

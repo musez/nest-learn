@@ -5,9 +5,7 @@ import { CreateFileDto } from './dto/create-file.dto';
 import { File } from './entities/file.entity';
 import { BaseFindByIdDto, BaseFindByIdsDto, BasePageDto } from '../base.dto';
 import { Utils } from '../../utils';
-import { LimitArticleDto } from '../article/dto/limit-article.dto';
 import { LimitFileDto } from './dto/limit-file.dto';
-import { Article } from '../article/entities/article.entity';
 
 @Injectable()
 export class FileService {
@@ -30,7 +28,6 @@ export class FileService {
   async batchInsert(files, curUser?): Promise<CreateFileDto[]> {
     return await this.fileRepository.save(files);
   }
-
 
   /**
    * 获取列表（分页）

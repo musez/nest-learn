@@ -4,7 +4,6 @@ import { Repository, Like } from 'typeorm';
 import { CreateGroupRoleDto } from './dto/create-group-role.dto';
 import { BaseFindByIdDto } from '../base.dto';
 import { GroupRole } from './entities/group-role.entity';
-import { UserRole } from '../user-role/entities/user-role.entity';
 
 @Injectable()
 export class GroupRoleService {

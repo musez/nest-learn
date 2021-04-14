@@ -8,8 +8,6 @@ import { Utils } from '../../utils';
 import { SearchOrgDto } from './dto/search-org.dto';
 import { LimitOrgDto } from './dto/limit-org.dto';
 import { BaseFindByIdDto, BaseFindByIdsDto, BaseFindByPIdDto } from '../base.dto';
-import { Permission } from '../permission/entities/permission.entity';
-import { Group } from '../group/entities/group.entity';
 
 @Injectable()
 export class OrgService {

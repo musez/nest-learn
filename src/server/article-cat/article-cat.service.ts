@@ -3,14 +3,11 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Like } from 'typeorm';
 import { CreateArticleCatDto } from './dto/create-article-cat.dto';
 import { UpdateArticleCatDto } from './dto/update-article-cat.dto';
-import { Article } from '../article/entities/article.entity';
 import { ArticleCat } from './entities/article-cat.entity';
 import { Utils } from '../../utils';
 import { BaseFindByIdDto, BaseFindByIdsDto, BaseFindByPIdDto } from '../base.dto';
 import { SearchArticleCatDto } from './dto/search-article-cat.dto';
 import { LimitArticleCatDto } from './dto/limit-article-cat.dto';
-import { Permission } from '../permission/entities/permission.entity';
-import { File } from '../file/entities/file.entity';
 
 @Injectable()
 export class ArticleCatService {

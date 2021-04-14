@@ -12,7 +12,6 @@ import { CreateRolePermissionDto } from '../role-permission/dto/create-role-perm
 import { RolePermissionService } from '../role-permission/role-permission.service';
 import { SearchRoleDto } from './dto/search-role.dto';
 import { LimitRoleDto } from './dto/limit-role.dto';
-import { SysPost } from '../post/entities/post.entity';
 
 @Injectable()
 export class RoleService {

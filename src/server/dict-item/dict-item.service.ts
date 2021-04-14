@@ -5,11 +5,9 @@ import { CreateDictItemDto } from './dto/create-dict-item.dto';
 import { UpdateDictItemDto } from './dto/update-dict-item.dto';
 import { DictItem } from './entities/dict-item.entity';
 import { Utils } from '../../utils';
-import { LimitDictDto } from '../dict/dto/limit-dict.dto';
 import { SearchDictItemDto } from './dto/search-dict-item.dto';
 import { LimitDictItemDto } from './dto/limit-dict-item.dto';
 import { BaseFindByIdDto, BaseFindByIdsDto } from '../base.dto';
-import { Dict } from '../dict/entities/dict.entity';
 
 @Injectable()
 export class DictItemService {

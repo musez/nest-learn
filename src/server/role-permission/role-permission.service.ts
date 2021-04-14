@@ -4,9 +4,7 @@ import { Repository, Like } from 'typeorm';
 import { CreateRolePermissionDto } from './dto/create-role-permission.dto';
 import { UpdateRolePermissionDto } from './dto/update-role-permission.dto';
 import { RolePermission } from './entities/role-permission.entity';
-import { CreateGroupRoleDto } from '../group-role/dto/create-group-role.dto';
 import { BaseFindByIdDto } from '../base.dto';
-import { GroupRole } from '../group-role/entities/group-role.entity';
 import { UserRole } from '../user-role/entities/user-role.entity';
 
 @Injectable()

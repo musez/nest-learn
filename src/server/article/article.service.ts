@@ -8,7 +8,6 @@ import { BaseFindByIdDto, BaseFindByIdsDto, BaseModifyStatusByIdsDto } from '../
 import { Article } from './entities/article.entity';
 import { SearchArticleDto } from './dto/search-article.dto';
 import { LimitArticleDto } from './dto/limit-article.dto';
-import { File } from '../file/entities/file.entity';
 
 @Injectable()
 export class ArticleService {
