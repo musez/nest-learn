@@ -85,13 +85,13 @@ export class PermissionController {
     if (!isExistId) {
       throw new BadRequestException(`数据 id：${id} 不存在！`);
     }
-    return await this.permissionService.deleteById(baseFindByIdDto);
+    return await this.permissionService.deleteById(baseFindByIdDto, curUser);
   }
 
   @Post('deleteBatch')
   @Permissions('system:permission:deleteBatch')
   @ApiOperation({ summary: '删除（批量）' })
   async deleteBatch(@CurUser() curUser, @Body() baseFindByIdsDto: BaseFindByIdsDto): Promise<any> {
-    return await this.permissionService.deleteByIds(baseFindByIdsDto);
+    return await this.permissionService.deleteByIds(baseFindByIdsDto, curUser);
   }
 }

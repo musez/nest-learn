@@ -39,14 +39,13 @@ export class FileService {
     let offset = (page - 1) * limit;
 
     let queryConditionList = [];
-
     if (!Utils.isBlank(originalName)) {
       queryConditionList.push('originalName LIKE :originalName');
     }
     if (!Utils.isBlank(fileDisName)) {
       queryConditionList.push('fileDisName LIKE :fileDisName');
     }
-
+    queryConditionList.push('deleteStatus = 0');
     let queryCondition = queryConditionList.join(' AND ');
 
     let res = await this.fileRepository.createQueryBuilder()
@@ -94,18 +93,21 @@ export class FileService {
    * 获取列表（extId）
    */
   async selectByExtId(extId: string): Promise<CreateFileDto[]> {
-    return await this.fileRepository.find({ extId: extId });
+    return await this.fileRepository.find({
+      extId: extId,
+      deleteStatus: 0,
+    });
   }
 
   /**
    * 删除
    */
-  async deleteById(baseFindByIdDto: BaseFindByIdDto): Promise<void> {
+  async deleteById(baseFindByIdDto: BaseFindByIdDto, curUser?): Promise<void> {
     let { id } = baseFindByIdDto;
 
     await this.fileRepository.createQueryBuilder()
-      .delete()
-      .from(File)
+      .update(File)
+      .set({ deleteStatus: 1, deleteBy: curUser.id })
       .where('id = :id', { id: id })
       .execute();
   }
@@ -113,12 +115,12 @@ export class FileService {
   /**
    * 删除（批量）
    */
-  async deleteByIds(baseFindByIdsDto: BaseFindByIdsDto): Promise<void> {
+  async deleteByIds(baseFindByIdsDto: BaseFindByIdsDto, curUser?): Promise<void> {
     let { ids } = baseFindByIdsDto;
 
     await this.fileRepository.createQueryBuilder()
-      .delete()
-      .from(File)
+      .update(File)
+      .set({ deleteStatus: 1, deleteBy: curUser.id })
       .where('id in (:ids)', { ids: ids })
       .execute();
   }

@@ -1,5 +1,3 @@
-console.log('ENV:', process.env.ENV);
-
 export default {
   type: 'mysql',
   host: process.env.MYSQL_HOST || 'localhost',

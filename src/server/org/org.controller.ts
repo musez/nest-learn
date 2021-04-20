@@ -95,13 +95,13 @@ export class OrgController {
       throw new BadRequestException(`数据 id：${id} 不存在！`);
     }
 
-    return await this.orgService.deleteById(baseFindByIdDto);
+    return await this.orgService.deleteById(baseFindByIdDto, curUser);
   }
 
   @Post('deleteBatch')
   @Permissions('system:org:deleteBatch')
   @ApiOperation({ summary: '删除（批量）' })
   async deleteBatch(@CurUser() curUser, @Body() baseFindByIdsDto: BaseFindByIdsDto): Promise<any> {
-    return await this.orgService.deleteByIds(baseFindByIdsDto);
+    return await this.orgService.deleteByIds(baseFindByIdsDto, curUser);
   }
 }

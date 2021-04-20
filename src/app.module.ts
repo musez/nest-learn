@@ -27,11 +27,15 @@ import { ArticleCatModule } from './server/article-cat/article-cat.module';
 import { ArticleDataCatModule } from './server/article-data-cat/article-data-cat.module';
 import { OrgModule } from './server/org/org.module';
 import { PostModule } from './server/post/post.module';
+import { ExcelModule } from './server/excel/excel.module';
+
+const ENV = process.env.NODE_ENV;
 
 @Module({
   imports: [
     ConfigModule.load(path.resolve(__dirname, 'config/**/!(*.d).config.{ts,js}'), {
-      path: path.resolve(__dirname, '..', '.env.development'),
+      // path: path.resolve(__dirname, '..', '.env.development'),
+      path: path.resolve(__dirname, '..', !ENV ? '.env.development' : `.env.${ENV}`),
       modifyConfigName: name => name.replace('.config', ''),
     }),
     TypeOrmModule.forRootAsync({
@@ -46,14 +50,13 @@ import { PostModule } from './server/post/post.module';
       },
       inject: [ConfigService],
     }),
-    RedisModule.register({
-      host: '127.0.0.1',
-      port: 6379,
-      password: '',
-      db: 0,
+    RedisModule.forRootAsync({
+      useFactory: (configService: ConfigService) => configService.get('redis'),
+      inject: [ConfigService],
     }),
     CacheModule,
     CaptchaModule,
+    ExcelModule,
     AuthModule,
     UserModule,
     UserinfoModule,

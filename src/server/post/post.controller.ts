@@ -75,13 +75,13 @@ export class PostController {
     if (!isExistId) {
       throw new BadRequestException(`数据 id：${id} 不存在！`);
     }
-    return await this.postService.deleteById(baseFindByIdDto);
+    return await this.postService.deleteById(baseFindByIdDto, curUser);
   }
 
   @Post('deleteBatch')
   @Permissions('system:post:deleteBatch')
   @ApiOperation({ summary: '删除（批量）' })
   async deleteBatch(@CurUser() curUser, @Body() baseFindByIdsDto: BaseFindByIdsDto): Promise<any> {
-    return await this.postService.deleteByIds(baseFindByIdsDto);
+    return await this.postService.deleteByIds(baseFindByIdsDto, curUser);
   }
 }

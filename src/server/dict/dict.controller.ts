@@ -75,7 +75,7 @@ export class DictController {
     }
 
     if (dictItems && dictItems.length > 0) {
-      await this.dictItemService.deleteByDictId(id);
+      await this.dictItemService.deleteByDictId(id, curUser);
       await this.dictItemService.insertBatch(dictItems, curUser);
     }
     delete updateDictDto.dictItems;
@@ -93,14 +93,14 @@ export class DictController {
       throw new BadRequestException(`数据 id：${id} 不存在！`);
     }
 
-    return await this.dictService.deleteById(baseFindByIdDto);
+    return await this.dictService.deleteById(baseFindByIdDto, curUser);
   }
 
   @Post('deleteBatch')
   @Permissions('system:dict:deleteBatch')
   @ApiOperation({ summary: '删除（批量）' })
   async deleteBatch(@CurUser() curUser, @Body() baseFindByIdsDto: BaseFindByIdsDto): Promise<any> {
-    return await this.dictService.deleteByIds(baseFindByIdsDto);
+    return await this.dictService.deleteByIds(baseFindByIdsDto, curUser);
   }
 
   @Get('findDictItemById')

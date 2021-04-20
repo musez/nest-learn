@@ -89,7 +89,7 @@ export class ArticleController {
       throw new BadRequestException(`数据 id：${id} 不存在！`);
     }
 
-    return await this.articleService.deleteById(baseFindByIdDto);
+    return await this.articleService.deleteById(baseFindByIdDto, curUser);
   }
 
   @Post('inRecycle')
@@ -112,6 +112,6 @@ export class ArticleController {
   @Permissions('cms:article:clearRecycle')
   @ApiOperation({ summary: '清空回收站/删除（批量）' })
   async clearRecycle(@CurUser() curUser, @Body() baseFindByIdsDto: BaseFindByIdsDto): Promise<any> {
-    return await this.articleService.clearRecycle(baseFindByIdsDto);
+    return await this.articleService.clearRecycle(baseFindByIdsDto, curUser);
   }
 }

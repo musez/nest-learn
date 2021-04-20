@@ -39,11 +39,10 @@ export class RoleService {
     let { name } = searchRoleDto;
 
     let queryConditionList = [];
-
     if (!Utils.isBlank(name)) {
       queryConditionList.push('name LIKE :name');
     }
-
+    queryConditionList.push('deleteStatus = 0');
     let queryCondition = queryConditionList.join(' AND ');
 
     return await this.roleRepository.createQueryBuilder()
@@ -65,11 +64,10 @@ export class RoleService {
     let offset = (page - 1) * limit;
 
     let queryConditionList = [];
-
     if (!Utils.isBlank(name)) {
       queryConditionList.push('name LIKE :name');
     }
-
+    queryConditionList.push('deleteStatus = 0');
     let queryCondition = queryConditionList.join(' AND ');
 
     let res = await this.roleRepository.createQueryBuilder()
@@ -125,12 +123,12 @@ export class RoleService {
   /**
    * 删除
    */
-  async deleteById(baseFindByIdDto: BaseFindByIdDto): Promise<void> {
+  async deleteById(baseFindByIdDto: BaseFindByIdDto, curUser?): Promise<void> {
     let { id } = baseFindByIdDto;
 
     await this.roleRepository.createQueryBuilder()
-      .delete()
-      .from(Role)
+      .update(Role)
+      .set({ deleteStatus: 1, deleteBy: curUser.id })
       .where('id = :id', { id: id })
       .execute();
   }
@@ -138,12 +136,12 @@ export class RoleService {
   /**
    * 删除（批量）
    */
-  async deleteByIds(baseFindByIdsDto: BaseFindByIdsDto): Promise<void> {
+  async deleteByIds(baseFindByIdsDto: BaseFindByIdsDto, curUser?): Promise<void> {
     let { ids } = baseFindByIdsDto;
 
     await this.roleRepository.createQueryBuilder()
-      .delete()
-      .from(Role)
+      .update(Role)
+      .set({ deleteStatus: 1, deleteBy: curUser.id })
       .where('id in (:ids)', { ids: ids })
       .execute();
   }

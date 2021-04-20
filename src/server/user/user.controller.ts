@@ -9,6 +9,7 @@ import {
   UsePipes,
   ClassSerializerInterceptor,
   BadRequestException,
+  Res,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -28,6 +29,9 @@ import { CurUser } from '../../common/decorators/user.decorator';
 import { SearchUserDto } from './dto/search-user.dto';
 import { Permissions } from '../../common/decorators/permissions.decorator';
 import { RolesGuard } from '../../common/guards/roles.guard';
+import { ExcelService } from '../excel/excel.service';
+
+const fs = require('fs');
 
 @ApiTags('用户')
 @Controller('user')
@@ -36,6 +40,7 @@ import { RolesGuard } from '../../common/guards/roles.guard';
 export class UserController {
   constructor(
     private readonly userService: UserService,
+    private readonly excelService: ExcelService,
   ) {
   }
 
@@ -65,6 +70,68 @@ export class UserController {
   async findListPage(@Query() limitUserDto: LimitUserDto): Promise<any> {
     return await this.userService.selectListPage(limitUserDto);
   }
+
+  @Get('export')
+  @Permissions('account:user:export')
+  @ApiOperation({ summary: '列表（导出）' })
+  async export(@Query() searchUserDto: SearchUserDto, @Res() res): Promise<any> {
+    let list = await this.userService.export(searchUserDto);
+
+    let titleList = [{
+      key: 'userName',
+      value: '用户名',
+    }, {
+      key: 'userType',
+      value: '用户类型',
+    }, {
+      key: 'name',
+      value: '姓名',
+    }, {
+      key: 'mobile',
+      value: '手机号',
+    }, {
+      key: 'email',
+      value: '邮箱',
+    }, {
+      key: 'sex',
+      value: '性别',
+    }, {
+      key: 'birthday',
+      value: '生日',
+    }, {
+      key: 'status',
+      value: '状态',
+    }, {
+      key: 'description',
+      value: '备注',
+    }, {
+      key: 'createTime',
+      value: '创建时间',
+    }, {
+      key: 'updateTime',
+      value: '修改时间',
+    }];
+
+    const result = this.excelService.exportExcel(titleList, list);
+
+    res.setHeader(
+      'Content-Type',
+      'application/vnd.openxmlformats;charset=utf-8',
+    );
+    res.setHeader(
+      'Content-Disposition',
+      'attachment; filename=' + encodeURIComponent('用户') + '.xlsx',// 中文名需要进行 url 转码
+    );
+    res.setTimeout(30 * 60 * 1000); // 防止网络原因造成超时。
+    res.end(result, 'binary');
+  }
+
+  // @Get('import')
+  // @Permissions('account:user:import')
+  // @ApiOperation({ summary: '列表（导入）' })
+  // async import(@Query() searchUserDto: SearchUserDto, @Res() res): Promise<any> {
+  //   // TODO
+  // }
 
   @Get('findById')
   @Permissions('account:user:findById')
@@ -105,14 +172,14 @@ export class UserController {
       throw new BadRequestException(`数据 id：${id} 不存在！`);
     }
 
-    return await this.userService.deleteById(baseFindByIdDto);
+    return await this.userService.deleteById(baseFindByIdDto, curUser);
   }
 
   @Post('deleteBatch')
   @Permissions('system:user:deleteBatch')
   @ApiOperation({ summary: '删除（批量）' })
   async deleteBatch(@CurUser() curUser, @Body() baseFindByIdsDto: BaseFindByIdsDto): Promise<any> {
-    return await this.userService.deleteByIds(baseFindByIdsDto);
+    return await this.userService.deleteByIds(baseFindByIdsDto, curUser);
   }
 
   @Post('bindGroups')

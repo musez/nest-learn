@@ -36,7 +36,6 @@ export class OrgService {
     kinship = kinship ? kinship : 0;
 
     let queryConditionList = [];
-
     let parentIds = null;
     if (!Utils.isBlank(parentId)) {
       if (kinship === 0) {
@@ -49,10 +48,10 @@ export class OrgService {
     } else {
       queryConditionList.push('parentId IS NULL');
     }
-
     if (!Utils.isBlank(name)) {
       queryConditionList.push('name LIKE :name');
     }
+    queryConditionList.push('deleteStatus = 0');
     let queryCondition = queryConditionList.join(' AND ');
 
     let res = await this.orgRepository.createQueryBuilder('o')
@@ -88,6 +87,7 @@ export class OrgService {
     if (!Utils.isBlank(name)) {
       queryConditionList.push('org.name LIKE :name');
     }
+    queryConditionList.push('deleteStatus = 0');
     let queryCondition = queryConditionList.join(' AND ');
 
     let res = await this.orgRepository.createQueryBuilder('org')
@@ -118,6 +118,7 @@ export class OrgService {
     let childList = await this.orgRepository.find({
       where: {
         parentId: id,
+        deleteStatus: 0,
       },
     });
 
@@ -137,7 +138,9 @@ export class OrgService {
     let { parentId } = baseFindByPIdDto;
 
     if (Utils.isBlank(parentId)) {
-      let res = await this.orgRepository.find();
+      let res = await this.orgRepository.find({
+        deleteStatus: 0,
+      });
       return Utils.construct(res, {
         id: 'id',
         pid: 'parentId',
@@ -158,6 +161,7 @@ export class OrgService {
     let childList = await this.orgRepository.find({
       where: {
         parentId: id,
+        deleteStatus: 0,
       },
     });
 
@@ -213,12 +217,12 @@ export class OrgService {
   /**
    * 删除
    */
-  async deleteById(baseFindByIdDto: BaseFindByIdDto): Promise<void> {
+  async deleteById(baseFindByIdDto: BaseFindByIdDto, curUser?): Promise<void> {
     let { id } = baseFindByIdDto;
 
     await this.orgRepository.createQueryBuilder()
-      .delete()
-      .from(Org)
+      .update(Org)
+      .set({ deleteStatus: 1, deleteBy: curUser.id })
       .where('id = :id', { id: id })
       .execute();
   }
@@ -226,12 +230,12 @@ export class OrgService {
   /**
    * 删除（批量）
    */
-  async deleteByIds(baseFindByIdsDto: BaseFindByIdsDto): Promise<void> {
+  async deleteByIds(baseFindByIdsDto: BaseFindByIdsDto, curUser?): Promise<void> {
     let { ids } = baseFindByIdsDto;
 
     await this.orgRepository.createQueryBuilder()
-      .delete()
-      .from(Org)
+      .update(Org)
+      .set({ deleteStatus: 1, deleteBy: curUser.id })
       .where('id in (:ids)', { ids: ids })
       .execute();
   }

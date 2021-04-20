@@ -37,11 +37,10 @@ export class DictService {
     let { dictName } = searchDictDto;
 
     let queryConditionList = [];
-
     if (!Utils.isBlank(dictName)) {
       queryConditionList.push('dictName LIKE :dictName');
     }
-
+    queryConditionList.push('deleteStatus = 0');
     let queryCondition = queryConditionList.join(' AND ');
 
     return await this.dictRepository.createQueryBuilder()
@@ -62,11 +61,10 @@ export class DictService {
     let offset = (page - 1) * limit;
 
     let queryConditionList = [];
-
     if (!Utils.isBlank(dictName)) {
       queryConditionList.push('dictName LIKE :dictName');
     }
-
+    queryConditionList.push('deleteStatus = 0');
     let queryCondition = queryConditionList.join(' AND ');
 
     let res = await this.dictRepository.createQueryBuilder()
@@ -123,12 +121,12 @@ export class DictService {
   /**
    * 删除
    */
-  async deleteById(baseFindByIdDto: BaseFindByIdDto): Promise<void> {
+  async deleteById(baseFindByIdDto: BaseFindByIdDto, curUser?): Promise<void> {
     let { id } = baseFindByIdDto;
 
     await this.dictRepository.createQueryBuilder()
-      .delete()
-      .from(Dict)
+      .update(Dict)
+      .set({ deleteStatus: 1, deleteBy: curUser.id })
       .where('id = :id', { id: id })
       .execute();
   }
@@ -136,12 +134,12 @@ export class DictService {
   /**
    * 删除（批量）
    */
-  async deleteByIds(baseFindByIdsDto: BaseFindByIdsDto): Promise<void> {
+  async deleteByIds(baseFindByIdsDto: BaseFindByIdsDto, curUser?): Promise<void> {
     let { ids } = baseFindByIdsDto;
 
     await this.dictRepository.createQueryBuilder()
-      .delete()
-      .from(Dict)
+      .update(Dict)
+      .set({ deleteStatus: 1, deleteBy: curUser.id })
       .where('id in (:ids)', { ids: ids })
       .execute();
   }

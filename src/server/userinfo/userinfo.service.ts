@@ -51,30 +51,30 @@ export class UserinfoService {
   /**
    * 删除
    */
-  async deleteByUserId(id: string): Promise<any> {
-    let res = await this.userinfoRepository.createQueryBuilder()
-      .delete()
-      .from(Userinfo)
-      .where('userId = :userId', {
-        userId: id,
-      })
-      .execute();
-
-    return res;
-  }
+  // async deleteByUserId(id: string,curUser?): Promise<any> {
+  //   let res = await this.userinfoRepository.createQueryBuilder()
+  //     .delete()
+  //     .from(Userinfo)
+  //     .where('userId = :userId', {
+  //       userId: id,
+  //     })
+  //     .execute();
+  //
+  //   return res;
+  // }
 
   /**
    * 删除（ids）
    */
-  async deleteByUserIds(baseFindByIdsDto: BaseFindByIdsDto): Promise<any> {
-    let res = await this.userinfoRepository.createQueryBuilder()
-      .delete()
-      .from(Userinfo)
-      .where('userId in (:userIds)', {
-        userIds: baseFindByIdsDto,
-      })
-      .execute();
-
-    return res;
-  }
+  // async deleteByUserIds(baseFindByIdsDto: BaseFindByIdsDto): Promise<any> {
+  //   let res = await this.userinfoRepository.createQueryBuilder()
+  //     .delete()
+  //     .from(Userinfo)
+  //     .where('userId in (:userIds)', {
+  //       userIds: baseFindByIdsDto,
+  //     })
+  //     .execute();
+  //
+  //   return res;
+  // }
 }

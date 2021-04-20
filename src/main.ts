@@ -12,6 +12,9 @@ import { ParseIntPipe } from './common/pipe/parse-int.pipe';
 import { HttpExceptionFilter } from './common/filter/http-exception.filter';
 import { AllExceptionsFilter } from './common/filter/any-exception.filter';
 import { logger } from './common/middleware/logger.middleware';
+import { Logger } from './utils/log4js';
+// import Alphabet from 'alphabetjs'
+const Alphabet = require('alphabetjs')
 
 async function bootstrap() {
   // const app = await NestFactory.create(AppModule);
@@ -82,7 +85,8 @@ async function bootstrap() {
 
   await app.listen(3000);
 
-  console.log(`应用程序运行在：${await app.getUrl()}`);
+  const str = Alphabet('icmz','stereo')
+  console.info(str)
 }
 
 bootstrap();

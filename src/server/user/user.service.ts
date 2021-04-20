@@ -19,6 +19,7 @@ import { UserinfoService } from '../userinfo/userinfo.service';
 import { SearchUserDto } from './dto/search-user.dto';
 import { LimitUserDto } from './dto/limit-user.dto';
 import { CryptoUtil } from '../../utils/crypto.util';
+import { Role } from '../role/entities/role.entity';
 
 @Injectable()
 export class UserService {
@@ -33,10 +34,13 @@ export class UserService {
   }
 
   /**
-   * 获取详情（name）
+   * 获取详情（userName）
    */
   async selectByName(userName: string): Promise<User | undefined> {
-    const user = this.userRepository.findOne({ userName: userName });
+    const user = this.userRepository.findOne({
+      userName: userName,
+      deleteStatus: 0,
+    });
     if (user) return user;
     else return null;
   }
@@ -95,7 +99,6 @@ export class UserService {
     let { userName, name, userType, mobile, email } = searchUserDto;
 
     let queryConditionList = [];
-
     if (!Utils.isBlank(userName)) {
       queryConditionList.push('user.userName LIKE :userName');
     }
@@ -111,6 +114,45 @@ export class UserService {
     if (!Utils.isBlank(email)) {
       queryConditionList.push('user.email = :email');
     }
+    queryConditionList.push('deleteStatus = 0');
+    let queryCondition = queryConditionList.join(' AND ');
+
+    return await this.userRepository.createQueryBuilder('user')
+      .leftJoinAndSelect('user.userinfo', 'userinfo')
+      .where(queryCondition, {
+        userName: `%${userName}%`,
+        name: `%${name}%`,
+        userType: userType,
+        mobile: mobile,
+        email: email,
+      })
+      .orderBy('user.createTime', 'DESC')
+      .getMany();
+  }
+
+  /**
+   * 获取列表
+   */
+  async export(searchUserDto: SearchUserDto): Promise<any[]> {
+    let { userName, name, userType, mobile, email } = searchUserDto;
+
+    let queryConditionList = [];
+    if (!Utils.isBlank(userName)) {
+      queryConditionList.push('user.userName LIKE :userName');
+    }
+    if (!Utils.isBlank(name)) {
+      queryConditionList.push('user.name LIKE :name');
+    }
+    if (!Utils.isBlank(userType)) {
+      queryConditionList.push('user.userType = :userType');
+    }
+    if (!Utils.isBlank(mobile)) {
+      queryConditionList.push('user.mobile = :mobile');
+    }
+    if (!Utils.isBlank(email)) {
+      queryConditionList.push('user.email = :email');
+    }
+    queryConditionList.push('deleteStatus = 0');
     let queryCondition = queryConditionList.join(' AND ');
 
     return await this.userRepository.createQueryBuilder('user')
@@ -151,6 +193,7 @@ export class UserService {
     if (!Utils.isBlank(email)) {
       queryConditionList.push('user.email = :email');
     }
+    queryConditionList.push('deleteStatus = 0');
     let queryCondition = queryConditionList.join(' AND ');
 
     let res = await this.userRepository.createQueryBuilder('user')
@@ -253,21 +296,31 @@ export class UserService {
   /**
    * 删除
    */
-  async deleteById(baseFindByIdDto: BaseFindByIdDto): Promise<void> {
+  async deleteById(baseFindByIdDto: BaseFindByIdDto, curUser?): Promise<void> {
     let { id } = baseFindByIdDto;
 
-    this.userRepository.delete(id);
-    await this.userinfoService.deleteByUserId(id);
+    // this.userRepository.delete(id);
+    // await this.userinfoService.deleteByUserId(id);
+    await this.userRepository.createQueryBuilder()
+      .update(User)
+      .set({ deleteStatus: 1, deleteBy: curUser.id })
+      .where('id = :id', { id: id })
+      .execute();
   }
 
   /**
    * 删除（批量）
    */
-  async deleteByIds(baseFindByIdsDto: BaseFindByIdsDto): Promise<void> {
+  async deleteByIds(baseFindByIdsDto: BaseFindByIdsDto, curUser?): Promise<void> {
     let { ids } = baseFindByIdsDto;
 
-    this.userRepository.delete(ids);
-    await this.userinfoService.deleteByUserId(ids);
+    // this.userRepository.delete(ids);
+    // await this.userinfoService.deleteByUserId(ids);
+    await this.userRepository.createQueryBuilder()
+      .update(User)
+      .set({ deleteStatus: 1, deleteBy: curUser.id })
+      .where('ids in (:ids)', { ids: ids })
+      .execute();
   }
 
   /**

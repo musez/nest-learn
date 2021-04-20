@@ -91,14 +91,14 @@ export class RoleController {
     if (!isExistId) {
       throw new BadRequestException(`数据 id：${id} 不存在！`);
     }
-    return await this.roleService.deleteById(baseFindByIdDto);
+    return await this.roleService.deleteById(baseFindByIdDto, curUser);
   }
 
   @Post('deleteBatch')
   @Permissions('system:role:deleteBatch')
   @ApiOperation({ summary: '删除（批量）' })
   async deleteBatch(@CurUser() curUser, @Body() baseFindByIdsDto: BaseFindByIdsDto): Promise<any> {
-    return await this.roleService.deleteByIds(baseFindByIdsDto);
+    return await this.roleService.deleteByIds(baseFindByIdsDto, curUser);
   }
 
   @Get('getPermissions')

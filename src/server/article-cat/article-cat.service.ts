@@ -34,7 +34,6 @@ export class ArticleCatService {
     let { parentId, kinship, catName } = searchArticleCatDto;
 
     let queryConditionList = [];
-
     let parentIds = null;
     if (!Utils.isBlank(parentId)) {
       if (kinship === 0) {
@@ -47,11 +46,10 @@ export class ArticleCatService {
     } else {
       queryConditionList.push('parentId IS NULL');
     }
-
     if (!Utils.isBlank(catName)) {
       queryConditionList.push('catName LIKE :catName');
     }
-
+    queryConditionList.push('deleteStatus = 0');
     let queryCondition = queryConditionList.join(' AND ');
 
     let res = await this.articleCatRepository.createQueryBuilder('ac')
@@ -79,17 +77,15 @@ export class ArticleCatService {
     let offset = (page - 1) * limit;
 
     let queryConditionList = [];
-
     let parentIds = [];
     if (!Utils.isBlank(parentId)) {
       parentIds = await this.selectChildrenIdsRecursive(parentId);
       queryConditionList.push('parentId IN (:...parentIds)');
     }
-
     if (!Utils.isBlank(catName)) {
       queryConditionList.push('catName LIKE :catName');
     }
-
+    queryConditionList.push('deleteStatus = 0');
     let queryCondition = queryConditionList.join(' AND ');
 
     let res = await this.articleCatRepository.createQueryBuilder()
@@ -119,6 +115,7 @@ export class ArticleCatService {
     let childList = await this.articleCatRepository.find({
       where: {
         parentId: id,
+        deleteStatus: 0,
       },
     });
 
@@ -138,7 +135,9 @@ export class ArticleCatService {
     let { parentId } = baseFindByPIdDto;
 
     if (Utils.isBlank(parentId)) {
-      let res = await this.articleCatRepository.find();
+      let res = await this.articleCatRepository.find({
+        deleteStatus: 0,
+      });
       return Utils.construct(res, {
         id: 'id',
         pid: 'parentId',
@@ -159,6 +158,7 @@ export class ArticleCatService {
     let childList = await this.articleCatRepository.find({
       where: {
         parentId: id,
+        deleteStatus: 0,
       },
     });
 
@@ -213,13 +213,12 @@ export class ArticleCatService {
   /**
    * 删除
    */
-  async deleteById(baseFindByIdDto: BaseFindByIdDto): Promise<void> {
+  async deleteById(baseFindByIdDto: BaseFindByIdDto, curUser?): Promise<void> {
     let { id } = baseFindByIdDto;
 
-    // await this.articleCatRepository.delete(isExist);
     await this.articleCatRepository.createQueryBuilder()
-      .delete()
-      .from(ArticleCat)
+      .update(ArticleCat)
+      .set({ deleteStatus: 1, deleteBy: curUser.id })
       .where('id = :id', { id: id })
       .execute();
   }
@@ -227,12 +226,12 @@ export class ArticleCatService {
   /**
    * 删除（批量）
    */
-  async deleteByIds(baseFindByIdsDto: BaseFindByIdsDto): Promise<void> {
+  async deleteByIds(baseFindByIdsDto: BaseFindByIdsDto, curUser?): Promise<void> {
     let { ids } = baseFindByIdsDto;
 
     await this.articleCatRepository.createQueryBuilder()
-      .delete()
-      .from(ArticleCat)
+      .update(ArticleCat)
+      .set({ deleteStatus: 1, deleteBy: curUser.id })
       .where('id in (:ids)', { ids: ids })
       .execute();
   }

@@ -31,19 +31,16 @@ export class ArticleService {
     let { title, type, status } = searchArticleDto;
 
     let queryConditionList = [];
-
     if (!Utils.isBlank(title)) {
       queryConditionList.push('title LIKE :title');
     }
-
     if (!Utils.isBlank(type)) {
       queryConditionList.push('type = :type');
     }
-
     if (!Utils.isBlank(status)) {
       queryConditionList.push('status = :status');
     }
-
+    queryConditionList.push('deleteStatus = 0');
     let queryCondition = queryConditionList.join(' AND ');
 
     return await this.articleRepository.createQueryBuilder()
@@ -66,19 +63,16 @@ export class ArticleService {
     let offset = (page - 1) * limit;
 
     let queryConditionList = [];
-
     if (!Utils.isBlank(title)) {
       queryConditionList.push('title LIKE :title');
     }
-
     if (!Utils.isBlank(type)) {
       queryConditionList.push('type = :type');
     }
-
     if (!Utils.isBlank(status)) {
       queryConditionList.push('status = :status');
     }
-
+    queryConditionList.push('deleteStatus = 0');
     let queryCondition = queryConditionList.join(' AND ');
 
     let res = await this.articleRepository.createQueryBuilder()
@@ -135,13 +129,17 @@ export class ArticleService {
   /**
    * 删除
    */
-  async deleteById(baseFindByIdDto: BaseFindByIdDto): Promise<void> {
+  async deleteById(baseFindByIdDto: BaseFindByIdDto, curUser?): Promise<void> {
     let { id } = baseFindByIdDto;
 
-    // await this.articleRepository.delete(isExist);
+    // await this.articleRepository.createQueryBuilder()
+    //   .delete()
+    //   .from(Article)
+    //   .where('id = :id', { id: id })
+    //   .execute();
     await this.articleRepository.createQueryBuilder()
-      .delete()
-      .from(Article)
+      .update(Article)
+      .set({ deleteStatus: 1, deleteBy: curUser.id })
       .where('id = :id', { id: id })
       .execute();
   }
@@ -162,12 +160,18 @@ export class ArticleService {
   /**
    * 清空回收站
    */
-  async clearRecycle(baseFindByIdsDto: BaseFindByIdsDto): Promise<void> {
+  async clearRecycle(baseFindByIdsDto: BaseFindByIdsDto, curUser?): Promise<void> {
     let { ids } = baseFindByIdsDto;
 
+    // await this.articleRepository.createQueryBuilder()
+    //   .delete()
+    //   .from(Article)
+    //   .where('id in (:ids)', { ids: ids })
+    //   .execute();
+
     await this.articleRepository.createQueryBuilder()
-      .delete()
-      .from(Article)
+      .update(Article)
+      .set({ deleteStatus: 1, deleteBy: curUser.id })
       .where('id in (:ids)', { ids: ids })
       .execute();
   }

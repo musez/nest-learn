@@ -37,11 +37,10 @@ export class PostService {
     let { name } = query;
 
     let queryConditionList = [];
-
     if (!Utils.isBlank(name)) {
       queryConditionList.push('name LIKE :name');
     }
-
+    queryConditionList.push('deleteStatus = 0');
     let queryCondition = queryConditionList.join(' AND ');
 
     return await this.postRepository.createQueryBuilder()
@@ -65,11 +64,10 @@ export class PostService {
     let offset = (page - 1) * limit;
 
     let queryConditionList = [];
-
     if (!Utils.isBlank(name)) {
       queryConditionList.push('name LIKE :name');
     }
-
+    queryConditionList.push('deleteStatus = 0');
     let queryCondition = queryConditionList.join(' AND ');
 
     let res = await this.postRepository.createQueryBuilder()
@@ -131,7 +129,7 @@ export class PostService {
   /**
    * 删除
    */
-  async deleteById(baseFindByIdDto: BaseFindByIdDto): Promise<void> {
+  async deleteById(baseFindByIdDto: BaseFindByIdDto, curUser?): Promise<void> {
     let { id } = baseFindByIdDto;
     let isExist = await this.postRepository.findOne(id);
     if (Utils.isNil(isExist)) {
@@ -139,8 +137,9 @@ export class PostService {
     }
 
     // await this.postRepository.delete(isExist);
-    await this.postRepository.createQueryBuilder().delete()
-      .from(SysPost)
+    await this.postRepository.createQueryBuilder()
+      .update(SysPost)
+      .set({ deleteStatus: 1, deleteBy: curUser.id })
       .where('id = :id', { id: id })
       .execute();
   }
@@ -148,12 +147,12 @@ export class PostService {
   /**
    * 删除（批量）
    */
-  async deleteByIds(baseFindByIdsDto: BaseFindByIdsDto): Promise<void> {
+  async deleteByIds(baseFindByIdsDto: BaseFindByIdsDto, curUser?): Promise<void> {
     let { ids } = baseFindByIdsDto;
 
     await this.postRepository.createQueryBuilder()
-      .delete()
-      .from(SysPost)
+      .update(SysPost)
+      .set({ deleteStatus: 1, deleteBy: curUser.id })
       .where('id in (:ids)', { ids: ids })
       .execute();
   }

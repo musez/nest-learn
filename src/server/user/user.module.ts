@@ -7,9 +7,10 @@ import { UserinfoModule } from '../userinfo/userinfo.module';
 import { UserGroupModule } from '../user-group/user-group.module';
 import { UserRoleModule } from '../user-role/user-role.module';
 import { CryptoUtil } from '../../utils/crypto.util';
+import { ExcelModule } from '../excel/excel.module';
 
 @Module({
-  imports: [UserinfoModule, UserGroupModule, UserRoleModule, TypeOrmModule.forFeature([User])],
+  imports: [UserinfoModule, UserGroupModule, UserRoleModule, ExcelModule, TypeOrmModule.forFeature([User])],
   controllers: [UserController],
   providers: [UserService, CryptoUtil],
   exports: [UserService],

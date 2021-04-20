@@ -26,17 +26,14 @@ export class AreaService {
     }
 
     let queryConditionList = [];
-
     let parentIds = [];
     if (!Utils.isBlank(parentId)) {
       parentIds = await this.selectChildrenIdsRecursive(parentId);
       queryConditionList.push('parentId IN (:...parentIds)');
     }
-
     if (!Utils.isBlank(areaName)) {
       queryConditionList.push('areaName LIKE :areaName');
     }
-
     let queryCondition = queryConditionList.join(' AND ');
 
     let res = await this.areaRepository.createQueryBuilder('a')

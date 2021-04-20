@@ -91,13 +91,13 @@ export class ArticleCatController {
       throw new BadRequestException(`数据 id：${id} 不存在！`);
     }
 
-    return await this.articleCatService.deleteById(baseFindByIdDto);
+    return await this.articleCatService.deleteById(baseFindByIdDto, curUser);
   }
 
   @Post('deleteBatch')
   @Permissions('system:articleCat:deleteBatch')
   @ApiOperation({ summary: '删除（批量）' })
   async deleteBatch(@CurUser() curUser, @Body() baseFindByIdsDto: BaseFindByIdsDto): Promise<any> {
-    return await this.articleCatService.deleteByIds(baseFindByIdsDto);
+    return await this.articleCatService.deleteByIds(baseFindByIdsDto, curUser);
   }
 }

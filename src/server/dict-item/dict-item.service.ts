@@ -50,15 +50,13 @@ export class DictItemService {
     let { itemText, dictId } = searchDictItemDto;
 
     let queryConditionList = [];
-
     if (!Utils.isBlank(itemText)) {
       queryConditionList.push('itemText LIKE :itemText');
     }
-
     if (!Utils.isBlank(dictId)) {
       queryConditionList.push('dictId = :dictId');
     }
-
+    queryConditionList.push('deleteStatus = 0');
     let queryCondition = queryConditionList.join(' AND ');
 
     return await this.dictItemRepository.createQueryBuilder()
@@ -83,11 +81,10 @@ export class DictItemService {
     let offset = (page - 1) * limit;
 
     let queryConditionList = [];
-
     if (!Utils.isBlank(itemText)) {
       queryConditionList.push('itemText LIKE :itemText');
     }
-
+    queryConditionList.push('deleteStatus = 0');
     let queryCondition = queryConditionList.join(' AND ');
 
     let res = await this.dictItemRepository.createQueryBuilder()
@@ -118,11 +115,10 @@ export class DictItemService {
     let { id } = baseFindByIdDto;
 
     let queryConditionList = [];
-
     if (!Utils.isBlank(id)) {
       queryConditionList.push('dictId = :id');
     }
-
+    queryConditionList.push('deleteStatus = 0');
     let queryCondition = queryConditionList.join(' AND ');
 
     return await this.dictItemRepository.createQueryBuilder()
@@ -139,10 +135,10 @@ export class DictItemService {
   /**
    * 删除（字典 id）
    */
-  async deleteByDictId(id: string): Promise<void> {
+  async deleteByDictId(id: string, curUser?): Promise<void> {
     await this.dictItemRepository.createQueryBuilder()
-      .delete()
-      .from(DictItem)
+      .update(DictItem)
+      .set({ deleteStatus: 1, deleteBy: curUser.id })
       .where('dictId = :id', { id: id })
       .execute();
   }

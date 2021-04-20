@@ -54,7 +54,8 @@ export class User extends BaseEntity {
   @Column('varchar', { comment: '名称', length: 50 })
   userName: string;
 
-  @Column('varchar', { comment: '密码', length: 100, select: false })
+  // @Column('varchar', { comment: '密码', length: 100, select: false })
+  @Column('varchar', { comment: '密码', length: 100 })
   @Exclude()
   userPwd: string;
 

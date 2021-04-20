@@ -18,6 +18,7 @@ import {
   FilesInterceptor,
   FileFieldsInterceptor,
 } from '@nestjs/platform-express';
+
 const fs = require('fs');
 import { Utils } from './../../utils/index';
 import { FileService } from './file.service';
@@ -216,7 +217,7 @@ export class FileController {
       throw new BadRequestException(`数据 id：${id} 不存在！`);
     }
 
-    return await this.fileService.deleteById(baseFindByIdDto);
+    return await this.fileService.deleteById(baseFindByIdDto, curUser);
   }
 
   @Post('deleteBatch')
@@ -224,6 +225,6 @@ export class FileController {
   @Permissions('system:file:deleteBatch')
   @ApiOperation({ summary: '删除（批量）' })
   async deleteBatch(@CurUser() curUser, @Body() baseFindByIdsDto: BaseFindByIdsDto): Promise<any> {
-    return await this.fileService.deleteByIds(baseFindByIdsDto);
+    return await this.fileService.deleteByIds(baseFindByIdsDto, curUser);
   }
 }

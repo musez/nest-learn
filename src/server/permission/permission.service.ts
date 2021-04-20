@@ -40,7 +40,6 @@ export class PermissionService {
     kinship = kinship ? kinship : 0;
 
     let queryConditionList = [];
-
     let parentIds = null;
     if (!Utils.isBlank(parentId)) {
       if (kinship === 0) {
@@ -53,11 +52,9 @@ export class PermissionService {
     } else {
       queryConditionList.push('parentId IS NULL');
     }
-
     if (!Utils.isBlank(name)) {
       queryConditionList.push('name LIKE :name');
     }
-
     if (!Utils.isBlank(type)) {
       if (Array.isArray(type)) {
         queryConditionList.push('type IN (:...type)');
@@ -65,7 +62,7 @@ export class PermissionService {
         queryConditionList.push('type = type');
       }
     }
-
+    queryConditionList.push('deleteStatus = 0');
     let queryCondition = queryConditionList.join(' AND ');
 
     let res = await this.permissionRepository.createQueryBuilder('p')
@@ -107,6 +104,7 @@ export class PermissionService {
     if (!Utils.isBlank(name)) {
       queryConditionList.push('name LIKE :name');
     }
+    queryConditionList.push('deleteStatus = 0');
     let queryCondition = queryConditionList.join(' AND ');
 
     let res = await this.permissionRepository.createQueryBuilder()
@@ -139,6 +137,7 @@ export class PermissionService {
     let childList = await this.permissionRepository.find({
       where: {
         parentId: id,
+        deleteStatus: 0,
       },
     });
 
@@ -158,7 +157,9 @@ export class PermissionService {
     let { parentId } = baseFindByPIdDto;
 
     if (Utils.isBlank(parentId)) {
-      let res = await this.permissionRepository.find();
+      let res = await this.permissionRepository.find({
+        deleteStatus: 0,
+      });
       return Utils.construct(res, {
         id: 'id',
         pid: 'parentId',
@@ -179,6 +180,7 @@ export class PermissionService {
     let childList = await this.permissionRepository.find({
       where: {
         parentId: id,
+        deleteStatus: 0,
       },
     });
 
@@ -235,12 +237,12 @@ export class PermissionService {
   /**
    * 删除
    */
-  async deleteById(baseFindByIdDto: BaseFindByIdDto): Promise<void> {
+  async deleteById(baseFindByIdDto: BaseFindByIdDto, curUser?): Promise<void> {
     let { id } = baseFindByIdDto;
 
     await this.permissionRepository.createQueryBuilder()
-      .delete()
-      .from(Permission)
+      .update(Permission)
+      .set({ deleteStatus: 1, deleteBy: curUser.id })
       .where('id = :id', { id: id })
       .execute();
   }
@@ -248,12 +250,12 @@ export class PermissionService {
   /**
    * 删除（批量）
    */
-  async deleteByIds(baseFindByIdsDto: BaseFindByIdsDto): Promise<void> {
+  async deleteByIds(baseFindByIdsDto: BaseFindByIdsDto, curUser?): Promise<void> {
     let { ids } = baseFindByIdsDto;
 
     await this.permissionRepository.createQueryBuilder()
-      .delete()
-      .from(Permission)
+      .update(Permission)
+      .set({ deleteStatus: 1, deleteBy: curUser.id })
       .where('id in (:ids)', { ids: ids })
       .execute();
   }

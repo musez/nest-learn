@@ -38,11 +38,10 @@ export class GroupService {
     let { name } = query;
 
     let queryConditionList = [];
-
     if (!Utils.isBlank(name)) {
       queryConditionList.push('name LIKE :name');
     }
-
+    queryConditionList.push('deleteStatus = 0');
     let queryCondition = queryConditionList.join(' AND ');
 
     return await this.groupRepository.createQueryBuilder()
@@ -63,11 +62,10 @@ export class GroupService {
     let offset = (page - 1) * limit;
 
     let queryConditionList = [];
-
     if (!Utils.isBlank(name)) {
       queryConditionList.push('name LIKE :name');
     }
-
+    queryConditionList.push('deleteStatus = 0');
     let queryCondition = queryConditionList.join(' AND ');
 
     let res = await this.groupRepository.createQueryBuilder()
@@ -113,7 +111,6 @@ export class GroupService {
     let { id } = updateGroupDto;
 
     let group = new Group();
-    debugger
     group = Utils.dto2entity(updateGroupDto, group);
     group.updateBy = curUser.id;
     await this.groupRepository.update(id, group);
@@ -122,11 +119,12 @@ export class GroupService {
   /**
    * 删除
    */
-  async deleteById(baseFindByIdDto: BaseFindByIdDto): Promise<void> {
+  async deleteById(baseFindByIdDto: BaseFindByIdDto, curUser?): Promise<void> {
     let { id } = baseFindByIdDto;
 
-    await this.groupRepository.createQueryBuilder().delete()
-      .from(Group)
+    await this.groupRepository.createQueryBuilder()
+      .update(Group)
+      .set({ deleteStatus: 1, deleteBy: curUser.id })
       .where('id = :id', { id: id })
       .execute();
   }
@@ -134,12 +132,12 @@ export class GroupService {
   /**
    * 删除（批量）
    */
-  async deleteByIds(baseFindByIdsDto: BaseFindByIdsDto): Promise<void> {
+  async deleteByIds(baseFindByIdsDto: BaseFindByIdsDto, curUser?): Promise<void> {
     let { ids } = baseFindByIdsDto;
 
     await this.groupRepository.createQueryBuilder()
-      .delete()
-      .from(Group)
+      .update(Group)
+      .set({ deleteStatus: 1, deleteBy: curUser.id })
       .where('id in (:ids)', { ids: ids })
       .execute();
   }
