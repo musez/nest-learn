@@ -30,7 +30,7 @@ export class OrgService {
   /**
    * 获取列表
    */
-  async selectList(searchOrgDto: SearchOrgDto): Promise<Org[]> {
+  async selectList(searchOrgDto: SearchOrgDto): Promise<any[]> {
     let { parentId, kinship, name } = searchOrgDto;
 
     kinship = kinship ? kinship : 0;

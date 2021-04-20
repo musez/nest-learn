@@ -3,6 +3,7 @@ import {
   Get,
   Query,
   UseGuards,
+  Res,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -17,19 +18,31 @@ import { BaseFindByIdDto, BaseFindByPIdDto } from '../base.dto';
 import { SearchAreaDto } from './dto/search-area.dto';
 import { Permissions } from '../../common/decorators/permissions.decorator';
 import { RolesGuard } from '../../common/guards/roles.guard';
+import { SearchPostDto } from '../post/dto/search-post.dto';
+import { Utils } from '../../utils';
+import { ExcelService } from '../excel/excel.service';
 
 @Controller('area')
 @ApiTags('地区')
 @ApiBasicAuth()
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class AreaController {
-  constructor(private readonly areaService: AreaService) {
+  constructor(
+    private readonly areaService: AreaService,
+    private readonly excelService: ExcelService,
+  ) {
   }
 
   @Get('findList')
   @Permissions('system:area:findList')
   @ApiOperation({ summary: '获取列表（默认返回 []）' })
   async findList(@Query() searchAreaDto: SearchAreaDto): Promise<Area[]> {
+    let { parentId, areaName } = searchAreaDto;
+
+    if (Utils.isBlank(parentId) && Utils.isBlank(areaName)) {
+      return [];
+    }
+
     return await this.areaService.selectList(searchAreaDto);
   }
 
@@ -59,5 +72,34 @@ export class AreaController {
   @ApiOperation({ summary: '获取详情（主键 id）' })
   async findById(@Query() id: string): Promise<Area> {
     return await this.areaService.selectById(id);
+  }
+
+  @Get('export')
+  @Permissions('account:area:export')
+  @ApiOperation({ summary: '列表（导出）' })
+  async export(@Query() searchAreaDto: SearchAreaDto, @Res() res): Promise<any> {
+    let list = await this.areaService.selectList(searchAreaDto);
+
+    let titleList = [
+      { key: 'areaName', value: '地区名称' },
+      { key: 'areaCode', value: '地区编码' },
+      { key: 'level', value: '地区级别' },
+      { key: 'cityCode', value: '城市编码' },
+      { key: 'center', value: '城市中心点' },
+      { key: 'createTime', value: '创建时间' },
+      { key: 'updateTime', value: '修改时间' },
+    ];
+    const result = this.excelService.exportExcel(titleList, list);
+
+    res.setHeader(
+      'Content-Type',
+      'application/vnd.openxmlformats;charset=utf-8',
+    );
+    res.setHeader(
+      'Content-Disposition',
+      'attachment; filename=' + encodeURIComponent(`地区_${Utils.dayjsFormat('YYYYMMDD')}`) + '.xlsx',// 中文名需要进行 url 转码
+    );
+    res.setTimeout(30 * 60 * 1000); // 防止网络原因造成超时。
+    res.end(result, 'binary');
   }
 }

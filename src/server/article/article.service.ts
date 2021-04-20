@@ -27,7 +27,7 @@ export class ArticleService {
   /**
    * 获取列表
    */
-  async selectList(searchArticleDto: SearchArticleDto): Promise<Article[]> {
+  async selectList(searchArticleDto: SearchArticleDto): Promise<any[]> {
     let { title, type, status } = searchArticleDto;
 
     let queryConditionList = [];

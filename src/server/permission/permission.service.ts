@@ -34,7 +34,7 @@ export class PermissionService {
   /**
    * 获取列表
    */
-  async selectList(searchPermissionDto: SearchPermissionDto): Promise<Permission[]> {
+  async selectList(searchPermissionDto: SearchPermissionDto): Promise<any[]> {
     let { parentId, kinship, name, type } = searchPermissionDto;
 
     kinship = kinship ? kinship : 0;

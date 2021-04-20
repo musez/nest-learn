@@ -9,6 +9,7 @@ import {
   UseInterceptors,
   ClassSerializerInterceptor,
   BadRequestException,
+  Res,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -28,13 +29,18 @@ import { CurUser } from '../../common/decorators/user.decorator';
 import { SearchArticleDto } from './dto/search-article.dto';
 import { Permissions } from '../../common/decorators/permissions.decorator';
 import { RolesGuard } from '../../common/guards/roles.guard';
+import { Utils } from '../../utils';
+import { ExcelService } from '../excel/excel.service';
 
 @Controller('article')
 @ApiTags('文章')
 @ApiBasicAuth()
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class ArticleController {
-  constructor(private readonly articleService: ArticleService) {
+  constructor(
+    private readonly articleService: ArticleService,
+    private readonly excelService: ExcelService,
+  ) {
   }
 
   @Post('add')
@@ -63,6 +69,48 @@ export class ArticleController {
   @ApiOperation({ summary: '获取详情（主键 id）' })
   async findById(@Query() baseFindByIdDto: BaseFindByIdDto): Promise<Article> {
     return await this.articleService.selectById(baseFindByIdDto);
+  }
+
+  @Get('export')
+  @Permissions('account:article:export')
+  @ApiOperation({ summary: '列表（导出）' })
+  async export(@Query() searchArticleDto: SearchArticleDto, @Res() res): Promise<any> {
+    let list = await this.articleService.selectList(searchArticleDto);
+
+    let titleList = [
+      { key: 'title', value: '标题' },
+      { key: 'summary', value: '摘要' },
+      { key: 'author', value: '作者' },
+      { key: 'source', value: '来源' },
+      { key: 'keywords', value: '关键字' },
+      { key: 'type', value: '文章类型' },
+      { key: 'contentUrl', value: '链接' },
+      { key: 'weight', value: '权重' },
+      { key: 'publicTime', value: '发布时间' },
+      { key: 'publicBy', value: '发布人' },
+      { key: 'browseCount', value: '浏览量' },
+      { key: 'linkCount', value: '点赞量' },
+      { key: 'collectCount', value: '收藏量' },
+      { key: 'shareCount', value: '分享量' },
+      { key: 'commentCount', value: '评论' },
+      { key: 'isComment', value: '是否可以评论' },
+      { key: 'status', value: '状态' },
+      { key: 'description', value: '备注' },
+      { key: 'createTime', value: '创建时间' },
+      { key: 'updateTime', value: '修改时间' },
+    ];
+    const result = this.excelService.exportExcel(titleList, list);
+
+    res.setHeader(
+      'Content-Type',
+      'application/vnd.openxmlformats;charset=utf-8',
+    );
+    res.setHeader(
+      'Content-Disposition',
+      'attachment; filename=' + encodeURIComponent(`文章_${Utils.dayjsFormat('YYYYMMDD')}`) + '.xlsx',// 中文名需要进行 url 转码
+    );
+    res.setTimeout(30 * 60 * 1000); // 防止网络原因造成超时。
+    res.end(result, 'binary');
   }
 
   @Post('update')

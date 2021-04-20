@@ -6,6 +6,7 @@ import { Area } from './entities/area.entity';
 import { BaseFindByIdDto, BaseFindByPIdDto } from '../base.dto';
 import { LimitAreaDto } from './dto/limit-area.dto';
 import { Permission } from '../permission/entities/permission.entity';
+import { SearchAreaDto } from './dto/search-area.dto';
 
 @Injectable()
 export class AreaService {
@@ -18,12 +19,8 @@ export class AreaService {
   /**
    * 获取列表（默认返回 []）
    */
-  async selectList(limitAreaDto: LimitAreaDto): Promise<Area[]> {
-    let { parentId, areaName } = limitAreaDto;
-
-    if (Utils.isBlank(parentId) && Utils.isBlank(areaName)) {
-      return [];
-    }
+  async selectList(searchAreaDto: SearchAreaDto): Promise<any[]> {
+    let { parentId, areaName } = searchAreaDto;
 
     let queryConditionList = [];
     let parentIds = [];

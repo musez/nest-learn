@@ -7,6 +7,10 @@ export class Utils {
     return dayjs(Date.now()).format('YYYY-MM-DD HH:mm:ss');
   }
 
+  static dayjsFormat(format) {
+    return dayjs(Date.now()).format(format);
+  }
+
   static dto2entity(dto: any, entity: any): any {
     let e = {};
     for (const key in entity) {

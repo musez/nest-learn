@@ -10,7 +10,7 @@ import { CryptoUtil } from '../../utils/crypto.util';
 import { ExcelModule } from '../excel/excel.module';
 
 @Module({
-  imports: [UserinfoModule, UserGroupModule, UserRoleModule, ExcelModule, TypeOrmModule.forFeature([User])],
+  imports: [UserinfoModule, UserGroupModule, UserRoleModule, TypeOrmModule.forFeature([User])],
   controllers: [UserController],
   providers: [UserService, CryptoUtil],
   exports: [UserService],

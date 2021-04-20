@@ -30,6 +30,7 @@ import { SearchUserDto } from './dto/search-user.dto';
 import { Permissions } from '../../common/decorators/permissions.decorator';
 import { RolesGuard } from '../../common/guards/roles.guard';
 import { ExcelService } from '../excel/excel.service';
+import { Utils } from './../../utils/index';
 
 const fs = require('fs');
 
@@ -71,47 +72,33 @@ export class UserController {
     return await this.userService.selectListPage(limitUserDto);
   }
 
+  @Get('findById')
+  @Permissions('account:user:findById')
+  @ApiOperation({ summary: '获取详情（主键 id）' })
+  async findById(@Query() baseFindByIdDto: BaseFindByIdDto): Promise<User> {
+    return await this.userService.selectById(baseFindByIdDto);
+  }
+
+
   @Get('export')
   @Permissions('account:user:export')
   @ApiOperation({ summary: '列表（导出）' })
   async export(@Query() searchUserDto: SearchUserDto, @Res() res): Promise<any> {
-    let list = await this.userService.export(searchUserDto);
+    let list = await this.userService.selectList(searchUserDto);
 
-    let titleList = [{
-      key: 'userName',
-      value: '用户名',
-    }, {
-      key: 'userType',
-      value: '用户类型',
-    }, {
-      key: 'name',
-      value: '姓名',
-    }, {
-      key: 'mobile',
-      value: '手机号',
-    }, {
-      key: 'email',
-      value: '邮箱',
-    }, {
-      key: 'sex',
-      value: '性别',
-    }, {
-      key: 'birthday',
-      value: '生日',
-    }, {
-      key: 'status',
-      value: '状态',
-    }, {
-      key: 'description',
-      value: '备注',
-    }, {
-      key: 'createTime',
-      value: '创建时间',
-    }, {
-      key: 'updateTime',
-      value: '修改时间',
-    }];
-
+    let titleList = [
+      { key: 'userName', value: '用户名' },
+      { key: 'userType', value: '用户类型' },
+      { key: 'name', value: '姓名' },
+      { key: 'mobile', value: '手机号' },
+      { key: 'email', value: '邮箱' },
+      { key: 'sex', value: '性别' },
+      { key: 'birthday', value: '生日' },
+      { key: 'status', value: '状态' },
+      { key: 'description', value: '备注' },
+      { key: 'createTime', value: '创建时间' },
+      { key: 'updateTime', value: '修改时间' },
+    ];
     const result = this.excelService.exportExcel(titleList, list);
 
     res.setHeader(
@@ -120,7 +107,7 @@ export class UserController {
     );
     res.setHeader(
       'Content-Disposition',
-      'attachment; filename=' + encodeURIComponent('用户') + '.xlsx',// 中文名需要进行 url 转码
+      'attachment; filename=' + encodeURIComponent(`用户_${Utils.dayjsFormat('YYYYMMDD')}`) + '.xlsx',// 中文名需要进行 url 转码
     );
     res.setTimeout(30 * 60 * 1000); // 防止网络原因造成超时。
     res.end(result, 'binary');
@@ -132,13 +119,6 @@ export class UserController {
   // async import(@Query() searchUserDto: SearchUserDto, @Res() res): Promise<any> {
   //   // TODO
   // }
-
-  @Get('findById')
-  @Permissions('account:user:findById')
-  @ApiOperation({ summary: '获取详情（主键 id）' })
-  async findById(@Query() baseFindByIdDto: BaseFindByIdDto): Promise<User> {
-    return await this.userService.selectById(baseFindByIdDto);
-  }
 
   @Post('update')
   @Permissions('account:user:update')

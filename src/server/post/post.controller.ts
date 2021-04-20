@@ -1,4 +1,16 @@
-import { Controller, Get, Post, Query, Body, Put, Param, Delete, UseGuards, BadRequestException } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Query,
+  Body,
+  Put,
+  Param,
+  Delete,
+  UseGuards,
+  BadRequestException,
+  Res,
+} from '@nestjs/common';
 import {
   ApiTags,
   ApiBasicAuth,
@@ -15,13 +27,18 @@ import { BaseFindByIdDto, BaseFindByIdsDto } from '../base.dto';
 import { SysPost } from './entities/post.entity';
 import { RolesGuard } from '../../common/guards/roles.guard';
 import { Permissions } from '../../common/decorators/permissions.decorator';
+import { Utils } from '../../utils';
+import { ExcelService } from '../excel/excel.service';
 
 @Controller('post')
 @ApiTags('岗位')
 @ApiBasicAuth()
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class PostController {
-  constructor(private readonly postService: PostService) {
+  constructor(
+    private readonly postService: PostService,
+    private readonly excelService: ExcelService,
+  ) {
   }
 
   @Post('add')
@@ -50,6 +67,33 @@ export class PostController {
   @ApiOperation({ summary: '获取详情（主键 id）' })
   async findById(@Query() baseFindByIdDto: BaseFindByIdDto): Promise<SysPost> {
     return await this.postService.selectById(baseFindByIdDto);
+  }
+
+  @Get('export')
+  @Permissions('account:post:export')
+  @ApiOperation({ summary: '列表（导出）' })
+  async export(@Query() searchPostDto: SearchPostDto, @Res() res): Promise<any> {
+    let list = await this.postService.selectList(searchPostDto);
+
+    let titleList = [
+      { key: 'name', value: '名称' },
+      { key: 'status', value: '状态' },
+      { key: 'description', value: '备注' },
+      { key: 'createTime', value: '创建时间' },
+      { key: 'updateTime', value: '修改时间' },
+    ];
+    const result = this.excelService.exportExcel(titleList, list);
+
+    res.setHeader(
+      'Content-Type',
+      'application/vnd.openxmlformats;charset=utf-8',
+    );
+    res.setHeader(
+      'Content-Disposition',
+      'attachment; filename=' + encodeURIComponent(`岗位_${Utils.dayjsFormat('YYYYMMDD')}`) + '.xlsx',// 中文名需要进行 url 转码
+    );
+    res.setTimeout(30 * 60 * 1000); // 防止网络原因造成超时。
+    res.end(result, 'binary');
   }
 
   @Post('update')

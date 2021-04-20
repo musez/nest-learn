@@ -34,7 +34,7 @@ export class GroupService {
   /**
    * 获取列表
    */
-  async selectList(query): Promise<Group[]> {
+  async selectList(query): Promise<any[]> {
     let { name } = query;
 
     let queryConditionList = [];

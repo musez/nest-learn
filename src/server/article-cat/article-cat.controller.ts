@@ -9,6 +9,7 @@ import {
   UseInterceptors,
   ClassSerializerInterceptor,
   BadRequestException,
+  Res
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -28,13 +29,18 @@ import { LimitArticleCatDto } from './dto/limit-article-cat.dto';
 import { SearchArticleCatDto } from './dto/search-article-cat.dto';
 import { RolesGuard } from '../../common/guards/roles.guard';
 import { Permissions } from '../../common/decorators/permissions.decorator';
+import { Utils } from '../../utils';
+import { ExcelService } from '../excel/excel.service';
 
 @Controller('articleCat')
 @ApiTags('文章栏目')
 @ApiBasicAuth()
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class ArticleCatController {
-  constructor(private readonly articleCatService: ArticleCatService) {
+  constructor(
+    private readonly articleCatService: ArticleCatService,
+    private readonly excelService: ExcelService,
+  ) {
   }
 
   @Post('add')
@@ -71,6 +77,33 @@ export class ArticleCatController {
   @ApiOperation({ summary: '获取详情（主键 id）' })
   async findById(@Query() baseFindByIdDto: BaseFindByIdDto): Promise<ArticleCat> {
     return await this.articleCatService.selectById(baseFindByIdDto);
+  }
+
+  @Get('export')
+  @Permissions('account:articleCat:export')
+  @ApiOperation({ summary: '列表（导出）' })
+  async export(@Query()  searchArticleCatDto: SearchArticleCatDto, @Res() res): Promise<any> {
+    let list = await this.articleCatService.selectList(searchArticleCatDto);
+
+    let titleList = [
+      { key: 'catName', value: '栏目名称' },
+      { key: 'status', value: '状态' },
+      { key: 'description', value: '备注' },
+      { key: 'createTime', value: '创建时间' },
+      { key: 'updateTime', value: '修改时间' },
+    ];
+    const result = this.excelService.exportExcel(titleList, list);
+
+    res.setHeader(
+      'Content-Type',
+      'application/vnd.openxmlformats;charset=utf-8',
+    );
+    res.setHeader(
+      'Content-Disposition',
+      'attachment; filename=' + encodeURIComponent(`文章分类_${Utils.dayjsFormat('YYYYMMDD')}`) + '.xlsx',// 中文名需要进行 url 转码
+    );
+    res.setTimeout(30 * 60 * 1000); // 防止网络原因造成超时。
+    res.end(result, 'binary');
   }
 
   @Post('update')

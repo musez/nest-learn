@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Query, Body, UseGuards, BadRequestException } from '@nestjs/common';
+import { Controller, Get, Post, Query, Body, UseGuards, BadRequestException, Res } from '@nestjs/common';
 import {
   ApiTags,
   ApiQuery,
@@ -17,13 +17,19 @@ import { CurUser } from '../../common/decorators/user.decorator';
 import { SearchPermissionDto } from './dto/search-permission.dto';
 import { RolesGuard } from '../../common/guards/roles.guard';
 import { Permissions } from '../../common/decorators/permissions.decorator';
+import { SearchRoleDto } from '../role/dto/search-role.dto';
+import { Utils } from '../../utils';
+import { ExcelService } from '../excel/excel.service';
 
 @Controller('permission')
 @ApiTags('权限')
 @ApiBasicAuth()
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class PermissionController {
-  constructor(private readonly permissionService: PermissionService) {
+  constructor(
+    private readonly permissionService: PermissionService,
+    private readonly excelService: ExcelService,
+  ) {
   }
 
   @Post('add')
@@ -60,6 +66,40 @@ export class PermissionController {
   @ApiOperation({ summary: '获取详情（主键 id）' })
   async findById(@Query() baseFindByIdDto: BaseFindByIdDto): Promise<Permission> {
     return await this.permissionService.selectById(baseFindByIdDto);
+  }
+
+  @Get('export')
+  @Permissions('account:permission:export')
+  @ApiOperation({ summary: '列表（导出）' })
+  async export(@Query() searchPermissionDto: SearchPermissionDto, @Res() res): Promise<any> {
+    let list = await this.permissionService.selectList(searchPermissionDto);
+
+    let titleList = [
+      { key: 'name', value: '名称' },
+      { key: 'type', value: '权限类型' },
+      { key: 'code', value: '权限 CODE 代码' },
+      { key: 'routerComponent', value: '路由 component' },
+      { key: 'routerHidden', value: '路由 hidden' },
+      { key: 'routerIcon', value: '路由 icon' },
+      { key: 'sort', value: '权限 sort' },
+      { key: 'routerPath', value: '路由 path' },
+      { key: 'status', value: '状态' },
+      { key: 'description', value: '备注' },
+      { key: 'createTime', value: '创建时间' },
+      { key: 'updateTime', value: '修改时间' },
+    ];
+    const result = this.excelService.exportExcel(titleList, list);
+
+    res.setHeader(
+      'Content-Type',
+      'application/vnd.openxmlformats;charset=utf-8',
+    );
+    res.setHeader(
+      'Content-Disposition',
+      'attachment; filename=' + encodeURIComponent(`权限_${Utils.dayjsFormat('YYYYMMDD')}`) + '.xlsx',// 中文名需要进行 url 转码
+    );
+    res.setTimeout(30 * 60 * 1000); // 防止网络原因造成超时。
+    res.end(result, 'binary');
   }
 
   @Post('update')

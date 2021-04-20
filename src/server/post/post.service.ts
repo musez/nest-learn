@@ -33,7 +33,7 @@ export class PostService {
   /**
    * 获取列表
    */
-  async selectList(query): Promise<SysPost[]> {
+  async selectList(query): Promise<any[]> {
     let { name } = query;
 
     let queryConditionList = [];

@@ -28,6 +28,7 @@ import { ArticleDataCatModule } from './server/article-data-cat/article-data-cat
 import { OrgModule } from './server/org/org.module';
 import { PostModule } from './server/post/post.module';
 import { ExcelModule } from './server/excel/excel.module';
+import { LocalConfigModule } from './server/config/local-config.module';
 
 const ENV = process.env.NODE_ENV;
 
@@ -76,6 +77,8 @@ const ENV = process.env.NODE_ENV;
     ArticleModule,
     ArticleCatModule,
     ArticleDataCatModule,
+    ConfigModule,
+    LocalConfigModule,
   ],
   controllers: [AppController],
   providers: [AppService],

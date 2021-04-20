@@ -10,6 +10,7 @@ import {
   UseInterceptors,
   ClassSerializerInterceptor,
   BadRequestException,
+  Res,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -27,13 +28,18 @@ import { LimitOrgDto } from './dto/limit-org.dto';
 import { BaseFindByIdDto, BaseFindByIdsDto, BaseFindByPIdDto } from '../base.dto';
 import { RolesGuard } from '../../common/guards/roles.guard';
 import { Permissions } from '../../common/decorators/permissions.decorator';
+import { Utils } from '../../utils';
+import { ExcelService } from '../excel/excel.service';
 
 @Controller('org')
 @ApiTags('组织机构')
 @ApiBasicAuth()
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class OrgController {
-  constructor(private readonly orgService: OrgService) {
+  constructor(
+    private readonly orgService: OrgService,
+    private readonly excelService: ExcelService,
+  ) {
   }
 
   @Post('add')
@@ -69,6 +75,37 @@ export class OrgController {
   @ApiOperation({ summary: '获取详情（主键 id）' })
   async findById(@Query() baseFindByIdDto: BaseFindByIdDto): Promise<Org> {
     return await this.orgService.selectById(baseFindByIdDto);
+  }
+
+  @Get('export')
+  @Permissions('account:org:export')
+  @ApiOperation({ summary: '列表（导出）' })
+  async export(@Query() searchOrgDto: SearchOrgDto, @Res() res): Promise<any> {
+    let list = await this.orgService.selectList(searchOrgDto);
+
+    let titleList = [
+      { key: 'name', value: '名称' },
+      { key: 'shortName', value: '简称' },
+      { key: 'orgType', value: '机构类型' },
+      { key: 'orgType', value: '机构类型' },
+      { key: 'orgLevel', value: '机构级次码' },
+      { key: 'status', value: '状态' },
+      { key: 'description', value: '备注' },
+      { key: 'createTime', value: '创建时间' },
+      { key: 'updateTime', value: '修改时间' },
+    ];
+    const result = this.excelService.exportExcel(titleList, list);
+
+    res.setHeader(
+      'Content-Type',
+      'application/vnd.openxmlformats;charset=utf-8',
+    );
+    res.setHeader(
+      'Content-Disposition',
+      'attachment; filename=' + encodeURIComponent(`组织机构_${Utils.dayjsFormat('YYYYMMDD')}`) + '.xlsx',// 中文名需要进行 url 转码
+    );
+    res.setTimeout(30 * 60 * 1000); // 防止网络原因造成超时。
+    res.end(result, 'binary');
   }
 
   @Post('update')

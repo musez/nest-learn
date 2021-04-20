@@ -1,14 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { CreateExcelDto } from './dto/create-excel.dto';
-import { UpdateExcelDto } from './dto/update-excel.dto';
 import xlsx from 'node-xlsx';
 
 // var excelParser = require('excel-parser');
 
 type ObjectType = {
-  id: number;
-  name: string;
-  address: string;
+  key: string;
+  value: string;
 };
 
 @Injectable()
@@ -20,8 +17,8 @@ export class ExcelService {
    * @param xlsName sheet 的名称
    */
   public exportExcel(
-    // titleList: Array<string>,
-    titleList,
+    titleList: Array<ObjectType>,
+    // titleList,
     dataList: string[],
     xlsName = 'sheet1',
   ): ArrayBuffer {

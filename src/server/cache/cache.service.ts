@@ -1,7 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { RedisService } from 'nestjs-redis';
-import { CreateCacheDto } from './dto/create-cache.dto';
-import { UpdateCacheDto } from './dto/update-cache.dto';
 
 @Injectable()
 export class CacheService {

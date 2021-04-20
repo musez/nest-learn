@@ -35,7 +35,7 @@ export class RoleService {
   /**
    * 获取列表
    */
-  async selectList(searchRoleDto: SearchRoleDto): Promise<Role[]> {
+  async selectList(searchRoleDto: SearchRoleDto): Promise<any[]> {
     let { name } = searchRoleDto;
 
     let queryConditionList = [];

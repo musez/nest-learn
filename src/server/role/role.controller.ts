@@ -9,6 +9,7 @@ import {
   UseInterceptors,
   ClassSerializerInterceptor,
   BadRequestException,
+  Res,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -29,6 +30,8 @@ import { CurUser } from '../../common/decorators/user.decorator';
 import { SearchRoleDto } from './dto/search-role.dto';
 import { RolesGuard } from '../../common/guards/roles.guard';
 import { Permissions } from '../../common/decorators/permissions.decorator';
+import { Utils } from '../../utils';
+import { ExcelService } from '../excel/excel.service';
 
 @Controller('role')
 @ApiTags('角色')
@@ -37,6 +40,7 @@ import { Permissions } from '../../common/decorators/permissions.decorator';
 export class RoleController {
   constructor(
     private readonly roleService: RoleService,
+    private readonly excelService: ExcelService,
   ) {
   }
 
@@ -66,6 +70,33 @@ export class RoleController {
   @ApiOperation({ summary: '获取详情（主键 id）' })
   async findById(@Query() baseFindByIdDto: BaseFindByIdDto): Promise<Role> {
     return await this.roleService.selectById(baseFindByIdDto);
+  }
+
+  @Get('export')
+  @Permissions('account:role:export')
+  @ApiOperation({ summary: '列表（导出）' })
+  async export(@Query() searchRoleDto: SearchRoleDto, @Res() res): Promise<any> {
+    let list = await this.roleService.selectList(searchRoleDto);
+
+    let titleList = [
+      { key: 'name', value: '名称' },
+      { key: 'status', value: '状态' },
+      { key: 'description', value: '备注' },
+      { key: 'createTime', value: '创建时间' },
+      { key: 'updateTime', value: '修改时间' },
+    ];
+    const result = this.excelService.exportExcel(titleList, list);
+
+    res.setHeader(
+      'Content-Type',
+      'application/vnd.openxmlformats;charset=utf-8',
+    );
+    res.setHeader(
+      'Content-Disposition',
+      'attachment; filename=' + encodeURIComponent(`角色_${Utils.dayjsFormat('YYYYMMDD')}`) + '.xlsx',// 中文名需要进行 url 转码
+    );
+    res.setTimeout(30 * 60 * 1000); // 防止网络原因造成超时。
+    res.end(result, 'binary');
   }
 
   @Post('update')

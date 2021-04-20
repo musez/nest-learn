@@ -30,7 +30,7 @@ export class ArticleCatService {
   /**
    * 获取列表
    */
-  async selectList(searchArticleCatDto: SearchArticleCatDto): Promise<ArticleCat[]> {
+  async selectList(searchArticleCatDto: SearchArticleCatDto): Promise<any[]> {
     let { parentId, kinship, catName } = searchArticleCatDto;
 
     let queryConditionList = [];
