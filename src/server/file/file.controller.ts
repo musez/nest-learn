@@ -88,7 +88,7 @@ export class FileController {
     fileEntity.path = file.path;
     fileEntity.size = file.size;
     fileEntity.fileUrl = `${file.destination}/${file.filename}`;
-    fileEntity.createBy = curUser.id;
+    fileEntity.createBy = curUser&&curUser.id;
 
     return this.fileService.insert(fileEntity, curUser);
   }
@@ -156,7 +156,7 @@ export class FileController {
       fileEntity.path = file.path;
       fileEntity.size = file.size;
       fileEntity.fileUrl = `${file.destination}/${file.filename}`;
-      fileEntity.createBy = curUser.id;
+      fileEntity.createBy = curUser&&curUser.id;
 
       filesEntity.push(fileEntity);
     });

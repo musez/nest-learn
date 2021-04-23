@@ -71,10 +71,10 @@ export class ArticleController {
     return await this.articleService.selectById(baseFindByIdDto);
   }
 
-  @Get('export')
-  @Permissions('account:article:export')
-  @ApiOperation({ summary: '列表（导出）' })
-  async export(@Query() searchArticleDto: SearchArticleDto, @Res() res): Promise<any> {
+  @Get('exportExcel')
+  @Permissions('account:article:exportExcel')
+  @ApiOperation({ summary: '列表（Excel 导出）' })
+  async exportExcel(@Query() searchArticleDto: SearchArticleDto, @Res() res): Promise<any> {
     let list = await this.articleService.selectList(searchArticleDto);
 
     let titleList = [

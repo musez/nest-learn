@@ -23,7 +23,7 @@ export class DictItemService {
   async insert(createDictItemDto: CreateDictItemDto, curUser): Promise<CreateDictItemDto> {
     let dictItem = new DictItem();
     dictItem = Utils.dto2entity(createDictItemDto, dictItem);
-    dictItem.createBy = curUser.id;
+    dictItem.createBy = curUser&&curUser.id;
     return await this.dictItemRepository.save(dictItem);
   }
 
@@ -36,7 +36,7 @@ export class DictItemService {
     createDictItemDto.forEach(item => {
       let dictItem = new DictItem();
       dictItem = Utils.dto2entity(item, dictItem);
-      dictItem.createBy = curUser.id;
+      dictItem.createBy = curUser&&curUser.id;
       dictItems.push(dictItem);
     });
 
@@ -138,7 +138,7 @@ export class DictItemService {
   async deleteByDictId(id: string, curUser?): Promise<void> {
     await this.dictItemRepository.createQueryBuilder()
       .update(DictItem)
-      .set({ deleteStatus: 1, deleteBy: curUser.id })
+      .set({ deleteStatus: 1, deleteBy: curUser&&curUser.id })
       .where('dictId = :id', { id: id })
       .execute();
   }

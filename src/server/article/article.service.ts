@@ -139,7 +139,7 @@ export class ArticleService {
     //   .execute();
     await this.articleRepository.createQueryBuilder()
       .update(Article)
-      .set({ deleteStatus: 1, deleteBy: curUser.id })
+      .set({ deleteStatus: 1, deleteBy: curUser&&curUser.id })
       .where('id = :id', { id: id })
       .execute();
   }
@@ -152,7 +152,7 @@ export class ArticleService {
 
     await this.articleRepository.createQueryBuilder()
       .update(Article)
-      .set({ status: status, updateBy: curUser.id })
+      .set({ status: status, updateBy: curUser&&curUser.id })
       .where('id in (:ids)', { ids: ids })
       .execute();
   }
@@ -171,7 +171,7 @@ export class ArticleService {
 
     await this.articleRepository.createQueryBuilder()
       .update(Article)
-      .set({ deleteStatus: 1, deleteBy: curUser.id })
+      .set({ deleteStatus: 1, deleteBy: curUser&&curUser.id })
       .where('id in (:ids)', { ids: ids })
       .execute();
   }

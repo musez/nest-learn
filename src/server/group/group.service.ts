@@ -27,7 +27,7 @@ export class GroupService {
   async insert(createGroupDto: CreateGroupDto, curUser?): Promise<CreateGroupDto> {
     let group = new Group();
     group = Utils.dto2entity(createGroupDto, group);
-    group.createBy = curUser.id;
+    group.createBy = curUser&&curUser.id;
     return await this.groupRepository.save(group);
   }
 
@@ -112,7 +112,7 @@ export class GroupService {
 
     let group = new Group();
     group = Utils.dto2entity(updateGroupDto, group);
-    group.updateBy = curUser.id;
+    group.updateBy = curUser&&curUser.id;
     await this.groupRepository.update(id, group);
   }
 
@@ -124,7 +124,7 @@ export class GroupService {
 
     await this.groupRepository.createQueryBuilder()
       .update(Group)
-      .set({ deleteStatus: 1, deleteBy: curUser.id })
+      .set({ deleteStatus: 1, deleteBy: curUser&&curUser.id })
       .where('id = :id', { id: id })
       .execute();
   }
@@ -137,7 +137,7 @@ export class GroupService {
 
     await this.groupRepository.createQueryBuilder()
       .update(Group)
-      .set({ deleteStatus: 1, deleteBy: curUser.id })
+      .set({ deleteStatus: 1, deleteBy: curUser&&curUser.id })
       .where('id in (:ids)', { ids: ids })
       .execute();
   }

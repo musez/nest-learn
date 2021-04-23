@@ -25,7 +25,7 @@ export class DictService {
   async insert(createDictDto: CreateDictDto, curUser?) {
     let dict = new Dict();
     dict = Utils.dto2entity(createDictDto, dict);
-    dict.createBy = curUser.id;
+    dict.createBy = curUser&&curUser.id;
 
     return await this.dictRepository.save(dict);
   }
@@ -112,7 +112,7 @@ export class DictService {
 
     let dict = new Dict();
     dict = Utils.dto2entity(updateDictDto, dict);
-    dict.updateBy = curUser.id;
+    dict.updateBy = curUser&&curUser.id;
     let result = await this.dictRepository.update(id, updateDictDto);
 
     return result;
@@ -126,7 +126,7 @@ export class DictService {
 
     await this.dictRepository.createQueryBuilder()
       .update(Dict)
-      .set({ deleteStatus: 1, deleteBy: curUser.id })
+      .set({ deleteStatus: 1, deleteBy: curUser&&curUser.id })
       .where('id = :id', { id: id })
       .execute();
   }
@@ -139,7 +139,7 @@ export class DictService {
 
     await this.dictRepository.createQueryBuilder()
       .update(Dict)
-      .set({ deleteStatus: 1, deleteBy: curUser.id })
+      .set({ deleteStatus: 1, deleteBy: curUser&&curUser.id })
       .where('id in (:ids)', { ids: ids })
       .execute();
   }

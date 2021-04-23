@@ -26,7 +26,7 @@ export class PostService {
 
     let post = new SysPost();
     post = Utils.dto2entity(createPostDto, post);
-    post.createBy = curUser.id;
+    post.createBy = curUser&&curUser.id;
     return await this.postRepository.save(post);
   }
 
@@ -121,7 +121,7 @@ export class PostService {
 
     let post = new SysPost();
     post = Utils.dto2entity(updatePostDto, post);
-    post.updateBy = curUser.id;
+    post.updateBy = curUser&&curUser.id;
 
     await this.postRepository.update(id, post);
   }
@@ -139,7 +139,7 @@ export class PostService {
     // await this.postRepository.delete(isExist);
     await this.postRepository.createQueryBuilder()
       .update(SysPost)
-      .set({ deleteStatus: 1, deleteBy: curUser.id })
+      .set({ deleteStatus: 1, deleteBy: curUser&&curUser.id })
       .where('id = :id', { id: id })
       .execute();
   }
@@ -152,7 +152,7 @@ export class PostService {
 
     await this.postRepository.createQueryBuilder()
       .update(SysPost)
-      .set({ deleteStatus: 1, deleteBy: curUser.id })
+      .set({ deleteStatus: 1, deleteBy: curUser&&curUser.id })
       .where('id in (:ids)', { ids: ids })
       .execute();
   }

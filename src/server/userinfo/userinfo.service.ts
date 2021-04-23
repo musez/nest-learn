@@ -16,9 +16,16 @@ export class UserinfoService {
   }
 
   /**
-   * 添加（批量）
+   * 添加
    */
   async insert(createUserinfoDto: CreateUserinfoDto): Promise<CreateUserinfoDto> {
+    return await this.userinfoRepository.save(createUserinfoDto);
+  }
+
+  /**
+   * 添加（批量）
+   */
+  async insertBatch(createUserinfoDto: CreateUserinfoDto[]): Promise<CreateUserinfoDto[]> {
     return await this.userinfoRepository.save(createUserinfoDto);
   }
 

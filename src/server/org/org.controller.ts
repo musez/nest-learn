@@ -77,10 +77,10 @@ export class OrgController {
     return await this.orgService.selectById(baseFindByIdDto);
   }
 
-  @Get('export')
-  @Permissions('account:org:export')
-  @ApiOperation({ summary: '列表（导出）' })
-  async export(@Query() searchOrgDto: SearchOrgDto, @Res() res): Promise<any> {
+  @Get('exportExcel')
+  @Permissions('account:org:exportExcel')
+  @ApiOperation({ summary: '列表（Excel 导出）' })
+  async exportExcel(@Query() searchOrgDto: SearchOrgDto, @Res() res): Promise<any> {
     let list = await this.orgService.selectList(searchOrgDto);
 
     let titleList = [

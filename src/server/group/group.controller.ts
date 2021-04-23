@@ -77,10 +77,10 @@ export class GroupController {
     return await this.groupService.selectById(baseFindByIdDto);
   }
 
-  @Get('export')
-  @Permissions('account:group:export')
-  @ApiOperation({ summary: '列表（导出）' })
-  async export(@Query() searchGroupDto: SearchGroupDto, @Res() res): Promise<any> {
+  @Get('exportExcel')
+  @Permissions('account:group:exportExcel')
+  @ApiOperation({ summary: '列表（Excel 导出）' })
+  async exportExcel(@Query() searchGroupDto: SearchGroupDto, @Res() res): Promise<any> {
     let list = await this.groupService.selectList(searchGroupDto);
 
     let titleList = [

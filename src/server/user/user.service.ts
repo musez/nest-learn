@@ -20,6 +20,8 @@ import { SearchUserDto } from './dto/search-user.dto';
 import { LimitUserDto } from './dto/limit-user.dto';
 import { CryptoUtil } from '../../utils/crypto.util';
 import { Role } from '../role/entities/role.entity';
+import { CreateRolePermissionDto } from '../role-permission/dto/create-role-permission.dto';
+import { CreateUserinfoDto } from '../userinfo/dto/create-userinfo.dto';
 
 @Injectable()
 export class UserService {
@@ -49,7 +51,11 @@ export class UserService {
    * 修改登录次数
    */
   async incrementLoginCount(baseFindByIdDto: BaseFindByIdDto): Promise<any> {
-    let userEntity = await this.userRepository.findOne(baseFindByIdDto, {
+    let userEntity = await this.userRepository.findOne({
+      where: {
+        id: baseFindByIdDto,
+        deleteStatus: 0,
+      },
       select: ['id'],
     });
 
@@ -69,7 +75,7 @@ export class UserService {
     } else {
       user.userPwd = this.cryptoUtil.encryptPassword(userPwd);
     }
-    user.createBy = curUser.id;
+    user.createBy = curUser && curUser.id;
 
     let userinfo = new Userinfo();
     if (!Utils.isBlank(createUserDto.provinceId)) {
@@ -89,6 +95,51 @@ export class UserService {
 
     await this.userRepository.save(user);
     await this.userinfoService.insert(userinfo);
+    return createUserDto;
+  }
+
+  /**
+   * 添加（批量）
+   */
+  async insertBatch(createUserDto: CreateUserDto[], curUser?): Promise<CreateUserDto[]> {
+    let userList: CreateUserDto[] = [],
+      userinfoList: CreateUserinfoDto[] = [];
+
+    createUserDto.forEach(item => {
+      let { userPwd } = item;
+      let user = new User();
+      user = Utils.dto2entityImport(item, user);
+      if (Utils.isBlank(userPwd)) {
+        user.userPwd = this.cryptoUtil.encryptPassword('888888');
+      } else {
+        user.userPwd = this.cryptoUtil.encryptPassword(userPwd);
+      }
+      user.createBy = curUser && curUser.id;
+
+      let userinfo = new Userinfo();
+      if (!Utils.isBlank(item.provinceId)) {
+        userinfo.provinceId = item.provinceId;
+      }
+      if (!Utils.isBlank(item.cityId)) {
+        userinfo.cityId = item.cityId;
+      }
+      if (!Utils.isBlank(item.districtId)) {
+        userinfo.districtId = item.districtId;
+      }
+      if (!Utils.isBlank(item.address)) {
+        userinfo.address = item.address;
+      }
+      // userinfo = Utils.dto2entity(createUserDto, userinfo);
+      userinfo.user = user;// 联接两者
+
+      userList.push(user);
+      userinfoList.push(userinfo);
+    });
+    console.log(userList);
+    console.log(userinfoList);
+    await this.userRepository.save(userList);
+    await this.userinfoService.insertBatch(userinfoList);
+
     return createUserDto;
   }
 
@@ -220,7 +271,7 @@ export class UserService {
 
     let user = new User();
     user = Utils.dto2entity(updateUserDto, user);
-    user.updateBy = curUser.id;
+    user.updateBy = curUser && curUser.id;
 
     let userinfo = new Userinfo();
     // userinfo = Utils.dto2entity(updateUserDto, userinfo);
@@ -250,7 +301,7 @@ export class UserService {
 
     return this.userRepository.createQueryBuilder()
       .update(User)
-      .set({ status: status, updateBy: curUser.id })
+      .set({ status: status, updateBy: curUser && curUser.id })
       .where('id in (:ids)', { ids: ids })
       .execute();
   }
@@ -265,7 +316,7 @@ export class UserService {
     // await this.userinfoService.deleteByUserId(id);
     await this.userRepository.createQueryBuilder()
       .update(User)
-      .set({ deleteStatus: 1, deleteBy: curUser.id })
+      .set({ deleteStatus: 1, deleteBy: curUser && curUser.id })
       .where('id = :id', { id: id })
       .execute();
   }
@@ -280,7 +331,7 @@ export class UserService {
     // await this.userinfoService.deleteByUserId(ids);
     await this.userRepository.createQueryBuilder()
       .update(User)
-      .set({ deleteStatus: 1, deleteBy: curUser.id })
+      .set({ deleteStatus: 1, deleteBy: curUser && curUser.id })
       .where('ids in (:ids)', { ids: ids })
       .execute();
   }
@@ -341,52 +392,61 @@ export class UserService {
     let userEntity = await this.selectById(baseFindByIdDto);
 
     let permissions1 = await this.userRepository.query(`
-        select p.*
-        from cms_nest.sys_permission p
-                 inner join cms_nest.sys_role_permission rp on p.id = rp.permissionId
-                 inner join cms_nest.sys_role r on rp.roleId = r.id
-                 inner join cms_nest.sys_group_role gr on r.id = gr.roleId
-                 inner join cms_nest.sys_group g on gr.groupId = g.id
-                 inner join cms_nest.sys_user_group ug on g.id = ug.groupId
-                 inner join cms_nest.sys_user u on u.id = ug.userId
-        where u.id = '${baseFindByIdDto}'
-    `);
+        SELECT p.*
+        FROM cms_nest.sys_permission p
+                 INNER JOIN cms_nest.sys_role_permission rp ON p.id = rp.permissionId
+                 INNER JOIN cms_nest.sys_role r ON rp.roleId = r.id
+                 INNER JOIN cms_nest.sys_group_role gr ON r.id = gr.roleId
+                 INNER JOIN cms_nest.sys_group g ON gr.groupId = g.id
+                 INNER JOIN cms_nest.sys_user_group ug ON g.id = ug.groupId
+                 INNER JOIN cms_nest.sys_user u on u.id = ug.userId
+        WHERE u.id = '${baseFindByIdDto}'
+          AND u.deleteStatus = 0
+          AND g.deleteStatus = 0
+          AND r.deleteStatus = 0
+          AND p.deleteStatus = 0`);
 
     let permissions2 = await this.userRepository.query(`
-        select p.*
-        from cms_nest.sys_permission p
-                 inner join cms_nest.sys_role_permission rp on p.id = rp.permissionId
-                 inner join cms_nest.sys_role r on rp.roleId = r.id
-                 inner join cms_nest.sys_user_role ur on r.id = ur.roleId
-                 inner join cms_nest.sys_user u on u.id = ur.userId
-        where u.id = '${baseFindByIdDto}'
-    `);
+        SELECT p.*
+        FROM cms_nest.sys_permission p
+                 INNER JOIN cms_nest.sys_role_permission rp ON p.id = rp.permissionId
+                 INNER JOIN cms_nest.sys_role r ON rp.roleId = r.id
+                 INNER JOIN cms_nest.sys_user_role ur ON r.id = ur.roleId
+                 INNER JOIN cms_nest.sys_user u ON u.id = ur.userId
+        WHERE u.id = '${baseFindByIdDto}'
+          AND u.deleteStatus = 0
+          AND r.deleteStatus = 0
+          AND p.deleteStatus = 0`);
 
     let role1 = await this.userRepository.query(`
-        select r.*
-        from cms_nest.sys_role r
-                 inner join cms_nest.sys_group_role gr on r.id = gr.roleId
-                 inner join cms_nest.sys_group g on gr.groupId = g.id
-                 inner join cms_nest.sys_user_group ug on g.id = ug.groupId
-                 inner join cms_nest.sys_user u on u.id = ug.userId
-        where u.id = '${baseFindByIdDto}'
-    `);
+        SELECT r.*
+        FROM cms_nest.sys_role r
+                 INNER JOIN cms_nest.sys_group_role gr ON r.id = gr.roleId
+                 INNER JOIN cms_nest.sys_group g ON gr.groupId = g.id
+                 INNER JOIN cms_nest.sys_user_group ug ON g.id = ug.groupId
+                 INNER JOIN cms_nest.sys_user u ON u.id = ug.userId
+        WHERE u.id = '${baseFindByIdDto}'
+          AND u.deleteStatus = 0
+          AND g.deleteStatus = 0
+          AND r.deleteStatus = 0`);
 
     let role2 = await this.userRepository.query(`
-        select r.*
-        from cms_nest.sys_role r
-                 inner join cms_nest.sys_user_role ur on r.id = ur.roleId
-                 inner join cms_nest.sys_user u on u.id = ur.userId
-        where u.id = '${baseFindByIdDto}'
-    `);
+        SELECT r.*
+        FROM cms_nest.sys_role r
+                 INNER JOIN cms_nest.sys_user_role ur ON r.id = ur.roleId
+                 INNER JOIN cms_nest.sys_user u ON u.id = ur.userId
+        WHERE u.id = '${baseFindByIdDto}'
+          AND u.deleteStatus = 0
+          AND r.deleteStatus = 0`);
 
     let group1 = await this.userRepository.query(`
-        select g.*
-        from cms_nest.sys_group g
-                 inner join cms_nest.sys_user_group ug on g.id = ug.groupId
-                 inner join cms_nest.sys_user u on u.id = ug.userId
-        where u.id = '${baseFindByIdDto}'
-    `);
+        SELECT g.*
+        FROM cms_nest.sys_group g
+                 INNER JOIN cms_nest.sys_user_group ug ON g.id = ug.groupId
+                 INNER JOIN cms_nest.sys_user u ON u.id = ug.userId
+        WHERE u.id = '${baseFindByIdDto}'
+          AND u.deleteStatus = 0
+          AND g.deleteStatus = 0`);
 
     let res = Utils.assign(userEntity, {
       permissions: Utils.uniqBy(Utils.concat(permissions1, permissions2), 'id'),
@@ -402,26 +462,31 @@ export class UserService {
    */
   async selectAuthByUserId(baseFindByIdDto: BaseFindByIdDto): Promise<any> {
     let permissions1 = await this.userRepository.query(`
-        select p.*
-        from cms_nest.sys_permission p
-                 inner join cms_nest.sys_role_permission rp on p.id = rp.permissionId
-                 inner join cms_nest.sys_role r on rp.roleId = r.id
-                 inner join cms_nest.sys_group_role gr on r.id = gr.roleId
-                 inner join cms_nest.sys_group g on gr.groupId = g.id
-                 inner join cms_nest.sys_user_group ug on g.id = ug.groupId
-                 inner join cms_nest.sys_user u on u.id = ug.userId
-        where u.id = '${baseFindByIdDto}'
-    `);
+        SELECT p.*
+        FROM cms_nest.sys_permission p
+                 INNER JOIN cms_nest.sys_role_permission rp ON p.id = rp.permissionId
+                 INNER JOIN cms_nest.sys_role r ON rp.roleId = r.id
+                 INNER JOIN cms_nest.sys_group_role gr ON r.id = gr.roleId
+                 INNER JOIN cms_nest.sys_group g ON gr.groupId = g.id
+                 INNER JOIN cms_nest.sys_user_group ug ON g.id = ug.groupId
+                 INNER JOIN cms_nest.sys_user u ON u.id = ug.userId
+        WHERE u.id = '${baseFindByIdDto}'
+          AND u.deleteStatus = 0
+          AND g.deleteStatus = 0
+          AND r.deleteStatus = 0
+          AND p.deleteStatus = 0`);
 
     let permissions2 = await this.userRepository.query(`
-        select p.*
-        from cms_nest.sys_permission p
-                 inner join cms_nest.sys_role_permission rp on p.id = rp.permissionId
-                 inner join cms_nest.sys_role r on rp.roleId = r.id
-                 inner join cms_nest.sys_user_role ur on r.id = ur.roleId
-                 inner join cms_nest.sys_user u on u.id = ur.userId
-        where u.id = '${baseFindByIdDto}'
-    `);
+        SELECT p.*
+        FROM cms_nest.sys_permission p
+                 INNER JOIN cms_nest.sys_role_permission rp ON p.id = rp.permissionId
+                 INNER JOIN cms_nest.sys_role r ON rp.roleId = r.id
+                 INNER JOIN cms_nest.sys_user_role ur ON r.id = ur.roleId
+                 INNER JOIN cms_nest.sys_user u ON u.id = ur.userId
+        WHERE u.id = '${baseFindByIdDto}'
+          AND u.deleteStatus = 0
+          AND r.deleteStatus = 0
+          AND p.deleteStatus = 0`);
 
     let res = Utils.uniqBy(Utils.concat(permissions1, permissions2), 'id');
 

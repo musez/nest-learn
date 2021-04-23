@@ -3,6 +3,24 @@ import * as _ from 'lodash';
 import { construct } from '@aximario/json-tree';
 
 export class Utils {
+  /**
+   * 生成随机字符串
+   * @param {number} length 生成长度
+   * @param {string} charSet 指定字符集
+   * @returns {string} 生成字符串
+   */
+  static randomString = (length: number = 8, charSet?: string): string => {
+    charSet =
+      charSet || 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    // tslint:disable-next-line:no-shadowed-variable
+    let randomString = '';
+    for (let i = 0; i < length; i++) {
+      const randomPoz = Math.floor(Math.random() * charSet.length);
+      randomString += charSet.substring(randomPoz, randomPoz + 1);
+    }
+    return randomString;
+  };
+
   static now() {
     return dayjs(Date.now()).format('YYYY-MM-DD HH:mm:ss');
   }
@@ -15,6 +33,16 @@ export class Utils {
     let e = {};
     for (const key in entity) {
       if (dto.hasOwnProperty(key)) {
+        e[key] = dto[key];
+      }
+    }
+    return e;
+  }
+
+  static dto2entityImport(dto: any, entity: any): any {
+    let e = {};
+    for (const key in entity) {
+      if (dto.hasOwnProperty(key) && dto[key] !== '') {
         e[key] = dto[key];
       }
     }

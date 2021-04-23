@@ -23,7 +23,7 @@ export class ArticleCatService {
   async insert(createArticleCatDto: CreateArticleCatDto, curUser?): Promise<CreateArticleCatDto> {
     let articleCat = new ArticleCat();
     articleCat = Utils.dto2entity(createArticleCatDto, articleCat);
-    articleCat.createBy = curUser.id;
+    articleCat.createBy = curUser&&curUser.id;
     return await this.articleCatRepository.save(createArticleCatDto);
   }
 
@@ -218,7 +218,7 @@ export class ArticleCatService {
 
     await this.articleCatRepository.createQueryBuilder()
       .update(ArticleCat)
-      .set({ deleteStatus: 1, deleteBy: curUser.id })
+      .set({ deleteStatus: 1, deleteBy: curUser&&curUser.id })
       .where('id = :id', { id: id })
       .execute();
   }
@@ -231,7 +231,7 @@ export class ArticleCatService {
 
     await this.articleCatRepository.createQueryBuilder()
       .update(ArticleCat)
-      .set({ deleteStatus: 1, deleteBy: curUser.id })
+      .set({ deleteStatus: 1, deleteBy: curUser&&curUser.id })
       .where('id in (:ids)', { ids: ids })
       .execute();
   }

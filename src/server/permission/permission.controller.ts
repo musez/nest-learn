@@ -68,10 +68,10 @@ export class PermissionController {
     return await this.permissionService.selectById(baseFindByIdDto);
   }
 
-  @Get('export')
-  @Permissions('account:permission:export')
-  @ApiOperation({ summary: '列表（导出）' })
-  async export(@Query() searchPermissionDto: SearchPermissionDto, @Res() res): Promise<any> {
+  @Get('exportExcel')
+  @Permissions('account:permission:exportExcel')
+  @ApiOperation({ summary: '列表（Excel 导出）' })
+  async exportExcel(@Query() searchPermissionDto: SearchPermissionDto, @Res() res): Promise<any> {
     let list = await this.permissionService.selectList(searchPermissionDto);
 
     let titleList = [

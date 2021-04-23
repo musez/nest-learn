@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import xlsx from 'node-xlsx';
-
-// var excelParser = require('excel-parser');
+import { importExcel } from '../../utils/excel';
 
 type ObjectType = {
   key: string;
@@ -16,7 +15,7 @@ export class ExcelService {
    * @param dataList 数据
    * @param xlsName sheet 的名称
    */
-  public exportExcel(
+  exportExcel(
     titleList: Array<ObjectType>,
     // titleList,
     dataList: string[],
@@ -46,15 +45,10 @@ export class ExcelService {
 
   /**
    * 导入 excel
-   * @param
+   * @param columns 表头
+   * @param file 文件
    */
-  public importExcel() {
-    // excelParser.worksheets({
-    //   inFile: 'my_file.in',
-    // }, function(err, worksheets) {
-    //   if (err) console.error(err);
-    //   // TODO
-    //   console.log(worksheets);
-    // });
+  async importExcel(columns, file) {
+    return await importExcel(columns, file.buffer, true);
   }
 }

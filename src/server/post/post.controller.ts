@@ -69,10 +69,10 @@ export class PostController {
     return await this.postService.selectById(baseFindByIdDto);
   }
 
-  @Get('export')
-  @Permissions('account:post:export')
-  @ApiOperation({ summary: '列表（导出）' })
-  async export(@Query() searchPostDto: SearchPostDto, @Res() res): Promise<any> {
+  @Get('exportExcel')
+  @Permissions('account:post:exportExcel')
+  @ApiOperation({ summary: '列表（Excel 导出）' })
+  async exportExcel(@Query() searchPostDto: SearchPostDto, @Res() res): Promise<any> {
     let list = await this.postService.selectList(searchPostDto);
 
     let titleList = [

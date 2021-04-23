@@ -107,7 +107,7 @@ export class FileService {
 
     await this.fileRepository.createQueryBuilder()
       .update(File)
-      .set({ deleteStatus: 1, deleteBy: curUser.id })
+      .set({ deleteStatus: 1, deleteBy: curUser&&curUser.id })
       .where('id = :id', { id: id })
       .execute();
   }
@@ -120,7 +120,7 @@ export class FileService {
 
     await this.fileRepository.createQueryBuilder()
       .update(File)
-      .set({ deleteStatus: 1, deleteBy: curUser.id })
+      .set({ deleteStatus: 1, deleteBy: curUser&&curUser.id })
       .where('id in (:ids)', { ids: ids })
       .execute();
   }

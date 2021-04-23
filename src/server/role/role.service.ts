@@ -28,7 +28,7 @@ export class RoleService {
   async insert(createRoleDto: CreateRoleDto, curUser?): Promise<CreateRoleDto> {
     let role = new Role();
     role = Utils.dto2entity(createRoleDto, role);
-    role.createBy = curUser.id;
+    role.createBy = curUser&&curUser.id;
     return await this.roleRepository.save(role);
   }
 
@@ -115,7 +115,7 @@ export class RoleService {
 
     let role = new Role();
     role = Utils.dto2entity(updateRoleDto, role);
-    role.updateBy = curUser.id;
+    role.updateBy = curUser&&curUser.id;
 
     await this.roleRepository.update(id, role);
   }
@@ -128,7 +128,7 @@ export class RoleService {
 
     await this.roleRepository.createQueryBuilder()
       .update(Role)
-      .set({ deleteStatus: 1, deleteBy: curUser.id })
+      .set({ deleteStatus: 1, deleteBy: curUser&&curUser.id })
       .where('id = :id', { id: id })
       .execute();
   }
@@ -141,7 +141,7 @@ export class RoleService {
 
     await this.roleRepository.createQueryBuilder()
       .update(Role)
-      .set({ deleteStatus: 1, deleteBy: curUser.id })
+      .set({ deleteStatus: 1, deleteBy: curUser&&curUser.id })
       .where('id in (:ids)', { ids: ids })
       .execute();
   }

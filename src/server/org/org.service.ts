@@ -23,7 +23,7 @@ export class OrgService {
   async insert(createOrgDto: CreateOrgDto, curUser?): Promise<CreateOrgDto> {
     let role = new Org();
     role = Utils.dto2entity(createOrgDto, role);
-    role.createBy = curUser.id;
+    role.createBy = curUser&&curUser.id;
     return await this.orgRepository.save(role);
   }
 
@@ -209,7 +209,7 @@ export class OrgService {
 
     let org = new Org();
     org = Utils.dto2entity(updateOrgDto, org);
-    org.updateBy = curUser.id;
+    org.updateBy = curUser&&curUser.id;
 
     await this.orgRepository.update(id, org);
   }
@@ -222,7 +222,7 @@ export class OrgService {
 
     await this.orgRepository.createQueryBuilder()
       .update(Org)
-      .set({ deleteStatus: 1, deleteBy: curUser.id })
+      .set({ deleteStatus: 1, deleteBy: curUser&&curUser.id })
       .where('id = :id', { id: id })
       .execute();
   }
@@ -235,7 +235,7 @@ export class OrgService {
 
     await this.orgRepository.createQueryBuilder()
       .update(Org)
-      .set({ deleteStatus: 1, deleteBy: curUser.id })
+      .set({ deleteStatus: 1, deleteBy: curUser&&curUser.id })
       .where('id in (:ids)', { ids: ids })
       .execute();
   }

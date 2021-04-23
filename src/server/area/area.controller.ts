@@ -74,10 +74,10 @@ export class AreaController {
     return await this.areaService.selectById(id);
   }
 
-  @Get('export')
-  @Permissions('account:area:export')
-  @ApiOperation({ summary: '列表（导出）' })
-  async export(@Query() searchAreaDto: SearchAreaDto, @Res() res): Promise<any> {
+  @Get('exportExcel')
+  @Permissions('account:area:exportExcel')
+  @ApiOperation({ summary: '列表（Excel 导出）' })
+  async exportExcel(@Query() searchAreaDto: SearchAreaDto, @Res() res): Promise<any> {
     let list = await this.areaService.selectList(searchAreaDto);
 
     let titleList = [

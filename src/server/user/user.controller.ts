@@ -10,12 +10,20 @@ import {
   ClassSerializerInterceptor,
   BadRequestException,
   Res,
+  UploadedFile,
 } from '@nestjs/common';
 import {
   ApiTags,
   ApiBasicAuth,
   ApiOperation,
+  ApiConsumes,
+  ApiBody,
 } from '@nestjs/swagger';
+import {
+  FileInterceptor,
+  FilesInterceptor,
+  FileFieldsInterceptor,
+} from '@nestjs/platform-express';
 import { UserService } from './user.service';
 import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -36,8 +44,8 @@ const fs = require('fs');
 
 @ApiTags('用户')
 @Controller('user')
-@ApiBasicAuth()
-@UseGuards(JwtAuthGuard, RolesGuard)
+// @ApiBasicAuth()
+// @UseGuards(JwtAuthGuard, RolesGuard)
 export class UserController {
   constructor(
     private readonly userService: UserService,
@@ -79,11 +87,10 @@ export class UserController {
     return await this.userService.selectById(baseFindByIdDto);
   }
 
-
-  @Get('export')
-  @Permissions('account:user:export')
-  @ApiOperation({ summary: '列表（导出）' })
-  async export(@Query() searchUserDto: SearchUserDto, @Res() res): Promise<any> {
+  @Get('exportExcel')
+  @Permissions('account:user:exportExcel')
+  @ApiOperation({ summary: '列表（Excel 导出）' })
+  async exportExcel(@Query() searchUserDto: SearchUserDto, @Res() res): Promise<any> {
     let list = await this.userService.selectList(searchUserDto);
 
     let titleList = [
@@ -113,12 +120,40 @@ export class UserController {
     res.end(result, 'binary');
   }
 
-  // @Get('import')
-  // @Permissions('account:user:import')
-  // @ApiOperation({ summary: '列表（导入）' })
-  // async import(@Query() searchUserDto: SearchUserDto, @Res() res): Promise<any> {
-  //   // TODO
-  // }
+  @Post('importExcel')
+  @Permissions('account:user:importExcel')
+  @ApiOperation({ summary: '列表（Excel 导入）' })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+          description: '文件',
+        },
+      },
+    },
+  })
+  @UseInterceptors(FileInterceptor('file'))
+  async importExcel(@CurUser() curUser, @UploadedFile() file): Promise<any> {
+    const columns = [
+      { name: '用户名', type: 'String', key: 'userName', size: 50, index: 1 },
+      { name: '用户类型', type: 'Number', key: 'userType', index: 2 },
+      { name: '姓名', type: 'String', key: 'name', size: 50, index: 3 },
+      { name: '手机号', type: 'String', key: 'mobile', size: 50, index: 4 },
+      { name: '邮箱', type: 'String', key: 'email', size: 50, index: 5 },
+      { name: '性别', type: 'Number', key: 'sex', index: 6 },
+      { name: '生日', type: 'Date', key: 'birthday', index: 7 },
+      { name: '状态', type: 'Number', key: 'status', index: 8 },
+      { name: '备注', type: 'String', key: 'description', index: 9 },
+      { name: '创建时间', type: 'Date', key: 'createTime', index: 10 },
+      { name: '修改时间', type: 'Date', key: 'updateTime', index: 11 },
+    ];
+    let rows = await this.excelService.importExcel(columns, file);
+    return await this.userService.insertBatch(rows, curUser);
+  }
 
   @Post('update')
   @Permissions('account:user:update')
