@@ -34,7 +34,7 @@ export class DictController {
   @Permissions('system:dict:add')
   @ApiOperation({ summary: '添加' })
   async create(@CurUser() curUser, @Body() createDictDto: CreateDictDto) {
-    let { dictItems } = createDictDto;
+    const { dictItems } = createDictDto;
     if (dictItems && dictItems.length > 0) {
       await this.dictItemService.insertBatch(dictItems, curUser);
     }
@@ -67,8 +67,8 @@ export class DictController {
   @Permissions('system:dict:update')
   @ApiOperation({ summary: '修改' })
   async update(@CurUser() curUser, @Body() updateDictDto: UpdateDictDto): Promise<any> {
-    let { id, dictItems } = updateDictDto;
-    let isExistId = await this.dictService.isExistId(id);
+    const { id, dictItems } = updateDictDto;
+    const isExistId = await this.dictService.isExistId(id);
 
     if (!isExistId) {
       throw new BadRequestException(`数据 id：${id} 不存在！`);
@@ -86,8 +86,8 @@ export class DictController {
   @Permissions('system:dict:delete')
   @ApiOperation({ summary: '删除' })
   async delete(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
-    let { id } = baseFindByIdDto;
-    let isExistId = await this.dictService.isExistId(id);
+    const { id } = baseFindByIdDto;
+    const isExistId = await this.dictService.isExistId(id);
 
     if (!isExistId) {
       throw new BadRequestException(`数据 id：${id} 不存在！`);

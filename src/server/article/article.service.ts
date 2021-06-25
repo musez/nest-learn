@@ -28,9 +28,9 @@ export class ArticleService {
    * 获取列表
    */
   async selectList(searchArticleDto: SearchArticleDto): Promise<any[]> {
-    let { title, type, status } = searchArticleDto;
+    const { title, type, status } = searchArticleDto;
 
-    let queryConditionList = [];
+    const queryConditionList = [];
     if (!Utils.isBlank(title)) {
       queryConditionList.push('title LIKE :title');
     }
@@ -41,7 +41,7 @@ export class ArticleService {
       queryConditionList.push('status = :status');
     }
     queryConditionList.push('deleteStatus = 0');
-    let queryCondition = queryConditionList.join(' AND ');
+    const queryCondition = queryConditionList.join(' AND ');
 
     return await this.articleRepository.createQueryBuilder()
       .where(queryCondition, {
@@ -57,12 +57,13 @@ export class ArticleService {
    * 获取列表（分页）
    */
   async selectListPage(limitArticleDto: LimitArticleDto): Promise<any> {
+    // eslint-disable-next-line prefer-const
     let { page, limit, title, type, status } = limitArticleDto;
     page = page ? page : 1;
     limit = limit ? limit : 10;
-    let offset = (page - 1) * limit;
+    const offset = (page - 1) * limit;
 
-    let queryConditionList = [];
+    const queryConditionList = [];
     if (!Utils.isBlank(title)) {
       queryConditionList.push('title LIKE :title');
     }
@@ -73,9 +74,9 @@ export class ArticleService {
       queryConditionList.push('status = :status');
     }
     queryConditionList.push('deleteStatus = 0');
-    let queryCondition = queryConditionList.join(' AND ');
+    const queryCondition = queryConditionList.join(' AND ');
 
-    let res = await this.articleRepository.createQueryBuilder()
+    const res = await this.articleRepository.createQueryBuilder()
       .where(queryCondition, {
         title: `%${title}%`,
         type: type,
@@ -98,15 +99,15 @@ export class ArticleService {
    * 获取详情（主键 id）
    */
   async selectById(baseFindByIdDto: BaseFindByIdDto): Promise<Article> {
-    let { id } = baseFindByIdDto;
+    const { id } = baseFindByIdDto;
     return await this.articleRepository.findOne(id);
   }
 
   /**
    * 是否存在（主键 id）
    */
-  async isExistId(id: string): Promise<Boolean> {
-    let isExist = await this.articleRepository.findOne(id);
+  async isExistId(id: string): Promise<boolean> {
+    const isExist = await this.articleRepository.findOne(id);
     if (Utils.isNil(isExist)) {
       return false;
     } else {
@@ -118,7 +119,7 @@ export class ArticleService {
    * 修改
    */
   async update(updateArticleDto: UpdateArticleDto, curUser?): Promise<void> {
-    let { id } = updateArticleDto;
+    const { id } = updateArticleDto;
 
     let article = new Article();
     article = Utils.dto2entity(updateArticleDto, article);
@@ -130,7 +131,7 @@ export class ArticleService {
    * 删除
    */
   async deleteById(baseFindByIdDto: BaseFindByIdDto, curUser?): Promise<void> {
-    let { id } = baseFindByIdDto;
+    const { id } = baseFindByIdDto;
 
     // await this.articleRepository.createQueryBuilder()
     //   .delete()
@@ -148,7 +149,7 @@ export class ArticleService {
    * 回收站状态修改
    */
   async updateRecycle(baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto, curUser?): Promise<void> {
-    let { ids, status } = baseModifyStatusByIdsDto;
+    const { ids, status } = baseModifyStatusByIdsDto;
 
     await this.articleRepository.createQueryBuilder()
       .update(Article)
@@ -161,7 +162,7 @@ export class ArticleService {
    * 清空回收站
    */
   async clearRecycle(baseFindByIdsDto: BaseFindByIdsDto, curUser?): Promise<void> {
-    let { ids } = baseFindByIdsDto;
+    const { ids } = baseFindByIdsDto;
 
     // await this.articleRepository.createQueryBuilder()
     //   .delete()

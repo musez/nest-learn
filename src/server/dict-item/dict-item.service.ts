@@ -31,7 +31,7 @@ export class DictItemService {
    * 添加（批量）
    */
   async insertBatch(createDictItemDto: CreateDictItemDto[], curUser): Promise<CreateDictItemDto[]> {
-    let dictItems = [];
+    const dictItems = [];
 
     createDictItemDto.forEach(item => {
       let dictItem = new DictItem();
@@ -47,9 +47,9 @@ export class DictItemService {
    * 获取列表
    */
   async selectList(searchDictItemDto: SearchDictItemDto): Promise<DictItem[]> {
-    let { itemText, dictId } = searchDictItemDto;
+    const { itemText, dictId } = searchDictItemDto;
 
-    let queryConditionList = [];
+    const queryConditionList = [];
     if (!Utils.isBlank(itemText)) {
       queryConditionList.push('itemText LIKE :itemText');
     }
@@ -57,7 +57,7 @@ export class DictItemService {
       queryConditionList.push('dictId = :dictId');
     }
     queryConditionList.push('deleteStatus = 0');
-    let queryCondition = queryConditionList.join(' AND ');
+    const queryCondition = queryConditionList.join(' AND ');
 
     return await this.dictItemRepository.createQueryBuilder()
       .where(queryCondition, {
@@ -75,19 +75,20 @@ export class DictItemService {
    * 获取列表（分页）
    */
   async selectListPage(limitDictItemDto: LimitDictItemDto): Promise<any> {
+    // eslint-disable-next-line prefer-const
     let { page, limit, itemText } = limitDictItemDto;
     page = page ? page : 1;
     limit = limit ? limit : 10;
-    let offset = (page - 1) * limit;
+    const offset = (page - 1) * limit;
 
-    let queryConditionList = [];
+    const queryConditionList = [];
     if (!Utils.isBlank(itemText)) {
       queryConditionList.push('itemText LIKE :itemText');
     }
     queryConditionList.push('deleteStatus = 0');
-    let queryCondition = queryConditionList.join(' AND ');
+    const queryCondition = queryConditionList.join(' AND ');
 
-    let res = await this.dictItemRepository.createQueryBuilder()
+    const res = await this.dictItemRepository.createQueryBuilder()
       .where(queryCondition, {
         itemText: `%${itemText}%`,
       })
@@ -112,14 +113,14 @@ export class DictItemService {
    * 获取列表
    */
   async selectByDictId(baseFindByIdDto: BaseFindByIdDto): Promise<DictItem[]> {
-    let { id } = baseFindByIdDto;
+    const { id } = baseFindByIdDto;
 
-    let queryConditionList = [];
+    const queryConditionList = [];
     if (!Utils.isBlank(id)) {
       queryConditionList.push('dictId = :id');
     }
     queryConditionList.push('deleteStatus = 0');
-    let queryCondition = queryConditionList.join(' AND ');
+    const queryCondition = queryConditionList.join(' AND ');
 
     return await this.dictItemRepository.createQueryBuilder()
       .where(queryCondition, {

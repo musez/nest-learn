@@ -51,7 +51,7 @@ export class UserService {
    * 修改登录次数
    */
   async incrementLoginCount(baseFindByIdDto: BaseFindByIdDto): Promise<any> {
-    let userEntity = await this.userRepository.findOne({
+    const userEntity = await this.userRepository.findOne({
       where: {
         id: baseFindByIdDto,
         deleteStatus: 0,
@@ -66,7 +66,7 @@ export class UserService {
    * 添加
    */
   async insert(createUserDto: CreateUserDto, curUser?): Promise<CreateUserDto> {
-    let { userPwd } = createUserDto;
+    const { userPwd } = createUserDto;
 
     let user = new User();
     user = Utils.dto2entity(createUserDto, user);
@@ -77,7 +77,7 @@ export class UserService {
     }
     user.createBy = curUser && curUser.id;
 
-    let userinfo = new Userinfo();
+    const userinfo = new Userinfo();
     if (!Utils.isBlank(createUserDto.provinceId)) {
       userinfo.provinceId = createUserDto.provinceId;
     }
@@ -102,11 +102,11 @@ export class UserService {
    * 添加（批量）
    */
   async insertBatch(createUserDto: CreateUserDto[], curUser?): Promise<CreateUserDto[]> {
-    let userList: CreateUserDto[] = [],
+    const userList: CreateUserDto[] = [],
       userinfoList: CreateUserinfoDto[] = [];
 
     createUserDto.forEach(item => {
-      let { userPwd } = item;
+      const { userPwd } = item;
       let user = new User();
       user = Utils.dto2entityImport(item, user);
       if (Utils.isBlank(userPwd)) {
@@ -116,7 +116,7 @@ export class UserService {
       }
       user.createBy = curUser && curUser.id;
 
-      let userinfo = new Userinfo();
+      const userinfo = new Userinfo();
       if (!Utils.isBlank(item.provinceId)) {
         userinfo.provinceId = item.provinceId;
       }
@@ -147,9 +147,9 @@ export class UserService {
    * 获取列表
    */
   async selectList(searchUserDto: SearchUserDto): Promise<any[]> {
-    let { userName, name, userType, mobile, email } = searchUserDto;
+    const { userName, name, userType, mobile, email } = searchUserDto;
 
-    let queryConditionList = [];
+    const queryConditionList = [];
     if (!Utils.isBlank(userName)) {
       queryConditionList.push('user.userName LIKE :userName');
     }
@@ -166,7 +166,7 @@ export class UserService {
       queryConditionList.push('user.email = :email');
     }
     queryConditionList.push('deleteStatus = 0');
-    let queryCondition = queryConditionList.join(' AND ');
+    const queryCondition = queryConditionList.join(' AND ');
 
     return await this.userRepository.createQueryBuilder('user')
       .leftJoinAndSelect('user.userinfo', 'userinfo')
@@ -188,9 +188,9 @@ export class UserService {
     let { page, limit, userName, name, userType, mobile, email } = limitUserDto;
     page = page ? page : 1;
     limit = limit ? limit : 10;
-    let offset = (page - 1) * limit;
+    const offset = (page - 1) * limit;
 
-    let queryConditionList = [];
+    const queryConditionList = [];
     if (!Utils.isBlank(userName)) {
       queryConditionList.push('user.userName LIKE :userName');
     }
@@ -207,9 +207,9 @@ export class UserService {
       queryConditionList.push('user.email = :email');
     }
     queryConditionList.push('deleteStatus = 0');
-    let queryCondition = queryConditionList.join(' AND ');
+    const queryCondition = queryConditionList.join(' AND ');
 
-    let res = await this.userRepository.createQueryBuilder('user')
+    const res = await this.userRepository.createQueryBuilder('user')
       .leftJoinAndSelect('user.userinfo', 'userinfo')
       .where(queryCondition, {
         userName: `%${userName}%`,
@@ -235,15 +235,15 @@ export class UserService {
    * 获取详情（主键 id）
    */
   async selectById(baseFindByIdDto: BaseFindByIdDto): Promise<User> {
-    let { id } = baseFindByIdDto;
+    const { id } = baseFindByIdDto;
     return await this.userRepository.findOne(id, { relations: ['userinfo'] });
   }
 
   /**
    * 是否存在（主键 id）
    */
-  async isExistId(id: string): Promise<Boolean> {
-    let isExist = await this.userRepository.findOne(id);
+  async isExistId(id: string): Promise<boolean> {
+    const isExist = await this.userRepository.findOne(id);
     if (Utils.isNil(isExist)) {
       return false;
     } else {
@@ -254,8 +254,8 @@ export class UserService {
   /**
    * 是否存在（用户名）
    */
-  async isExistUserName(userName: string): Promise<Boolean> {
-    let isExist = await this.userRepository.findOne({ userName: userName });
+  async isExistUserName(userName: string): Promise<boolean> {
+    const isExist = await this.userRepository.findOne({ userName: userName });
     if (Utils.isNil(isExist)) {
       return false;
     } else {
@@ -267,13 +267,13 @@ export class UserService {
    * 修改
    */
   async update(updateUserDto: UpdateUserDto, curUser?): Promise<void> {
-    let { id } = updateUserDto;
+    const { id } = updateUserDto;
 
     let user = new User();
     user = Utils.dto2entity(updateUserDto, user);
     user.updateBy = curUser && curUser.id;
 
-    let userinfo = new Userinfo();
+    const userinfo = new Userinfo();
     // userinfo = Utils.dto2entity(updateUserDto, userinfo);
     if (!Utils.isBlank(updateUserDto.provinceId)) {
       userinfo.provinceId = updateUserDto.provinceId;
@@ -297,7 +297,7 @@ export class UserService {
    * 修改状态
    */
   async updateStatus(baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto, curUser?): Promise<any> {
-    let { ids, status } = baseModifyStatusByIdsDto;
+    const { ids, status } = baseModifyStatusByIdsDto;
 
     return this.userRepository.createQueryBuilder()
       .update(User)
@@ -310,7 +310,7 @@ export class UserService {
    * 删除
    */
   async deleteById(baseFindByIdDto: BaseFindByIdDto, curUser?): Promise<void> {
-    let { id } = baseFindByIdDto;
+    const { id } = baseFindByIdDto;
 
     // this.userRepository.delete(id);
     // await this.userinfoService.deleteByUserId(id);
@@ -325,7 +325,7 @@ export class UserService {
    * 删除（批量）
    */
   async deleteByIds(baseFindByIdsDto: BaseFindByIdsDto, curUser?): Promise<void> {
-    let { ids } = baseFindByIdsDto;
+    const { ids } = baseFindByIdsDto;
 
     // this.userRepository.delete(ids);
     // await this.userinfoService.deleteByUserId(ids);
@@ -340,11 +340,11 @@ export class UserService {
    * 绑定用户组
    */
   async bindGroups(bindUserGroupDto: BindUserGroupDto): Promise<void> {
-    let { id, groups } = bindUserGroupDto;
+    const { id, groups } = bindUserGroupDto;
 
-    let userGroupList = [];
+    const userGroupList = [];
     for (let i = 0, len = groups.length; i < len; i++) {
-      let createUserGroupDto = new CreateUserGroupDto();
+      const createUserGroupDto = new CreateUserGroupDto();
       createUserGroupDto.userId = id;
       createUserGroupDto.groupId = groups[i];
       userGroupList.push(createUserGroupDto);
@@ -364,11 +364,11 @@ export class UserService {
    * 绑定角色
    */
   async bindRoles(bindUserRoleDto: BindUserRoleDto): Promise<void> {
-    let { id, roles } = bindUserRoleDto;
+    const { id, roles } = bindUserRoleDto;
 
-    let userGroupList = [];
+    const userGroupList = [];
     for (let i = 0, len = roles.length; i < len; i++) {
-      let createUserRoleDto = new CreateUserRoleDto();
+      const createUserRoleDto = new CreateUserRoleDto();
       createUserRoleDto.userId = id;
       createUserRoleDto.roleId = roles[i];
       userGroupList.push(createUserRoleDto);
@@ -389,9 +389,9 @@ export class UserService {
    * 获取用户、用户组、角色、权限
    */
   async selectPermissionsByUserId(baseFindByIdDto: BaseFindByIdDto): Promise<any> {
-    let userEntity = await this.selectById(baseFindByIdDto);
+    const userEntity = await this.selectById(baseFindByIdDto);
 
-    let permissions1 = await this.userRepository.query(`
+    const permissions1 = await this.userRepository.query(`
         SELECT p.*
         FROM cms_nest.sys_permission p
                  INNER JOIN cms_nest.sys_role_permission rp ON p.id = rp.permissionId
@@ -406,7 +406,7 @@ export class UserService {
           AND r.deleteStatus = 0
           AND p.deleteStatus = 0`);
 
-    let permissions2 = await this.userRepository.query(`
+    const permissions2 = await this.userRepository.query(`
         SELECT p.*
         FROM cms_nest.sys_permission p
                  INNER JOIN cms_nest.sys_role_permission rp ON p.id = rp.permissionId
@@ -418,7 +418,7 @@ export class UserService {
           AND r.deleteStatus = 0
           AND p.deleteStatus = 0`);
 
-    let role1 = await this.userRepository.query(`
+    const role1 = await this.userRepository.query(`
         SELECT r.*
         FROM cms_nest.sys_role r
                  INNER JOIN cms_nest.sys_group_role gr ON r.id = gr.roleId
@@ -430,7 +430,7 @@ export class UserService {
           AND g.deleteStatus = 0
           AND r.deleteStatus = 0`);
 
-    let role2 = await this.userRepository.query(`
+    const role2 = await this.userRepository.query(`
         SELECT r.*
         FROM cms_nest.sys_role r
                  INNER JOIN cms_nest.sys_user_role ur ON r.id = ur.roleId
@@ -439,7 +439,7 @@ export class UserService {
           AND u.deleteStatus = 0
           AND r.deleteStatus = 0`);
 
-    let group1 = await this.userRepository.query(`
+    const group1 = await this.userRepository.query(`
         SELECT g.*
         FROM cms_nest.sys_group g
                  INNER JOIN cms_nest.sys_user_group ug ON g.id = ug.groupId
@@ -448,7 +448,7 @@ export class UserService {
           AND u.deleteStatus = 0
           AND g.deleteStatus = 0`);
 
-    let res = Utils.assign(userEntity, {
+    const res = Utils.assign(userEntity, {
       permissions: Utils.uniqBy(Utils.concat(permissions1, permissions2), 'id'),
       roles: Utils.uniqBy(Utils.concat(role1, role2), 'id'),
       groups: group1,
@@ -461,7 +461,7 @@ export class UserService {
    * 获取权限
    */
   async selectAuthByUserId(baseFindByIdDto: BaseFindByIdDto): Promise<any> {
-    let permissions1 = await this.userRepository.query(`
+    const permissions1 = await this.userRepository.query(`
         SELECT p.*
         FROM cms_nest.sys_permission p
                  INNER JOIN cms_nest.sys_role_permission rp ON p.id = rp.permissionId
@@ -476,7 +476,7 @@ export class UserService {
           AND r.deleteStatus = 0
           AND p.deleteStatus = 0`);
 
-    let permissions2 = await this.userRepository.query(`
+    const permissions2 = await this.userRepository.query(`
         SELECT p.*
         FROM cms_nest.sys_permission p
                  INNER JOIN cms_nest.sys_role_permission rp ON p.id = rp.permissionId
@@ -488,7 +488,7 @@ export class UserService {
           AND r.deleteStatus = 0
           AND p.deleteStatus = 0`);
 
-    let res = Utils.uniqBy(Utils.concat(permissions1, permissions2), 'id');
+    const res = Utils.uniqBy(Utils.concat(permissions1, permissions2), 'id');
 
     return res;
   }

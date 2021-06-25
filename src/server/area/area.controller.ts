@@ -37,7 +37,7 @@ export class AreaController {
   @Permissions('system:area:findList')
   @ApiOperation({ summary: '获取列表（默认返回 []）' })
   async findList(@Query() searchAreaDto: SearchAreaDto): Promise<Area[]> {
-    let { parentId, areaName } = searchAreaDto;
+    const { parentId, areaName } = searchAreaDto;
 
     if (Utils.isBlank(parentId) && Utils.isBlank(areaName)) {
       return [];
@@ -78,9 +78,9 @@ export class AreaController {
   @Permissions('account:area:exportExcel')
   @ApiOperation({ summary: '列表（Excel 导出）' })
   async exportExcel(@Query() searchAreaDto: SearchAreaDto, @Res() res): Promise<any> {
-    let list = await this.areaService.selectList(searchAreaDto);
+    const list = await this.areaService.selectList(searchAreaDto);
 
-    let titleList = [
+    const titleList = [
       { key: 'areaName', value: '地区名称' },
       { key: 'areaCode', value: '地区编码' },
       { key: 'level', value: '地区级别' },

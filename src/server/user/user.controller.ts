@@ -56,9 +56,9 @@ export class UserController {
   @Post('add')
   @ApiOperation({ summary: '添加' })
   async add(@CurUser() curUser, @Body() createUserDto: CreateUserDto): Promise<CreateUserDto> {
-    let { userName } = createUserDto;
+    const { userName } = createUserDto;
 
-    let isExistUserName = await this.userService.isExistUserName(userName);
+    const isExistUserName = await this.userService.isExistUserName(userName);
     if (isExistUserName) {
       throw new BadRequestException(`用户名：${userName} 已存在！`);
     }
@@ -91,9 +91,9 @@ export class UserController {
   @Permissions('account:user:exportExcel')
   @ApiOperation({ summary: '列表（Excel 导出）' })
   async exportExcel(@Query() searchUserDto: SearchUserDto, @Res() res): Promise<any> {
-    let list = await this.userService.selectList(searchUserDto);
+    const list = await this.userService.selectList(searchUserDto);
 
-    let titleList = [
+    const titleList = [
       { key: 'userName', value: '用户名' },
       { key: 'userType', value: '用户类型' },
       { key: 'name', value: '姓名' },
@@ -151,7 +151,7 @@ export class UserController {
       { name: '创建时间', type: 'Date', key: 'createTime', index: 10 },
       { name: '修改时间', type: 'Date', key: 'updateTime', index: 11 },
     ];
-    let rows = await this.excelService.importExcel(columns, file);
+    const rows = await this.excelService.importExcel(columns, file);
     return await this.userService.insertBatch(rows, curUser);
   }
 
@@ -159,9 +159,9 @@ export class UserController {
   @Permissions('account:user:update')
   @ApiOperation({ summary: '修改' })
   async update(@CurUser() curUser, @Body() updateUserDto: UpdateUserDto): Promise<any> {
-    let { id } = updateUserDto;
+    const { id } = updateUserDto;
 
-    let isExistId = await this.userService.isExistId(id);
+    const isExistId = await this.userService.isExistId(id);
     if (!isExistId) {
       throw new BadRequestException(`数据 id：${id} 不存在！`);
     }
@@ -180,9 +180,9 @@ export class UserController {
   @Permissions('account:user:delete')
   @ApiOperation({ summary: '删除' })
   async delete(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
-    let { id } = baseFindByIdDto;
+    const { id } = baseFindByIdDto;
 
-    let isExistId = await this.userService.isExistId(id);
+    const isExistId = await this.userService.isExistId(id);
     if (!isExistId) {
       throw new BadRequestException(`数据 id：${id} 不存在！`);
     }
@@ -201,9 +201,9 @@ export class UserController {
   @Permissions('account:user:bindGroups')
   @ApiOperation({ summary: '绑定用户组' })
   async bindGroups(@CurUser() curUser, @Body() bindUserGroupDto: BindUserGroupDto): Promise<any> {
-    let { id } = bindUserGroupDto;
+    const { id } = bindUserGroupDto;
 
-    let isExistId = await this.userService.isExistId(id);
+    const isExistId = await this.userService.isExistId(id);
     if (!isExistId) {
       throw new BadRequestException(`数据 id：${id} 不存在！`);
     }
@@ -214,9 +214,9 @@ export class UserController {
   @Permissions('account:user:getGroups')
   @ApiOperation({ summary: '获取用户组' })
   async findGroupsByUserId(@CurUser() curUser, @Query() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
-    let { id } = baseFindByIdDto;
+    const { id } = baseFindByIdDto;
 
-    let isExistId = await this.userService.isExistId(id);
+    const isExistId = await this.userService.isExistId(id);
     if (!isExistId) {
       throw new BadRequestException(`数据 id：${id} 不存在！`);
     }
@@ -227,9 +227,9 @@ export class UserController {
   @Permissions('account:user:bindRoles')
   @ApiOperation({ summary: '绑定角色' })
   async bindRoles(@CurUser() curUser, @Body() bindUserRoleDto: BindUserRoleDto): Promise<any> {
-    let { id } = bindUserRoleDto;
+    const { id } = bindUserRoleDto;
 
-    let isExistId = await this.userService.isExistId(id);
+    const isExistId = await this.userService.isExistId(id);
     if (!isExistId) {
       throw new BadRequestException(`数据 id：${id} 不存在！`);
     }
@@ -240,9 +240,9 @@ export class UserController {
   @Permissions('account:user:getRoles')
   @ApiOperation({ summary: '获取角色' })
   async findRolesByUserId(@CurUser() curUser, @Query() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
-    let { id } = baseFindByIdDto;
+    const { id } = baseFindByIdDto;
 
-    let isExistId = await this.userService.isExistId(id);
+    const isExistId = await this.userService.isExistId(id);
     if (!isExistId) {
       throw new BadRequestException(`数据 id：${id} 不存在！`);
     }

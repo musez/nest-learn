@@ -31,11 +31,12 @@ export class OrgService {
    * 获取列表
    */
   async selectList(searchOrgDto: SearchOrgDto): Promise<any[]> {
+    // eslint-disable-next-line prefer-const
     let { parentId, kinship, name } = searchOrgDto;
 
     kinship = kinship ? kinship : 0;
 
-    let queryConditionList = [];
+    const queryConditionList = [];
     let parentIds = null;
     if (!Utils.isBlank(parentId)) {
       if (kinship === 0) {
@@ -52,9 +53,9 @@ export class OrgService {
       queryConditionList.push('name LIKE :name');
     }
     queryConditionList.push('deleteStatus = 0');
-    let queryCondition = queryConditionList.join(' AND ');
+    const queryCondition = queryConditionList.join(' AND ');
 
-    let res = await this.orgRepository.createQueryBuilder('o')
+    const res = await this.orgRepository.createQueryBuilder('o')
       .select(['o.*'])
       .addSelect(subQuery =>
         subQuery.select('COUNT(*)')
@@ -73,12 +74,13 @@ export class OrgService {
    * 获取列表（分页）
    */
   async selectListPage(limitOrgDto: LimitOrgDto): Promise<any> {
+    // eslint-disable-next-line prefer-const
     let { page, limit, parentId, name } = limitOrgDto;
     page = page ? page : 1;
     limit = limit ? limit : 10;
-    let offset = (page - 1) * limit;
+    const offset = (page - 1) * limit;
 
-    let queryConditionList = [];
+    const queryConditionList = [];
     let parentIds = [];
     if (!Utils.isBlank(parentId)) {
       parentIds = await this.selectChildrenIdsRecursive(parentId);
@@ -88,9 +90,9 @@ export class OrgService {
       queryConditionList.push('org.name LIKE :name');
     }
     queryConditionList.push('deleteStatus = 0');
-    let queryCondition = queryConditionList.join(' AND ');
+    const queryCondition = queryConditionList.join(' AND ');
 
-    let res = await this.orgRepository.createQueryBuilder('org')
+    const res = await this.orgRepository.createQueryBuilder('org')
       .leftJoinAndSelect(Org, 'p', 'p.id = org.parentId')
       .where(queryCondition, {
         parentIds: parentIds,
@@ -113,9 +115,9 @@ export class OrgService {
    * 递归查询（ids）
    */
   async selectChildrenIdsRecursive(id): Promise<any> {
-    let list = [];
+    const list = [];
     list.push(id);
-    let childList = await this.orgRepository.find({
+    const childList = await this.orgRepository.find({
       where: {
         parentId: id,
         deleteStatus: 0,
@@ -123,7 +125,7 @@ export class OrgService {
     });
 
     for (const item of childList) {
-      let obj = { ...item };
+      const obj = { ...item };
       await this.selectChildrenIdsRecursive(item.id);
       list.push(obj.id);
     }
@@ -135,10 +137,10 @@ export class OrgService {
    * 获取树
    */
   async selectTree(baseFindByPIdDto: BaseFindByPIdDto): Promise<any> {
-    let { parentId } = baseFindByPIdDto;
+    const { parentId } = baseFindByPIdDto;
 
     if (Utils.isBlank(parentId)) {
-      let res = await this.orgRepository.find({
+      const res = await this.orgRepository.find({
         deleteStatus: 0,
       });
       return Utils.construct(res, {
@@ -147,7 +149,7 @@ export class OrgService {
         children: 'children',
       });
     } else {
-      let result = await this.selectChildrenRecursive(parentId);
+      const result = await this.selectChildrenRecursive(parentId);
 
       return result;
     }
@@ -157,8 +159,8 @@ export class OrgService {
    * 递归查询（id）
    */
   async selectChildrenRecursive(id): Promise<any> {
-    let list = [];
-    let childList = await this.orgRepository.find({
+    const list = [];
+    const childList = await this.orgRepository.find({
       where: {
         parentId: id,
         deleteStatus: 0,
@@ -166,8 +168,8 @@ export class OrgService {
     });
 
     for (const item of childList) {
-      let obj = { ...item };
-      let child = await this.selectChildrenRecursive(item.id);
+      const obj = { ...item };
+      const child = await this.selectChildrenRecursive(item.id);
       if (child.length > 0) {
         obj['children'] = child;
         obj['hasChildren'] = true;
@@ -185,15 +187,15 @@ export class OrgService {
    * 获取详情（主键 id）
    */
   async selectById(baseFindByIdDto: BaseFindByIdDto): Promise<Org> {
-    let { id } = baseFindByIdDto;
+    const { id } = baseFindByIdDto;
     return await this.orgRepository.findOne(id);
   }
 
   /**
    * 是否存在（主键 id）
    */
-  async isExistId(id: string): Promise<Boolean> {
-    let isExist = await this.orgRepository.findOne(id);
+  async isExistId(id: string): Promise<boolean> {
+    const isExist = await this.orgRepository.findOne(id);
     if (Utils.isNil(isExist)) {
       return false;
     } else {
@@ -205,7 +207,7 @@ export class OrgService {
    * 修改
    */
   async update(updateOrgDto: UpdateOrgDto, curUser?): Promise<void> {
-    let { id } = updateOrgDto;
+    const { id } = updateOrgDto;
 
     let org = new Org();
     org = Utils.dto2entity(updateOrgDto, org);
@@ -218,7 +220,7 @@ export class OrgService {
    * 删除
    */
   async deleteById(baseFindByIdDto: BaseFindByIdDto, curUser?): Promise<void> {
-    let { id } = baseFindByIdDto;
+    const { id } = baseFindByIdDto;
 
     await this.orgRepository.createQueryBuilder()
       .update(Org)
@@ -231,7 +233,7 @@ export class OrgService {
    * 删除（批量）
    */
   async deleteByIds(baseFindByIdsDto: BaseFindByIdsDto, curUser?): Promise<void> {
-    let { ids } = baseFindByIdsDto;
+    const { ids } = baseFindByIdsDto;
 
     await this.orgRepository.createQueryBuilder()
       .update(Org)

@@ -33,12 +33,13 @@ export class FileService {
    * 获取列表（分页）
    */
   async selectListPage(limitFileDto: LimitFileDto): Promise<any> {
+    // eslint-disable-next-line prefer-const
     let { page, limit, originalName, fileDisName } = limitFileDto;
     page = page ? page : 1;
     limit = limit ? limit : 10;
-    let offset = (page - 1) * limit;
+    const offset = (page - 1) * limit;
 
-    let queryConditionList = [];
+    const queryConditionList = [];
     if (!Utils.isBlank(originalName)) {
       queryConditionList.push('originalName LIKE :originalName');
     }
@@ -46,9 +47,9 @@ export class FileService {
       queryConditionList.push('fileDisName LIKE :fileDisName');
     }
     queryConditionList.push('deleteStatus = 0');
-    let queryCondition = queryConditionList.join(' AND ');
+    const queryCondition = queryConditionList.join(' AND ');
 
-    let res = await this.fileRepository.createQueryBuilder()
+    const res = await this.fileRepository.createQueryBuilder()
       .where(queryCondition, {
         originalName: `%${originalName}%`,
         fileDisName: `%${fileDisName}%`,
@@ -73,15 +74,15 @@ export class FileService {
    * 获取详情（主键 id）
    */
   async selectById(baseFindByIdDto: BaseFindByIdDto): Promise<CreateFileDto> {
-    let { id } = baseFindByIdDto;
+    const { id } = baseFindByIdDto;
     return await this.fileRepository.findOne(id);
   }
 
   /**
    * 是否存在（主键 id）
    */
-  async isExistId(id: string): Promise<Boolean> {
-    let isExist = await this.fileRepository.findOne(id);
+  async isExistId(id: string): Promise<boolean> {
+    const isExist = await this.fileRepository.findOne(id);
     if (Utils.isNil(isExist)) {
       return false;
     } else {
@@ -103,7 +104,7 @@ export class FileService {
    * 删除
    */
   async deleteById(baseFindByIdDto: BaseFindByIdDto, curUser?): Promise<void> {
-    let { id } = baseFindByIdDto;
+    const { id } = baseFindByIdDto;
 
     await this.fileRepository.createQueryBuilder()
       .update(File)
@@ -116,7 +117,7 @@ export class FileService {
    * 删除（批量）
    */
   async deleteByIds(baseFindByIdsDto: BaseFindByIdsDto, curUser?): Promise<void> {
-    let { ids } = baseFindByIdsDto;
+    const { ids } = baseFindByIdsDto;
 
     await this.fileRepository.createQueryBuilder()
       .update(File)

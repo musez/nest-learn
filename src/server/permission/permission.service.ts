@@ -21,10 +21,10 @@ export class PermissionService {
    * 添加
    */
   async insert(createPermissionDto: CreatePermissionDto, curUser?): Promise<Permission> {
-    let { parentId, ...result } = createPermissionDto;
+    const { parentId, ...result } = createPermissionDto;
 
-    let child = new Permission();
-    for (let key in result) {
+    const child = new Permission();
+    for (const key in result) {
       child[key] = result[key];
     }
 
@@ -35,11 +35,12 @@ export class PermissionService {
    * 获取列表
    */
   async selectList(searchPermissionDto: SearchPermissionDto): Promise<any[]> {
+    // eslint-disable-next-line prefer-const
     let { parentId, kinship, name, type } = searchPermissionDto;
 
     kinship = kinship ? kinship : 0;
 
-    let queryConditionList = [];
+    const queryConditionList = [];
     let parentIds = null;
     if (!Utils.isBlank(parentId)) {
       if (kinship === 0) {
@@ -63,9 +64,9 @@ export class PermissionService {
       }
     }
     queryConditionList.push('deleteStatus = 0');
-    let queryCondition = queryConditionList.join(' AND ');
+    const queryCondition = queryConditionList.join(' AND ');
 
-    let res = await this.permissionRepository.createQueryBuilder('p')
+    const res = await this.permissionRepository.createQueryBuilder('p')
       .select(['p.*'])
       .addSelect(subQuery =>
         subQuery.select('COUNT(*)')
@@ -89,13 +90,14 @@ export class PermissionService {
    * 获取列表（分页）
    */
   async selectListPage(limitPermissionDto: LimitPermissionDto): Promise<any> {
+    // eslint-disable-next-line prefer-const
     let { page, limit, parentId, name } = limitPermissionDto;
 
     page = page ? page : 1;
     limit = limit ? limit : 10;
-    let offset = (page - 1) * limit;
+    const offset = (page - 1) * limit;
 
-    let queryConditionList = [];
+    const queryConditionList = [];
     let parentIds = [];
     if (!Utils.isBlank(parentId)) {
       parentIds = await this.selectChildrenIdsRecursive(parentId);
@@ -105,9 +107,9 @@ export class PermissionService {
       queryConditionList.push('name LIKE :name');
     }
     queryConditionList.push('deleteStatus = 0');
-    let queryCondition = queryConditionList.join(' AND ');
+    const queryCondition = queryConditionList.join(' AND ');
 
-    let res = await this.permissionRepository.createQueryBuilder()
+    const res = await this.permissionRepository.createQueryBuilder()
       .where(queryCondition, {
         parentIds: parentIds,
         name: `%${name}%`,
@@ -132,9 +134,9 @@ export class PermissionService {
    * 递归查询（ids）
    */
   async selectChildrenIdsRecursive(id): Promise<any> {
-    let list = [];
+    const list = [];
     list.push(id);
-    let childList = await this.permissionRepository.find({
+    const childList = await this.permissionRepository.find({
       where: {
         parentId: id,
         deleteStatus: 0,
@@ -142,7 +144,7 @@ export class PermissionService {
     });
 
     for (const item of childList) {
-      let obj = { ...item };
+      const obj = { ...item };
       await this.selectChildrenIdsRecursive(item.id);
       list.push(obj.id);
     }
@@ -154,10 +156,10 @@ export class PermissionService {
    * 获取树
    */
   async selectTree(baseFindByPIdDto: BaseFindByPIdDto): Promise<Permission[]> {
-    let { parentId } = baseFindByPIdDto;
+    const { parentId } = baseFindByPIdDto;
 
     if (Utils.isBlank(parentId)) {
-      let res = await this.permissionRepository.find({
+      const res = await this.permissionRepository.find({
         deleteStatus: 0,
       });
       return Utils.construct(res, {
@@ -166,7 +168,7 @@ export class PermissionService {
         children: 'children',
       });
     } else {
-      let result = await this.selectChildrenRecursive(parentId);
+      const result = await this.selectChildrenRecursive(parentId);
 
       return result;
     }
@@ -176,8 +178,8 @@ export class PermissionService {
    * 递归查询（id）
    */
   async selectChildrenRecursive(id): Promise<any> {
-    let list = [];
-    let childList = await this.permissionRepository.find({
+    const list = [];
+    const childList = await this.permissionRepository.find({
       where: {
         parentId: id,
         deleteStatus: 0,
@@ -185,8 +187,8 @@ export class PermissionService {
     });
 
     for (const item of childList) {
-      let obj = { ...item };
-      let child = await this.selectChildrenRecursive(item.id);
+      const obj = { ...item };
+      const child = await this.selectChildrenRecursive(item.id);
       if (child.length > 0) {
         obj['children'] = child;
         obj['hasChildren'] = true;
@@ -204,15 +206,15 @@ export class PermissionService {
    * 获取详情（主键 id）
    */
   async selectById(baseFindByIdDto: BaseFindByIdDto): Promise<Permission> {
-    let { id } = baseFindByIdDto;
+    const { id } = baseFindByIdDto;
     return await this.permissionRepository.findOne(id);
   }
 
   /**
    * 是否存在（主键 id）
    */
-  async isExistId(id: string): Promise<Boolean> {
-    let isExist = await this.permissionRepository.findOne(id);
+  async isExistId(id: string): Promise<boolean> {
+    const isExist = await this.permissionRepository.findOne(id);
     if (Utils.isNil(isExist)) {
       return false;
     } else {
@@ -224,10 +226,10 @@ export class PermissionService {
    * 修改
    */
   async update(updatePermissionDto: UpdatePermissionDto, curUser?) {
-    let { id, parentId, ...result } = updatePermissionDto;
+    const { id, parentId, ...result } = updatePermissionDto;
 
-    let child = new Permission();
-    for (let key in result) {
+    const child = new Permission();
+    for (const key in result) {
       child[key] = result[key];
     }
 
@@ -238,7 +240,7 @@ export class PermissionService {
    * 删除
    */
   async deleteById(baseFindByIdDto: BaseFindByIdDto, curUser?): Promise<void> {
-    let { id } = baseFindByIdDto;
+    const { id } = baseFindByIdDto;
 
     await this.permissionRepository.createQueryBuilder()
       .update(Permission)
@@ -251,7 +253,7 @@ export class PermissionService {
    * 删除（批量）
    */
   async deleteByIds(baseFindByIdsDto: BaseFindByIdsDto, curUser?): Promise<void> {
-    let { ids } = baseFindByIdsDto;
+    const { ids } = baseFindByIdsDto;
 
     await this.permissionRepository.createQueryBuilder()
       .update(Permission)

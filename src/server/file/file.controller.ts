@@ -74,8 +74,8 @@ export class FileController {
     }
 
     // 获取 body 中的文本参数
-    let { description, extId, fileDisName } = body;
-    let fileEntity = new File();
+    const { description, extId, fileDisName } = body;
+    const fileEntity = new File();
 
     fileEntity.fileDisName = fileDisName;
     fileEntity.extId = extId;
@@ -137,11 +137,11 @@ export class FileController {
     }
 
     // 获取 body 中的文本参数
-    let { description, extId, fileDisName } = body;
-    let filesEntity = [];
+    const { description, extId, fileDisName } = body;
+    const filesEntity = [];
 
     files.files.forEach((file, index) => {
-      let fileEntity = new File();
+      const fileEntity = new File();
 
       if (fileDisName[index]) {
         fileEntity.fileDisName = fileDisName[index];
@@ -185,12 +185,12 @@ export class FileController {
   @ApiOperation({ summary: '获取文件地址' })
   @ApiQuery({ name: 'id', description: '主键 id', required: true })
   async findFileUrl(@Query() baseFindByIdDto: BaseFindByIdDto, @Res() res) {
-    let file = await this.fileService.selectById(baseFindByIdDto);
+    const file = await this.fileService.selectById(baseFindByIdDto);
 
     // 设置请求的返回头 type，content 的 type 类型列表见上面
     res.setHeader('Content-Type', file.mimeType);
     // 格式必须为 binary 否则会出错
-    let content = fs.readFileSync(file.fileUrl, 'binary');
+    const content = fs.readFileSync(file.fileUrl, 'binary');
     res.writeHead(200, 'Ok');
     res.write(content, 'binary'); // 格式必须为 binary，否则会出错
     res.end();
@@ -210,8 +210,8 @@ export class FileController {
   @Permissions('system:file:delete')
   @ApiOperation({ summary: '删除' })
   async delete(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
-    let { id } = baseFindByIdDto;
-    let isExistId = await this.fileService.isExistId(id);
+    const { id } = baseFindByIdDto;
+    const isExistId = await this.fileService.isExistId(id);
 
     if (!isExistId) {
       throw new BadRequestException(`数据 id：${id} 不存在！`);

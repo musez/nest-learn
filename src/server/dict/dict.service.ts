@@ -34,14 +34,14 @@ export class DictService {
    * 获取列表
    */
   async selectList(searchDictDto: SearchDictDto): Promise<Dict[]> {
-    let { dictName } = searchDictDto;
+    const { dictName } = searchDictDto;
 
-    let queryConditionList = [];
+    const queryConditionList = [];
     if (!Utils.isBlank(dictName)) {
       queryConditionList.push('dictName LIKE :dictName');
     }
     queryConditionList.push('deleteStatus = 0');
-    let queryCondition = queryConditionList.join(' AND ');
+    const queryCondition = queryConditionList.join(' AND ');
 
     return await this.dictRepository.createQueryBuilder()
       .where(queryCondition, {
@@ -55,19 +55,20 @@ export class DictService {
    * 获取列表（分页）
    */
   async selectListPage(limitDictDto: LimitDictDto): Promise<any> {
+    // eslint-disable-next-line prefer-const
     let { page, limit, dictName } = limitDictDto;
     page = page ? page : 1;
     limit = limit ? limit : 10;
-    let offset = (page - 1) * limit;
+    const offset = (page - 1) * limit;
 
-    let queryConditionList = [];
+    const queryConditionList = [];
     if (!Utils.isBlank(dictName)) {
       queryConditionList.push('dictName LIKE :dictName');
     }
     queryConditionList.push('deleteStatus = 0');
-    let queryCondition = queryConditionList.join(' AND ');
+    const queryCondition = queryConditionList.join(' AND ');
 
-    let res = await this.dictRepository.createQueryBuilder()
+    const res = await this.dictRepository.createQueryBuilder()
       .where(queryCondition, {
         dictName: `%${dictName}%`,
       })
@@ -88,15 +89,15 @@ export class DictService {
    * 获取详情（主键 id）
    */
   async selectById(baseFindByIdDto: BaseFindByIdDto): Promise<Dict> {
-    let { id } = baseFindByIdDto;
+    const { id } = baseFindByIdDto;
     return await this.dictRepository.findOne(id, {});
   }
 
   /**
    * 是否存在（主键 id）
    */
-  async isExistId(id: string): Promise<Boolean> {
-    let isExist = await this.dictRepository.findOne(id);
+  async isExistId(id: string): Promise<boolean> {
+    const isExist = await this.dictRepository.findOne(id);
     if (Utils.isNil(isExist)) {
       return false;
     } else {
@@ -108,12 +109,12 @@ export class DictService {
    * 修改
    */
   async update(updateDictDto: UpdateDictDto, curUser?): Promise<any> {
-    let { id } = updateDictDto;
+    const { id } = updateDictDto;
 
     let dict = new Dict();
     dict = Utils.dto2entity(updateDictDto, dict);
     dict.updateBy = curUser&&curUser.id;
-    let result = await this.dictRepository.update(id, updateDictDto);
+    const result = await this.dictRepository.update(id, updateDictDto);
 
     return result;
   }
@@ -122,7 +123,7 @@ export class DictService {
    * 删除
    */
   async deleteById(baseFindByIdDto: BaseFindByIdDto, curUser?): Promise<void> {
-    let { id } = baseFindByIdDto;
+    const { id } = baseFindByIdDto;
 
     await this.dictRepository.createQueryBuilder()
       .update(Dict)
@@ -135,7 +136,7 @@ export class DictService {
    * 删除（批量）
    */
   async deleteByIds(baseFindByIdsDto: BaseFindByIdsDto, curUser?): Promise<void> {
-    let { ids } = baseFindByIdsDto;
+    const { ids } = baseFindByIdsDto;
 
     await this.dictRepository.createQueryBuilder()
       .update(Dict)

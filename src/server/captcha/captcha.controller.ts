@@ -17,9 +17,9 @@ export class CaptchaController {
   @Get('getCaptcha')
   @ApiOperation({ summary: '验证码' })
   async getCaptcha(@Query() createCaptchaDto: CreateCaptchaDto, @Res() res): Promise<any> {
-    let { captchaId } = createCaptchaDto;
+    const { captchaId } = createCaptchaDto;
 
-    let svgCaptcha = this.captchaService.getCaptcha();
+    const svgCaptcha = this.captchaService.getCaptcha();
 
     await this.captchaService.insertCaptcha(captchaId, svgCaptcha.text);
 

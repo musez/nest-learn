@@ -33,7 +33,7 @@ export class UserinfoService {
    * 修改
    */
   async update(updateUserinfoDto: UpdateUserinfoDto): Promise<any> {
-    let { id } = updateUserinfoDto;
+    const { id } = updateUserinfoDto;
     return await this.userinfoRepository.update(id, updateUserinfoDto);
   }
 

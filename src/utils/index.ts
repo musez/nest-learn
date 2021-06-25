@@ -29,8 +29,30 @@ export class Utils {
     return dayjs(Date.now()).format(format);
   }
 
+  static dayjsGetDay(day) {
+    console.log('day:',day);
+    const days = [];
+    for (let i = 1; i <= day; i++) {
+      days.push(dayjs().add(day, 'day'));
+    }
+
+    return days;
+  }
+
+  static dayjsGetWeekday() {
+    return;
+  }
+
+  static dayjsGetMonth(format) {
+    return;
+  }
+
+  static dayjsGetYear(format) {
+    return;
+  }
+
   static dto2entity(dto: any, entity: any): any {
-    let e = {};
+    const e = {};
     for (const key in entity) {
       if (dto.hasOwnProperty(key)) {
         e[key] = dto[key];
@@ -40,7 +62,7 @@ export class Utils {
   }
 
   static dto2entityImport(dto: any, entity: any): any {
-    let e = {};
+    const e = {};
     for (const key in entity) {
       if (dto.hasOwnProperty(key) && dto[key] !== '') {
         e[key] = dto[key];

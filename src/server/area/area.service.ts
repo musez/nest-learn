@@ -20,9 +20,9 @@ export class AreaService {
    * 获取列表（默认返回 []）
    */
   async selectList(searchAreaDto: SearchAreaDto): Promise<any[]> {
-    let { parentId, areaName } = searchAreaDto;
+    const { parentId, areaName } = searchAreaDto;
 
-    let queryConditionList = [];
+    const queryConditionList = [];
     let parentIds = [];
     if (!Utils.isBlank(parentId)) {
       parentIds = await this.selectChildrenIdsRecursive(parentId);
@@ -31,9 +31,9 @@ export class AreaService {
     if (!Utils.isBlank(areaName)) {
       queryConditionList.push('areaName LIKE :areaName');
     }
-    let queryCondition = queryConditionList.join(' AND ');
+    const queryCondition = queryConditionList.join(' AND ');
 
-    let res = await this.areaRepository.createQueryBuilder('a')
+    const res = await this.areaRepository.createQueryBuilder('a')
       .select(['a.*'])
       .addSelect(subQuery =>
         subQuery.select('COUNT(*)')
@@ -52,12 +52,13 @@ export class AreaService {
    * 获取列表（分页）
    */
   async selectListPage(limitAreaDto: LimitAreaDto): Promise<any> {
+    // eslint-disable-next-line prefer-const
     let { page, limit, parentId, areaName } = limitAreaDto;
     page = page ? page : 1;
     limit = limit ? limit : 10;
-    let offset = (page - 1) * limit;
+    const offset = (page - 1) * limit;
 
-    let queryConditionList = [];
+    const queryConditionList = [];
     let parentIds = [];
     if (!Utils.isBlank(parentId)) {
       parentIds = await this.selectChildrenIdsRecursive(parentId);
@@ -66,9 +67,9 @@ export class AreaService {
     if (!Utils.isBlank(areaName)) {
       queryConditionList.push('areaName LIKE :areaName');
     }
-    let queryCondition = queryConditionList.join(' AND ');
+    const queryCondition = queryConditionList.join(' AND ');
 
-    let res = await this.areaRepository.createQueryBuilder()
+    const res = await this.areaRepository.createQueryBuilder()
       .where(queryCondition, {
         parentIds: parentIds,
         areaName: `%${areaName}%`,
@@ -90,15 +91,15 @@ export class AreaService {
    * 递归查询（ids）
    */
   async selectChildrenIdsRecursive(id): Promise<any> {
-    let list = [];
-    let childList = await this.areaRepository.find({
+    const list = [];
+    const childList = await this.areaRepository.find({
       where: {
         parentId: id,
       },
     });
 
     for (const item of childList) {
-      let obj = { ...item };
+      const obj = { ...item };
       await this.selectChildrenIdsRecursive(item.id);
       list.push(obj.id);
     }
@@ -127,17 +128,17 @@ export class AreaService {
    * 获取树
    */
   async selectTree(baseFindByPIdDto: BaseFindByPIdDto): Promise<any> {
-    let { parentId } = baseFindByPIdDto;
+    const { parentId } = baseFindByPIdDto;
 
     if (Utils.isBlank(parentId)) {
-      let res = await this.areaRepository.find();
+      const res = await this.areaRepository.find();
       return Utils.construct(res, {
         id: 'id',
         pid: 'parentId',
         children: 'children',
       });
     } else {
-      let result = await this.selectChildrenRecursive(parentId);
+      const result = await this.selectChildrenRecursive(parentId);
 
       return result;
     }
@@ -147,16 +148,16 @@ export class AreaService {
    * 递归查询（id）
    */
   async selectChildrenRecursive(id): Promise<any> {
-    let list = [];
-    let childList = await this.areaRepository.find({
+    const list = [];
+    const childList = await this.areaRepository.find({
       where: {
         parentId: id,
       },
     });
 
     for (const item of childList) {
-      let obj = { ...item };
-      let child = await this.selectChildrenRecursive(item.id);
+      const obj = { ...item };
+      const child = await this.selectChildrenRecursive(item.id);
       if (child.length > 0) {
         obj['children'] = child;
         obj['hasChildren'] = true;

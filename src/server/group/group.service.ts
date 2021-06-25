@@ -35,14 +35,14 @@ export class GroupService {
    * 获取列表
    */
   async selectList(query): Promise<any[]> {
-    let { name } = query;
+    const { name } = query;
 
-    let queryConditionList = [];
+    const queryConditionList = [];
     if (!Utils.isBlank(name)) {
       queryConditionList.push('name LIKE :name');
     }
     queryConditionList.push('deleteStatus = 0');
-    let queryCondition = queryConditionList.join(' AND ');
+    const queryCondition = queryConditionList.join(' AND ');
 
     return await this.groupRepository.createQueryBuilder()
       .where(queryCondition, {
@@ -56,19 +56,20 @@ export class GroupService {
    * 获取列表（分页）
    */
   async selectListPage(limitGroupDto: LimitGroupDto): Promise<any> {
+    // eslint-disable-next-line prefer-const
     let { page, limit, name } = limitGroupDto;
     page = page ? page : 1;
     limit = limit ? limit : 10;
-    let offset = (page - 1) * limit;
+    const offset = (page - 1) * limit;
 
-    let queryConditionList = [];
+    const queryConditionList = [];
     if (!Utils.isBlank(name)) {
       queryConditionList.push('name LIKE :name');
     }
     queryConditionList.push('deleteStatus = 0');
-    let queryCondition = queryConditionList.join(' AND ');
+    const queryCondition = queryConditionList.join(' AND ');
 
-    let res = await this.groupRepository.createQueryBuilder()
+    const res = await this.groupRepository.createQueryBuilder()
       .where(queryCondition, {
         name: `%${name}%`,
       })
@@ -95,8 +96,8 @@ export class GroupService {
   /**
    * 是否存在（主键 id）
    */
-  async isExistId(id: string): Promise<Boolean> {
-    let isExist = await this.groupRepository.findOne(id);
+  async isExistId(id: string): Promise<boolean> {
+    const isExist = await this.groupRepository.findOne(id);
     if (Utils.isNil(isExist)) {
       return false;
     } else {
@@ -108,7 +109,7 @@ export class GroupService {
    * 修改
    */
   async update(updateGroupDto: UpdateGroupDto, curUser?): Promise<void> {
-    let { id } = updateGroupDto;
+    const { id } = updateGroupDto;
 
     let group = new Group();
     group = Utils.dto2entity(updateGroupDto, group);
@@ -120,7 +121,7 @@ export class GroupService {
    * 删除
    */
   async deleteById(baseFindByIdDto: BaseFindByIdDto, curUser?): Promise<void> {
-    let { id } = baseFindByIdDto;
+    const { id } = baseFindByIdDto;
 
     await this.groupRepository.createQueryBuilder()
       .update(Group)
@@ -133,7 +134,7 @@ export class GroupService {
    * 删除（批量）
    */
   async deleteByIds(baseFindByIdsDto: BaseFindByIdsDto, curUser?): Promise<void> {
-    let { ids } = baseFindByIdsDto;
+    const { ids } = baseFindByIdsDto;
 
     await this.groupRepository.createQueryBuilder()
       .update(Group)
@@ -153,11 +154,11 @@ export class GroupService {
    * 绑定角色
    */
   async bindRoles(bindGroupRoleDto: BindGroupRoleDto): Promise<void> {
-    let { id, roles } = bindGroupRoleDto;
+    const { id, roles } = bindGroupRoleDto;
 
-    let userGroupList = [];
+    const userGroupList = [];
     for (let i = 0, len = roles.length; i < len; i++) {
-      let createGroupRoleDto = new CreateGroupRoleDto();
+      const createGroupRoleDto = new CreateGroupRoleDto();
       createGroupRoleDto.groupId = id;
       createGroupRoleDto.roleId = roles[i];
       userGroupList.push(createGroupRoleDto);

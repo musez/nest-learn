@@ -17,9 +17,9 @@ export class PostService {
   }
 
   async insert(createPostDto: CreatePostDto, curUser?) {
-    let { name } = createPostDto;
+    const { name } = createPostDto;
 
-    let isExist = await this.postRepository.findOne({ name: name });
+    const isExist = await this.postRepository.findOne({ name: name });
     if (isExist) {
       throw new BadRequestException(`岗位名称：${name} 已存在！`);
     }
@@ -34,14 +34,14 @@ export class PostService {
    * 获取列表
    */
   async selectList(query): Promise<any[]> {
-    let { name } = query;
+    const { name } = query;
 
-    let queryConditionList = [];
+    const queryConditionList = [];
     if (!Utils.isBlank(name)) {
       queryConditionList.push('name LIKE :name');
     }
     queryConditionList.push('deleteStatus = 0');
-    let queryCondition = queryConditionList.join(' AND ');
+    const queryCondition = queryConditionList.join(' AND ');
 
     return await this.postRepository.createQueryBuilder()
       .where(queryCondition, {
@@ -61,16 +61,16 @@ export class PostService {
     let { page, limit, name } = limitPostDto;
     page = page ? page : 1;
     limit = limit ? limit : 10;
-    let offset = (page - 1) * limit;
+    const offset = (page - 1) * limit;
 
-    let queryConditionList = [];
+    const queryConditionList = [];
     if (!Utils.isBlank(name)) {
       queryConditionList.push('name LIKE :name');
     }
     queryConditionList.push('deleteStatus = 0');
-    let queryCondition = queryConditionList.join(' AND ');
+    const queryCondition = queryConditionList.join(' AND ');
 
-    let res = await this.postRepository.createQueryBuilder()
+    const res = await this.postRepository.createQueryBuilder()
       .where(queryCondition, {
         name: `%${name}%`,
       })
@@ -100,8 +100,8 @@ export class PostService {
   /**
    * 是否存在（主键 id）
    */
-  async isExistId(id: string): Promise<Boolean> {
-    let isExist = await this.postRepository.findOne(id);
+  async isExistId(id: string): Promise<boolean> {
+    const isExist = await this.postRepository.findOne(id);
     if (Utils.isNil(isExist)) {
       return false;
     } else {
@@ -113,8 +113,8 @@ export class PostService {
    * 修改
    */
   async update(updatePostDto: UpdatePostDto, curUser?): Promise<void> {
-    let { id } = updatePostDto;
-    let isExist = await this.postRepository.findOne(id);
+    const { id } = updatePostDto;
+    const isExist = await this.postRepository.findOne(id);
     if (Utils.isNil(isExist)) {
       throw new BadRequestException(`数据 id：${id} 不存在！`);
     }
@@ -130,8 +130,8 @@ export class PostService {
    * 删除
    */
   async deleteById(baseFindByIdDto: BaseFindByIdDto, curUser?): Promise<void> {
-    let { id } = baseFindByIdDto;
-    let isExist = await this.postRepository.findOne(id);
+    const { id } = baseFindByIdDto;
+    const isExist = await this.postRepository.findOne(id);
     if (Utils.isNil(isExist)) {
       throw new BadRequestException(`数据 id：${baseFindByIdDto} 不存在！`);
     }
@@ -148,7 +148,7 @@ export class PostService {
    * 删除（批量）
    */
   async deleteByIds(baseFindByIdsDto: BaseFindByIdsDto, curUser?): Promise<void> {
-    let { ids } = baseFindByIdsDto;
+    const { ids } = baseFindByIdsDto;
 
     await this.postRepository.createQueryBuilder()
       .update(SysPost)

@@ -72,9 +72,9 @@ export class PermissionController {
   @Permissions('account:permission:exportExcel')
   @ApiOperation({ summary: '列表（Excel 导出）' })
   async exportExcel(@Query() searchPermissionDto: SearchPermissionDto, @Res() res): Promise<any> {
-    let list = await this.permissionService.selectList(searchPermissionDto);
+    const list = await this.permissionService.selectList(searchPermissionDto);
 
-    let titleList = [
+    const titleList = [
       { key: 'name', value: '名称' },
       { key: 'type', value: '权限类型' },
       { key: 'code', value: '权限 CODE 代码' },
@@ -106,8 +106,8 @@ export class PermissionController {
   @Permissions('account:permission:update')
   @ApiOperation({ summary: '修改' })
   async update(@CurUser() curUser, @Body() updatePermissionDto: UpdatePermissionDto): Promise<any> {
-    let { id } = updatePermissionDto;
-    let isExistId = await this.permissionService.isExistId(id);
+    const { id } = updatePermissionDto;
+    const isExistId = await this.permissionService.isExistId(id);
 
     if (!isExistId) {
       throw new BadRequestException(`数据 id：${id} 不存在！`);
@@ -119,8 +119,8 @@ export class PermissionController {
   @Permissions('account:permission:delete')
   @ApiOperation({ summary: '删除' })
   async delete(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
-    let { id } = baseFindByIdDto;
-    let isExistId = await this.permissionService.isExistId(id);
+    const { id } = baseFindByIdDto;
+    const isExistId = await this.permissionService.isExistId(id);
 
     if (!isExistId) {
       throw new BadRequestException(`数据 id：${id} 不存在！`);

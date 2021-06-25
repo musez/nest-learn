@@ -36,14 +36,14 @@ export class RoleService {
    * 获取列表
    */
   async selectList(searchRoleDto: SearchRoleDto): Promise<any[]> {
-    let { name } = searchRoleDto;
+    const { name } = searchRoleDto;
 
-    let queryConditionList = [];
+    const queryConditionList = [];
     if (!Utils.isBlank(name)) {
       queryConditionList.push('name LIKE :name');
     }
     queryConditionList.push('deleteStatus = 0');
-    let queryCondition = queryConditionList.join(' AND ');
+    const queryCondition = queryConditionList.join(' AND ');
 
     return await this.roleRepository.createQueryBuilder()
       .where(queryCondition, {
@@ -58,19 +58,20 @@ export class RoleService {
    * 获取列表（分页）
    */
   async selectListPage(limitRoleDto: LimitRoleDto): Promise<any> {
+    // eslint-disable-next-line prefer-const
     let { page, limit, name } = limitRoleDto;
     page = page ? page : 1;
     limit = limit ? limit : 10;
-    let offset = (page - 1) * limit;
+    const offset = (page - 1) * limit;
 
-    let queryConditionList = [];
+    const queryConditionList = [];
     if (!Utils.isBlank(name)) {
       queryConditionList.push('name LIKE :name');
     }
     queryConditionList.push('deleteStatus = 0');
-    let queryCondition = queryConditionList.join(' AND ');
+    const queryCondition = queryConditionList.join(' AND ');
 
-    let res = await this.roleRepository.createQueryBuilder()
+    const res = await this.roleRepository.createQueryBuilder()
       .where(queryCondition, {
         name: `%${name}%`,
       })
@@ -91,15 +92,15 @@ export class RoleService {
    * 获取详情（主键 id）
    */
   async selectById(baseFindByIdDto: BaseFindByIdDto): Promise<Role> {
-    let { id } = baseFindByIdDto;
+    const { id } = baseFindByIdDto;
     return await this.roleRepository.findOne(id);
   }
 
   /**
    * 是否存在（主键 id）
    */
-  async isExistId(id: string): Promise<Boolean> {
-    let isExist = await this.roleRepository.findOne(id);
+  async isExistId(id: string): Promise<boolean> {
+    const isExist = await this.roleRepository.findOne(id);
     if (Utils.isNil(isExist)) {
       return false;
     } else {
@@ -111,7 +112,7 @@ export class RoleService {
    * 修改
    */
   async update(updateRoleDto: UpdateRoleDto, curUser?): Promise<void> {
-    let { id } = updateRoleDto;
+    const { id } = updateRoleDto;
 
     let role = new Role();
     role = Utils.dto2entity(updateRoleDto, role);
@@ -124,7 +125,7 @@ export class RoleService {
    * 删除
    */
   async deleteById(baseFindByIdDto: BaseFindByIdDto, curUser?): Promise<void> {
-    let { id } = baseFindByIdDto;
+    const { id } = baseFindByIdDto;
 
     await this.roleRepository.createQueryBuilder()
       .update(Role)
@@ -137,7 +138,7 @@ export class RoleService {
    * 删除（批量）
    */
   async deleteByIds(baseFindByIdsDto: BaseFindByIdsDto, curUser?): Promise<void> {
-    let { ids } = baseFindByIdsDto;
+    const { ids } = baseFindByIdsDto;
 
     await this.roleRepository.createQueryBuilder()
       .update(Role)
@@ -157,11 +158,11 @@ export class RoleService {
    * 绑定权限
    */
   async bindPermissions(bindRolePermissionDto: BindRolePermissionDto): Promise<void> {
-    let { id, permissions } = bindRolePermissionDto;
+    const { id, permissions } = bindRolePermissionDto;
 
-    let userGroupList = [];
+    const userGroupList = [];
     for (let i = 0, len = permissions.length; i < len; i++) {
-      let createRolePermissionDto = new CreateRolePermissionDto();
+      const createRolePermissionDto = new CreateRolePermissionDto();
       createRolePermissionDto.roleId = id;
       createRolePermissionDto.permissionId = permissions[i];
       userGroupList.push(createRolePermissionDto);

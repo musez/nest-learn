@@ -149,7 +149,6 @@ const getRowValue = (workbook, column, mediaIndex, cellIndex, value, row) => {
  * @param {path} savePath  文件保存路径
  * @param {path} style 设置每行高度
  */
-// @ts-ignore
 export const exportExcel = async (columns, rows, sheetName, savePath, style = { row: { height: 32 } }) => {
   try {
     const workbook = new Excel.Workbook();

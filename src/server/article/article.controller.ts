@@ -75,9 +75,9 @@ export class ArticleController {
   @Permissions('account:article:exportExcel')
   @ApiOperation({ summary: '列表（Excel 导出）' })
   async exportExcel(@Query() searchArticleDto: SearchArticleDto, @Res() res): Promise<any> {
-    let list = await this.articleService.selectList(searchArticleDto);
+    const list = await this.articleService.selectList(searchArticleDto);
 
-    let titleList = [
+    const titleList = [
       { key: 'title', value: '标题' },
       { key: 'summary', value: '摘要' },
       { key: 'author', value: '作者' },
@@ -117,8 +117,8 @@ export class ArticleController {
   @Permissions('cms:article:update')
   @ApiOperation({ summary: '修改' })
   async update(@CurUser() curUser, @Body() updateArticleDto: UpdateArticleDto): Promise<any> {
-    let { id } = updateArticleDto;
-    let isExistId = await this.articleService.isExistId(id);
+    const { id } = updateArticleDto;
+    const isExistId = await this.articleService.isExistId(id);
     if (!isExistId) {
       throw new BadRequestException(`数据 id：${id} 不存在！`);
     }
@@ -130,8 +130,8 @@ export class ArticleController {
   @Permissions('cms:article:delete')
   @ApiOperation({ summary: '删除' })
   async delete(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
-    let { id } = baseFindByIdDto;
-    let isExistId = await this.articleService.isExistId(id);
+    const { id } = baseFindByIdDto;
+    const isExistId = await this.articleService.isExistId(id);
 
     if (!isExistId) {
       throw new BadRequestException(`数据 id：${id} 不存在！`);

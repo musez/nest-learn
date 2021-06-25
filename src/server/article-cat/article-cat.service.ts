@@ -31,9 +31,9 @@ export class ArticleCatService {
    * 获取列表
    */
   async selectList(searchArticleCatDto: SearchArticleCatDto): Promise<any[]> {
-    let { parentId, kinship, catName } = searchArticleCatDto;
+    const { parentId, kinship, catName } = searchArticleCatDto;
 
-    let queryConditionList = [];
+    const queryConditionList = [];
     let parentIds = null;
     if (!Utils.isBlank(parentId)) {
       if (kinship === 0) {
@@ -50,9 +50,9 @@ export class ArticleCatService {
       queryConditionList.push('catName LIKE :catName');
     }
     queryConditionList.push('deleteStatus = 0');
-    let queryCondition = queryConditionList.join(' AND ');
+    const queryCondition = queryConditionList.join(' AND ');
 
-    let res = await this.articleCatRepository.createQueryBuilder('ac')
+    const res = await this.articleCatRepository.createQueryBuilder('ac')
       .select(['ac.*'])
       .addSelect(subQuery =>
         subQuery.select('COUNT(*)')
@@ -71,12 +71,13 @@ export class ArticleCatService {
    * 获取列表（分页）
    */
   async selectListPage(limitArticleCatDto: LimitArticleCatDto): Promise<any> {
+    // eslint-disable-next-line prefer-const
     let { page, limit, parentId, catName } = limitArticleCatDto;
     page = page ? page : 1;
     limit = limit ? limit : 10;
-    let offset = (page - 1) * limit;
+    const offset = (page - 1) * limit;
 
-    let queryConditionList = [];
+    const queryConditionList = [];
     let parentIds = [];
     if (!Utils.isBlank(parentId)) {
       parentIds = await this.selectChildrenIdsRecursive(parentId);
@@ -86,9 +87,9 @@ export class ArticleCatService {
       queryConditionList.push('catName LIKE :catName');
     }
     queryConditionList.push('deleteStatus = 0');
-    let queryCondition = queryConditionList.join(' AND ');
+    const queryCondition = queryConditionList.join(' AND ');
 
-    let res = await this.articleCatRepository.createQueryBuilder()
+    const res = await this.articleCatRepository.createQueryBuilder()
       .where(queryCondition, {
         parentIds: parentIds,
         catName: `%${catName}%`,
@@ -110,9 +111,9 @@ export class ArticleCatService {
    * 递归查询（ids）
    */
   async selectChildrenIdsRecursive(id): Promise<any> {
-    let list = [];
+    const list = [];
     list.push(id);
-    let childList = await this.articleCatRepository.find({
+    const childList = await this.articleCatRepository.find({
       where: {
         parentId: id,
         deleteStatus: 0,
@@ -120,7 +121,7 @@ export class ArticleCatService {
     });
 
     for (const item of childList) {
-      let obj = { ...item };
+      const obj = { ...item };
       await this.selectChildrenIdsRecursive(item.id);
       list.push(obj.id);
     }
@@ -132,10 +133,10 @@ export class ArticleCatService {
    * 获取树
    */
   async selectTree(baseFindByPIdDto: BaseFindByPIdDto): Promise<ArticleCat[]> {
-    let { parentId } = baseFindByPIdDto;
+    const { parentId } = baseFindByPIdDto;
 
     if (Utils.isBlank(parentId)) {
-      let res = await this.articleCatRepository.find({
+      const res = await this.articleCatRepository.find({
         deleteStatus: 0,
       });
       return Utils.construct(res, {
@@ -144,7 +145,7 @@ export class ArticleCatService {
         children: 'children',
       });
     } else {
-      let result = await this.selectChildrenRecursive(parentId);
+      const result = await this.selectChildrenRecursive(parentId);
 
       return result;
     }
@@ -154,8 +155,8 @@ export class ArticleCatService {
    * 递归查询（id）
    */
   async selectChildrenRecursive(id): Promise<any> {
-    let list = [];
-    let childList = await this.articleCatRepository.find({
+    const list = [];
+    const childList = await this.articleCatRepository.find({
       where: {
         parentId: id,
         deleteStatus: 0,
@@ -163,8 +164,8 @@ export class ArticleCatService {
     });
 
     for (const item of childList) {
-      let obj = { ...item };
-      let child = await this.selectChildrenRecursive(item.id);
+      const obj = { ...item };
+      const child = await this.selectChildrenRecursive(item.id);
       if (child.length > 0) {
         obj['children'] = child;
         obj['hasChildren'] = true;
@@ -182,15 +183,15 @@ export class ArticleCatService {
    * 获取详情（主键 id）
    */
   async selectById(baseFindByIdDto: BaseFindByIdDto): Promise<ArticleCat> {
-    let { id } = baseFindByIdDto;
+    const { id } = baseFindByIdDto;
     return await this.articleCatRepository.findOne(id);
   }
 
   /**
    * 是否存在（主键 id）
    */
-  async isExistId(id: string): Promise<Boolean> {
-    let isExist = await this.articleCatRepository.findOne(id);
+  async isExistId(id: string): Promise<boolean> {
+    const isExist = await this.articleCatRepository.findOne(id);
     if (Utils.isNil(isExist)) {
       return false;
     } else {
@@ -202,7 +203,7 @@ export class ArticleCatService {
    * 修改
    */
   async update(updateArticleCatDto: UpdateArticleCatDto, curUser?): Promise<void> {
-    let { id } = updateArticleCatDto;
+    const { id } = updateArticleCatDto;
 
     let articleCat = new ArticleCat();
     articleCat = Utils.dto2entity(updateArticleCatDto, articleCat);
@@ -214,7 +215,7 @@ export class ArticleCatService {
    * 删除
    */
   async deleteById(baseFindByIdDto: BaseFindByIdDto, curUser?): Promise<void> {
-    let { id } = baseFindByIdDto;
+    const { id } = baseFindByIdDto;
 
     await this.articleCatRepository.createQueryBuilder()
       .update(ArticleCat)
@@ -227,7 +228,7 @@ export class ArticleCatService {
    * 删除（批量）
    */
   async deleteByIds(baseFindByIdsDto: BaseFindByIdsDto, curUser?): Promise<void> {
-    let { ids } = baseFindByIdsDto;
+    const { ids } = baseFindByIdsDto;
 
     await this.articleCatRepository.createQueryBuilder()
       .update(ArticleCat)

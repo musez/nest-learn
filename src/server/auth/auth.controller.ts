@@ -47,7 +47,7 @@ export class AuthController {
     },
   })
   async login(@CurUser() curUser, @Body() body) {
-    let { captchaId, captchaText } = body;
+    const { captchaId, captchaText } = body;
 
     const validateCaptcha = await this.authService.validateCaptcha(captchaId, captchaText);
     if (validateCaptcha) {
@@ -61,9 +61,9 @@ export class AuthController {
   @Post('register')
   @ApiOperation({ summary: '注册' })
   async register(@Body() registerUserDto: RegisterUserDto): Promise<CreateUserDto> {
-    let { userName, userPwd, userPwdConfirm } = registerUserDto;
+    const { userName, userPwd, userPwdConfirm } = registerUserDto;
 
-    let isExistUserName = await this.userService.isExistUserName(userName);
+    const isExistUserName = await this.userService.isExistUserName(userName);
     if (isExistUserName) {
       throw new BadRequestException(`用户名：${userName} 已存在！`);
     }
@@ -80,9 +80,9 @@ export class AuthController {
   @ApiBasicAuth()
   @ApiOperation({ summary: '根据 token 获取权限' })
   async getPermissionsByToken(@CurUser() curUser): Promise<any> {
-    let { id } = curUser;
+    const { id } = curUser;
 
-    let isExistId = await this.userService.isExistId(id);
+    const isExistId = await this.userService.isExistId(id);
     if (!isExistId) {
       throw new BadRequestException(`数据 id：${id} 不存在！`);
     }
@@ -95,9 +95,9 @@ export class AuthController {
   @ApiBasicAuth()
   @ApiOperation({ summary: '根据 token 获取用户、用户组、角色、权限' })
   async getAuthByToken(@CurUser() curUser): Promise<any> {
-    let { id } = curUser;
+    const { id } = curUser;
 
-    let isExistId = await this.userService.isExistId(id);
+    const isExistId = await this.userService.isExistId(id);
     if (!isExistId) {
       throw new BadRequestException(`数据 id：${id} 不存在！`);
     }

@@ -73,9 +73,9 @@ export class PostController {
   @Permissions('account:post:exportExcel')
   @ApiOperation({ summary: '列表（Excel 导出）' })
   async exportExcel(@Query() searchPostDto: SearchPostDto, @Res() res): Promise<any> {
-    let list = await this.postService.selectList(searchPostDto);
+    const list = await this.postService.selectList(searchPostDto);
 
-    let titleList = [
+    const titleList = [
       { key: 'name', value: '名称' },
       { key: 'status', value: '状态' },
       { key: 'description', value: '备注' },
@@ -100,8 +100,8 @@ export class PostController {
   @Permissions('account:post:update')
   @ApiOperation({ summary: '修改' })
   async update(@CurUser() curUser, @Body() updatePostDto: UpdatePostDto): Promise<any> {
-    let { id } = updatePostDto;
-    let isExistId = await this.postService.isExistId(id);
+    const { id } = updatePostDto;
+    const isExistId = await this.postService.isExistId(id);
 
     if (!isExistId) {
       throw new BadRequestException(`数据 id：${id} 不存在！`);
@@ -113,8 +113,8 @@ export class PostController {
   @Permissions('account:post:delete')
   @ApiOperation({ summary: '删除' })
   async delete(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
-    let { id } = baseFindByIdDto;
-    let isExistId = await this.postService.isExistId(id);
+    const { id } = baseFindByIdDto;
+    const isExistId = await this.postService.isExistId(id);
 
     if (!isExistId) {
       throw new BadRequestException(`数据 id：${id} 不存在！`);

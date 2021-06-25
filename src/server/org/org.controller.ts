@@ -81,9 +81,9 @@ export class OrgController {
   @Permissions('account:org:exportExcel')
   @ApiOperation({ summary: '列表（Excel 导出）' })
   async exportExcel(@Query() searchOrgDto: SearchOrgDto, @Res() res): Promise<any> {
-    let list = await this.orgService.selectList(searchOrgDto);
+    const list = await this.orgService.selectList(searchOrgDto);
 
-    let titleList = [
+    const titleList = [
       { key: 'name', value: '名称' },
       { key: 'shortName', value: '简称' },
       { key: 'orgType', value: '机构类型' },

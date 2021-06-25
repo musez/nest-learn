@@ -29,6 +29,8 @@ import { OrgModule } from './server/org/org.module';
 import { PostModule } from './server/post/post.module';
 import { ExcelModule } from './server/excel/excel.module';
 import { LocalConfigModule } from './server/config/local-config.module';
+import { HolidayModule } from './server/holiday/holiday.module';
+import { HolidayCatModule } from './server/holiday-cat/holiday-cat.module';
 
 const ENV = process.env.NODE_ENV;
 
@@ -79,6 +81,8 @@ const ENV = process.env.NODE_ENV;
     ArticleDataCatModule,
     ConfigModule,
     LocalConfigModule,
+    HolidayModule,
+    HolidayCatModule,
   ],
   controllers: [AppController],
   providers: [AppService],

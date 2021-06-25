@@ -76,9 +76,9 @@ export class RoleController {
   @Permissions('account:role:exportExcel')
   @ApiOperation({ summary: '列表（Excel 导出）' })
   async exportExcel(@Query() searchRoleDto: SearchRoleDto, @Res() res): Promise<any> {
-    let list = await this.roleService.selectList(searchRoleDto);
+    const list = await this.roleService.selectList(searchRoleDto);
 
-    let titleList = [
+    const titleList = [
       { key: 'name', value: '名称' },
       { key: 'status', value: '状态' },
       { key: 'description', value: '备注' },
@@ -103,8 +103,8 @@ export class RoleController {
   @Permissions('account:role:update')
   @ApiOperation({ summary: '修改' })
   async update(@CurUser() curUser, @Body() updateRoleDto: UpdateRoleDto): Promise<any> {
-    let { id } = updateRoleDto;
-    let isExistId = await this.roleService.isExistId(id);
+    const { id } = updateRoleDto;
+    const isExistId = await this.roleService.isExistId(id);
 
     if (!isExistId) {
       throw new BadRequestException(`数据 id：${id} 不存在！`);
@@ -116,8 +116,8 @@ export class RoleController {
   @Permissions('account:role:delete')
   @ApiOperation({ summary: '删除' })
   async delete(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
-    let { id } = baseFindByIdDto;
-    let isExistId = await this.roleService.isExistId(id);
+    const { id } = baseFindByIdDto;
+    const isExistId = await this.roleService.isExistId(id);
 
     if (!isExistId) {
       throw new BadRequestException(`数据 id：${id} 不存在！`);
@@ -136,8 +136,8 @@ export class RoleController {
   @Permissions('account:role:getPermissions')
   @ApiOperation({ summary: '获取角色权限' })
   async findPermissionsByRoleId(@CurUser() curUser, @Query() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
-    let { id } = baseFindByIdDto;
-    let isExistId = await this.roleService.isExistId(id);
+    const { id } = baseFindByIdDto;
+    const isExistId = await this.roleService.isExistId(id);
 
     if (!isExistId) {
       throw new BadRequestException(`数据 id：${id} 不存在！`);
@@ -149,8 +149,8 @@ export class RoleController {
   @Permissions('account:role:bindPermissions')
   @ApiOperation({ summary: '绑定角色权限' })
   async bindPermissions(@CurUser() curUser, @Body() bindRolePermissionDto: BindRolePermissionDto): Promise<any> {
-    let { id } = bindRolePermissionDto;
-    let isExistId = await this.roleService.isExistId(id);
+    const { id } = bindRolePermissionDto;
+    const isExistId = await this.roleService.isExistId(id);
 
     if (!isExistId) {
       throw new BadRequestException(`数据 id：${id} 不存在！`);

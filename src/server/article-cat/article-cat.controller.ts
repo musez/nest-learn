@@ -83,9 +83,9 @@ export class ArticleCatController {
   @Permissions('account:articleCat:exportExcel')
   @ApiOperation({ summary: '列表（Excel 导出）' })
   async exportExcel(@Query()  searchArticleCatDto: SearchArticleCatDto, @Res() res): Promise<any> {
-    let list = await this.articleCatService.selectList(searchArticleCatDto);
+    const list = await this.articleCatService.selectList(searchArticleCatDto);
 
-    let titleList = [
+    const titleList = [
       { key: 'catName', value: '栏目名称' },
       { key: 'status', value: '状态' },
       { key: 'description', value: '备注' },
@@ -117,8 +117,8 @@ export class ArticleCatController {
   @Permissions('cms:articleCat:delete')
   @ApiOperation({ summary: '删除' })
   async delete(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
-    let { id } = baseFindByIdDto;
-    let isExistId = await this.articleCatService.isExistId(id);
+    const { id } = baseFindByIdDto;
+    const isExistId = await this.articleCatService.isExistId(id);
 
     if (!isExistId) {
       throw new BadRequestException(`数据 id：${id} 不存在！`);
