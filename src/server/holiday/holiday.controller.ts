@@ -12,6 +12,7 @@ import { LimitHolidayDto } from './dto/limit-holiday.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../../common/guards/roles.guard';
 import { Utils } from '../../utils';
+import { BaseDaysDto } from './dto/base-holiday.dto';
 
 @Controller('holiday')
 @ApiTags('节假日')
@@ -51,10 +52,9 @@ export class HolidayController {
   @Get('getDays')
   @Permissions('system:holiday:getDays')
   @ApiOperation({ summary: '获取 n 天内的日期' })
-  @ApiQuery({ name: 'days', description: '获取 n 天内的日期', required: true })
-  async getDays(@CurUser() curUser, days: number): Promise<any> {
-    const dayList = Utils.dayjsGetDay(days)
-    console.log(dayList);
+  async getDays(@CurUser() curUser, @Query() baseDaysDto: BaseDaysDto): Promise<any> {
+    const { days } = baseDaysDto;
+    const dayList = Utils.dayjsGetDay(parseInt(String(days)));
     return this.holidayService.selectDays(dayList, curUser);
   }
 

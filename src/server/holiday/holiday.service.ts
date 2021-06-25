@@ -1,7 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateHolidayDto } from './dto/create-holiday.dto';
 import { UpdateHolidayDto } from './dto/update-holiday.dto';
-import { User } from '../user/entities/user.entity';
 import { BaseFindByIdDto, BaseFindByIdsDto, BaseModifyStatusByIdsDto } from '../base.dto';
 import { Utils } from '../../utils';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -55,13 +54,13 @@ export class HolidayService {
 
     const queryConditionList = [];
     if (!Utils.isBlank(name)) {
-      queryConditionList.push('user.name LIKE :name');
+      queryConditionList.push('name LIKE :name');
     }
     if (!Utils.isBlank(weekday)) {
-      queryConditionList.push('user.weekday = :weekday');
+      queryConditionList.push('weekday = :weekday');
     }
     if (!Utils.isBlank(restType)) {
-      queryConditionList.push('user.restType = :restType');
+      queryConditionList.push('restType = :restType');
     }
 
     queryConditionList.push('deleteStatus = 0');
@@ -89,13 +88,13 @@ export class HolidayService {
 
     const queryConditionList = [];
     if (!Utils.isBlank(name)) {
-      queryConditionList.push('user.name LIKE :name');
+      queryConditionList.push('name LIKE :name');
     }
     if (!Utils.isBlank(weekday)) {
-      queryConditionList.push('user.weekday = :weekday');
+      queryConditionList.push('weekday = :weekday');
     }
     if (!Utils.isBlank(restType)) {
-      queryConditionList.push('user.restType = :restType');
+      queryConditionList.push('restType = :restType');
     }
 
     queryConditionList.push('deleteStatus = 0');
@@ -143,8 +142,26 @@ export class HolidayService {
   /**
    * 获取 n 天内的日期
    */
-  async selectDays(days, curUser?): Promise<any> {
-    return [];
+  async selectDays(dayList, curUser?): Promise<any> {
+    const queryConditionList = [];
+    if (dayList.length > 0) {
+      queryConditionList.push('date IN (:date)');
+    }
+
+    queryConditionList.push('deleteStatus = 0');
+    const queryCondition = queryConditionList.join(' AND ');
+
+    const dayListStr = dayList.map(v => {
+      return v.toString();
+    });
+
+    const ret = await this.holidayRepository.createQueryBuilder()
+      .where(queryCondition, {
+        date: dayListStr,
+      })
+      .orderBy('createTime', 'DESC')
+      .getMany();
+    return ret;
   }
 
   /**
@@ -172,7 +189,7 @@ export class HolidayService {
     const { ids, status } = baseModifyStatusByIdsDto;
 
     return this.holidayRepository.createQueryBuilder()
-      .update(User)
+      .update(Holiday)
       .set({ status: status, updateBy: curUser && curUser.id })
       .where('id in (:ids)', { ids: ids })
       .execute();
@@ -185,7 +202,7 @@ export class HolidayService {
     const { id } = baseFindByIdDto;
 
     await this.holidayRepository.createQueryBuilder()
-      .update(User)
+      .update(Holiday)
       .set({ deleteStatus: 1, deleteBy: curUser && curUser.id })
       .where('id = :id', { id: id })
       .execute();
@@ -198,7 +215,7 @@ export class HolidayService {
     const { ids } = baseFindByIdsDto;
 
     await this.holidayRepository.createQueryBuilder()
-      .update(User)
+      .update(Holiday)
       .set({ deleteStatus: 1, deleteBy: curUser && curUser.id })
       .where('ids in (:ids)', { ids: ids })
       .execute();

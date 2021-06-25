@@ -55,3 +55,12 @@ export class BaseHolidayDto {
   @MaxLength(BaseConstants.DESCRIPTION_MAX_LENGTH, { message: '描述不能大于 $constraint1 位！' })
   readonly description?: string;
 }
+
+export class BaseDaysDto {
+  @ApiPropertyOptional({ description: '获取 n 天内的日期', example: 7 })
+  @IsDefined({ message: 'n 不能为空！' })
+  @IsNotEmpty({ message: 'n 不能为空' })
+  @Transform(days => Number.parseInt(days))
+  @IsInt({ message: 'n 必须为数字！' })
+  readonly days?: number;
+}

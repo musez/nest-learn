@@ -30,25 +30,24 @@ export class Utils {
   }
 
   static dayjsGetDay(day) {
-    console.log('day:',day);
     const days = [];
     for (let i = 1; i <= day; i++) {
-      days.push(dayjs().add(day, 'day'));
+      days.push(dayjs().add(i, 'day').format('YYYY-MM-DD'));
     }
 
     return days;
   }
 
   static dayjsGetWeekday() {
-    return;
+    return this.dayjsGetDay(7);
   }
 
-  static dayjsGetMonth(format) {
-    return;
+  static dayjsGetMonth() {
+    return this.dayjsGetDay(30);
   }
 
-  static dayjsGetYear(format) {
-    return;
+  static dayjsGetYear() {
+    return this.dayjsGetDay(365);
   }
 
   static dto2entity(dto: any, entity: any): any {
@@ -101,5 +100,16 @@ export class Utils {
 
   static construct(...args) {
     return construct(...args);
+  }
+
+  static handleDbRet({ fn, argus, iRet, result, err }, dbRow2Obj = false) {
+    const ret = dbRow2Obj ? JSON.parse(result) : result;
+    console.log('ret：', ret);
+    return ret;
+  }
+
+  static handleNestRet(ret) {
+    console.log('ret：', ret);
+    return ret;
   }
 }
