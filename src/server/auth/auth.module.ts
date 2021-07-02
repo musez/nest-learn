@@ -3,7 +3,7 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { LocalStrategy } from './strategies/local.strategy';
 import { JwtStrategy } from './strategies/jwt.strategy';
-import { jwtConstants } from './contants';
+import  jwtConfig  from './../../config/jwt.config';
 import { UserModule } from '../user/user.module';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
@@ -16,7 +16,7 @@ import { CryptoUtil } from '../../utils/crypto.util';
     PassportModule,
     CaptchaModule,
     JwtModule.register({
-      secret: jwtConstants.secret,// 设置 secret
+      secret: jwtConfig.secretKey,// 设置 secret
       signOptions: { expiresIn: '7200s' },// 设置 token 的属性，时间为 3600 * 10 就是十小时，其余配置可以看 jwt 的一些相关
     }),
   ],
