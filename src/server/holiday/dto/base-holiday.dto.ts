@@ -31,7 +31,7 @@ export class BaseHolidayDto {
   @ApiPropertyOptional({ description: '日期', example: '2020-12-25' })
   readonly date?: Date;
 
-  @ApiPropertyOptional({ description: '（周几）一、二、三、四、五、六、日', example: 0 })
+  @ApiPropertyOptional({ description: '周几（1：一；2：二；3：三；4：四；5：五；6：六；0：日）', example: 0 })
   @IsOptional()
   @Transform(sex => Number.parseInt(sex))
   @IsInt({ message: '周几必须为数字！' })

@@ -35,7 +35,7 @@ export class AppError extends Error {
         res = {
           type: AppErrorTypeEnum.USER_EXISTS,
           httpStatus: HttpStatus.UNPROCESSABLE_ENTITY,
-          errorMessage: 'User exisists',
+          errorMessage: 'User exists',
           userMessage: 'Username exists',
         };
         break;

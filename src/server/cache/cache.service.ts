@@ -75,7 +75,4 @@ export class CacheService {
 
     await this.client.flushall();
   }
-
-  // await this.cache.set('username','李四');
-  // await this.cache.get('username')
 }

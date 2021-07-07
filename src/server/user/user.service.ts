@@ -135,8 +135,8 @@ export class UserService {
       userList.push(user);
       userinfoList.push(userinfo);
     });
-    console.log(userList);
-    console.log(userinfoList);
+    // console.log(userList);
+    // console.log(userinfoList);
     await this.userRepository.save(userList);
     await this.userinfoService.insertBatch(userinfoList);
 

@@ -25,7 +25,7 @@ export class RolesGuard implements CanActivate {
     const currentPerm = this.reflector.get<string>('permissions', context.getHandler());
     // 空， 标识不需要权限
     if (!currentPerm) return true;
-    // 根据用户id 查询所拥有的权限
+    // 根据用户 id 查询所拥有的权限
     const permList = await this.userService.selectPermissionsByUserId(user.id);
     const perms: string[] = [];
     for (let i = 0, len = permList.length; i < len; i++) {

@@ -37,7 +37,7 @@ export class CaptchaService {
     return await this.cacheService.set('captcha', {
       captchaId,
       text: captchaText.toLowerCase(),
-    });
+    }, 2 * 60);
   }
 
   /**

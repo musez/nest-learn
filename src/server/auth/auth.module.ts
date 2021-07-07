@@ -17,7 +17,7 @@ import { CryptoUtil } from '../../utils/crypto.util';
     CaptchaModule,
     JwtModule.register({
       secret: jwtConfig.secretKey,// 设置 secret
-      signOptions: { expiresIn: '7200s' },// 设置 token 的属性，时间为 3600 * 10 就是十小时，其余配置可以看 jwt 的一些相关
+      signOptions: { expiresIn: '7200s' },// 设置 token 的属性，时间为 3600 * 2 就是 2 小时，其余配置可以看 jwt 的一些相关
     }),
   ],
   providers: [AuthService, LocalStrategy, JwtStrategy, CryptoUtil],// 把 AuthService，LocalStrategy，JwtStrategy 注册成提供者

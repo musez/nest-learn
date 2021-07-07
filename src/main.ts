@@ -5,7 +5,7 @@ import * as express from 'express';
 import { join } from 'path';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';// api文档插件
 // import * as passport from 'passport';
-// import * as session from 'express-session'
+import * as session from 'express-session'
 import { TransformInterceptor } from './common/interceptor/transform.interceptor';
 import { ValidationPipe } from './common/pipe/validation.pipe';
 import { ParseIntPipe } from './common/pipe/parse-int.pipe';
@@ -13,13 +13,9 @@ import { HttpExceptionFilter } from './common/filter/http-exception.filter';
 import { AllExceptionsFilter } from './common/filter/any-exception.filter';
 import { logger } from './common/middleware/logger.middleware';
 import { Logger } from './utils/log4js';
-// import Alphabet from 'alphabetjs'
-const Alphabet = require('alphabetjs')
 
 async function bootstrap() {
   // const app = await NestFactory.create(AppModule);
-  // await app.listen(3000);
-
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   app.enableCors();
 
@@ -27,27 +23,34 @@ async function bootstrap() {
   //   secret: 'secret-key',
   //   name: 'sess-tutorial',
   //   resave: false,
-  //   saveUninitialized: false
+  //   saveUninitialized: false,
+  //   cookie:{
+  //
+  //   }
   // }))
   // app.use(passport.initialize());
   // app.use(passport.session());
 
+  // 配置 public 文件夹为静态目录，以达到可直接访问下面文件的目的
   app.useStaticAssets('uploads', {
     prefix: '/uploads',
   });
-  // 配置 public 文件夹为静态目录，以达到可直接访问下面文件的目的
-  const rootDir = join(__dirname, '..');
-  // app.use('/public', express.static(join(rootDir, 'public')));
+
+  // 配置模板引擎
+  app.setBaseViewsDir('views');
+  app.setViewEngine('ejs')
 
   app.use(express.json()); // For parsing application/json
   app.use(express.urlencoded({ extended: true })); // For parsing application/x-www-form-urlencoded
+
+
+  app.useGlobalFilters(new HttpExceptionFilter());// 过滤处理 HTTP 异常
+  app.useGlobalFilters(new AllExceptionsFilter());// 过滤处理所有异常
 
   app.useGlobalInterceptors(new TransformInterceptor());// 使用全局拦截器打印出参
   app.useGlobalPipes(new ValidationPipe()); // 开启一个全局验证管道
   // app.useGlobalPipes(new ParseIntPipe()); // 开启一个全局转换管道
 
-  app.useGlobalFilters(new HttpExceptionFilter());// 过滤处理 HTTP 异常
-  app.useGlobalFilters(new AllExceptionsFilter());// 过滤处理所有异常
   app.use(logger);// 监听所有的请求路由，并打印日志
 
   app.setGlobalPrefix('/api');
@@ -85,8 +88,12 @@ async function bootstrap() {
 
   await app.listen(3000);
 
-  const str = Alphabet('icmz','stereo')
-  console.info(str)
+  console.info(`
+   _                   
+  (_) ____  __ _    ___
+ / / / __/ /  ' \\  /_ /
+/_/  \\__/ /_/_/_/  /__/
+`)
 }
 
 bootstrap();
