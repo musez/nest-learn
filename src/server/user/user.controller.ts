@@ -33,10 +33,10 @@ import { LimitUserDto } from './dto/limit-user.dto';
 import { BaseFindByIdDto, BaseFindByIdsDto, BaseModifyStatusByIdsDto } from '../base.dto';
 import { BindUserGroupDto } from './dto/bind-user-group.dto';
 import { BindUserRoleDto } from '../user-role/dto/bind-user-role.dto';
-import { CurUser } from '../../common/decorators/user.decorator';
+import { CurUser } from '../../common/decorators/cur-user.decorator';
 import { SearchUserDto } from './dto/search-user.dto';
-import { Permissions } from '../../common/decorators/permissions.decorator';
-import { RolesGuard } from '../../common/guards/roles.guard';
+import { Auth } from '../../common/decorators/auth.decorator';
+import { AuthGuard } from '../../common/guards/auth.guard';
 import { ExcelService } from '../excel/excel.service';
 import { Utils } from './../../utils/index';
 
@@ -44,8 +44,8 @@ const fs = require('fs');
 
 @ApiTags('用户')
 @Controller('user')
-// @ApiBasicAuth()
-// @UseGuards(JwtAuthGuard, RolesGuard)
+// @ApiBasicAuth('jwt')
+// @UseGuards(JwtAuthGuard, AuthGuard)
 export class UserController {
   constructor(
     private readonly userService: UserService,
@@ -67,28 +67,28 @@ export class UserController {
   }
 
   @Get('findList')
-  @Permissions('account:user:findList')
+  @Auth('account:user:findList')
   @ApiOperation({ summary: '获取列表' })
   async findList(@Query() searchUserDto: SearchUserDto): Promise<User[]> {
     return await this.userService.selectList(searchUserDto);
   }
 
   @Get('findListPage')
-  @Permissions('account:user:findListPage')
+  @Auth('account:user:findListPage')
   @ApiOperation({ summary: '获取列表（分页）' })
   async findListPage(@Query() limitUserDto: LimitUserDto): Promise<any> {
     return await this.userService.selectListPage(limitUserDto);
   }
 
   @Get('findById')
-  @Permissions('account:user:findById')
+  @Auth('account:user:findById')
   @ApiOperation({ summary: '获取详情（主键 id）' })
   async findById(@Query() baseFindByIdDto: BaseFindByIdDto): Promise<User> {
     return await this.userService.selectById(baseFindByIdDto);
   }
 
   @Get('exportExcel')
-  @Permissions('account:user:exportExcel')
+  @Auth('account:user:exportExcel')
   @ApiOperation({ summary: '列表（Excel 导出）' })
   async exportExcel(@Query() searchUserDto: SearchUserDto, @Res() res): Promise<any> {
     const list = await this.userService.selectList(searchUserDto);
@@ -121,7 +121,7 @@ export class UserController {
   }
 
   @Post('importExcel')
-  @Permissions('account:user:importExcel')
+  @Auth('account:user:importExcel')
   @ApiOperation({ summary: '列表（Excel 导入）' })
   @ApiConsumes('multipart/form-data')
   @ApiBody({
@@ -156,7 +156,7 @@ export class UserController {
   }
 
   @Post('update')
-  @Permissions('account:user:update')
+  @Auth('account:user:update')
   @ApiOperation({ summary: '修改' })
   async update(@CurUser() curUser, @Body() updateUserDto: UpdateUserDto): Promise<any> {
     const { id } = updateUserDto;
@@ -170,14 +170,14 @@ export class UserController {
   }
 
   @Post('updateStatus')
-  @Permissions('account:user:updateStatus')
+  @Auth('account:user:updateStatus')
   @ApiOperation({ summary: '修改状态' })
   async updateStatus(@CurUser() curUser, @Body() baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto): Promise<any> {
     return this.userService.updateStatus(baseModifyStatusByIdsDto, curUser);
   }
 
   @Post('delete')
-  @Permissions('account:user:delete')
+  @Auth('account:user:delete')
   @ApiOperation({ summary: '删除' })
   async delete(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
     const { id } = baseFindByIdDto;
@@ -191,14 +191,14 @@ export class UserController {
   }
 
   @Post('deleteBatch')
-  @Permissions('system:user:deleteBatch')
+  @Auth('system:user:deleteBatch')
   @ApiOperation({ summary: '删除（批量）' })
   async deleteBatch(@CurUser() curUser, @Body() baseFindByIdsDto: BaseFindByIdsDto): Promise<any> {
     return await this.userService.deleteByIds(baseFindByIdsDto, curUser);
   }
 
   @Post('bindGroups')
-  @Permissions('account:user:bindGroups')
+  @Auth('account:user:bindGroups')
   @ApiOperation({ summary: '绑定用户组' })
   async bindGroups(@CurUser() curUser, @Body() bindUserGroupDto: BindUserGroupDto): Promise<any> {
     const { id } = bindUserGroupDto;
@@ -211,7 +211,7 @@ export class UserController {
   }
 
   @Get('getGroups')
-  @Permissions('account:user:getGroups')
+  @Auth('account:user:getGroups')
   @ApiOperation({ summary: '获取用户组' })
   async findGroupsByUserId(@CurUser() curUser, @Query() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
     const { id } = baseFindByIdDto;
@@ -224,7 +224,7 @@ export class UserController {
   }
 
   @Post('bindRoles')
-  @Permissions('account:user:bindRoles')
+  @Auth('account:user:bindRoles')
   @ApiOperation({ summary: '绑定角色' })
   async bindRoles(@CurUser() curUser, @Body() bindUserRoleDto: BindUserRoleDto): Promise<any> {
     const { id } = bindUserRoleDto;
@@ -237,7 +237,7 @@ export class UserController {
   }
 
   @Get('getRoles')
-  @Permissions('account:user:getRoles')
+  @Auth('account:user:getRoles')
   @ApiOperation({ summary: '获取角色' })
   async findRolesByUserId(@CurUser() curUser, @Query() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
     const { id } = baseFindByIdDto;

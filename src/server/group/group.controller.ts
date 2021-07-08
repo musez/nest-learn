@@ -32,16 +32,16 @@ import { BaseFindByIdDto, BaseFindByIdsDto, BasePageDto } from '../base.dto';
 import { LimitGroupDto } from './dto/limit-group.dto';
 import { SearchGroupDto } from './dto/search-group.dto';
 import { BindGroupRoleDto } from '../group-role/dto/bind-group-role.dto';
-import { CurUser } from '../../common/decorators/user.decorator';
-import { RolesGuard } from '../../common/guards/roles.guard';
-import { Permissions } from '../../common/decorators/permissions.decorator';
+import { CurUser } from '../../common/decorators/cur-user.decorator';
+import { AuthGuard } from '../../common/guards/auth.guard';
+import { Auth } from '../../common/decorators/auth.decorator';
 import { Utils } from '../../utils';
 import { ExcelService } from '../excel/excel.service';
 
 @Controller('group')
 @ApiTags('用户组')
-@ApiBasicAuth()
-@UseGuards(JwtAuthGuard, RolesGuard)
+@ApiBasicAuth('jwt')
+@UseGuards(JwtAuthGuard, AuthGuard)
 export class GroupController {
   constructor(
     private readonly groupService: GroupService,
@@ -50,35 +50,35 @@ export class GroupController {
   }
 
   @Post('add')
-  @Permissions('account:group:add')
+  @Auth('account:group:add')
   @ApiOperation({ summary: '添加' })
   async add(@CurUser() curUser, @Body() createGroupDto: CreateGroupDto) {
     return this.groupService.insert(createGroupDto, curUser);
   }
 
   @Get('findList')
-  @Permissions('account:group:findList')
+  @Auth('account:group:findList')
   @ApiOperation({ summary: '获取列表' })
   async findList(@Query() searchGroupDto: SearchGroupDto): Promise<Group[]> {
     return await this.groupService.selectList(searchGroupDto);
   }
 
   @Get('findListPage')
-  @Permissions('account:group:findListPage')
+  @Auth('account:group:findListPage')
   @ApiOperation({ summary: '获取列表（分页）' })
   async findListPage(@Query() limitGroupDto: LimitGroupDto): Promise<any> {
     return await this.groupService.selectListPage(limitGroupDto);
   }
 
   @Get('findById')
-  @Permissions('account:group:findById')
+  @Auth('account:group:findById')
   @ApiOperation({ summary: '获取详情（主键 id）' })
   async findById(@Query() baseFindByIdDto: BaseFindByIdDto): Promise<Group> {
     return await this.groupService.selectById(baseFindByIdDto);
   }
 
   @Get('exportExcel')
-  @Permissions('account:group:exportExcel')
+  @Auth('account:group:exportExcel')
   @ApiOperation({ summary: '列表（Excel 导出）' })
   async exportExcel(@Query() searchGroupDto: SearchGroupDto, @Res() res): Promise<any> {
     const list = await this.groupService.selectList(searchGroupDto);
@@ -105,7 +105,7 @@ export class GroupController {
   }
 
   @Post('update')
-  @Permissions('account:group:update')
+  @Auth('account:group:update')
   @ApiOperation({ summary: '修改' })
   async update(@CurUser() curUser, @Body() updateGroupDto: UpdateGroupDto): Promise<any> {
     const { id } = updateGroupDto;
@@ -119,7 +119,7 @@ export class GroupController {
   }
 
   @Post('delete')
-  @Permissions('account:group:delete')
+  @Auth('account:group:delete')
   @ApiOperation({ summary: '删除' })
   async delete(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
     const { id } = baseFindByIdDto;
@@ -133,14 +133,14 @@ export class GroupController {
   }
 
   @Post('deleteBatch')
-  @Permissions('system:group:deleteBatch')
+  @Auth('system:group:deleteBatch')
   @ApiOperation({ summary: '删除（批量）' })
   async deleteBatch(@CurUser() curUser, @Body() baseFindByIdsDto: BaseFindByIdsDto): Promise<any> {
     return await this.groupService.deleteByIds(baseFindByIdsDto, curUser);
   }
 
   @Get('getRoles')
-  @Permissions('account:group:getRoles')
+  @Auth('account:group:getRoles')
   @ApiOperation({ summary: '获取用户组角色' })
   async findRolesByGroupId(@CurUser() curUser, @Query() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
     const { id } = baseFindByIdDto;
@@ -154,7 +154,7 @@ export class GroupController {
   }
 
   @Post('bindRoles')
-  @Permissions('account:group:bindRoles')
+  @Auth('account:group:bindRoles')
   @ApiOperation({ summary: '绑定用户组角色' })
   async bindRoles(@CurUser() curUser, @Body() bindGroupRoleDto: BindGroupRoleDto): Promise<any> {
     const { id } = bindGroupRoleDto;

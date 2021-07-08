@@ -27,20 +27,20 @@ import { UpdateFileDto } from './dto/update-file.dto';
 import { File } from './entities/file.entity';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { BaseFindByIdDto, BaseFindByIdsDto, BasePageDto } from '../base.dto';
-import { CurUser } from '../../common/decorators/user.decorator';
-import { Permissions } from '../../common/decorators/permissions.decorator';
-import { RolesGuard } from '../../common/guards/roles.guard';
+import { CurUser } from '../../common/decorators/cur-user.decorator';
+import { Auth } from '../../common/decorators/auth.decorator';
+import { AuthGuard } from '../../common/guards/auth.guard';
 
 @Controller('file')
 @ApiTags('文件')
-@ApiBasicAuth()
+@ApiBasicAuth('jwt')
 export class FileController {
   constructor(private readonly fileService: FileService) {
   }
 
   @Post('upload')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Permissions('system:file:upload')
+  @UseGuards(JwtAuthGuard, AuthGuard)
+  @Auth('system:file:upload')
   @ApiOperation({ summary: '文件上传（单）' })
   @ApiConsumes('multipart/form-data')
   @ApiBody({
@@ -94,8 +94,8 @@ export class FileController {
   }
 
   @Post('uploads')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Permissions('system:file:uploads')
+  @UseGuards(JwtAuthGuard, AuthGuard)
+  @Auth('system:file:uploads')
   @ApiOperation({ summary: '文件上传（批量）' })
   @ApiConsumes('multipart/form-data')
   @ApiBody({
@@ -165,16 +165,16 @@ export class FileController {
   }
 
   @Get('findListPage')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Permissions('system:file:findListPage')
+  @UseGuards(JwtAuthGuard, AuthGuard)
+  @Auth('system:file:findListPage')
   @ApiOperation({ summary: '获取列表（分页）' })
   findListPage(@Query() basePageDto: BasePageDto) {
     return this.fileService.selectListPage(basePageDto);
   }
 
   @Get('findById')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Permissions('system:file:findById')
+  @UseGuards(JwtAuthGuard, AuthGuard)
+  @Auth('system:file:findById')
   @ApiOperation({ summary: '获取详情（主键 id）' })
   @ApiQuery({ name: 'id', description: '主键 id', required: true })
   findById(@Query() baseFindByIdDto: BaseFindByIdDto) {
@@ -197,8 +197,8 @@ export class FileController {
   }
 
   @Get('findByExtId')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Permissions('system:file:findByExtId')
+  @UseGuards(JwtAuthGuard, AuthGuard)
+  @Auth('system:file:findByExtId')
   @ApiOperation({ summary: '获取列表（关联 extId）' })
   @ApiQuery({ name: 'extId', description: '关联 id', required: true })
   findByExtId(@Query('extId') extId: string) {
@@ -206,8 +206,8 @@ export class FileController {
   }
 
   @Post('delete')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Permissions('system:file:delete')
+  @UseGuards(JwtAuthGuard, AuthGuard)
+  @Auth('system:file:delete')
   @ApiOperation({ summary: '删除' })
   async delete(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
     const { id } = baseFindByIdDto;
@@ -221,8 +221,8 @@ export class FileController {
   }
 
   @Post('deleteBatch')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Permissions('system:file:deleteBatch')
+  @UseGuards(JwtAuthGuard, AuthGuard)
+  @Auth('system:file:deleteBatch')
   @ApiOperation({ summary: '删除（批量）' })
   async deleteBatch(@CurUser() curUser, @Body() baseFindByIdsDto: BaseFindByIdsDto): Promise<any> {
     return await this.fileService.deleteByIds(baseFindByIdsDto, curUser);

@@ -7,8 +7,8 @@ export default {
   database: process.env.MYSQL_DATABASE,
   timezone: 'UTC',
   charset: 'utf8mb4',
-  multipleStatements: true,
+  multipleStatements: false,
   dropSchema: false,
-  synchronize: true, // 是否自动将实体类同步到数据库
+  synchronize: false, // 是否自动将实体类同步到数据库
   logging: true,
 };

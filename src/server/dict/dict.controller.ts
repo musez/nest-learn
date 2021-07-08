@@ -12,17 +12,17 @@ import { UpdateDictDto } from './dto/update-dict.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { Dict } from './entities/dict.entity';
 import { BaseFindByIdDto, BaseFindByIdsDto, BasePageDto } from '../base.dto';
-import { CurUser } from '../../common/decorators/user.decorator';
+import { CurUser } from '../../common/decorators/cur-user.decorator';
 import { SearchDictDto } from './dto/search-dict.dto';
 import { LimitDictDto } from './dto/limit-dict.dto';
 import { DictItemService } from '../dict-item/dict-item.service';
-import { Permissions } from '../../common/decorators/permissions.decorator';
-import { RolesGuard } from '../../common/guards/roles.guard';
+import { Auth } from '../../common/decorators/auth.decorator';
+import { AuthGuard } from '../../common/guards/auth.guard';
 
 @ApiTags('字典')
 @Controller('dict')
-@ApiBasicAuth()
-@UseGuards(JwtAuthGuard, RolesGuard)
+@ApiBasicAuth('jwt')
+@UseGuards(JwtAuthGuard, AuthGuard)
 export class DictController {
   constructor(
     private readonly dictService: DictService,
@@ -31,7 +31,7 @@ export class DictController {
   }
 
   @Post('add')
-  @Permissions('system:dict:add')
+  @Auth('system:dict:add')
   @ApiOperation({ summary: '添加' })
   async create(@CurUser() curUser, @Body() createDictDto: CreateDictDto) {
     const { dictItems } = createDictDto;
@@ -43,28 +43,28 @@ export class DictController {
   }
 
   @Get('findList')
-  @Permissions('system:dict:findList')
+  @Auth('system:dict:findList')
   @ApiOperation({ summary: '获取列表' })
   async findList(@Query() searchDictDto: SearchDictDto): Promise<Dict[]> {
     return await this.dictService.selectList(searchDictDto);
   }
 
   @Get('findListPage')
-  @Permissions('system:dict:findListPage')
+  @Auth('system:dict:findListPage')
   @ApiOperation({ summary: '获取列表（分页）' })
   async findListPage(@Query() limitDictDto: LimitDictDto): Promise<any> {
     return await this.dictService.selectListPage(limitDictDto);
   }
 
   @Get('findById')
-  @Permissions('system:dict:findById')
+  @Auth('system:dict:findById')
   @ApiOperation({ summary: '获取详情（主键 id）' })
   async findById(@Query() baseFindByIdDto: BaseFindByIdDto): Promise<Dict> {
     return await this.dictService.selectById(baseFindByIdDto);
   }
 
   @Post('update')
-  @Permissions('system:dict:update')
+  @Auth('system:dict:update')
   @ApiOperation({ summary: '修改' })
   async update(@CurUser() curUser, @Body() updateDictDto: UpdateDictDto): Promise<any> {
     const { id, dictItems } = updateDictDto;
@@ -83,7 +83,7 @@ export class DictController {
   }
 
   @Post('delete')
-  @Permissions('system:dict:delete')
+  @Auth('system:dict:delete')
   @ApiOperation({ summary: '删除' })
   async delete(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
     const { id } = baseFindByIdDto;
@@ -97,14 +97,14 @@ export class DictController {
   }
 
   @Post('deleteBatch')
-  @Permissions('system:dict:deleteBatch')
+  @Auth('system:dict:deleteBatch')
   @ApiOperation({ summary: '删除（批量）' })
   async deleteBatch(@CurUser() curUser, @Body() baseFindByIdsDto: BaseFindByIdsDto): Promise<any> {
     return await this.dictService.deleteByIds(baseFindByIdsDto, curUser);
   }
 
   @Get('findDictItemById')
-  @Permissions('system:dict:findDictItemById')
+  @Auth('system:dict:findDictItemById')
   @ApiOperation({ summary: '获取字典详情（主键 id）' })
   async findDictItemById(@Query() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
     return await this.dictItemService.selectByDictId(baseFindByIdDto);

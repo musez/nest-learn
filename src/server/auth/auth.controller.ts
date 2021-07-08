@@ -21,7 +21,7 @@ import { RegisterUserDto } from '../user/dto/register-user.dto';
 import { CreateUserDto } from '../user/dto/create-user.dto';
 import { UserService } from '../user/user.service';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
-import { CurUser } from '../../common/decorators/user.decorator';
+import { CurUser } from '../../common/decorators/cur-user.decorator';
 
 @ApiTags('认证')
 @Controller('auth')
@@ -77,7 +77,7 @@ export class AuthController {
 
   @Get('getPermissionsByToken')
   @UseGuards(JwtAuthGuard)
-  @ApiBasicAuth()
+  @ApiBasicAuth('jwt')
   @ApiOperation({ summary: '根据 token 获取权限' })
   async getPermissionsByToken(@CurUser() curUser): Promise<any> {
     const { id } = curUser;
@@ -92,7 +92,7 @@ export class AuthController {
 
   @Get('getAuthByToken')
   @UseGuards(JwtAuthGuard)
-  @ApiBasicAuth()
+  @ApiBasicAuth('jwt')
   @ApiOperation({ summary: '根据 token 获取用户、用户组、角色、权限' })
   async getAuthByToken(@CurUser() curUser): Promise<any> {
     const { id } = curUser;

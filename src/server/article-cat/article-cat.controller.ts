@@ -22,20 +22,20 @@ import { ArticleCatService } from './article-cat.service';
 import { CreateArticleCatDto } from './dto/create-article-cat.dto';
 import { UpdateArticleCatDto } from './dto/update-article-cat.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { CurUser } from '../../common/decorators/user.decorator';
+import { CurUser } from '../../common/decorators/cur-user.decorator';
 import { BaseFindByIdDto, BaseFindByIdsDto, BaseFindByPIdDto } from '../base.dto';
 import { ArticleCat } from './entities/article-cat.entity';
 import { LimitArticleCatDto } from './dto/limit-article-cat.dto';
 import { SearchArticleCatDto } from './dto/search-article-cat.dto';
-import { RolesGuard } from '../../common/guards/roles.guard';
-import { Permissions } from '../../common/decorators/permissions.decorator';
+import { AuthGuard } from '../../common/guards/auth.guard';
+import { Auth } from '../../common/decorators/auth.decorator';
 import { Utils } from '../../utils';
 import { ExcelService } from '../excel/excel.service';
 
 @Controller('articleCat')
 @ApiTags('文章栏目')
-@ApiBasicAuth()
-@UseGuards(JwtAuthGuard, RolesGuard)
+@ApiBasicAuth('jwt')
+@UseGuards(JwtAuthGuard, AuthGuard)
 export class ArticleCatController {
   constructor(
     private readonly articleCatService: ArticleCatService,
@@ -44,28 +44,28 @@ export class ArticleCatController {
   }
 
   @Post('add')
-  @Permissions('cms:articleCat:add')
+  @Auth('cms:articleCat:add')
   @ApiOperation({ summary: '添加' })
   async add(@CurUser() curUser, @Body() createArticleCatDto: CreateArticleCatDto) {
     return this.articleCatService.insert(createArticleCatDto, curUser);
   }
 
   @Get('findList')
-  @Permissions('cms:articleCat:findList')
+  @Auth('cms:articleCat:findList')
   @ApiOperation({ summary: '获取列表' })
   async findList(@Query() searchArticleCatDto: SearchArticleCatDto): Promise<ArticleCat[]> {
     return await this.articleCatService.selectList(searchArticleCatDto);
   }
 
   @Get('findListPage')
-  @Permissions('cms:articleCat:findListPage')
+  @Auth('cms:articleCat:findListPage')
   @ApiOperation({ summary: '获取列表（分页）' })
   async findListPage(@Query() limitArticleCatDto: LimitArticleCatDto): Promise<any> {
     return await this.articleCatService.selectListPage(limitArticleCatDto);
   }
 
   @Get('findTree')
-  @Permissions('cms:articleCat:findTree')
+  @Auth('cms:articleCat:findTree')
   @ApiOperation({ summary: '获取树' })
   @ApiQuery({ name: 'parentId', description: '父 id', required: false })
   findTree(@Query() baseFindByPIdDto: BaseFindByPIdDto) {
@@ -73,14 +73,14 @@ export class ArticleCatController {
   }
 
   @Get('findById')
-  @Permissions('cms:articleCat:findById')
+  @Auth('cms:articleCat:findById')
   @ApiOperation({ summary: '获取详情（主键 id）' })
   async findById(@Query() baseFindByIdDto: BaseFindByIdDto): Promise<ArticleCat> {
     return await this.articleCatService.selectById(baseFindByIdDto);
   }
 
   @Get('exportExcel')
-  @Permissions('account:articleCat:exportExcel')
+  @Auth('account:articleCat:exportExcel')
   @ApiOperation({ summary: '列表（Excel 导出）' })
   async exportExcel(@Query()  searchArticleCatDto: SearchArticleCatDto, @Res() res): Promise<any> {
     const list = await this.articleCatService.selectList(searchArticleCatDto);
@@ -107,14 +107,14 @@ export class ArticleCatController {
   }
 
   @Post('update')
-  @Permissions('cms:articleCat:update')
+  @Auth('cms:articleCat:update')
   @ApiOperation({ summary: '修改' })
   async update(@CurUser() curUser, @Body() updateArticleCatDto: UpdateArticleCatDto): Promise<any> {
     return this.articleCatService.update(updateArticleCatDto, curUser);
   }
 
   @Post('delete')
-  @Permissions('cms:articleCat:delete')
+  @Auth('cms:articleCat:delete')
   @ApiOperation({ summary: '删除' })
   async delete(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
     const { id } = baseFindByIdDto;
@@ -128,7 +128,7 @@ export class ArticleCatController {
   }
 
   @Post('deleteBatch')
-  @Permissions('system:articleCat:deleteBatch')
+  @Auth('system:articleCat:deleteBatch')
   @ApiOperation({ summary: '删除（批量）' })
   async deleteBatch(@CurUser() curUser, @Body() baseFindByIdsDto: BaseFindByIdsDto): Promise<any> {
     return await this.articleCatService.deleteByIds(baseFindByIdsDto, curUser);

@@ -43,7 +43,6 @@ async function bootstrap() {
   app.use(express.json()); // For parsing application/json
   app.use(express.urlencoded({ extended: true })); // For parsing application/x-www-form-urlencoded
 
-
   app.useGlobalFilters(new HttpExceptionFilter());// 过滤处理 HTTP 异常
   app.useGlobalFilters(new AllExceptionsFilter());// 过滤处理所有异常
 
@@ -61,13 +60,14 @@ async function bootstrap() {
     .setDescription('后台管理系统接口文档') // 文档介绍
     .setVersion('1.0.0') // 文档版本
     .addServer('http://localhost:3000')
-    .setExternalDoc('swagger.json', 'http://localhost:3000/api-docs-json')
+    .setExternalDoc('swagger.json', 'http://localhost:3000/swagger-json')
     .setContact('Wang Yue', 'https://juejin.cn/user/1063982984593997', '920317438@qq.com')
     // .addTag('用户') // 每个 tag 标签都可以对应着几个 @ApiUseTags('用户') 然后被 ApiUseTags 注释，字符串一致的都会变成同一个标签下的
     // .setBasePath('http://localhost:5000')
     // .addBearerAuth({ type: 'apiKey', name: 'Authorization' })
     // .addBearerAuth()
-    .addBasicAuth({ type: 'apiKey', in: 'header', name: 'token' })
+    // .addBasicAuth({ type: 'apiKey', in: 'header', name: 'token' })
+    .addBearerAuth({ type: 'http', scheme: 'bearer', bearerFormat: 'JWT' }, 'jwt')
     .build();
 
   // 为了创建完整的文档（具有定义的 HTTP 路由），我们使用类的 createDocument() 方法 SwaggerModule。此方法带有两个参数，分别是应用程序实例和基本 Swagger 选项。

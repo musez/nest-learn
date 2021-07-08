@@ -4,7 +4,7 @@ import { UserService } from '../../server/user/user.service';
 import { ForbiddenException } from '../exception/forbidden.exception';
 
 @Injectable()
-export class RolesGuard implements CanActivate {
+export class AuthGuard implements CanActivate {
   constructor(
     private readonly reflector: Reflector,
     @Inject('UserService')
@@ -22,7 +22,7 @@ export class RolesGuard implements CanActivate {
       return true;
     }
     // 当前请求所需权限
-    const currentPerm = this.reflector.get<string>('permissions', context.getHandler());
+    const currentPerm = this.reflector.get<string>('auth', context.getHandler());
     // 空， 标识不需要权限
     if (!currentPerm) return true;
     // 根据用户 id 查询所拥有的权限

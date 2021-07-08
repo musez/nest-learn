@@ -25,17 +25,17 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { BaseFindByIdDto, BaseFindByIdsDto, BaseModifyStatusByIdsDto } from '../base.dto';
 import { Article } from './entities/article.entity';
 import { LimitArticleDto } from './dto/limit-article.dto';
-import { CurUser } from '../../common/decorators/user.decorator';
+import { CurUser } from '../../common/decorators/cur-user.decorator';
 import { SearchArticleDto } from './dto/search-article.dto';
-import { Permissions } from '../../common/decorators/permissions.decorator';
-import { RolesGuard } from '../../common/guards/roles.guard';
+import { Auth } from '../../common/decorators/auth.decorator';
+import { AuthGuard } from '../../common/guards/auth.guard';
 import { Utils } from '../../utils';
 import { ExcelService } from '../excel/excel.service';
 
 @Controller('article')
 @ApiTags('文章')
-@ApiBasicAuth()
-@UseGuards(JwtAuthGuard, RolesGuard)
+@ApiBasicAuth('jwt')
+@UseGuards(JwtAuthGuard, AuthGuard)
 export class ArticleController {
   constructor(
     private readonly articleService: ArticleService,
@@ -44,35 +44,35 @@ export class ArticleController {
   }
 
   @Post('add')
-  @Permissions('cms:article:findList')
+  @Auth('cms:article:findList')
   @ApiOperation({ summary: '添加' })
   async add(@CurUser() curUser, @Body() createArticleDto: CreateArticleDto) {
     return this.articleService.insert(createArticleDto, curUser);
   }
 
   @Get('findList')
-  @Permissions('cms:article:findList')
+  @Auth('cms:article:findList')
   @ApiOperation({ summary: '获取列表' })
   async findList(@Query() searchArticleDto: SearchArticleDto): Promise<Article[]> {
     return await this.articleService.selectList(searchArticleDto);
   }
 
   @Get('findListPage')
-  @Permissions('cms:article:findListPage')
+  @Auth('cms:article:findListPage')
   @ApiOperation({ summary: '获取列表（分页）' })
   async findListPage(@Query() limitArticleDto: LimitArticleDto): Promise<any> {
     return await this.articleService.selectListPage(limitArticleDto);
   }
 
   @Get('findById')
-  @Permissions('cms:article:findById')
+  @Auth('cms:article:findById')
   @ApiOperation({ summary: '获取详情（主键 id）' })
   async findById(@Query() baseFindByIdDto: BaseFindByIdDto): Promise<Article> {
     return await this.articleService.selectById(baseFindByIdDto);
   }
 
   @Get('exportExcel')
-  @Permissions('account:article:exportExcel')
+  @Auth('account:article:exportExcel')
   @ApiOperation({ summary: '列表（Excel 导出）' })
   async exportExcel(@Query() searchArticleDto: SearchArticleDto, @Res() res): Promise<any> {
     const list = await this.articleService.selectList(searchArticleDto);
@@ -114,7 +114,7 @@ export class ArticleController {
   }
 
   @Post('update')
-  @Permissions('cms:article:update')
+  @Auth('cms:article:update')
   @ApiOperation({ summary: '修改' })
   async update(@CurUser() curUser, @Body() updateArticleDto: UpdateArticleDto): Promise<any> {
     const { id } = updateArticleDto;
@@ -127,7 +127,7 @@ export class ArticleController {
   }
 
   @Post('delete')
-  @Permissions('cms:article:delete')
+  @Auth('cms:article:delete')
   @ApiOperation({ summary: '删除' })
   async delete(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
     const { id } = baseFindByIdDto;
@@ -141,7 +141,7 @@ export class ArticleController {
   }
 
   @Post('inRecycle')
-  @Permissions('cms:article:inRecycle')
+  @Auth('cms:article:inRecycle')
   @ApiOperation({ summary: '移入回收站' })
   async inRecycle(@CurUser() curUser, @Body() baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto): Promise<any> {
     baseModifyStatusByIdsDto.status = 3;
@@ -149,7 +149,7 @@ export class ArticleController {
   }
 
   @Post('outRecycle')
-  @Permissions('cms:article:outRecycle')
+  @Auth('cms:article:outRecycle')
   @ApiOperation({ summary: '移出回收站' })
   async outRecycle(@CurUser() curUser, @Body() baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto): Promise<any> {
     baseModifyStatusByIdsDto.status = 2;
@@ -157,7 +157,7 @@ export class ArticleController {
   }
 
   @Post('clearRecycle')
-  @Permissions('cms:article:clearRecycle')
+  @Auth('cms:article:clearRecycle')
   @ApiOperation({ summary: '清空回收站/删除（批量）' })
   async clearRecycle(@CurUser() curUser, @Body() baseFindByIdsDto: BaseFindByIdsDto): Promise<any> {
     return await this.articleService.clearRecycle(baseFindByIdsDto, curUser);
