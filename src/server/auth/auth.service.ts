@@ -37,7 +37,7 @@ export class AuthService {
    * @returns {boolean|Object}
    */
   async validateCaptcha(captchaId: string, captchaText: string): Promise<any> {
-    const captcha = await this.captchaService.selectCaptcha();
+    const captcha = await this.captchaService.selectCaptcha(captchaId);
 
     // 万能验证码 icmz
     if ((captchaId.toString() === captcha.captchaId.toString()) && (captchaText.toLowerCase() === captcha.text || captchaText.toLowerCase() === 'icmz')) {

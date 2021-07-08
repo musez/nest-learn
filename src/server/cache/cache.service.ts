@@ -1,12 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { RedisService } from 'nestjs-redis';
+import { Logger } from '../../utils/log4js';
 
 @Injectable()
 export class CacheService {
   private client: any;
 
   constructor(private redisService: RedisService) {
-    this.getClient();
+    this.getClient().then(res => {
+      Logger.log('redis 连接成功！');
+    }).catch(error => {
+      Logger.error('redis 连接异常！异常信息：', error);
+    });
   }
 
   private async getClient() {

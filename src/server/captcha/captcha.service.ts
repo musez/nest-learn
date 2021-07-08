@@ -34,7 +34,8 @@ export class CaptchaService {
    * 缓存到 redis
    */
   async insertCaptcha(captchaId, captchaText): Promise<any> {
-    return await this.cacheService.set('captcha', {
+    const key = `captcha:${captchaId}`;
+    return await this.cacheService.set(key, {
       captchaId,
       text: captchaText.toLowerCase(),
     }, 2 * 60);
@@ -43,7 +44,8 @@ export class CaptchaService {
   /**
    * 从 redis 获取
    */
-  async selectCaptcha(): Promise<any> {
-    return await this.cacheService.get('captcha');
+  async selectCaptcha(captchaId): Promise<any> {
+    const key = `captcha:${captchaId}`;
+    return await this.cacheService.get(key);
   }
 }

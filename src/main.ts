@@ -5,7 +5,7 @@ import * as express from 'express';
 import { join } from 'path';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';// api文档插件
 // import * as passport from 'passport';
-import * as session from 'express-session'
+import * as session from 'express-session';
 import { TransformInterceptor } from './common/interceptor/transform.interceptor';
 import { ValidationPipe } from './common/pipe/validation.pipe';
 import { ParseIntPipe } from './common/pipe/parse-int.pipe';
@@ -38,7 +38,7 @@ async function bootstrap() {
 
   // 配置模板引擎
   app.setBaseViewsDir('views');
-  app.setViewEngine('ejs')
+  app.setViewEngine('ejs');
 
   app.use(express.json()); // For parsing application/json
   app.use(express.urlencoded({ extended: true })); // For parsing application/x-www-form-urlencoded
@@ -73,7 +73,7 @@ async function bootstrap() {
   // 为了创建完整的文档（具有定义的 HTTP 路由），我们使用类的 createDocument() 方法 SwaggerModule。此方法带有两个参数，分别是应用程序实例和基本 Swagger 选项。
   const sysDocument = SwaggerModule.createDocument(app, sysOptions);
   // 最后一步是 setup()。它依次接受（1）装入 Swagger 的路径，（2）应用程序实例, （3）描述 Nest 应用程序的文档。
-  SwaggerModule.setup('/api-docs', app, sysDocument, {
+  SwaggerModule.setup('/swagger', app, sysDocument, {
     swaggerOptions: {
       explorer: true,
       docExpansion: 'list',
@@ -88,12 +88,14 @@ async function bootstrap() {
 
   await app.listen(3000);
 
-  console.info(`
+  Logger.info(`
    _                   
   (_) ____  __ _    ___
  / / / __/ /  ' \\  /_ /
 /_/  \\__/ /_/_/_/  /__/
-`)
+`);
+
+  Logger.info(`server listen on：http://localhost:3000/api\n swagger listen on：http://localhost:3000/swagger`);
 }
 
 bootstrap();
