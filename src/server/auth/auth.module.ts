@@ -1,9 +1,10 @@
 import { Module } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
 import { LocalStrategy } from './strategies/local.strategy';
 import { JwtStrategy } from './strategies/jwt.strategy';
-import  jwtConfig  from './../../config/jwt.config';
+// import  jwtConfig  from './../../config/jwt.config';
 import { UserModule } from '../user/user.module';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
@@ -12,11 +13,12 @@ import { CryptoUtil } from '../../utils/crypto.util';
 
 @Module({
   imports: [
+    ConfigService,
     UserModule,
     PassportModule,
     CaptchaModule,
     JwtModule.register({
-      secret: jwtConfig.secretKey,// 设置 secret
+      secret: new ConfigService().get('jwt.secretKey'),// 设置 secret
       signOptions: { expiresIn: '7200s' },// 设置 token 的属性，时间为 3600 * 2 就是 2 小时，其余配置可以看 jwt 的一些相关
     }),
   ],

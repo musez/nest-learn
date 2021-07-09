@@ -1,4 +1,6 @@
-export default {
+import { registerAs } from '@nestjs/config';
+
+export default registerAs('mysql', () => ({
   type: 'mysql',
   host: process.env.MYSQL_HOST || 'localhost',
   port: parseInt(process.env.MYSQL_PORT, 10) || 3306,
@@ -11,4 +13,4 @@ export default {
   dropSchema: false,
   synchronize: false, // 是否自动将实体类同步到数据库
   logging: true,
-};
+}));

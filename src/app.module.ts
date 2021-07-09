@@ -2,7 +2,8 @@ import { Module, MiddlewareConsumer, RequestMethod } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Connection } from 'typeorm';
 import { RedisModule } from 'nestjs-redis';
-import { ConfigModule, ConfigService } from 'nestjs-config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import * as Joi from '@hapi/joi';
 import * as path from 'path';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -28,21 +29,29 @@ import { ArticleDataCatModule } from './server/article-data-cat/article-data-cat
 import { OrgModule } from './server/org/org.module';
 import { PostModule } from './server/post/post.module';
 import { ExcelModule } from './server/excel/excel.module';
-import { LocalConfigModule } from './server/config/local-config.module';
 import { SystemController } from './server/system/system.controller';
 import { SystemModule } from './server/system/system.module';
 import { CodeGenerateModule } from './server/code-generate/code-generate.module';
 import { HolidayModule } from './server/holiday/holiday.module';
 import { HolidayCatModule } from './server/holiday-cat/holiday-cat.module';
-
-const ENV = process.env.NODE_ENV;
+import AppConfig from './config/app.config';
+import MysqlConfig from './config/mysql.config';
+import RedisConfig from './config/redis.config';
+import JwtConfig from './config/jwt.config';
+import SwaggerConfig from './config/swagger.config';
 
 @Module({
   imports: [
-    ConfigModule.load(path.resolve(__dirname, 'config/**/!(*.d).config.{ts,js}'), {
-      // path: path.resolve(__dirname, '..', '.env.development'),
-      path: path.resolve(__dirname, '..', !ENV ? '.env.development' : `.env.${ENV}`),
-      modifyConfigName: name => name.replace('.config', ''),
+    ConfigModule.forRoot({
+      envFilePath: ['.env.development'],
+      isGlobal: true,
+      // 配置为全局可见，否则需要在每个模块中单独导入 ConfigModule
+      load: [AppConfig, JwtConfig, MysqlConfig, RedisConfig, SwaggerConfig],
+      // validationSchema: Joi.object({
+      //   NODE_ENV: Joi.string()
+      //     .valid('development', 'production', 'test', 'provision')
+      //     .default('development'),
+      // }),
     }),
     TypeOrmModule.forRootAsync({
       useFactory: async (config: ConfigService) => {
@@ -82,9 +91,7 @@ const ENV = process.env.NODE_ENV;
     ArticleModule,
     ArticleCatModule,
     ArticleDataCatModule,
-    ConfigModule,
-    LocalConfigModule,
-    HolidayModule
+    HolidayModule,
   ],
   controllers: [AppController],
   providers: [AppService],

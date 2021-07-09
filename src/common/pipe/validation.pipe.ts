@@ -17,8 +17,6 @@ export class ValidationPipe implements PipeTransform {
 
     if (errors.length > 0) {
       const msg = Object.values(errors[0].constraints)[0]; // 只需要取第一个错误信息并返回即可
-      // Logger.error(`Validation failed: ${msg}`);
-      // throw new BadRequestException(`Validation failed: ${msg}`);
       Logger.error(`字段校验不通过: ${msg}`);
       throw new BadRequestException(`字段校验不通过: ${msg}`);
     }
@@ -26,7 +24,7 @@ export class ValidationPipe implements PipeTransform {
   }
 
   private toValidate(metatype: any): boolean {
-    const types: any[] = [String, Boolean, Number, Array, Object];
+    const types: Function[] = [String, Boolean, Number, Array, Object];
     return !types.includes(metatype);
   }
 }

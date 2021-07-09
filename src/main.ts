@@ -1,5 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
+import { ConfigService } from '@nestjs/config';
 import { AppModule } from './app.module';
 import * as express from 'express';
 import { join } from 'path';
@@ -17,6 +18,10 @@ import { Logger } from './utils/log4js';
 async function bootstrap() {
   // const app = await NestFactory.create(AppModule);
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
+  const config = app.get(ConfigService);
+  const listenPort = config.get('app.listenPort');
+  const setupPath = config.get('swagger.setupPath');
+
   app.enableCors();
 
   // app.use(session({
@@ -53,14 +58,13 @@ async function bootstrap() {
   app.use(logger);// 监听所有的请求路由，并打印日志
 
   app.setGlobalPrefix('/api');
-
   // DocumentBuilder 是一个辅助类，有助于结构的基本文件 SwaggerModule。它包含几种方法，可用于设置诸如标题，描述，版本等属性。
   const sysOptions = new DocumentBuilder()
-    .setTitle('cms_nest 内容管理系统接口文档')
-    .setDescription('后台管理系统接口文档') // 文档介绍
-    .setVersion('1.0.0') // 文档版本
-    .addServer('http://localhost:3000')
-    .setExternalDoc('swagger.json', 'http://localhost:3000/swagger-json')
+    .setTitle(config.get('app.title'))
+    .setDescription(config.get('app.desc')) // 文档介绍
+    .setVersion(config.get('app.version')) // 文档版本
+    .addServer(`http://localhost:${listenPort}`)
+    .setExternalDoc('swagger.json', `http://localhost:${listenPort}${setupPath}-json`)
     .setContact('Wang Yue', 'https://juejin.cn/user/1063982984593997', '920317438@qq.com')
     // .addTag('用户') // 每个 tag 标签都可以对应着几个 @ApiUseTags('用户') 然后被 ApiUseTags 注释，字符串一致的都会变成同一个标签下的
     // .setBasePath('http://localhost:5000')
@@ -73,7 +77,7 @@ async function bootstrap() {
   // 为了创建完整的文档（具有定义的 HTTP 路由），我们使用类的 createDocument() 方法 SwaggerModule。此方法带有两个参数，分别是应用程序实例和基本 Swagger 选项。
   const sysDocument = SwaggerModule.createDocument(app, sysOptions);
   // 最后一步是 setup()。它依次接受（1）装入 Swagger 的路径，（2）应用程序实例, （3）描述 Nest 应用程序的文档。
-  SwaggerModule.setup('/swagger', app, sysDocument, {
+  SwaggerModule.setup(setupPath, app, sysDocument, {
     swaggerOptions: {
       explorer: true,
       docExpansion: 'list',
@@ -86,7 +90,7 @@ async function bootstrap() {
     },
   });
 
-  await app.listen(3000);
+  await app.listen(listenPort);
 
   Logger.info(`
    _                   
@@ -95,7 +99,10 @@ async function bootstrap() {
 /_/  \\__/ /_/_/_/  /__/
 `);
 
-  Logger.info(`server listen on：http://localhost:3000/api\n swagger listen on：http://localhost:3000/swagger`);
+  Logger.info(`
+  server listen on：http://localhost:${listenPort}/api
+  swagger listen on：http://localhost:${listenPort}${setupPath}
+  `);
 }
 
 bootstrap();

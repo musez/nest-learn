@@ -15,9 +15,9 @@ export class AuthGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const req: Request = context.switchToHttp().getRequest();
     const user = req['user'];
-    if (!user) return false;
+    if (!user) throw new ForbiddenException();
     if (user.userType === 0) {// 普通用户不能进行任何操作
-      return false;
+      throw new ForbiddenException();
     } else if (user.userType === 2) {// 超级管理员可以进行任何操作
       return true;
     }
