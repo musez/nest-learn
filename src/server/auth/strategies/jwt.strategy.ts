@@ -2,16 +2,17 @@ import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy, StrategyOptions } from 'passport-jwt';
 import jwtConfig from '../../../config/jwt.config';
+import { LocalConfigService } from '../../config/local-config.service';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-  constructor() {
+  constructor(private readonly config: LocalConfigService) {
     super({
       // 获取请求 header token 值
       // jwtFromRequest: ExtractJwt.fromHeader('token'),
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),// 接收一个 passport-jwt 对象的 ExtractJwt 的 fromAuthHeaderAsBearerToken 方法执行的结果（JwtFromRequestFunction 类型）
       ignoreExpiration: false,// 接收一个布尔类型，是否忽略过期时间，正常是 false，不忽略过期
-      secretOrKey: jwtConfig.secretKey,// 就是加密的时候的密钥，需要一致才能解密
+      secretOrKey: config.jwtSecretKey,// 就是加密的时候的密钥，需要一致才能解密
     } as StrategyOptions);
   }
 

@@ -14,6 +14,8 @@ export class LocalConfigService {
 
   constructor(filePath: string) {
     const config = dotenv.parse(fs.readFileSync(filePath));
+    console.log('filePath:',filePath);
+    console.log('config:',config);
     this.envConfig = this.validateInput(config);
   }
 
@@ -24,6 +26,9 @@ export class LocalConfigService {
   private validateInput(envConfig: EnvConfig): EnvConfig {
     const envVarsSchema: Joi.ObjectSchema = Joi.object({
       // NODE_ENV: Joi.string().valid(['development', 'production', 'staging']).default('development'),
+      // ENV: Joi.string().valid(['development', 'production', 'staging']).default('development'),
+
+      NODE_ENV: Joi.string().default('development'),
       ENV: Joi.string().default('development'),
 
       SERVER_PORT: Joi.number().default(3000),
@@ -38,6 +43,8 @@ export class LocalConfigService {
       REDIS_PORT: Joi.number().default(6379),
       REDIS_PASSWORD: Joi.string().default('root'),
       REDIS_DB: Joi.string().default('0'),
+
+      JWT_SECRET_KEY: Joi.string().required(),
     });
 
     const { error, value: validatedEnvConfig } = envVarsSchema.validate(
@@ -96,5 +103,9 @@ export class LocalConfigService {
 
   get redisDb(): string {
     return this.envConfig.REDIS_DB;
+  }
+
+  get jwtSecretKey(): string {
+    return this.envConfig.JWT_SECRET_KEY;
   }
 }
