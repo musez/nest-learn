@@ -33,7 +33,7 @@ import { ExcelService } from '../excel/excel.service';
 
 @Controller('org')
 @ApiTags('组织机构')
-@ApiBasicAuth('jwt')
+@ApiBasicAuth('token')
 @UseGuards(JwtAuthGuard, AuthGuard)
 export class OrgController {
   constructor(

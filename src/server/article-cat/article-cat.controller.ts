@@ -34,7 +34,7 @@ import { ExcelService } from '../excel/excel.service';
 
 @Controller('articleCat')
 @ApiTags('文章栏目')
-@ApiBasicAuth('jwt')
+@ApiBasicAuth('token')
 @UseGuards(JwtAuthGuard, AuthGuard)
 export class ArticleCatController {
   constructor(

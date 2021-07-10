@@ -12,7 +12,7 @@ import { UpdateUserinfoDto } from './dto/update-userinfo.dto';
 
 @Controller('userinfo')
 @ApiTags('用户信息')
-@ApiBasicAuth('jwt')
+@ApiBasicAuth('token')
 export class UserinfoController {
   constructor(private readonly userinfoService: UserinfoService) {}
 }

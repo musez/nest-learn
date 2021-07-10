@@ -21,7 +21,7 @@ import { AuthGuard } from '../../common/guards/auth.guard';
 
 @ApiTags('字典')
 @Controller('dict')
-@ApiBasicAuth('jwt')
+@ApiBasicAuth('token')
 @UseGuards(JwtAuthGuard, AuthGuard)
 export class DictController {
   constructor(

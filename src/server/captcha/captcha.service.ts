@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import * as svgCaptcha from 'svg-captcha';
 import { CacheService } from '../cache/cache.service';
 
@@ -46,6 +46,13 @@ export class CaptchaService {
    */
   async selectCaptcha(captchaId): Promise<any> {
     const key = `captcha:${captchaId}`;
-    return await this.cacheService.get(key);
+
+    const captcha = await this.cacheService.get(key);
+
+    if (!captcha) {
+      throw new ForbiddenException('验证码错误！');
+    }
+
+    return captcha;
   }
 }

@@ -23,7 +23,7 @@ import { ExcelService } from '../excel/excel.service';
 
 @Controller('permission')
 @ApiTags('权限')
-@ApiBasicAuth('jwt')
+@ApiBasicAuth('token')
 @UseGuards(JwtAuthGuard, AuthGuard)
 export class PermissionController {
   constructor(

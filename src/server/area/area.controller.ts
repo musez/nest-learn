@@ -24,7 +24,7 @@ import { ExcelService } from '../excel/excel.service';
 
 @Controller('area')
 @ApiTags('地区')
-@ApiBasicAuth('jwt')
+@ApiBasicAuth('token')
 @UseGuards(JwtAuthGuard, AuthGuard)
 export class AreaController {
   constructor(

@@ -35,7 +35,7 @@ import { ExcelService } from '../excel/excel.service';
 
 @Controller('role')
 @ApiTags('角色')
-@ApiBasicAuth('jwt')
+@ApiBasicAuth('token')
 @UseGuards(JwtAuthGuard, AuthGuard)
 export class RoleController {
   constructor(

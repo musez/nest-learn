@@ -32,7 +32,7 @@ import { ExcelService } from '../excel/excel.service';
 
 @Controller('post')
 @ApiTags('岗位')
-@ApiBasicAuth('jwt')
+@ApiBasicAuth('token')
 @UseGuards(JwtAuthGuard, AuthGuard)
 export class PostController {
   constructor(

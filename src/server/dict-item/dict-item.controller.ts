@@ -19,7 +19,7 @@ import { AuthGuard } from '../../common/guards/auth.guard';
 
 @ApiTags('字典')
 @Controller('dictItem')
-@ApiBasicAuth('jwt')
+@ApiBasicAuth('token')
 @UseGuards(JwtAuthGuard, AuthGuard)
 export class DictItemController {
   constructor(private readonly dictItemService: DictItemService) {

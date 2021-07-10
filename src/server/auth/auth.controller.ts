@@ -77,11 +77,10 @@ export class AuthController {
 
   @Get('getPermissionsByToken')
   @UseGuards(JwtAuthGuard)
-  @ApiBasicAuth('jwt')
+  @ApiBasicAuth('token')
   @ApiOperation({ summary: '根据 token 获取权限' })
   async getPermissionsByToken(@CurUser() curUser): Promise<any> {
     const { id } = curUser;
-
     const isExistId = await this.userService.isExistId(id);
     if (!isExistId) {
       throw new BadRequestException(`数据 id：${id} 不存在！`);
@@ -92,7 +91,7 @@ export class AuthController {
 
   @Get('getAuthByToken')
   @UseGuards(JwtAuthGuard)
-  @ApiBasicAuth('jwt')
+  @ApiBasicAuth('token')
   @ApiOperation({ summary: '根据 token 获取用户、用户组、角色、权限' })
   async getAuthByToken(@CurUser() curUser): Promise<any> {
     const { id } = curUser;

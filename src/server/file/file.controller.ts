@@ -33,7 +33,7 @@ import { AuthGuard } from '../../common/guards/auth.guard';
 
 @Controller('file')
 @ApiTags('文件')
-@ApiBasicAuth('jwt')
+@ApiBasicAuth('token')
 export class FileController {
   constructor(private readonly fileService: FileService) {
   }

@@ -44,7 +44,7 @@ const fs = require('fs');
 
 @ApiTags('用户')
 @Controller('user')
-// @ApiBasicAuth('jwt')
+// @ApiBasicAuth('token')
 // @UseGuards(JwtAuthGuard, AuthGuard)
 export class UserController {
   constructor(

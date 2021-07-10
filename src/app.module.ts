@@ -34,11 +34,13 @@ import { SystemModule } from './server/system/system.module';
 import { CodeGenerateModule } from './server/code-generate/code-generate.module';
 import { HolidayModule } from './server/holiday/holiday.module';
 import { HolidayCatModule } from './server/holiday-cat/holiday-cat.module';
+import { WechatModule } from './server/wechat/wechat.module';
 import AppConfig from './config/app.config';
 import MysqlConfig from './config/mysql.config';
 import RedisConfig from './config/redis.config';
 import JwtConfig from './config/jwt.config';
 import SwaggerConfig from './config/swagger.config';
+import WechatConfig from './config/wechat.config';
 
 @Module({
   imports: [
@@ -46,7 +48,7 @@ import SwaggerConfig from './config/swagger.config';
       envFilePath: ['.env.development'],
       isGlobal: true,
       // 配置为全局可见，否则需要在每个模块中单独导入 ConfigModule
-      load: [AppConfig, JwtConfig, MysqlConfig, RedisConfig, SwaggerConfig],
+      load: [AppConfig, JwtConfig, MysqlConfig, RedisConfig, SwaggerConfig, WechatConfig],
       // validationSchema: Joi.object({
       //   NODE_ENV: Joi.string()
       //     .valid('development', 'production', 'test', 'provision')
@@ -54,6 +56,7 @@ import SwaggerConfig from './config/swagger.config';
       // }),
     }),
     TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
       useFactory: async (config: ConfigService) => {
         return Object.assign({
           entities: [__dirname + '/**/*.entity{.ts,.js}'],
@@ -66,6 +69,7 @@ import SwaggerConfig from './config/swagger.config';
       inject: [ConfigService],
     }),
     RedisModule.forRootAsync({
+      imports: [ConfigModule],
       useFactory: (configService: ConfigService) => configService.get('redis'),
       inject: [ConfigService],
     }),
@@ -75,6 +79,7 @@ import SwaggerConfig from './config/swagger.config';
     AuthModule,
     UserModule,
     UserinfoModule,
+    WechatModule,
     GroupModule,
     UserGroupModule,
     UserRoleModule,

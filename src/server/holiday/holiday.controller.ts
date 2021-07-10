@@ -16,7 +16,7 @@ import { BaseDaysDto } from './dto/base-holiday.dto';
 
 @Controller('holiday')
 @ApiTags('节假日')
-// @ApiBasicAuth('jwt')
+// @ApiBasicAuth('token')
 // @UseGuards(JwtAuthGuard, AuthGuard)
 export class HolidayController {
   constructor(private readonly holidayService: HolidayService) {

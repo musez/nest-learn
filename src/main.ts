@@ -5,6 +5,7 @@ import { AppModule } from './app.module';
 import * as express from 'express';
 import { join } from 'path';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';// api文档插件
+import * as helmet from 'helmet';
 // import * as passport from 'passport';
 import * as session from 'express-session';
 import { TransformInterceptor } from './common/interceptor/transform.interceptor';
@@ -17,24 +18,16 @@ import { Logger } from './utils/log4js';
 
 async function bootstrap() {
   // const app = await NestFactory.create(AppModule);
-  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
+    cors: true, // 设置跨站访问
+    // logger: false,
+  });
   const config = app.get(ConfigService);
   const listenPort = config.get('app.listenPort');
   const setupPath = config.get('swagger.setupPath');
 
-  app.enableCors();
-
-  // app.use(session({
-  //   secret: 'secret-key',
-  //   name: 'sess-tutorial',
-  //   resave: false,
-  //   saveUninitialized: false,
-  //   cookie:{
-  //
-  //   }
-  // }))
-  // app.use(passport.initialize());
-  // app.use(passport.session());
+  // 使用跨站脚本攻击类的库
+  app.use(helmet());
 
   // 配置 public 文件夹为静态目录，以达到可直接访问下面文件的目的
   app.useStaticAssets('uploads', {
@@ -55,7 +48,7 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe()); // 开启一个全局验证管道
   // app.useGlobalPipes(new ParseIntPipe()); // 开启一个全局转换管道
 
-  app.use(logger);// 监听所有的请求路由，并打印日志
+  // app.use(logger);// 监听所有的请求路由，并打印日志
 
   app.setGlobalPrefix('/api');
   // DocumentBuilder 是一个辅助类，有助于结构的基本文件 SwaggerModule。它包含几种方法，可用于设置诸如标题，描述，版本等属性。
@@ -66,12 +59,9 @@ async function bootstrap() {
     .addServer(`http://localhost:${listenPort}`)
     .setExternalDoc('swagger.json', `http://localhost:${listenPort}${setupPath}-json`)
     .setContact('Wang Yue', 'https://juejin.cn/user/1063982984593997', '920317438@qq.com')
-    // .addTag('用户') // 每个 tag 标签都可以对应着几个 @ApiUseTags('用户') 然后被 ApiUseTags 注释，字符串一致的都会变成同一个标签下的
-    // .setBasePath('http://localhost:5000')
     // .addBearerAuth({ type: 'apiKey', name: 'Authorization' })
-    // .addBearerAuth()
     // .addBasicAuth({ type: 'apiKey', in: 'header', name: 'token' })
-    .addBearerAuth({ type: 'http', scheme: 'bearer', bearerFormat: 'JWT' }, 'jwt')
+    .addBearerAuth({ type: 'http', scheme: 'bearer', bearerFormat: 'JWT' }, 'token')
     .build();
 
   // 为了创建完整的文档（具有定义的 HTTP 路由），我们使用类的 createDocument() 方法 SwaggerModule。此方法带有两个参数，分别是应用程序实例和基本 Swagger 选项。
@@ -90,19 +80,18 @@ async function bootstrap() {
     },
   });
 
-  await app.listen(listenPort);
-
-  Logger.info(`
-   _                   
-  (_) ____  __ _    ___
- / / / __/ /  ' \\  /_ /
-/_/  \\__/ /_/_/_/  /__/
-`);
-
-  Logger.info(`
-  server listen on：http://localhost:${listenPort}/api
-  swagger listen on：http://localhost:${listenPort}${setupPath}
-  `);
+  await app.listen(listenPort, () => {
+    Logger.info(`
+       _                   
+      (_) ____  __ _    ___
+     / / / __/ /  ' \\  /_ /
+    /_/  \\__/ /_/_/_/  /__/
+    
+    server listen on：http://localhost:${listenPort}/api
+    swagger listen on：http://localhost:${listenPort}${setupPath}
+    
+    Powered by WangYue`);
+  });
 }
 
 bootstrap();

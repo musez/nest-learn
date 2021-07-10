@@ -386,9 +386,45 @@ export class UserService {
   }
 
   /**
-   * 获取用户、用户组、角色、权限
+   * 获取权限
    */
   async selectPermissionsByUserId(baseFindByIdDto: BaseFindByIdDto): Promise<any> {
+    const permissions1 = await this.userRepository.query(`
+        SELECT p.*
+        FROM cms_nest.sys_permission p
+                 INNER JOIN cms_nest.sys_role_permission rp ON p.id = rp.permissionId
+                 INNER JOIN cms_nest.sys_role r ON rp.roleId = r.id
+                 INNER JOIN cms_nest.sys_group_role gr ON r.id = gr.roleId
+                 INNER JOIN cms_nest.sys_group g ON gr.groupId = g.id
+                 INNER JOIN cms_nest.sys_user_group ug ON g.id = ug.groupId
+                 INNER JOIN cms_nest.sys_user u ON u.id = ug.userId
+        WHERE u.id = '${baseFindByIdDto}'
+          AND u.deleteStatus = 0
+          AND g.deleteStatus = 0
+          AND r.deleteStatus = 0
+          AND p.deleteStatus = 0`);
+
+    const permissions2 = await this.userRepository.query(`
+        SELECT p.*
+        FROM cms_nest.sys_permission p
+                 INNER JOIN cms_nest.sys_role_permission rp ON p.id = rp.permissionId
+                 INNER JOIN cms_nest.sys_role r ON rp.roleId = r.id
+                 INNER JOIN cms_nest.sys_user_role ur ON r.id = ur.roleId
+                 INNER JOIN cms_nest.sys_user u ON u.id = ur.userId
+        WHERE u.id = '${baseFindByIdDto}'
+          AND u.deleteStatus = 0
+          AND r.deleteStatus = 0
+          AND p.deleteStatus = 0`);
+
+    const res = Utils.uniqBy(Utils.concat(permissions1, permissions2), 'id');
+
+    return res;
+  }
+
+  /**
+   * 获取用户、用户组、角色、权限
+   */
+  async selectAuthByUserId(baseFindByIdDto: BaseFindByIdDto): Promise<any> {
     const userEntity = await this.selectById(baseFindByIdDto);
 
     const permissions1 = await this.userRepository.query(`
@@ -453,42 +489,6 @@ export class UserService {
       roles: Utils.uniqBy(Utils.concat(role1, role2), 'id'),
       groups: group1,
     });
-
-    return res;
-  }
-
-  /**
-   * 获取权限
-   */
-  async selectAuthByUserId(baseFindByIdDto: BaseFindByIdDto): Promise<any> {
-    const permissions1 = await this.userRepository.query(`
-        SELECT p.*
-        FROM cms_nest.sys_permission p
-                 INNER JOIN cms_nest.sys_role_permission rp ON p.id = rp.permissionId
-                 INNER JOIN cms_nest.sys_role r ON rp.roleId = r.id
-                 INNER JOIN cms_nest.sys_group_role gr ON r.id = gr.roleId
-                 INNER JOIN cms_nest.sys_group g ON gr.groupId = g.id
-                 INNER JOIN cms_nest.sys_user_group ug ON g.id = ug.groupId
-                 INNER JOIN cms_nest.sys_user u ON u.id = ug.userId
-        WHERE u.id = '${baseFindByIdDto}'
-          AND u.deleteStatus = 0
-          AND g.deleteStatus = 0
-          AND r.deleteStatus = 0
-          AND p.deleteStatus = 0`);
-
-    const permissions2 = await this.userRepository.query(`
-        SELECT p.*
-        FROM cms_nest.sys_permission p
-                 INNER JOIN cms_nest.sys_role_permission rp ON p.id = rp.permissionId
-                 INNER JOIN cms_nest.sys_role r ON rp.roleId = r.id
-                 INNER JOIN cms_nest.sys_user_role ur ON r.id = ur.roleId
-                 INNER JOIN cms_nest.sys_user u ON u.id = ur.userId
-        WHERE u.id = '${baseFindByIdDto}'
-          AND u.deleteStatus = 0
-          AND r.deleteStatus = 0
-          AND p.deleteStatus = 0`);
-
-    const res = Utils.uniqBy(Utils.concat(permissions1, permissions2), 'id');
 
     return res;
   }

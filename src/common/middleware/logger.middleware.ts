@@ -7,8 +7,13 @@ export class LoggerMiddleware implements NestMiddleware {
   use(req: Request, res: Response, next: () => void) {
     const code = res.statusCode; // 响应状态码
     next();
+
     // 组装日志信息
-    const logFormat = `Method: ${req.method} \n Request original url: ${req.originalUrl} \n IP: ${req.ip} \n Status code: ${code} \n`;
+    const logFormat = `Method: ${req.method} 
+     Request original url: ${req.originalUrl} 
+     IP: ${req.ip} 
+     Status code: ${code}`;
+
     // 根据状态码，进行日志类型区分
     if (code >= 500) {
       Logger.error(logFormat);
@@ -25,6 +30,7 @@ export class LoggerMiddleware implements NestMiddleware {
 export function logger(req: Request, res: Response, next: () => any) {
   const code = res.statusCode; // 响应状态码
   next();
+
   // 组装日志信息
   const logFormat = ` >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
     Request original url: ${req.originalUrl}
@@ -33,8 +39,10 @@ export function logger(req: Request, res: Response, next: () => any) {
     Status code: ${code}
     Params: ${JSON.stringify(req.params)}
     Query: ${JSON.stringify(req.query)}
-    Body: ${JSON.stringify(req.body)} \n  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+    Body: ${JSON.stringify(req.body)} 
+    >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   `;
+
   // 根据状态码，进行日志类型区分
   if (code >= 500) {
     Logger.error(logFormat);

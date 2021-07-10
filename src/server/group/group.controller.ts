@@ -40,7 +40,7 @@ import { ExcelService } from '../excel/excel.service';
 
 @Controller('group')
 @ApiTags('用户组')
-@ApiBasicAuth('jwt')
+@ApiBasicAuth('token')
 @UseGuards(JwtAuthGuard, AuthGuard)
 export class GroupController {
   constructor(
