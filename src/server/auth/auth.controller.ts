@@ -51,7 +51,7 @@ export class AuthController {
 
     const validateCaptcha = await this.authService.validateCaptcha(captchaId, captchaText);
     if (validateCaptcha) {
-      await this.userService.incrementLoginCount(curUser&&curUser.id);// 登录次数 +1
+      await this.userService.incrementLoginCount(curUser && curUser.id);// 登录次数 +1
       return this.authService.login(curUser);
     } else {
       throw new UnauthorizedException('验证码错误！');
@@ -60,7 +60,7 @@ export class AuthController {
 
   @Post('register')
   @ApiOperation({ summary: '注册' })
-  async register(@Body() registerUserDto: RegisterUserDto): Promise<CreateUserDto> {
+  async register(@Body() registerUserDto: RegisterUserDto): Promise<CreateUserDto | void> {
     const { userName, userPwd, userPwdConfirm } = registerUserDto;
 
     const isExistUserName = await this.userService.isExistUserName(userName);

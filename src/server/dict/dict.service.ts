@@ -47,7 +47,7 @@ export class DictService {
       .where(queryCondition, {
         dictName: `%${dictName}%`,
       })
-      .orderBy('createTime', 'DESC')
+      .orderBy({ 'createTime': 'DESC' })
       .getMany();
   }
 
@@ -74,7 +74,7 @@ export class DictService {
       })
       .skip(offset)
       .take(limit)
-      .orderBy('createTime', 'DESC')
+      .orderBy({ 'createTime': 'DESC' })
       .getManyAndCount();
 
     return {

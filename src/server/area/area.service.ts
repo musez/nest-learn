@@ -39,7 +39,7 @@ export class AreaService {
         subQuery.select('COUNT(*)')
           .from(Permission, 'subA')
           .where('subA.parentId = a.id'), 'hasChildren')
-      .orderBy('createTime', 'DESC')
+      .orderBy({ 'createTime': 'DESC' })
       .where(queryCondition, {
         parentIds: parentIds,
         areaName: `%${areaName}%`,
@@ -76,7 +76,7 @@ export class AreaService {
       })
       .skip(offset)
       .take(limit)
-      .orderBy('createTime', 'DESC')
+      .orderBy({ 'createTime': 'DESC' })
       .getManyAndCount();
 
     return {

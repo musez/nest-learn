@@ -59,13 +59,23 @@ export class UserService {
       select: ['id'],
     });
 
-    return await this.userRepository.increment(userEntity, 'loginCount', 1);
+    if (!userEntity) {
+      throw new BadRequestException();
+    }
+
+    const userIncrement = await this.userRepository.increment(userEntity, 'loginCount', 1);
+
+    if (!userIncrement) {
+      throw new BadRequestException();
+    }
+
+    return userIncrement;
   }
 
   /**
    * 添加
    */
-  async insert(createUserDto: CreateUserDto, curUser?): Promise<CreateUserDto> {
+  async insert(createUserDto: CreateUserDto, curUser?): Promise<CreateUserDto | void> {
     const { userPwd } = createUserDto;
 
     let user = new User();
@@ -93,15 +103,20 @@ export class UserService {
     // userinfo = Utils.dto2entity(createUserDto, userinfo);
     userinfo.user = user;// 联接两者
 
-    await this.userRepository.save(user);
-    await this.userinfoService.insert(userinfo);
-    return createUserDto;
+    Promise.all([
+      await this.userRepository.save(user),
+      await this.userinfoService.insert(userinfo),
+    ]).then(() => {
+      return createUserDto;
+    }).catch((error) => {
+      throw new BadRequestException();
+    });
   }
 
   /**
    * 添加（批量）
    */
-  async insertBatch(createUserDto: CreateUserDto[], curUser?): Promise<CreateUserDto[]> {
+  async insertBatch(createUserDto: CreateUserDto[], curUser?): Promise<CreateUserDto[] | void> {
     const userList: CreateUserDto[] = [],
       userinfoList: CreateUserinfoDto[] = [];
 
@@ -135,12 +150,15 @@ export class UserService {
       userList.push(user);
       userinfoList.push(userinfo);
     });
-    // console.log(userList);
-    // console.log(userinfoList);
-    await this.userRepository.save(userList);
-    await this.userinfoService.insertBatch(userinfoList);
 
-    return createUserDto;
+    Promise.all([
+      await this.userRepository.save(userList),
+      await this.userinfoService.insertBatch(userinfoList),
+    ]).then(() => {
+      return createUserDto;
+    }).catch((error) => {
+      throw new BadRequestException();
+    });
   }
 
   /**
@@ -168,7 +186,7 @@ export class UserService {
     queryConditionList.push('deleteStatus = 0');
     const queryCondition = queryConditionList.join(' AND ');
 
-    return await this.userRepository.createQueryBuilder('user')
+    const userList = await this.userRepository.createQueryBuilder('user')
       .leftJoinAndSelect('user.userinfo', 'userinfo')
       .where(queryCondition, {
         userName: `%${userName}%`,
@@ -177,8 +195,16 @@ export class UserService {
         mobile: mobile,
         email: email,
       })
-      .orderBy('user.createTime', 'DESC')
+      .orderBy({
+        'user.createTime': 'DESC',
+      })
       .getMany();
+
+    if (!userList) {
+      throw new BadRequestException();
+    }
+
+    return userList;
   }
 
   /**
@@ -209,7 +235,7 @@ export class UserService {
     queryConditionList.push('deleteStatus = 0');
     const queryCondition = queryConditionList.join(' AND ');
 
-    const res = await this.userRepository.createQueryBuilder('user')
+    const userList = await this.userRepository.createQueryBuilder('user')
       .leftJoinAndSelect('user.userinfo', 'userinfo')
       .where(queryCondition, {
         userName: `%${userName}%`,
@@ -220,12 +246,18 @@ export class UserService {
       })
       .skip(offset)
       .take(limit)
-      .orderBy('user.createTime', 'DESC')
+      .orderBy({
+        'user.createTime': 'DESC',
+      })
       .getManyAndCount();
 
+    if (!userList) {
+      throw new BadRequestException();
+    }
+
     return {
-      list: res[0],
-      total: res[1],
+      list: userList[0],
+      total: userList[1],
       page: page,
       limit: limit,
     };
@@ -289,8 +321,14 @@ export class UserService {
     }
     userinfo.user = user;// 联接两者
 
-    await this.userRepository.update(id, user);
-    await this.userinfoService.updateByUserId(id, userinfo);
+    Promise.all([
+      await this.userRepository.update(id, user),
+      await this.userinfoService.updateByUserId(id, userinfo),
+    ]).then(() => {
+      return updateUserDto;
+    }).catch((error) => {
+      throw new BadRequestException();
+    });
   }
 
   /**
@@ -299,11 +337,17 @@ export class UserService {
   async updateStatus(baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto, curUser?): Promise<any> {
     const { ids, status } = baseModifyStatusByIdsDto;
 
-    return this.userRepository.createQueryBuilder()
+    const user = this.userRepository.createQueryBuilder()
       .update(User)
       .set({ status: status, updateBy: curUser && curUser.id })
       .where('id in (:ids)', { ids: ids })
       .execute();
+
+    if (!user) {
+      throw new BadRequestException();
+    }
+
+    return user;
   }
 
   /**
@@ -374,7 +418,7 @@ export class UserService {
       userGroupList.push(createUserRoleDto);
     }
 
-    await this.userRoleService.deleteByUserId(id);
+    let ret = await this.userRoleService.deleteByUserId(id);
     await this.userRoleService.insertBatch(userGroupList);
   }
 
@@ -389,7 +433,7 @@ export class UserService {
    * 获取权限
    */
   async selectPermissionsByUserId(baseFindByIdDto: BaseFindByIdDto): Promise<any> {
-    const permissions1 = await this.userRepository.query(`
+    const userGroupPermissions = await this.userRepository.query(`
         SELECT p.*
         FROM cms_nest.sys_permission p
                  INNER JOIN cms_nest.sys_role_permission rp ON p.id = rp.permissionId
@@ -404,7 +448,7 @@ export class UserService {
           AND r.deleteStatus = 0
           AND p.deleteStatus = 0`);
 
-    const permissions2 = await this.userRepository.query(`
+    const userPermissions = await this.userRepository.query(`
         SELECT p.*
         FROM cms_nest.sys_permission p
                  INNER JOIN cms_nest.sys_role_permission rp ON p.id = rp.permissionId
@@ -416,7 +460,7 @@ export class UserService {
           AND r.deleteStatus = 0
           AND p.deleteStatus = 0`);
 
-    const res = Utils.uniqBy(Utils.concat(permissions1, permissions2), 'id');
+    const res = Utils.uniqBy(Utils.concat(userGroupPermissions, userPermissions), 'id');
 
     return res;
   }
@@ -427,7 +471,7 @@ export class UserService {
   async selectAuthByUserId(baseFindByIdDto: BaseFindByIdDto): Promise<any> {
     const userEntity = await this.selectById(baseFindByIdDto);
 
-    const permissions1 = await this.userRepository.query(`
+    const userGroupPermissions = await this.userRepository.query(`
         SELECT p.*
         FROM cms_nest.sys_permission p
                  INNER JOIN cms_nest.sys_role_permission rp ON p.id = rp.permissionId
@@ -442,7 +486,7 @@ export class UserService {
           AND r.deleteStatus = 0
           AND p.deleteStatus = 0`);
 
-    const permissions2 = await this.userRepository.query(`
+    const userPermissions = await this.userRepository.query(`
         SELECT p.*
         FROM cms_nest.sys_permission p
                  INNER JOIN cms_nest.sys_role_permission rp ON p.id = rp.permissionId
@@ -454,7 +498,7 @@ export class UserService {
           AND r.deleteStatus = 0
           AND p.deleteStatus = 0`);
 
-    const role1 = await this.userRepository.query(`
+    const userGroupRole = await this.userRepository.query(`
         SELECT r.*
         FROM cms_nest.sys_role r
                  INNER JOIN cms_nest.sys_group_role gr ON r.id = gr.roleId
@@ -466,7 +510,7 @@ export class UserService {
           AND g.deleteStatus = 0
           AND r.deleteStatus = 0`);
 
-    const role2 = await this.userRepository.query(`
+    const userRole = await this.userRepository.query(`
         SELECT r.*
         FROM cms_nest.sys_role r
                  INNER JOIN cms_nest.sys_user_role ur ON r.id = ur.roleId
@@ -475,7 +519,7 @@ export class UserService {
           AND u.deleteStatus = 0
           AND r.deleteStatus = 0`);
 
-    const group1 = await this.userRepository.query(`
+    const userGroup = await this.userRepository.query(`
         SELECT g.*
         FROM cms_nest.sys_group g
                  INNER JOIN cms_nest.sys_user_group ug ON g.id = ug.groupId
@@ -485,9 +529,9 @@ export class UserService {
           AND g.deleteStatus = 0`);
 
     const res = Utils.assign(userEntity, {
-      permissions: Utils.uniqBy(Utils.concat(permissions1, permissions2), 'id'),
-      roles: Utils.uniqBy(Utils.concat(role1, role2), 'id'),
-      groups: group1,
+      permissions: Utils.uniqBy(Utils.concat(userGroupPermissions, userPermissions), 'id'),
+      roles: Utils.uniqBy(Utils.concat(userGroupRole, userRole), 'id'),
+      groups: userGroup,
     });
 
     return res;

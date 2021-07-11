@@ -40,12 +40,10 @@ import { AuthGuard } from '../../common/guards/auth.guard';
 import { ExcelService } from '../excel/excel.service';
 import { Utils } from './../../utils/index';
 
-const fs = require('fs');
-
 @ApiTags('用户')
 @Controller('user')
-// @ApiBasicAuth('token')
-// @UseGuards(JwtAuthGuard, AuthGuard)
+@ApiBasicAuth('token')
+@UseGuards(JwtAuthGuard, AuthGuard)
 export class UserController {
   constructor(
     private readonly userService: UserService,

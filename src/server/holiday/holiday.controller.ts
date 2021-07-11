@@ -1,8 +1,26 @@
-import { Controller, Get, Post, Body, Put, Param, Delete, Query, BadRequestException, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Put,
+  Param,
+  Delete,
+  Query,
+  BadRequestException,
+  UseGuards,
+  UseInterceptors,
+  UploadedFile,
+} from '@nestjs/common';
+import {
+  FileInterceptor,
+  FilesInterceptor,
+  FileFieldsInterceptor,
+} from '@nestjs/platform-express';
 import { HolidayService } from './holiday.service';
 import { CreateHolidayDto } from './dto/create-holiday.dto';
 import { UpdateHolidayDto } from './dto/update-holiday.dto';
-import { ApiBasicAuth, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { ApiBasicAuth, ApiBody, ApiConsumes, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { CurUser } from '../../common/decorators/cur-user.decorator';
 import { Auth } from '../../common/decorators/auth.decorator';
 import { BaseFindByIdDto, BaseFindByIdsDto, BaseModifyStatusByIdsDto } from '../base.dto';
@@ -13,13 +31,17 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { AuthGuard } from '../../common/guards/auth.guard';
 import { Utils } from '../../utils';
 import { BaseDaysDto } from './dto/base-holiday.dto';
+import { ExcelService } from '../excel/excel.service';
 
 @Controller('holiday')
 @ApiTags('节假日')
 // @ApiBasicAuth('token')
 // @UseGuards(JwtAuthGuard, AuthGuard)
 export class HolidayController {
-  constructor(private readonly holidayService: HolidayService) {
+  constructor(
+    private readonly holidayService: HolidayService,
+    private readonly excelService: ExcelService,
+  ) {
   }
 
   @Post('add')
@@ -56,6 +78,34 @@ export class HolidayController {
     const { days } = baseDaysDto;
     const dayList = Utils.dayjsGetDay(parseInt(String(days)));
     return this.holidayService.selectDays(dayList, curUser);
+  }
+
+  @Post('importExcel')
+  @Auth('holiday:user:importExcel')
+  @ApiOperation({ summary: '列表（Excel 导入）' })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+          description: '文件',
+        },
+      },
+    },
+  })
+  @UseInterceptors(FileInterceptor('file'))
+  async importExcel(@CurUser() curUser, @UploadedFile() file): Promise<any> {
+    const columns = [
+      { name: '名称', type: 'String', key: 'name', size: 50, index: 1 },
+      { name: '日期', type: 'String', key: 'date', index: 2 },
+      { name: '周几', type: 'Number', key: 'weekday', index: 3 },
+      { name: '类型', type: 'Number', key: 'restType', index: 4 },
+    ];
+    const rows = await this.excelService.importExcel(columns, file);
+    return await this.holidayService.insertBatch(rows, curUser);
   }
 
   @Post('update')

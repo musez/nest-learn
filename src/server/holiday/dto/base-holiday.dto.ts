@@ -37,7 +37,7 @@ export class BaseHolidayDto {
   @IsInt({ message: '周几必须为数字！' })
   readonly weekday?: number;
 
-  @ApiPropertyOptional({ description: '上班类型（0：休息；1：上班）', example: 0 })
+  @ApiPropertyOptional({ description: '类型（0：工作日；1：法定节假日；2：休息日加班；3：休息日）', example: 0 })
   @IsOptional()
   @Transform(sex => Number.parseInt(sex))
   @IsInt({ message: '上班类型必须为数字！' })

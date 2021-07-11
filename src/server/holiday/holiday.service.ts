@@ -72,7 +72,10 @@ export class HolidayService {
         weekday: weekday,
         restType: restType,
       })
-      .orderBy('createTime', 'DESC')
+      .orderBy({
+        'date': 'ASC',
+        'createTime': 'DESC',
+      })
       .getMany();
   }
 
@@ -108,7 +111,10 @@ export class HolidayService {
       })
       .skip(offset)
       .take(limit)
-      .orderBy('createTime', 'DESC')
+      .orderBy({
+        'date': 'ASC',
+        'createTime': 'DESC',
+      })
       .getManyAndCount();
 
     return {
@@ -159,7 +165,7 @@ export class HolidayService {
       .where(queryCondition, {
         date: dayListStr,
       })
-      .orderBy('createTime', 'DESC')
+      .orderBy({ 'createTime': 'DESC' })
       .getMany();
     return ret;
   }

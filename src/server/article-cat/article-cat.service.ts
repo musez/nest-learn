@@ -58,7 +58,7 @@ export class ArticleCatService {
         subQuery.select('COUNT(*)')
           .from(ArticleCat, 'subAC')
           .where('subAC.parentId = ac.id'), 'hasChildren')
-      .orderBy('createTime', 'DESC')
+      .orderBy({ 'createTime': 'DESC' })
       .where(queryCondition, {
         parentIds: parentIds,
         catName: `%${catName}%`,
@@ -96,7 +96,7 @@ export class ArticleCatService {
       })
       .skip(offset)
       .take(limit)
-      .orderBy('createTime', 'DESC')
+      .orderBy({ 'createTime': 'DESC' })
       .getManyAndCount();
 
     return {
