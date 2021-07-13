@@ -53,7 +53,7 @@ export class UserController {
 
   @Post('add')
   @ApiOperation({ summary: '添加' })
-  async add(@CurUser() curUser, @Body() createUserDto: CreateUserDto): Promise<CreateUserDto> {
+  async add(@CurUser() curUser, @Body() createUserDto: CreateUserDto): Promise<CreateUserDto | void> {
     const { userName } = createUserDto;
 
     const isExistUserName = await this.userService.isExistUserName(userName);

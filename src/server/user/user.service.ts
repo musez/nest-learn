@@ -63,13 +63,13 @@ export class UserService {
       throw new BadRequestException();
     }
 
-    const userIncrement = await this.userRepository.increment(userEntity, 'loginCount', 1);
+    const ret = await this.userRepository.increment(userEntity, 'loginCount', 1);
 
-    if (!userIncrement) {
+    if (!ret) {
       throw new BadRequestException();
     }
 
-    return userIncrement;
+    return ret;
   }
 
   /**
@@ -103,14 +103,16 @@ export class UserService {
     // userinfo = Utils.dto2entity(createUserDto, userinfo);
     userinfo.user = user;// 联接两者
 
-    Promise.all([
-      await this.userRepository.save(user),
-      await this.userinfoService.insert(userinfo),
-    ]).then(() => {
+    const [userRet, userinfoRet] = await Promise.all([
+      this.userRepository.save(user),
+      this.userinfoService.insert(userinfo),
+    ]);
+
+    if (userRet && userinfoRet) {
       return createUserDto;
-    }).catch((error) => {
+    } else {
       throw new BadRequestException();
-    });
+    }
   }
 
   /**
@@ -151,23 +153,26 @@ export class UserService {
       userinfoList.push(userinfo);
     });
 
-    Promise.all([
-      await this.userRepository.save(userList),
-      await this.userinfoService.insertBatch(userinfoList),
-    ]).then(() => {
+    const [userRet, userinfoRet] = await Promise.all([
+      this.userRepository.save(userList),
+      this.userinfoService.insertBatch(userinfoList),
+    ]);
+
+    if (userRet && userinfoRet) {
       return createUserDto;
-    }).catch((error) => {
+    } else {
       throw new BadRequestException();
-    });
+    }
   }
 
   /**
    * 获取列表
    */
   async selectList(searchUserDto: SearchUserDto): Promise<any[]> {
-    const { userName, name, userType, mobile, email } = searchUserDto;
+    const { side, userName, name, userType, mobile, email } = searchUserDto;
 
     const queryConditionList = [];
+    const orderCondition = {};
     if (!Utils.isBlank(userName)) {
       queryConditionList.push('user.userName LIKE :userName');
     }
@@ -185,6 +190,19 @@ export class UserService {
     }
     queryConditionList.push('deleteStatus = 0');
     const queryCondition = queryConditionList.join(' AND ');
+
+    if (!Utils.isBlank(side)) {
+      const sideArr = side.split(',');
+
+      sideArr.map((v) => {
+        const item = v.split(' ');
+        const key = item[0], value = item[1];
+
+        if (key && value) {
+          return orderCondition[key] = value;
+        }
+      });
+    }
 
     const userList = await this.userRepository.createQueryBuilder('user')
       .leftJoinAndSelect('user.userinfo', 'userinfo')
@@ -268,7 +286,12 @@ export class UserService {
    */
   async selectById(baseFindByIdDto: BaseFindByIdDto): Promise<User> {
     const { id } = baseFindByIdDto;
-    return await this.userRepository.findOne(id, { relations: ['userinfo'] });
+
+    const ret = await this.userRepository.findOne(id, { relations: ['userinfo'] });
+    if (!ret) {
+      throw new BadRequestException();
+    }
+    return ret;
   }
 
   /**
@@ -298,7 +321,7 @@ export class UserService {
   /**
    * 修改
    */
-  async update(updateUserDto: UpdateUserDto, curUser?): Promise<void> {
+  async update(updateUserDto: UpdateUserDto, curUser?): Promise<UpdateUserDto | void> {
     const { id } = updateUserDto;
 
     let user = new User();
@@ -321,14 +344,16 @@ export class UserService {
     }
     userinfo.user = user;// 联接两者
 
-    Promise.all([
-      await this.userRepository.update(id, user),
-      await this.userinfoService.updateByUserId(id, userinfo),
-    ]).then(() => {
+    const [userRet, userinfoRet] = await Promise.all([
+      this.userRepository.update(id, user),
+      this.userinfoService.updateByUserId(id, userinfo),
+    ]);
+
+    if (userRet && userinfoRet) {
       return updateUserDto;
-    }).catch((error) => {
+    } else {
       throw new BadRequestException();
-    });
+    }
   }
 
   /**
@@ -337,17 +362,17 @@ export class UserService {
   async updateStatus(baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto, curUser?): Promise<any> {
     const { ids, status } = baseModifyStatusByIdsDto;
 
-    const user = this.userRepository.createQueryBuilder()
+    const ret = this.userRepository.createQueryBuilder()
       .update(User)
       .set({ status: status, updateBy: curUser && curUser.id })
       .where('id in (:ids)', { ids: ids })
       .execute();
 
-    if (!user) {
+    if (!ret) {
       throw new BadRequestException();
     }
 
-    return user;
+    return ret;
   }
 
   /**
@@ -358,11 +383,17 @@ export class UserService {
 
     // this.userRepository.delete(id);
     // await this.userinfoService.deleteByUserId(id);
-    await this.userRepository.createQueryBuilder()
+    let ret = await this.userRepository.createQueryBuilder()
       .update(User)
       .set({ deleteStatus: 1, deleteBy: curUser && curUser.id })
       .where('id = :id', { id: id })
       .execute();
+
+    if (!ret) {
+      throw new BadRequestException();
+    }
+
+    return null;
   }
 
   /**
@@ -373,11 +404,17 @@ export class UserService {
 
     // this.userRepository.delete(ids);
     // await this.userinfoService.deleteByUserId(ids);
-    await this.userRepository.createQueryBuilder()
+    let ret = await this.userRepository.createQueryBuilder()
       .update(User)
       .set({ deleteStatus: 1, deleteBy: curUser && curUser.id })
       .where('ids in (:ids)', { ids: ids })
       .execute();
+
+    if (!ret) {
+      throw new BadRequestException();
+    }
+
+    return null;
   }
 
   /**
@@ -393,15 +430,29 @@ export class UserService {
       createUserGroupDto.groupId = groups[i];
       userGroupList.push(createUserGroupDto);
     }
-    await this.userGroupService.deleteByUserId(id);
-    await this.userGroupService.insertBatch(userGroupList);
+
+    const [userRet, userinfoRet] = await Promise.all([
+      this.userGroupService.deleteByUserId(id),
+      this.userGroupService.insertBatch(userGroupList),
+    ]);
+
+    if (userRet && userinfoRet) {
+      return null;
+    } else {
+      throw new BadRequestException();
+    }
   }
 
   /**
    * 获取用户组
    */
   async selectGroupsByUserId(baseFindByIdDto: BaseFindByIdDto): Promise<UserGroup[]> {
-    return await this.userGroupService.selectByUserId(baseFindByIdDto);
+    const ret = await this.userGroupService.selectByUserId(baseFindByIdDto);
+    if (!ret) {
+      throw new BadRequestException();
+    }
+
+    return ret;
   }
 
   /**
@@ -418,15 +469,29 @@ export class UserService {
       userGroupList.push(createUserRoleDto);
     }
 
-    let ret = await this.userRoleService.deleteByUserId(id);
-    await this.userRoleService.insertBatch(userGroupList);
+    const [userRet, userinfoRet] = await Promise.all([
+      this.userRoleService.deleteByUserId(id),
+      this.userRoleService.insertBatch(userGroupList),
+    ]);
+
+    if (userRet && userinfoRet) {
+      return null;
+    } else {
+      throw new BadRequestException();
+    }
   }
 
   /**
    * 获取角色
    */
   async selectRolesByUserId(baseFindByIdDto: BaseFindByIdDto): Promise<UserRole[]> {
-    return await this.userRoleService.selectByUserId(baseFindByIdDto);
+    const ret = await this.userRoleService.selectByUserId(baseFindByIdDto);
+
+    if (!ret) {
+      throw new BadRequestException();
+    }
+
+    return ret;
   }
 
   /**
