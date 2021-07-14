@@ -39,10 +39,15 @@ export class UserService {
    * 获取详情（userName）
    */
   async selectByName(userName: string): Promise<User | undefined> {
-    const user = this.userRepository.findOne({
-      userName: userName,
-      deleteStatus: 0,
-    });
+    const user = await this.userRepository.createQueryBuilder()
+      .select('User')
+      .addSelect('User.userPwd')
+      // .from('sys_user', 'u')
+      .where('User.userName = :userName AND User.deleteStatus = 0', {
+        userName: userName,
+      })
+      .getOne();
+    console.log(user);
     if (user) return user;
     else return null;
   }
