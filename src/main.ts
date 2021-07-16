@@ -50,7 +50,7 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe()); // 开启一个全局验证管道
   // app.useGlobalPipes(new ParseIntPipe()); // 开启一个全局转换管道
 
-  app.setGlobalPrefix('/api');
+  app.setGlobalPrefix('/nest/api');
   // DocumentBuilder 是一个辅助类，有助于结构的基本文件 SwaggerModule。它包含几种方法，可用于设置诸如标题，描述，版本等属性。
   const sysOptions = new DocumentBuilder()
     .setTitle(config.get('app.title'))

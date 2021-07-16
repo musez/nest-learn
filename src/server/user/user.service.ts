@@ -39,16 +39,15 @@ export class UserService {
    * 获取详情（userName）
    */
   async selectByName(userName: string): Promise<User | undefined> {
-    const user = await this.userRepository.createQueryBuilder()
+    const ret = await this.userRepository.createQueryBuilder()
       .select('User')
       .addSelect('User.userPwd')
-      // .from('sys_user', 'u')
       .where('User.userName = :userName AND User.deleteStatus = 0', {
         userName: userName,
       })
       .getOne();
-    console.log(user);
-    if (user) return user;
+
+    if (ret) return ret;
     else return null;
   }
 
@@ -56,7 +55,7 @@ export class UserService {
    * 修改登录次数
    */
   async incrementLoginCount(baseFindByIdDto: BaseFindByIdDto): Promise<any> {
-    const userEntity = await this.userRepository.findOne({
+    const findOneRet = await this.userRepository.findOne({
       where: {
         id: baseFindByIdDto,
         deleteStatus: 0,
@@ -64,17 +63,17 @@ export class UserService {
       select: ['id'],
     });
 
-    if (!userEntity) {
-      throw new BadRequestException();
+    if (!findOneRet) {
+      throw new BadRequestException(`数据 id：${baseFindByIdDto} 不存在！`);
     }
 
-    const ret = await this.userRepository.increment(userEntity, 'loginCount', 1);
+    const incrementRet = await this.userRepository.increment(findOneRet, 'loginCount', 1);
 
-    if (!ret) {
-      throw new BadRequestException();
+    if (!incrementRet) {
+      throw new BadRequestException('登录次数异常！');
     }
 
-    return ret;
+    return incrementRet;
   }
 
   /**
@@ -85,6 +84,7 @@ export class UserService {
 
     let user = new User();
     user = Utils.dto2entity(createUserDto, user);
+    // 未传入密码时，使用默认密码；传入密码时，使用传入密码
     if (Utils.isBlank(userPwd)) {
       user.userPwd = this.cryptoUtil.encryptPassword('888888');
     } else {
@@ -108,15 +108,15 @@ export class UserService {
     // userinfo = Utils.dto2entity(createUserDto, userinfo);
     userinfo.user = user;// 联接两者
 
-    const [userRet, userinfoRet] = await Promise.all([
+    const [saveRet, saveUIRet] = await Promise.all([
       this.userRepository.save(user),
       this.userinfoService.insert(userinfo),
     ]);
 
-    if (userRet && userinfoRet) {
+    if (saveRet && saveUIRet) {
       return createUserDto;
     } else {
-      throw new BadRequestException();
+      throw new BadRequestException('保存异常！');
     }
   }
 
@@ -131,6 +131,7 @@ export class UserService {
       const { userPwd } = item;
       let user = new User();
       user = Utils.dto2entityImport(item, user);
+      // 未传入密码时，使用默认密码；传入密码时，使用传入密码
       if (Utils.isBlank(userPwd)) {
         user.userPwd = this.cryptoUtil.encryptPassword('888888');
       } else {
@@ -158,15 +159,15 @@ export class UserService {
       userinfoList.push(userinfo);
     });
 
-    const [userRet, userinfoRet] = await Promise.all([
+    const [saveRet, saveUIRet] = await Promise.all([
       this.userRepository.save(userList),
       this.userinfoService.insertBatch(userinfoList),
     ]);
 
-    if (userRet && userinfoRet) {
+    if (saveRet && saveUIRet) {
       return createUserDto;
     } else {
-      throw new BadRequestException();
+      throw new BadRequestException('保存异常！');
     }
   }
 
@@ -209,7 +210,7 @@ export class UserService {
       });
     }
 
-    const userList = await this.userRepository.createQueryBuilder('user')
+    const ret = await this.userRepository.createQueryBuilder('user')
       .leftJoinAndSelect('user.userinfo', 'userinfo')
       .where(queryCondition, {
         userName: `%${userName}%`,
@@ -223,17 +224,18 @@ export class UserService {
       })
       .getMany();
 
-    if (!userList) {
-      throw new BadRequestException();
+    if (!ret) {
+      throw new BadRequestException('查询异常！');
     }
 
-    return userList;
+    return ret;
   }
 
   /**
    * 获取列表（分页）
    */
   async selectListPage(limitUserDto: LimitUserDto): Promise<any> {
+    // eslint-disable-next-line prefer-const
     let { page, limit, userName, name, userType, mobile, email } = limitUserDto;
     page = page ? page : 1;
     limit = limit ? limit : 10;
@@ -258,7 +260,7 @@ export class UserService {
     queryConditionList.push('deleteStatus = 0');
     const queryCondition = queryConditionList.join(' AND ');
 
-    const userList = await this.userRepository.createQueryBuilder('user')
+    const ret = await this.userRepository.createQueryBuilder('user')
       .leftJoinAndSelect('user.userinfo', 'userinfo')
       .where(queryCondition, {
         userName: `%${userName}%`,
@@ -274,13 +276,13 @@ export class UserService {
       })
       .getManyAndCount();
 
-    if (!userList) {
+    if (!ret) {
       throw new BadRequestException();
     }
 
     return {
-      list: userList[0],
-      total: userList[1],
+      list: ret[0],
+      total: ret[1],
       page: page,
       limit: limit,
     };
@@ -349,15 +351,15 @@ export class UserService {
     }
     userinfo.user = user;// 联接两者
 
-    const [userRet, userinfoRet] = await Promise.all([
+    const [updateRet, updateUIRet] = await Promise.all([
       this.userRepository.update(id, user),
       this.userinfoService.updateByUserId(id, userinfo),
     ]);
 
-    if (userRet && userinfoRet) {
+    if (updateRet && updateUIRet) {
       return updateUserDto;
     } else {
-      throw new BadRequestException();
+      throw new BadRequestException('更新异常！');
     }
   }
 
@@ -386,9 +388,7 @@ export class UserService {
   async deleteById(baseFindByIdDto: BaseFindByIdDto, curUser?): Promise<void> {
     const { id } = baseFindByIdDto;
 
-    // this.userRepository.delete(id);
-    // await this.userinfoService.deleteByUserId(id);
-    let ret = await this.userRepository.createQueryBuilder()
+    const ret = await this.userRepository.createQueryBuilder()
       .update(User)
       .set({ deleteStatus: 1, deleteBy: curUser && curUser.id })
       .where('id = :id', { id: id })
@@ -407,9 +407,7 @@ export class UserService {
   async deleteByIds(baseFindByIdsDto: BaseFindByIdsDto, curUser?): Promise<void> {
     const { ids } = baseFindByIdsDto;
 
-    // this.userRepository.delete(ids);
-    // await this.userinfoService.deleteByUserId(ids);
-    let ret = await this.userRepository.createQueryBuilder()
+    const ret = await this.userRepository.createQueryBuilder()
       .update(User)
       .set({ deleteStatus: 1, deleteBy: curUser && curUser.id })
       .where('ids in (:ids)', { ids: ids })
@@ -436,12 +434,12 @@ export class UserService {
       userGroupList.push(createUserGroupDto);
     }
 
-    const [userRet, userinfoRet] = await Promise.all([
+    const [deleteRet, deleteUIRet] = await Promise.all([
       this.userGroupService.deleteByUserId(id),
       this.userGroupService.insertBatch(userGroupList),
     ]);
 
-    if (userRet && userinfoRet) {
+    if (deleteRet && deleteUIRet) {
       return null;
     } else {
       throw new BadRequestException();
@@ -474,12 +472,12 @@ export class UserService {
       userGroupList.push(createUserRoleDto);
     }
 
-    const [userRet, userinfoRet] = await Promise.all([
+    const [deleteRet, deleteUIRet] = await Promise.all([
       this.userRoleService.deleteByUserId(id),
       this.userRoleService.insertBatch(userGroupList),
     ]);
 
-    if (userRet && userinfoRet) {
+    if (deleteRet && deleteUIRet) {
       return null;
     } else {
       throw new BadRequestException();
