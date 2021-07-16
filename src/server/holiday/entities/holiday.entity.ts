@@ -1,22 +1,6 @@
 import { BaseEntity } from '../../base.entity';
 import { Column, Entity } from 'typeorm';
-
-// 周几类型
-export enum WeekdayType {
-  SUNDAY = 0,
-  MONDAY = 1,
-  TUESDAY = 2,
-  WEDNESDAY = 3,
-  THURSDAY = 4,
-  FRIDAY = 5,
-  SATURDAY = 6,
-}
-
-// 上班类型
-export enum RestType {
-  DEFAULT = 0,
-  UNREST = 1,
-}
+import { WeekdayType, RestType } from '../../../constants/dicts';
 
 @Entity('sys_holiday')
 export class Holiday extends BaseEntity {

@@ -16,20 +16,7 @@ import { BaseEntity } from '../../base.entity';
 import { Userinfo } from '../../userinfo/entities/userinfo.entity';
 import { Group } from '../../group/entities/group.entity';
 import { Role } from '../../role/entities/role.entity';
-
-// 用户类型
-export enum UserType {
-  NORMAL = 0,
-  ADMIN = 1,
-  SUPER_ADMIN = 2,
-}
-
-// 性别类型
-export enum SexType {
-  DEFAULT = 0,
-  FEMALE = 1,
-  MALE = 2,
-}
+import { UserType, SexType } from '../../../constants/dicts';
 
 @Entity('sys_user')
 export class User extends BaseEntity {

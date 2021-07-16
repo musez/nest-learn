@@ -17,19 +17,7 @@ import {
 import { BaseEntity } from '../../base.entity';
 import { Role } from '../../role/entities/role.entity';
 import { BaseConstants } from '../../../constants/constants';
-
-// 权限类别
-export enum PermissionType {
-  NAVIGATION = 0,
-  PAGE = 1,
-  ACTION = 2,
-  FIELD = 3,
-}
-
-export enum PermissionHiddenType {
-  ENABLE = 1,
-  DISABLE = 0,
-}
+import { PermissionType, PermissionHiddenType } from '../../../constants/dicts';
 
 @Entity('sys_permission')
 export class Permission extends BaseEntity {

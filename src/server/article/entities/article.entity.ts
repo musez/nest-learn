@@ -14,22 +14,7 @@ import {
 } from 'typeorm';
 import { BaseEntity, StatusType } from '../../base.entity';
 import { ArticleCat } from '../../article-cat/entities/article-cat.entity';
-
-// 文章类型
-export enum ArticleType {
-  TEXT = 0,
-  LINK = 1,
-  PICTURE = 2,
-  PICTURE_GROUP = 3,
-  VIDEO = 4,
-  AUDIO = 5,
-}
-
-// 允许评论
-export enum IsCommentType {
-  ENABLE = 1,
-  DISABLE = 0,
-}
+import { ArticleType, IsCommentType } from '../../../constants/dicts';
 
 @Entity('cms_article')
 export class Article extends BaseEntity {
