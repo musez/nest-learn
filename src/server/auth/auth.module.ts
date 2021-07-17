@@ -19,7 +19,7 @@ import { CryptoUtil } from '../../utils/crypto.util';
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
         secret: configService.get('jwt.secretKey'),// 设置 secret
-        signOptions: { expiresIn: '7200s' },// 设置 token 的属性，时间为 3600 * 2 就是 2 小时，其余配置可以看 jwt 的一些相关
+        signOptions: { expiresIn: '7200s' },// 设置 token 的属性，时间为 3600 * n 就是 n 小时，其余配置可以看 jwt 的一些相关
       }),
       inject: [ConfigService],
     }),

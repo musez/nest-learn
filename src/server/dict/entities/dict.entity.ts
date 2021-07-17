@@ -5,12 +5,7 @@ import {
 } from 'typeorm';
 import { BaseEntity } from '../../base.entity';
 import { DictItem } from '../../dict-item/entities/dict-item.entity';
-
-// 字典类型
-export enum DictType {
-  TEXT = 0,
-  NUM = 1,
-}
+import { DictType } from '../../../constants/dicts';
 
 @Entity('sys_dict')
 export class Dict extends BaseEntity {

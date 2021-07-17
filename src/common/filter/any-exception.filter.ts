@@ -22,6 +22,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
     // Response: ${exception} \n  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
     // `;
     // Logger.error(logFormat);
+
     // 此刻的时间
     const nowDate = dayjs(Date.now()).format('YYYY-MM-DD HH:mm:ss');
     response.status(status).json({

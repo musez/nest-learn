@@ -1,7 +1,7 @@
 import { IsDefined, IsOptional, IsNotEmpty, IsString, IsInt, MaxLength, IsUUID } from 'class-validator';
 import { Transform } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { BaseConstants } from '../../../constants/constants';
+import { ArticleConstants, BaseConstants } from '../../../constants/constants';
 
 export class BaseArticleDto {
   @ApiProperty({ description: '主键 id', example: null })
@@ -13,27 +13,27 @@ export class BaseArticleDto {
   @ApiProperty({ description: '标题', example: null })
   @IsDefined({ message: '标题不能为空！' })
   @IsNotEmpty({ message: '标题不能为空！' })
-  @MaxLength(255, { message: '标题不能大于 255 位！' })
+  @MaxLength(ArticleConstants.TITLE_MAX_LENGTH, { message: '标题不能大于 $constraint1 位！' })
   readonly title: string;
 
   @ApiPropertyOptional({ description: '摘要', example: null })
   @IsOptional()
-  @MaxLength(255, { message: '摘要不能大于 255 位！' })
+  @MaxLength(ArticleConstants.SUMMARY_MAX_LENGTH, { message: '摘要不能大于 $constraint1 位！' })
   readonly summary?: string;
 
   @ApiPropertyOptional({ description: '作者', example: null })
   @IsOptional()
-  @MaxLength(50, { message: '作者不能大于 50 位！' })
+  @MaxLength(ArticleConstants.AUTHOR_MAX_LENGTH, { message: '作者不能大于 $constraint1 位！' })
   readonly author?: string;
 
   @ApiPropertyOptional({ description: '来源', example: null })
   @IsOptional()
-  @MaxLength(50, { message: '来源不能大于 50 位！' })
+  @MaxLength(ArticleConstants.SOURCE_MAX_LENGTH, { message: '来源不能大于 $constraint1 位！' })
   readonly source?: string;
 
   @ApiPropertyOptional({ description: '关键字（多个使用逗号“，”分隔）', example: null })
   @IsOptional()
-  @MaxLength(100, { message: '关键字不能大于 100 位！' })
+  @MaxLength(ArticleConstants.KEYWORDS_MAX_LENGTH, { message: '关键字不能大于 $constraint1 位！' })
   readonly keywords?: string;
 
   @ApiProperty({ description: '文章类型（1：文本；2：链接；3：组图；4：视频；5：音频）', default: 0 })
@@ -45,7 +45,7 @@ export class BaseArticleDto {
 
   @ApiPropertyOptional({ description: '缩略图', example: null })
   @IsOptional()
-  @MaxLength(255, { message: '缩略图不能大于 255 位！' })
+  // @MaxLength(255, { message: '缩略图不能大于 255 位！' })
   readonly thumbId?: string;
 
   @ApiPropertyOptional({ description: '附件', example: null })

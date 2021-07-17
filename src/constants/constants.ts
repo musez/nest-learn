@@ -1,3 +1,5 @@
+import { BaseArticleDto } from '../server/article/dto/base-article.dto';
+
 export const APIPrefix: string = '/api/v1';
 
 export class BaseConstants {
@@ -21,4 +23,21 @@ export class UserConstants {
 
 export class OrgConstants {
   static readonly ORG_LEVEL_MAX_LENGTH: number = 100;
+}
+
+export class ArticleConstants {
+  static readonly TITLE_MAX_LENGTH: number = 255;
+  static readonly SUMMARY_MAX_LENGTH: number = 255;
+  static readonly AUTHOR_MAX_LENGTH: number = 50;
+  static readonly SOURCE_MAX_LENGTH: number = 50;
+  static readonly KEYWORDS_MAX_LENGTH: number = 100;
+}
+
+export class ArticleCatConstants {
+  static readonly CAT_NAME_MAX_LENGTH: number = 255;
+}
+
+export class DictItemConstants {
+  static readonly ITEM_TEXT_MAX_LENGTH: number = 50;
+  static readonly ITEM_VALUE_MAX_LENGTH: number = 50;
 }

@@ -709,10 +709,10 @@
   resolved "https://registry.npm.taobao.org/@nestjs/mapped-types/download/@nestjs/mapped-types-0.4.1.tgz#e7fe038f0bdda7b8f858fa79ca8516b8f9069b1a"
   integrity sha1-5/4Djwvdp7j4WPp5yoUWuPkGmxo=
 
-"@nestjs/passport@^7.1.5":
-  version "7.1.6"
-  resolved "https://registry.nlark.com/@nestjs/passport/download/@nestjs/passport-7.1.6.tgz#608bb265dfd85602aa74bbceacc012ffb2e9d25d"
-  integrity sha1-YIuyZd/YVgKqdLvOrMAS/7Lp0l0=
+"@nestjs/passport@^8.0.0":
+  version "8.0.0"
+  resolved "https://registry.nlark.com/@nestjs/passport/download/@nestjs/passport-8.0.0.tgz#dda83945ad5ee75bf81f0d0bded0aaff48fb0536"
+  integrity sha1-3ag5Ra1e51v4Hw0L3tCq/0j7BTY=
 
 "@nestjs/platform-express@^7.6.3":
   version "7.6.18"
@@ -1149,10 +1149,10 @@
     "@types/jsonwebtoken" "*"
     "@types/passport-strategy" "*"
 
-"@types/passport-local@^1.0.33":
-  version "1.0.33"
-  resolved "https://registry.npm.taobao.org/@types/passport-local/download/@types/passport-local-1.0.33.tgz#d245b60c5b801cb3aeca1ffab557d5fe1534260d"
-  integrity sha1-0kW2DFuAHLOuyh/6tVfV/hU0Jg0=
+"@types/passport-local@^1.0.34":
+  version "1.0.34"
+  resolved "https://registry.nlark.com/@types/passport-local/download/@types/passport-local-1.0.34.tgz#84d3b35b2fd4d36295039ded17fe5f3eaa62f4f6"
+  integrity sha1-hNOzWy/U02KVA53tF/5fPqpi9PY=
   dependencies:
     "@types/express" "*"
     "@types/passport" "*"

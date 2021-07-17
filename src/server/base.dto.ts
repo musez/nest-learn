@@ -16,6 +16,16 @@ export class BasePageDto {
   readonly limit?: number;
 }
 
+export class BaseSearchDto {
+  @ApiPropertyOptional({ description: '关键字', example: '王' })
+  @IsOptional()
+  readonly keyword?: string;
+
+  @ApiPropertyOptional({ description: '排序', example: 'createTime DESC, updateTime DESC' })
+  @IsOptional()
+  readonly side?: string;
+}
+
 export class BaseModifyStatusByIdsDto {
   @ApiProperty({ description: '主键 ids', example: null })
   @IsDefined({ message: '主键 ids 不能为空！' })

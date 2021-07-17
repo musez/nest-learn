@@ -41,16 +41,16 @@ async function bootstrap() {
   app.use(express.json()); // For parsing application/json
   app.use(express.urlencoded({ extended: true })); // For parsing application/x-www-form-urlencoded
 
-  app.useGlobalFilters(new HttpExceptionFilter());// 过滤处理 HTTP 异常
+  app.use(logger);// 监听所有的请求路由，并打印日志
+
   app.useGlobalFilters(new AllExceptionsFilter());// 过滤处理所有异常
+  app.useGlobalFilters(new HttpExceptionFilter());// 过滤处理 HTTP 异常
 
   app.useGlobalInterceptors(new TransformInterceptor());// 使用全局拦截器打印出参
   app.useGlobalPipes(new ValidationPipe()); // 开启一个全局验证管道
   // app.useGlobalPipes(new ParseIntPipe()); // 开启一个全局转换管道
 
-  // app.use(logger);// 监听所有的请求路由，并打印日志
-
-  app.setGlobalPrefix('/api');
+  app.setGlobalPrefix('/nest/api');
   // DocumentBuilder 是一个辅助类，有助于结构的基本文件 SwaggerModule。它包含几种方法，可用于设置诸如标题，描述，版本等属性。
   const sysOptions = new DocumentBuilder()
     .setTitle(config.get('app.title'))
@@ -82,6 +82,7 @@ async function bootstrap() {
 
   await app.listen(listenPort, () => {
     Logger.info(`
+    <<<<<<<<<<<<<<<<<<<<.<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
        _                   
       (_) ____  __ _    ___
      / / / __/ /  ' \\  /_ /
@@ -90,7 +91,8 @@ async function bootstrap() {
     server listen on：http://localhost:${listenPort}/api
     swagger listen on：http://localhost:${listenPort}${setupPath}
     
-    Powered by WangYue`);
+    Powered by WangYue
+    <<<<<<<<<<<<<<<<<<<<.<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<`);
   });
 }
 

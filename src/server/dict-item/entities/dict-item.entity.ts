@@ -6,12 +6,7 @@ import {
 } from 'typeorm';
 import { BaseEntity } from '../../base.entity';
 import { Dict } from '../../dict/entities/dict.entity';
-
-// 状态类型
-export enum DefaultType {
-  NOT_DEFAULT,
-  DEFAULT = 1,
-}
+import { DefaultType } from '../../../constants/dicts';
 
 @Entity('sys_dict_item')
 export class DictItem extends BaseEntity {
