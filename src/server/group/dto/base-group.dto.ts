@@ -19,7 +19,7 @@ export class BaseGroupDto {
   @ApiProperty({ description: '状态（0：禁用；1：启用）', example: 0 })
   @IsDefined({ message: '状态不能为空！' })
   @IsNotEmpty({ message: '状态不能为空！' })
-  @Transform(status => Number.parseInt(status))
+  @Transform(({ value }) => Number.parseInt(value))
   @IsInt({ message: '状态必须为数字！' })
   readonly status?: number;
 

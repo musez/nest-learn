@@ -99,6 +99,7 @@ export class Utils {
   }
 
   static construct(...args) {
+    // @ts-ignore
     return construct(...args);
   }
 

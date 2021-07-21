@@ -22,7 +22,7 @@ export class BasePermissionDto {
   @ApiProperty({ description: '权限类别（1：目录；2：菜单；3：操作；4：字段；5：数据）' })
   @IsDefined({ message: '权限类别不能为空！' })
   @IsNotEmpty({ message: '权限类别不能为空！' })
-  @Transform(type => Number.parseInt(type))
+  @Transform(({ value }) => Number.parseInt(value))
   @IsInt({ message: '权限类别必须为数字！' })
   readonly type: number;
 
@@ -33,7 +33,7 @@ export class BasePermissionDto {
 
   @ApiPropertyOptional({ description: '权限路由 SORT', example: 0 })
   @IsOptional()
-  @Transform(sort => Number.parseInt(sort))
+  @Transform(({ value }) => Number.parseInt(value))
   @IsInt({ message: '权限路由 SORT 必须为数字！' })
   readonly sort?: number;
 
@@ -42,7 +42,7 @@ export class BasePermissionDto {
 
   @ApiPropertyOptional({ description: '权限路由 HIDDEN（0：不隐藏；1：隐藏；）', example: 0 })
   @IsOptional()
-  @Transform(routerHidden => Number.parseInt(routerHidden))
+  @Transform(({ value }) => Number.parseInt(value))
   @IsInt({ message: '权限路由 HIDDEN 必须为数字！' })
   readonly routerHidden?: number;
 
@@ -55,7 +55,7 @@ export class BasePermissionDto {
   @ApiProperty({ description: '状态（0：禁用；1：启用）', example: 0 })
   @IsDefined({ message: '状态不能为空！' })
   @IsNotEmpty({ message: '状态不能为空！' })
-  @Transform(status => Number.parseInt(status))
+  @Transform(({ value }) => Number.parseInt(value))
   @IsInt({ message: '状态必须为数字！' })
   readonly status?: number;
 

@@ -41,7 +41,7 @@ export class BaseUserDto {
   @ApiProperty({ description: '用户类型（0：普通用户；1：管理员；2：超级管理员；）', example: 0 })
   @IsDefined({ message: '用户类型不能为空！' })
   @IsNotEmpty({ message: '用户类型不能为空！' })
-  @Transform(userType => Number.parseInt(userType))
+  @Transform(({ value }) => Number.parseInt(value))
   @IsInt({ message: '用户类型必须为数字！' })
   readonly userType?: number;
 
@@ -64,7 +64,7 @@ export class BaseUserDto {
 
   @ApiPropertyOptional({ description: '性别（0：保密；1：男；2：女）', example: 0 })
   @IsOptional()
-  @Transform(sex => Number.parseInt(sex))
+  @Transform(({ value }) => Number.parseInt(value))
   @IsInt({ message: '性别必须为数字！' })
   readonly sex?: number;
 
@@ -88,7 +88,7 @@ export class BaseUserDto {
   @ApiProperty({ description: '状态（0：禁用；1：启用）', example: 0 })
   @IsDefined({ message: '状态不能为空！' })
   @IsNotEmpty({ message: '状态不能为空！' })
-  @Transform(status => Number.parseInt(status))
+  @Transform(({ value }) => Number.parseInt(value))
   @IsInt({ message: '状态必须为数字！' })
   readonly status?: number;
 

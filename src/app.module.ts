@@ -33,7 +33,6 @@ import { SystemController } from './server/system/system.controller';
 import { SystemModule } from './server/system/system.module';
 import { CodeGenerateModule } from './server/code-generate/code-generate.module';
 import { HolidayModule } from './server/holiday/holiday.module';
-import { HolidayCatModule } from './server/holiday-cat/holiday-cat.module';
 import { WechatModule } from './server/wechat/wechat.module';
 import AppConfig from './config/app.config';
 import MysqlConfig from './config/mysql.config';

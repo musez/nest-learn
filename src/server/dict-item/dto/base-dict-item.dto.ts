@@ -43,7 +43,7 @@ export class BaseDictItemDto {
 
   @ApiPropertyOptional({ description: '排序', example: 0 })
   @IsOptional()
-  @Transform(sort => Number.parseInt(sort))
+  @Transform(({ value }) => Number.parseInt(value))
   @IsInt({ message: '排序必须为数字！' })
   readonly sort?: number;
 }
