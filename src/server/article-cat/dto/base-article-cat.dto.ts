@@ -1,7 +1,7 @@
 import { IsDefined, IsOptional, IsNotEmpty, IsString, IsInt, MaxLength, IsUUID } from 'class-validator';
 import { Transform } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { BaseConstants } from '../../../constants/constants';
+import { ArticleCatConstants, BaseConstants } from '../../../constants/constants';
 
 export class BaseArticleCatDto {
   @ApiProperty({ description: '主键 id', example: null })
@@ -16,7 +16,7 @@ export class BaseArticleCatDto {
   @ApiProperty({ description: '栏目名称', example: null })
   @IsDefined({ message: '栏目名称不能为空！' })
   @IsNotEmpty({ message: '栏目名称不能为空！' })
-  @MaxLength(255, { message: '栏目名称不能大于 255 位！' })
+  @MaxLength(ArticleCatConstants.CAT_NAME_MAX_LENGTH, { message: '栏目名称不能大于 $constraint1 位！' })
   readonly catName: string;
 
   @ApiProperty({ description: '状态（0：禁用；1：启用）', example: 0 })
