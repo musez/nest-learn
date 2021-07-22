@@ -58,8 +58,8 @@ export class GroupService {
   async selectListPage(limitGroupDto: LimitGroupDto): Promise<any> {
     // eslint-disable-next-line prefer-const
     let { page, limit, name } = limitGroupDto;
-    page = page ? page : 1;
-    limit = limit ? limit : 10;
+    page = page ? Number(page) : 1;
+    limit = limit ? Number(limit) : 10;
     const offset = (page - 1) * limit;
 
     const queryConditionList = [];

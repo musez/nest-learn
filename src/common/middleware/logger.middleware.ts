@@ -14,7 +14,7 @@ export class LoggerMiddleware implements NestMiddleware {
     Method: ${req.method}
     IP: ${req.ip}
     Status code: ${code}
-    Params: ${JSON.stringify(req.params)}
+    Parmas: ${JSON.stringify(req.params)}
     Query: ${JSON.stringify(req.query)}
     Body: ${JSON.stringify(req.body)} \n  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
     `;

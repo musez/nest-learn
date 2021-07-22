@@ -39,7 +39,7 @@ export class BaseArticleDto {
   @ApiProperty({ description: '文章类型（1：文本；2：链接；3：组图；4：视频；5：音频）', default: 0 })
   @IsDefined({ message: '文章类型不能为空！' })
   @IsNotEmpty({ message: '文章类型不能为空！' })
-  @Transform(type => Number.parseInt(type))
+  @Transform(value => Number.parseInt(value))
   @IsInt({ message: '文章类型为数字！' })
   readonly type: number;
 
@@ -65,7 +65,7 @@ export class BaseArticleDto {
 
   @ApiPropertyOptional({ description: '权重', default: 0 })
   @IsOptional()
-  @Transform(weight => Number.parseInt(weight))
+  @Transform(value => Number.parseInt(value))
   @IsInt({ message: '权重为数字！' })
   readonly weight?: number;
 
@@ -77,44 +77,44 @@ export class BaseArticleDto {
 
   @ApiPropertyOptional({ description: '浏览量', example: 0 })
   @IsOptional()
-  @Transform(browseCount => Number.parseInt(browseCount))
+  @Transform(value => Number.parseInt(value))
   @IsInt({ message: '浏览量为数字！' })
   readonly browseCount?: number;
 
   @ApiPropertyOptional({ description: '点赞量', example: 0 })
   @IsOptional()
-  @Transform(linkCount => Number.parseInt(linkCount))
+  @Transform(value => Number.parseInt(value))
   @IsInt({ message: '点赞量为数字！' })
   readonly linkCount?: number;
 
   @ApiPropertyOptional({ description: '收藏量', example: 0 })
   @IsOptional()
-  @Transform(collectCount => Number.parseInt(collectCount))
+  @Transform(value => Number.parseInt(value))
   @IsInt({ message: '收藏量为数字！' })
   readonly collectCount?: number;
 
   @ApiPropertyOptional({ description: '分享量', example: 0 })
   @IsOptional()
-  @Transform(shareCount => Number.parseInt(shareCount))
+  @Transform(value => Number.parseInt(value))
   @IsInt({ message: '分享量为数字！' })
   readonly shareCount?: number;
 
   @ApiPropertyOptional({ description: '允许评论', example: 0 })
   @IsOptional()
-  @Transform(isComment => Number.parseInt(isComment))
+  @Transform(value => Number.parseInt(value))
   @IsInt({ message: '评论量为数字！' })
   readonly isComment?: number;
 
   @ApiPropertyOptional({ description: '评论量', example: 0 })
   @IsOptional()
-  @Transform(commentCount => Number.parseInt(commentCount))
+  @Transform(value => Number.parseInt(value))
   @IsInt({ message: '允许评论为数字！' })
   readonly commentCount?: number;
 
   @ApiProperty({ description: '状态（0：未发布；1：发布；2：草稿；3：回收站）', example: 0 })
   @IsDefined({ message: '状态不能为空！' })
   @IsNotEmpty({ message: '状态不能为空！' })
-  @Transform(status => Number.parseInt(status))
+  @Transform(value => Number.parseInt(value))
   @IsInt({ message: '状态必须为数字！' })
   readonly status?: number;
 

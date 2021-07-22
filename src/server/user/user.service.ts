@@ -237,8 +237,8 @@ export class UserService {
   async selectListPage(limitUserDto: LimitUserDto): Promise<any> {
     // eslint-disable-next-line prefer-const
     let { page, limit, userName, name, userType, mobile, email } = limitUserDto;
-    page = page ? page : 1;
-    limit = limit ? limit : 10;
+    page = page ? Number(page) : 1;
+    limit = limit ? Number(limit) : 10;
     const offset = (page - 1) * limit;
 
     const queryConditionList = [];
@@ -277,7 +277,7 @@ export class UserService {
       .getManyAndCount();
 
     if (!ret) {
-      throw new BadRequestException();
+      throw new BadRequestException('查询异常！');
     }
 
     return {
@@ -296,7 +296,7 @@ export class UserService {
 
     const ret = await this.userRepository.findOne(id, { relations: ['userinfo'] });
     if (!ret) {
-      throw new BadRequestException();
+      throw new BadRequestException(`数据 id：${id} 不存在！`);
     }
     return ret;
   }
@@ -376,7 +376,7 @@ export class UserService {
       .execute();
 
     if (!ret) {
-      throw new BadRequestException();
+      throw new BadRequestException('更新异常！');
     }
 
     return ret;
@@ -395,7 +395,7 @@ export class UserService {
       .execute();
 
     if (!ret) {
-      throw new BadRequestException();
+      throw new BadRequestException('删除异常！');
     }
 
     return null;
@@ -414,7 +414,7 @@ export class UserService {
       .execute();
 
     if (!ret) {
-      throw new BadRequestException();
+      throw new BadRequestException('删除异常！');
     }
 
     return null;
@@ -442,7 +442,7 @@ export class UserService {
     if (deleteRet && deleteUIRet) {
       return null;
     } else {
-      throw new BadRequestException();
+      throw new BadRequestException('操作异常！');
     }
   }
 
@@ -452,7 +452,7 @@ export class UserService {
   async selectGroupsByUserId(baseFindByIdDto: BaseFindByIdDto): Promise<UserGroup[]> {
     const ret = await this.userGroupService.selectByUserId(baseFindByIdDto);
     if (!ret) {
-      throw new BadRequestException();
+      throw new BadRequestException('查询异常！');
     }
 
     return ret;
@@ -480,7 +480,7 @@ export class UserService {
     if (deleteRet && deleteUIRet) {
       return null;
     } else {
-      throw new BadRequestException();
+      throw new BadRequestException('操作异常！');
     }
   }
 
@@ -491,7 +491,7 @@ export class UserService {
     const ret = await this.userRoleService.selectByUserId(baseFindByIdDto);
 
     if (!ret) {
-      throw new BadRequestException();
+      throw new BadRequestException('查询异常！');
     }
 
     return ret;
