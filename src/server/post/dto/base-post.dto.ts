@@ -17,14 +17,14 @@ export class BasePostDto {
   readonly name: string;
 
   @ApiPropertyOptional({ description: '排序', example: 0 })
-  @Transform(sort => Number.parseInt(sort))
+  @Transform(value => Number.parseInt(value))
   @IsInt({ message: '排序必须为数字！' })
   readonly sort?: number;
 
   @ApiProperty({ description: '状态（0：禁用；1：启用）', example: 0 })
   @IsDefined({ message: '状态不能为空！' })
   @IsNotEmpty({ message: '状态不能为空！' })
-  @Transform(status => Number.parseInt(status))
+  @Transform(value => Number.parseInt(value))
   @IsInt({ message: '状态必须为数字！' })
   readonly status?: number;
 

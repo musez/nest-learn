@@ -104,18 +104,18 @@ export class UserController {
       { key: 'createTime', value: '创建时间' },
       { key: 'updateTime', value: '修改时间' },
     ];
-    const result = this.excelService.exportExcel(titleList, list);
+    return await this.excelService.exportExcel(titleList, list);
 
-    res.setHeader(
-      'Content-Type',
-      'application/vnd.openxmlformats;charset=utf-8',
-    );
-    res.setHeader(
-      'Content-Disposition',
-      'attachment; filename=' + encodeURIComponent(`用户_${Utils.dayjsFormat('YYYYMMDD')}`) + '.xlsx',// 中文名需要进行 url 转码
-    );
-    res.setTimeout(30 * 60 * 1000); // 防止网络原因造成超时。
-    res.end(result, 'binary');
+    // res.setHeader(
+    //   'Content-Type',
+    //   'application/vnd.openxmlformats;charset=utf-8',
+    // );
+    // res.setHeader(
+    //   'Content-Disposition',
+    //   'attachment; filename=' + encodeURIComponent(`用户_${Utils.dayjsFormat('YYYYMMDD')}`) + '.xlsx',// 中文名需要进行 url 转码
+    // );
+    // res.setTimeout(30 * 60 * 1000); // 防止网络原因造成超时。
+    // res.end(result, 'binary');
   }
 
   @Post('importExcel')
@@ -143,13 +143,15 @@ export class UserController {
       { name: '手机号', type: 'String', key: 'mobile', size: 50, index: 4 },
       { name: '邮箱', type: 'String', key: 'email', size: 50, index: 5 },
       { name: '性别', type: 'Number', key: 'sex', index: 6 },
-      { name: '生日', type: 'Date', key: 'birthday', index: 7 },
+      { name: '生日', type: 'Date', key: 'birthday', index: 7, format: 'YYYY-MM-DD' },
       { name: '状态', type: 'Number', key: 'status', index: 8 },
       { name: '备注', type: 'String', key: 'description', index: 9 },
-      { name: '创建时间', type: 'Date', key: 'createTime', index: 10 },
-      { name: '修改时间', type: 'Date', key: 'updateTime', index: 11 },
+      { name: '创建时间', type: 'Date', key: 'createTime', index: 10, format: 'YYYY-MM-DD HH:mm:ss' },
+      { name: '修改时间', type: 'Date', key: 'updateTime', index: 11, format: 'YYYY-MM-DD HH:mm:ss' },
     ];
+
     const rows = await this.excelService.importExcel(columns, file);
+    console.log(rows);
     return await this.userService.insertBatch(rows, curUser);
   }
 

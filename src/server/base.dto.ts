@@ -5,13 +5,13 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 export class BasePageDto {
   @ApiPropertyOptional({ description: '当前页数', example: 1 })
   @IsOptional()
-  @Transform(page => Number.parseInt(page))
+  @Transform(value => Number.parseInt(value))
   @IsInt({ message: '当前页数必须为数字' })
   readonly page?: number;
 
   @ApiPropertyOptional({ description: '每页条数', example: 10 })
   @IsOptional()
-  @Transform(limit => Number.parseInt(limit))
+  @Transform(value => Number.parseInt(value))
   @IsInt({ message: '每页条数必须为数字' })
   readonly limit?: number;
 }
@@ -35,7 +35,7 @@ export class BaseModifyStatusByIdsDto {
   @ApiProperty({ description: '状态', example: 1 })
   @IsDefined({ message: '状态不能为空！' })
   @IsNotEmpty({ message: '状态不能为空' })
-  @Transform(status => Number.parseInt(status))
+  @Transform(value => Number.parseInt(value))
   @IsInt({ message: '排序必须为数字！' })
   status: number;
 }

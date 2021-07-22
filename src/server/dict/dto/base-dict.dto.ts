@@ -23,14 +23,14 @@ export class BaseDictDto {
 
   @ApiPropertyOptional({ description: '字典类型（0：string；1：number；）', example: 0 })
   @IsOptional()
-  @Transform(type => Number.parseInt(type))
+  @Transform(value => Number.parseInt(value))
   @IsInt({ message: '字典类型为数字！' })
   readonly type?: number;
 
   @ApiProperty({ description: '状态（0：禁用；1：启用）', example: 0 })
   @IsDefined({ message: '状态不能为空！' })
   @IsNotEmpty({ message: '状态不能为空！' })
-  @Transform(status => Number.parseInt(status))
+  @Transform(value => Number.parseInt(value))
   @IsInt({ message: '状态必须为数字！' })
   readonly status?: number;
 

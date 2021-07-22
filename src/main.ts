@@ -30,12 +30,14 @@ async function bootstrap() {
   app.use(helmet());
 
   // 配置 public 文件夹为静态目录，以达到可直接访问下面文件的目的
-  app.useStaticAssets('uploads', {
-    prefix: '/uploads',
+  // app.useStaticAssets(join(__dirname, '..', 'uploads'), {
+  //   prefix: '/uploads',
+  // });
+  app.useStaticAssets(join(__dirname, '..', 'public'), {
+    prefix: '/static/',
   });
-
   // 配置模板引擎
-  app.setBaseViewsDir('views');
+  app.setBaseViewsDir(join(__dirname, '..', 'views'));
   app.setViewEngine('ejs');
 
   app.use(express.json()); // For parsing application/json
@@ -50,7 +52,7 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe()); // 开启一个全局验证管道
   // app.useGlobalPipes(new ParseIntPipe()); // 开启一个全局转换管道
 
-  app.setGlobalPrefix('/nest/api');
+  app.setGlobalPrefix('/api');
   // DocumentBuilder 是一个辅助类，有助于结构的基本文件 SwaggerModule。它包含几种方法，可用于设置诸如标题，描述，版本等属性。
   const sysOptions = new DocumentBuilder()
     .setTitle(config.get('app.title'))

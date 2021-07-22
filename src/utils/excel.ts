@@ -5,27 +5,25 @@ import { basename, normalize, join } from 'path';
 import { writeFileSync, existsSync, readFileSync } from 'fs';
 import { Utils } from './index';
 
-// process.on(
-//   'message',
-//   async ({ filePath, rows, columns, sheetName, type, style, hasHeader }) => {
-//     try {
-//       if (type === 'export') {
-//         await exportExcel(columns, rows, sheetName, filePath, style);
-//         process.send({ code: 200, message: '导出成功' });
-//       } else {
-//         // tslint:disable-next-line:no-shadowed-variable
-//         const rows = await importExcel(columns, filePath, hasHeader);
-//         process.send({ code: 200, message: '导入成功', data: rows });
-//       }
-//
-//       process.exit();
-//     } catch (error) {
-//       console.log('exceljs export file. Error:', error);
-//       process.send({ code: 200, message: error.message });
-//       process.exit();
-//     }
-//   },
-// );
+process.on('message', async ({ filePath, rows, columns, sheetName, type, style, hasHeader }) => {
+    try {
+      if (type === 'export') {
+        await exportExcel(columns, rows, sheetName, filePath, style);
+        process.send({ code: 200, message: '导出成功' });
+      } else {
+        // tslint:disable-next-line:no-shadowed-variable
+        const rows = await importExcel(columns, filePath, hasHeader);
+        process.send({ code: 200, message: '导入成功', data: rows });
+      }
+
+      process.exit();
+    } catch (error) {
+      console.log('exceljs export file. Error:', error);
+      process.send({ code: 200, message: error.message });
+      process.exit();
+    }
+  },
+);
 
 /**
  * 导入 excel 表

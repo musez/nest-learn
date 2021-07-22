@@ -1,11 +1,12 @@
 import { Injectable } from '@nestjs/common';
+import { join } from 'path';
 import xlsx from 'node-xlsx';
-import { importExcel } from '../../utils/excel';
+import { exportExcel, importExcel } from '../../utils/excel';
 
-type ObjectType = {
-  key: string;
-  value: string;
-};
+// type ObjectType = {
+//   key: string;
+//   value: string;
+// };
 
 @Injectable()
 export class ExcelService {
@@ -15,33 +16,38 @@ export class ExcelService {
    * @param dataList 数据
    * @param xlsName sheet 的名称
    */
-  exportExcel(
-    titleList: Array<ObjectType>,
-    // titleList,
-    dataList: string[],
-    xlsName = 'sheet1',
-  ): ArrayBuffer {
-    // const data = [titleList, dataList]; // 其实最后就是把这个数组写入 excel
-    const data = [];
-    data.push(titleList.map((item) => {
-      return item.value;
-    })); // 添加完列名 下面就是添加真正的内容了
-    dataList.forEach((element) => {
-      const arrInner = [];
-      for (let i = 0; i < titleList.length; i++) {
-        arrInner.push(element[titleList[i].key]);
-      }
-      data.push(arrInner); // data 中添加的要是数组，可以将对象的值分解添加进数组，例如：['1','name','上海']
-    });
-
-    const buffer = xlsx.build([
-      {
-        name: xlsName,
-        data,
-      },
-    ]);
-    return buffer;
+  async exportExcel(columns, rows, sheetName = 'sheet1') {
+    console.log(join(__dirname,  'static/template/template.xlsx'));
+    return await exportExcel(columns, rows, sheetName, join(__dirname, 'static/template/template.xlsx'));
   }
+
+  // exportExcel(
+  //   titleList: Array<ObjectType>,
+  //   // titleList,
+  //   dataList: string[],
+  //   xlsName = 'sheet1',
+  // ): ArrayBuffer {
+  //   // const data = [titleList, dataList]; // 其实最后就是把这个数组写入 excel
+  //   const data = [];
+  //   data.push(titleList.map((item) => {
+  //     return item.value;
+  //   })); // 添加完列名 下面就是添加真正的内容了
+  //   dataList.forEach((element) => {
+  //     const arrInner = [];
+  //     for (let i = 0; i < titleList.length; i++) {
+  //       arrInner.push(element[titleList[i].key]);
+  //     }
+  //     data.push(arrInner); // data 中添加的要是数组，可以将对象的值分解添加进数组，例如：['1','name','上海']
+  //   });
+  //
+  //   const buffer = xlsx.build([
+  //     {
+  //       name: xlsName,
+  //       data,
+  //     },
+  //   ]);
+  //   return buffer;
+  // }
 
   /**
    * 导入 excel
