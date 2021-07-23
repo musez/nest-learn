@@ -4,11 +4,11 @@ import { User } from '../../user/entities/user.entity';
 
 @Entity('sys_user_role')
 export class UserRole {
-  constructor() {
-    this.id = undefined;
-    this.userId = undefined;
-    this.roleId = undefined;
-  }
+  // constructor() {
+  //   this.id = undefined;
+  //   this.userId = undefined;
+  //   this.roleId = undefined;
+  // }
 
   @PrimaryGeneratedColumn('uuid', { comment: '主键 id' })
   id: string;

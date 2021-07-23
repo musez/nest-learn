@@ -151,8 +151,33 @@ export class UserController {
     ];
 
     const rows = await this.excelService.importExcel(columns, file);
-    console.log(rows);
-    return await this.userService.insertBatch(rows, curUser);
+
+    const successRows = [],
+      errorRows = [];
+
+    for (const item of rows) {
+      const { userName } = item;
+      const ret = await this.userService.isExistUserName(userName);
+      if (ret) {
+        item.errorMsg = `数据 userName：${userName} 已存在！`;
+        errorRows.push(item);
+      } else {
+        successRows.push(item);
+      }
+    }
+
+    const ret = await this.userService.insertBatch(successRows, curUser);
+
+    if (!ret) {
+      throw new BadRequestException(`操作异常！`);
+    }
+
+    return {
+      successList: ret,
+      successCount: ret.length,
+      errorList: errorRows,
+      errorCount: ret.length,
+    };
   }
 
   @Post('update')

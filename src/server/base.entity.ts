@@ -21,18 +21,18 @@ export enum DeleteType {
 }
 
 export abstract class BaseEntity {
-  constructor() {
-    this.id = undefined;
-    this.status = undefined;
-    this.description = undefined;
-    this.createTime = undefined;
-    this.createBy = undefined;
-    this.updateTime = undefined;
-    this.updateBy = undefined;
-    this.deleteStatus = undefined;
-    this.deleteTime = undefined;
-    this.deleteBy = undefined;
-  }
+  // constructor() {
+  //   this.id = undefined;
+  //   this.status = undefined;
+  //   this.description = undefined;
+  //   this.createTime = undefined;
+  //   this.createBy = undefined;
+  //   this.updateTime = undefined;
+  //   this.updateBy = undefined;
+  //   this.deleteStatus = undefined;
+  //   this.deleteTime = undefined;
+  //   this.deleteBy = undefined;
+  // }
 
   @PrimaryGeneratedColumn('uuid', { comment: '主键 id' })
   id: string;

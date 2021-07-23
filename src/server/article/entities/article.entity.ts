@@ -18,31 +18,31 @@ import { ArticleType, IsCommentType } from '../../../constants/dicts';
 
 @Entity('cms_article')
 export class Article extends BaseEntity {
-  constructor() {
-    super();
-
-    this.title = undefined;
-    this.summary = undefined;
-    this.author = undefined;
-    this.source = undefined;
-    this.keywords = undefined;
-    this.type = undefined;
-    this.thumbId = undefined;
-    this.fileId = undefined;
-    this.contentUrl = undefined;
-    this.mediaId = undefined;
-    this.weight = undefined;
-    this.content = undefined;
-    this.publicTime = undefined;
-    this.publicBy = undefined;
-    this.browseCount = undefined;
-    this.linkCount = undefined;
-    this.collectCount = undefined;
-    this.shareCount = undefined;
-    this.isComment = undefined;
-    this.commentCount = undefined;
-    this.status = undefined;
-  }
+  // constructor() {
+  //   super();
+  //
+  //   this.title = undefined;
+  //   this.summary = undefined;
+  //   this.author = undefined;
+  //   this.source = undefined;
+  //   this.keywords = undefined;
+  //   this.type = undefined;
+  //   this.thumbId = undefined;
+  //   this.fileId = undefined;
+  //   this.contentUrl = undefined;
+  //   this.mediaId = undefined;
+  //   this.weight = undefined;
+  //   this.content = undefined;
+  //   this.publicTime = undefined;
+  //   this.publicBy = undefined;
+  //   this.browseCount = undefined;
+  //   this.linkCount = undefined;
+  //   this.collectCount = undefined;
+  //   this.shareCount = undefined;
+  //   this.isComment = undefined;
+  //   this.commentCount = undefined;
+  //   this.status = undefined;
+  // }
 
   @Column('varchar', { comment: '标题', length: 255 })
   title: string;

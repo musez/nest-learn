@@ -4,13 +4,13 @@ import { Permission } from '../../permission/entities/permission.entity';
 
 @Entity('sys_role_permission')
 export class RolePermission {
-  constructor() {
-    this.id = undefined;
-    this.roleId = undefined;
-    this.permissionId = undefined;
-    this.role = undefined;
-    this.permission = undefined;
-  }
+  // constructor() {
+  //   this.id = undefined;
+  //   this.roleId = undefined;
+  //   this.permissionId = undefined;
+  //   this.role = undefined;
+  //   this.permission = undefined;
+  // }
 
   @PrimaryGeneratedColumn('uuid', { comment: '主键 id' })
   id: string;

@@ -34,6 +34,7 @@ import { SystemModule } from './server/system/system.module';
 import { CodeGenerateModule } from './server/code-generate/code-generate.module';
 import { HolidayModule } from './server/holiday/holiday.module';
 import { WechatModule } from './server/wechat/wechat.module';
+import { UserAddressModule } from './server/user-address/user-address.module';
 import AppConfig from './config/app.config';
 import MysqlConfig from './config/mysql.config';
 import RedisConfig from './config/redis.config';
@@ -96,6 +97,7 @@ import WechatConfig from './config/wechat.config';
     ArticleCatModule,
     ArticleDataCatModule,
     HolidayModule,
+    UserAddressModule,
   ],
   controllers: [AppController],
   providers: [AppService],

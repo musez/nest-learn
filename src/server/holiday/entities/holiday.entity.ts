@@ -4,9 +4,9 @@ import { WeekdayType, RestType } from '../../../constants/dicts';
 
 @Entity('sys_holiday')
 export class Holiday extends BaseEntity {
-  constructor() {
-    super();
-  }
+  // constructor() {
+  //   super();
+  // }
 
   @Column('varchar', { comment: '名称', length: 50, nullable: true })
   name: string;

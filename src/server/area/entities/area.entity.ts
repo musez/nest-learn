@@ -8,19 +8,19 @@ import {
 
 @Entity('sys_area')
 export class Area {
-  constructor() {
-    this.id = undefined;
-    this.parentId = undefined;
-    this.areaCode = undefined;
-    this.areaName = undefined;
-    this.level = undefined;
-    this.cityCode = undefined;
-    this.center = undefined;
-    this.createTime = undefined;
-    this.createBy = undefined;
-    this.updateTime = undefined;
-    this.updateBy = undefined;
-  }
+  // constructor() {
+  //   this.id = undefined;
+  //   this.parentId = undefined;
+  //   this.areaCode = undefined;
+  //   this.areaName = undefined;
+  //   this.level = undefined;
+  //   this.cityCode = undefined;
+  //   this.center = undefined;
+  //   this.createTime = undefined;
+  //   this.createBy = undefined;
+  //   this.updateTime = undefined;
+  //   this.updateBy = undefined;
+  // }
 
   @PrimaryGeneratedColumn({ comment: '主键 id' })
   id: number;

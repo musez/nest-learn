@@ -20,25 +20,25 @@ import { UserType, SexType } from '../../../constants/dicts';
 
 @Entity('sys_user')
 export class User extends BaseEntity {
-  constructor() {
-    super();
+  // constructor() {
+  //   super();
+  //
+  //   this.userName = undefined;
+  //   this.userPwd = undefined;
+  //   this.userType = undefined;
+  //   this.name = undefined;
+  //   this.mobile = undefined;
+  //   this.email = undefined;
+  //   this.sex = undefined;
+  //   this.birthday = undefined;
+  //   this.loginTime = undefined;
+  //   this.loginCount = undefined;
+  //   // this.userinfo = undefined;
+  //   // this.groups = undefined;
+  //   // this.roles = undefined;
+  // }
 
-    this.userName = undefined;
-    this.userPwd = undefined;
-    this.userType = undefined;
-    this.name = undefined;
-    this.mobile = undefined;
-    this.email = undefined;
-    this.sex = undefined;
-    this.birthday = undefined;
-    this.loginTime = undefined;
-    this.loginCount = undefined;
-    // this.userinfo = undefined;
-    // this.groups = undefined;
-    // this.roles = undefined;
-  }
-
-  @Column('varchar', { comment: '名称', length: 50 })
+  @Column('varchar', { comment: '名称', length: 50, unique: true })
   userName: string;
 
   @Column('varchar', { comment: '密码', length: 100, select: false })

@@ -19,13 +19,13 @@ import { Role } from '../../role/entities/role.entity';
 
 @Entity('sys_group')
 export class Group extends BaseEntity {
-  constructor() {
-    super();
-
-    this.name = undefined;
-    // this.users = undefined;
-    // this.roles = undefined;
-  }
+  // constructor() {
+  //   super();
+  //
+  //   this.name = undefined;
+  //   // this.users = undefined;
+  //   // this.roles = undefined;
+  // }
 
   @Column('varchar', { comment: '名称', length: 50 })
   name: string;

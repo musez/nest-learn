@@ -21,20 +21,20 @@ import { PermissionType, PermissionHiddenType } from '../../../constants/dicts';
 
 @Entity('sys_permission')
 export class Permission extends BaseEntity {
-  constructor() {
-    super();
-
-    this.parentId = undefined;
-    this.name = undefined;
-    this.type = undefined;
-    this.code = undefined;
-    this.routerComponent = undefined;
-    this.routerHidden = undefined;
-    this.routerIcon = undefined;
-    this.sort = undefined;
-    this.routerPath = undefined;
-    // this.roles = undefined;
-  }
+  // constructor() {
+  //   super();
+  //
+  //   this.parentId = undefined;
+  //   this.name = undefined;
+  //   this.type = undefined;
+  //   this.code = undefined;
+  //   this.routerComponent = undefined;
+  //   this.routerHidden = undefined;
+  //   this.routerIcon = undefined;
+  //   this.sort = undefined;
+  //   this.routerPath = undefined;
+  //   // this.roles = undefined;
+  // }
 
   @Column({ comment: '父 id', nullable: true })
   parentId: string;
