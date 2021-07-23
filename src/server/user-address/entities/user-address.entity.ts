@@ -1,7 +1,8 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { SexType } from '../../../constants/dicts';
 import { BaseEntity } from '../../base.entity';
 import { ApiPropertyOptional } from '@nestjs/swagger';
+import { User } from '../../user/entities/user.entity';
 
 @Entity('sys_user_address')
 export class UserAddress extends BaseEntity {
@@ -32,9 +33,7 @@ export class UserAddress extends BaseEntity {
   @Column({ comment: '详细地址', length: 100, nullable: true })
   address: string;
 
-  // @Column('tinyint', { comment: '标签', nullable: true })
-  // tag: number;
-  //
-  // @ApiPropertyOptional({ description: '默认值（0：否；1：是）', example: null })
-  // readonly defaultValue?: number;
+  @OneToOne(() => User)
+  @JoinColumn()
+  user: User;
 }

@@ -75,10 +75,10 @@ export class User extends BaseEntity {
   @Column({ comment: '登录次数', nullable: true, default: () => 0 })
   loginCount: number;
 
-  @OneToOne((type) => Userinfo, (userinfo) => userinfo.user, {
-    // cascade: true
-  })
-  userinfo: Userinfo;
+  // @OneToOne((type) => Userinfo, (userinfo) => userinfo.user, {
+  //   // cascade: true
+  // })
+  // userinfo: Userinfo;
 
   @OneToMany(type => Group, group => group.users)
   groups: Group[];

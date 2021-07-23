@@ -33,7 +33,8 @@ export class Userinfo {
   @Column({ comment: '详细地址', length: 100, nullable: true })
   address: string;
 
-  @OneToOne((type) => User, (user) => user.userinfo)
+  // @OneToOne((type) => User, (user) => user.userinfo)
+  @OneToOne(() => User)
   @JoinColumn()
   user: User;
 }
