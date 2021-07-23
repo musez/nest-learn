@@ -1,4 +1,5 @@
 import { Module, MiddlewareConsumer, RequestMethod } from '@nestjs/common';
+import { ScheduleModule } from '@nestjs/schedule';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Connection } from 'typeorm';
 import { RedisModule } from 'nestjs-redis';
@@ -35,6 +36,7 @@ import { CodeGenerateModule } from './server/code-generate/code-generate.module'
 import { HolidayModule } from './server/holiday/holiday.module';
 import { WechatModule } from './server/wechat/wechat.module';
 import { UserAddressModule } from './server/user-address/user-address.module';
+import { TaskModule } from './server/task/task.module';
 import AppConfig from './config/app.config';
 import MysqlConfig from './config/mysql.config';
 import RedisConfig from './config/redis.config';
@@ -73,6 +75,7 @@ import WechatConfig from './config/wechat.config';
       useFactory: (configService: ConfigService) => configService.get('redis'),
       inject: [ConfigService],
     }),
+    ScheduleModule.forRoot(),
     CacheModule,
     CaptchaModule,
     ExcelModule,
@@ -98,6 +101,7 @@ import WechatConfig from './config/wechat.config';
     ArticleDataCatModule,
     HolidayModule,
     UserAddressModule,
+    TaskModule,
   ],
   controllers: [AppController],
   providers: [AppService],

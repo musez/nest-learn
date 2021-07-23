@@ -725,6 +725,14 @@
     multer "1.4.2"
     tslib "2.2.0"
 
+"@nestjs/schedule@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.nlark.com/@nestjs/schedule/download/@nestjs/schedule-1.0.0.tgz#a086b938a7569fbf5eec2d2b6e54761c34c11cb5"
+  integrity sha1-oIa5OKdWn79e7C0rblR2HDTBHLU=
+  dependencies:
+    cron "1.7.2"
+    uuid "8.3.2"
+
 "@nestjs/schematics@^7.0.0", "@nestjs/schematics@^7.1.0":
   version "7.2.5"
   resolved "https://registry.npm.taobao.org/@nestjs/schematics/download/@nestjs/schematics-7.2.5.tgz#60945ee12136dde78cf01c706413e7676e4bf494"
@@ -992,6 +1000,14 @@
   version "2.1.2"
   resolved "https://registry.npm.taobao.org/@types/cookiejar/download/@types/cookiejar-2.1.2.tgz#66ad9331f63fe8a3d3d9d8c6e3906dd10f6446e8"
   integrity sha1-Zq2TMfY/6KPT2djG45Bt0Q9kRug=
+
+"@types/cron@^1.7.3":
+  version "1.7.3"
+  resolved "https://registry.nlark.com/@types/cron/download/@types/cron-1.7.3.tgz#993db7d54646f61128c851607b64ba4495deae93"
+  integrity sha1-mT231UZG9hEoyFFge2S6RJXerpM=
+  dependencies:
+    "@types/node" "*"
+    moment ">=2.14.0"
 
 "@types/dotenv@^8.2.0":
   version "8.2.0"
@@ -2645,6 +2661,13 @@ create-require@^1.1.0:
   version "1.1.1"
   resolved "https://registry.npm.taobao.org/create-require/download/create-require-1.1.1.tgz?cache=0&sync_timestamp=1606399137064&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fcreate-require%2Fdownload%2Fcreate-require-1.1.1.tgz#c1d7e8f1e5f6cfc9ff65f9cd352d37348756c333"
   integrity sha1-wdfo8eX2z8n/ZfnNNS03NIdWwzM=
+
+cron@1.7.2:
+  version "1.7.2"
+  resolved "https://registry.npm.taobao.org/cron/download/cron-1.7.2.tgz#2ea1f35c138a07edac2ac5af5084ed6fee5723db"
+  integrity sha1-LqHzXBOKB+2sKsWvUITtb+5XI9s=
+  dependencies:
+    moment-timezone "^0.5.x"
 
 cron@1.8.2:
   version "1.8.2"
@@ -5682,7 +5705,7 @@ moment-timezone@^0.5.x:
   dependencies:
     moment ">= 2.9.0"
 
-"moment@>= 2.9.0":
+"moment@>= 2.9.0", moment@>=2.14.0:
   version "2.29.1"
   resolved "https://registry.npm.taobao.org/moment/download/moment-2.29.1.tgz#b2be769fa31940be9eeea6469c075e35006fa3d3"
   integrity sha1-sr52n6MZQL6e7qZGnAdeNQBvo9M=
