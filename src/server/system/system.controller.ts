@@ -46,9 +46,9 @@ export class SystemController {
       files.forEach((file, index) => {
         if (file !== '.git' && file !== '.idea' && file !== 'node_modules' && file !== 'dist') {
           // 拼接获取绝对路径，fs.stat(绝对路径,回调函数)
-          let fPath = path.join(myUrl, file);
+          const fPath = path.join(myUrl, file);
           fs.stat(fPath,  (err, stat) => {
-            let list = {
+            const list = {
               name: file,
               type: null,
             };
@@ -70,7 +70,7 @@ export class SystemController {
   @Post('info')
   @ApiOperation({ summary: '服务器信息' })
   async info(@Req() req): Promise<any> {
-    let connection = req.connection;
+    const connection = req.connection;
 
     return {
       remoteAddress: connection.remoteAddress,

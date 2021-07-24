@@ -6,8 +6,18 @@ import { User } from '../../user/entities/user.entity';
 
 @Entity('sys_user_address')
 export class UserAddress extends BaseEntity {
-  @PrimaryGeneratedColumn('uuid', { comment: '主键 id' })
-  id: string;
+  constructor() {
+    super();
+
+    this.name = undefined;
+    this.mobile = undefined;
+    this.sex = undefined;
+    this.provinceId = undefined;
+    this.cityId = undefined;
+    this.districtId = undefined;
+    this.streetId = undefined;
+    this.address = undefined;
+  }
 
   @Column('varchar', { comment: '姓名', length: 50, nullable: true })
   name: string;
@@ -33,7 +43,8 @@ export class UserAddress extends BaseEntity {
   @Column({ comment: '详细地址', length: 100, nullable: true })
   address: string;
 
-  @OneToOne(() => User)
+  @OneToOne((type) => User, (user) => user.userAddress)
+  // @OneToOne(() => User)
   @JoinColumn()
   user: User;
 }

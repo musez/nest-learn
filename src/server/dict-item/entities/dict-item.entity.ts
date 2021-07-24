@@ -10,16 +10,16 @@ import { DefaultType } from '../../../constants/dicts';
 
 @Entity('sys_dict_item')
 export class DictItem extends BaseEntity {
-  // constructor() {
-  //   super();
-  //
-  //   this.parentId = undefined;
-  //   this.itemText = undefined;
-  //   this.itemValue = undefined;
-  //   this.defaultValue = undefined;
-  //   this.sort = undefined;
-  //   this.dict = undefined;
-  // }
+  constructor() {
+    super();
+
+    this.parentId = undefined;
+    this.itemText = undefined;
+    this.itemValue = undefined;
+    this.defaultValue = undefined;
+    this.sort = undefined;
+    this.dict = undefined;
+  }
 
   @Column({ comment: '父 id', nullable: true })
   parentId: string;

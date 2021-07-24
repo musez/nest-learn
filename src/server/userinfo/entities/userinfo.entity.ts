@@ -9,14 +9,14 @@ import { User } from '../../user/entities/user.entity';
 
 @Entity('sys_userinfo')
 export class Userinfo {
-  // constructor() {
-  //   this.id = undefined;
-  //   this.provinceId = undefined;
-  //   this.cityId = undefined;
-  //   this.districtId = undefined;
-  //   this.address = undefined;
-  //   this.user = undefined;
-  // }
+  constructor() {
+    this.id = undefined;
+    this.provinceId = undefined;
+    this.cityId = undefined;
+    this.districtId = undefined;
+    this.address = undefined;
+    this.user = undefined;
+  }
 
   @PrimaryGeneratedColumn('uuid', { comment: '主键 id' })
   id: string;
@@ -33,8 +33,8 @@ export class Userinfo {
   @Column({ comment: '详细地址', length: 100, nullable: true })
   address: string;
 
-  // @OneToOne((type) => User, (user) => user.userinfo)
-  @OneToOne(() => User)
+  @OneToOne((type) => User, (user) => user.userinfo)
+  // @OneToOne(() => User)
   @JoinColumn()
   user: User;
 }

@@ -38,9 +38,9 @@ export class WechatController {
       function(error, response, body) {
         console.log(response.statusCode, body);
         if (response.statusCode == 200) {
-          let data = JSON.parse(body);
-          let access_token = data.access_token;
-          let openid = data.openid;
+          const data = JSON.parse(body);
+          const access_token = data.access_token;
+          const openid = data.openid;
 
           // 调用获取用户信息的api
           request.get({ url: 'https://api.weixin.qq.com/sns/userinfo?access_token=' + access_token + '&openid=' + openid + '&lang=zh_CN' },

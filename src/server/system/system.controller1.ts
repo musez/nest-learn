@@ -41,14 +41,14 @@ export class SystemController {
       files.forEach((file, index) => {
         if (file !== '.git' && file !== '.idea' && file !== 'node_modules' && file !== 'dist') {
           // 拼接获取绝对路径，fs.stat(绝对路径,回调函数)
-          let fPath = path.join(MyUrl, file);
+          const fPath = path.join(MyUrl, file);
           fs.stat(fPath, async (err, stat) => {
             if (stat.isFile()) {
               // stat 状态中有两个函数一个是 stat 中有 isFile ,isisDirectory 等函数进行判断是文件还是文件夹
               // if (this.json[index] && this.json[index].children && this.json[index].children.length > 0) {
               //   this.json[index].children.push(file);
               // } else {
-              let list = {
+              const list = {
                 name: file,
                 type: 'dir',
                 children: [],
@@ -58,7 +58,7 @@ export class SystemController {
               // }
               // console.log(file);
             } else {
-              let list = {
+              const list = {
                 name: file,
                 type: 'file',
               };

@@ -17,15 +17,15 @@ import { OrgType } from '../../../constants/dicts';
 
 @Entity('sys_org')
 export class Org extends BaseEntity {
-  // constructor() {
-  //   super();
-  //
-  //   this.parentId = undefined;
-  //   this.name = undefined;
-  //   this.shortName = undefined;
-  //   this.orgType = undefined;
-  //   this.orgLevel = undefined;
-  // }
+  constructor() {
+    super();
+
+    this.parentId = undefined;
+    this.name = undefined;
+    this.shortName = undefined;
+    this.orgType = undefined;
+    this.orgLevel = undefined;
+  }
 
   @Column({ comment: '父 id', nullable: true })
   parentId: string;

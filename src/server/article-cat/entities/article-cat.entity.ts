@@ -15,12 +15,12 @@ import { Article } from '../../article/entities/article.entity';
 
 @Entity('cms_article_cat')
 export class ArticleCat extends BaseEntity {
-  // constructor() {
-  //   super();
-  //
-  //   this.parentId = undefined;
-  //   this.catName = undefined;
-  // }
+  constructor() {
+    super();
+
+    this.parentId = undefined;
+    this.catName = undefined;
+  }
 
   @Column({ comment: '父 id', nullable: true })
   parentId: string;

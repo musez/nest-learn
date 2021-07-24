@@ -4,9 +4,14 @@ import { WeekdayType, RestType } from '../../../constants/dicts';
 
 @Entity('sys_holiday')
 export class Holiday extends BaseEntity {
-  // constructor() {
-  //   super();
-  // }
+  constructor() {
+    super();
+
+    this.name = undefined;
+    this.date = undefined;
+    this.weekday = undefined;
+    this.restType = undefined;
+  }
 
   @Column('varchar', { comment: '名称', length: 50, nullable: true })
   name: string;

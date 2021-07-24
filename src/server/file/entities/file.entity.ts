@@ -12,20 +12,20 @@ import { BaseEntity } from '../../base.entity';
 
 @Entity('sys_file')
 export class File extends BaseEntity {
-  // constructor() {
-  //   super();
-  //
-  //   this.originalName = undefined;
-  //   this.encoding = undefined;
-  //   this.mimeType = undefined;
-  //   this.destination = undefined;
-  //   this.fileName = undefined;
-  //   this.path = undefined;
-  //   this.size = undefined;
-  //   this.fileType = undefined;
-  //   this.fileUrl = undefined;
-  //   this.extId = undefined;
-  // }
+  constructor() {
+    super();
+
+    this.originalName = undefined;
+    this.encoding = undefined;
+    this.mimeType = undefined;
+    this.destination = undefined;
+    this.fileName = undefined;
+    this.path = undefined;
+    this.size = undefined;
+    this.fileType = undefined;
+    this.fileUrl = undefined;
+    this.extId = undefined;
+  }
 
   @Column('varchar', { comment: '文件原始名称', nullable: true })
   originalName: string;

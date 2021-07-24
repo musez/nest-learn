@@ -91,31 +91,30 @@ export class UserController {
   async exportExcel(@Query() searchUserDto: SearchUserDto, @Res() res): Promise<any> {
     const list = await this.userService.selectList(searchUserDto);
 
-    const titleList = [
-      { key: 'userName', value: '用户名' },
-      { key: 'userType', value: '用户类型' },
-      { key: 'name', value: '姓名' },
-      { key: 'mobile', value: '手机号' },
-      { key: 'email', value: '邮箱' },
-      { key: 'sex', value: '性别' },
-      { key: 'birthday', value: '生日' },
-      { key: 'status', value: '状态' },
-      { key: 'description', value: '备注' },
-      { key: 'createTime', value: '创建时间' },
-      { key: 'updateTime', value: '修改时间' },
+    const columns = [
+      { key: 'userName', name: '用户名', type: 'String' },
+      { key: 'userType', name: '用户类型', type: 'String' },
+      { key: 'name', name: '姓名', type: 'String' },
+      { key: 'mobile', name: '手机号', type: 'String' },
+      { key: 'email', name: '邮箱', type: 'String' },
+      { key: 'sex', name: '性别', type: 'String' },
+      { key: 'birthday', name: '生日', type: 'String' },
+      { key: 'status', name: '状态', type: 'String' },
+      { key: 'description', name: '备注', type: 'String' },
+      { key: 'createTime', name: '创建时间', type: 'String' },
+      { key: 'updateTime', name: '修改时间', type: 'String' },
     ];
-    return await this.excelService.exportExcel(titleList, list);
-
-    // res.setHeader(
-    //   'Content-Type',
-    //   'application/vnd.openxmlformats;charset=utf-8',
-    // );
-    // res.setHeader(
-    //   'Content-Disposition',
-    //   'attachment; filename=' + encodeURIComponent(`用户_${Utils.dayjsFormat('YYYYMMDD')}`) + '.xlsx',// 中文名需要进行 url 转码
-    // );
+    const result = await this.excelService.exportExcel(columns, list);
+    res.setHeader(
+      'Content-Type',
+      'application/vnd.openxmlformats;charset=utf-8',
+    );
+    res.setHeader(
+      'Content-Disposition',
+      'attachment; filename=' + encodeURIComponent(`用户_${Utils.dayjsFormat('YYYYMMDD')}`) + '.xlsx',// 中文名需要进行 url 转码
+    );
     // res.setTimeout(30 * 60 * 1000); // 防止网络原因造成超时。
-    // res.end(result, 'binary');
+    res.end(result, 'binary');
   }
 
   @Post('importExcel')
@@ -137,17 +136,17 @@ export class UserController {
   @UseInterceptors(FileInterceptor('file'))
   async importExcel(@CurUser() curUser, @UploadedFile() file): Promise<any> {
     const columns = [
-      { name: '用户名', type: 'String', key: 'userName', size: 50, index: 1 },
-      { name: '用户类型', type: 'Number', key: 'userType', index: 2 },
-      { name: '姓名', type: 'String', key: 'name', size: 50, index: 3 },
-      { name: '手机号', type: 'String', key: 'mobile', size: 50, index: 4 },
-      { name: '邮箱', type: 'String', key: 'email', size: 50, index: 5 },
-      { name: '性别', type: 'Number', key: 'sex', index: 6 },
-      { name: '生日', type: 'Date', key: 'birthday', index: 7, format: 'YYYY-MM-DD' },
-      { name: '状态', type: 'Number', key: 'status', index: 8 },
-      { name: '备注', type: 'String', key: 'description', index: 9 },
-      { name: '创建时间', type: 'Date', key: 'createTime', index: 10, format: 'YYYY-MM-DD HH:mm:ss' },
-      { name: '修改时间', type: 'Date', key: 'updateTime', index: 11, format: 'YYYY-MM-DD HH:mm:ss' },
+      { key: 'userName', name: '用户名', type: 'String', size: 50, index: 1 },
+      { key: 'userType', name: '用户类型', type: 'Number', index: 2 },
+      { key: 'name', name: '姓名', type: 'String', size: 50, index: 3 },
+      { key: 'mobile', name: '手机号', type: 'String', size: 50, index: 4 },
+      { key: 'email', name: '邮箱', type: 'String', size: 50, index: 5 },
+      { key: 'sex', name: '性别', type: 'Number', index: 6 },
+      { key: 'birthday', name: '生日', type: 'Date', index: 7, format: 'YYYY-MM-DD' },
+      { key: 'status', name: '状态', type: 'Number', index: 8 },
+      { key: 'description', name: '备注', type: 'String', index: 9 },
+      { key: 'createTime', name: '创建时间', type: 'Date', index: 10, format: 'YYYY-MM-DD HH:mm:ss' },
+      { key: 'updateTime', name: '修改时间', type: 'Date', index: 11, format: 'YYYY-MM-DD HH:mm:ss' },
     ];
 
     const rows = await this.excelService.importExcel(columns, file);

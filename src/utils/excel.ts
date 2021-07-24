@@ -8,7 +8,7 @@ import { Utils } from './index';
 process.on('message', async ({ filePath, rows, columns, sheetName, type, style, hasHeader }) => {
     try {
       if (type === 'export') {
-        await exportExcel(columns, rows, sheetName, filePath, style);
+        await exportExcel(columns, rows, sheetName, style);
         process.send({ code: 200, message: '导出成功' });
       } else {
         // tslint:disable-next-line:no-shadowed-variable
@@ -144,10 +144,9 @@ const getRowValue = (workbook, column, mediaIndex, cellIndex, value, row) => {
  * @param {Array} columns  列头信息
  * @param {Array} rows  行数据
  * @param {String} sheetName  工作表名称
- * @param {path} savePath  文件保存路径
  * @param {path} style 设置每行高度
  */
-export const exportExcel = async (columns, rows, sheetName, savePath, style = { row: { height: 32 } }) => {
+export const exportExcel = async (columns, rows, sheetName, style = { row: { height: 32 } }) => {
   try {
     const workbook = new Excel.Workbook();
     const sheet = workbook.addWorksheet(sheetName);
@@ -183,7 +182,7 @@ export const exportExcel = async (columns, rows, sheetName, savePath, style = { 
       sheet.getRow(index + 2).height = style.row.height;
     }
 
-    await workbook.xlsx.writeFile(savePath);
+    return await workbook.xlsx.writeBuffer();
   } catch (error) {
     console.log(error);
   }

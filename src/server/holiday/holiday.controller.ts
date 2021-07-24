@@ -99,10 +99,10 @@ export class HolidayController {
   @UseInterceptors(FileInterceptor('file'))
   async importExcel(@CurUser() curUser, @UploadedFile() file): Promise<any> {
     const columns = [
-      { name: '名称', type: 'String', key: 'name', size: 50, index: 1 },
-      { name: '日期', type: 'String', key: 'date', index: 2 },
-      { name: '周几', type: 'Number', key: 'weekday', index: 3 },
-      { name: '类型', type: 'Number', key: 'restType', index: 4 },
+      { key: 'name', name: '名称', type: 'String', size: 50, index: 1 },
+      { key: 'date', name: '日期', type: 'String', index: 2 },
+      { key: 'weekday', name: '周几', type: 'Number', index: 3 },
+      { key: 'restType', name: '类型', type: 'Number', index: 4 },
     ];
     const rows = await this.excelService.importExcel(columns, file);
     return await this.holidayService.insertBatch(rows, curUser);

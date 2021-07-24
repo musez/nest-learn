@@ -9,13 +9,14 @@ import { DictType } from '../../../constants/dicts';
 
 @Entity('sys_dict')
 export class Dict extends BaseEntity {
-  // constructor() {
-  //   super();
-  //   this.dictName = undefined;
-  //   this.dictCode = undefined;
-  //   this.type = undefined;
-  //   this.dictItems = undefined;
-  // }
+  constructor() {
+    super();
+
+    this.dictName = undefined;
+    this.dictCode = undefined;
+    this.type = undefined;
+    this.dictItems = undefined;
+  }
 
   @Column('varchar', { comment: '字典名称', length: 50 })
   dictName: string;

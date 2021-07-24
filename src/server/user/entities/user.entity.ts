@@ -17,26 +17,27 @@ import { Userinfo } from '../../userinfo/entities/userinfo.entity';
 import { Group } from '../../group/entities/group.entity';
 import { Role } from '../../role/entities/role.entity';
 import { UserType, SexType } from '../../../constants/dicts';
+import { UserAddress } from 'src/server/user-address/entities/user-address.entity';
 
 @Entity('sys_user')
 export class User extends BaseEntity {
-  // constructor() {
-  //   super();
-  //
-  //   this.userName = undefined;
-  //   this.userPwd = undefined;
-  //   this.userType = undefined;
-  //   this.name = undefined;
-  //   this.mobile = undefined;
-  //   this.email = undefined;
-  //   this.sex = undefined;
-  //   this.birthday = undefined;
-  //   this.loginTime = undefined;
-  //   this.loginCount = undefined;
-  //   // this.userinfo = undefined;
-  //   // this.groups = undefined;
-  //   // this.roles = undefined;
-  // }
+  constructor() {
+    super();
+
+    this.userName = undefined;
+    this.userPwd = undefined;
+    this.userType = undefined;
+    this.name = undefined;
+    this.mobile = undefined;
+    this.email = undefined;
+    this.sex = undefined;
+    this.birthday = undefined;
+    this.loginTime = undefined;
+    this.loginCount = undefined;
+    // this.userinfo = undefined;
+    // this.groups = undefined;
+    // this.roles = undefined;
+  }
 
   @Column('varchar', { comment: '名称', length: 50, unique: true })
   userName: string;
@@ -75,10 +76,15 @@ export class User extends BaseEntity {
   @Column({ comment: '登录次数', nullable: true, default: () => 0 })
   loginCount: number;
 
-  // @OneToOne((type) => Userinfo, (userinfo) => userinfo.user, {
-  //   // cascade: true
-  // })
-  // userinfo: Userinfo;
+  @OneToOne((type) => Userinfo, (userinfo) => userinfo.user, {
+    // cascade: true
+  })
+  userinfo: Userinfo;
+
+  @OneToOne((type) => UserAddress, (userAddress) => userAddress.user, {
+    // cascade: true
+  })
+  userAddress: UserAddress;
 
   @OneToMany(type => Group, group => group.users)
   groups: Group[];
