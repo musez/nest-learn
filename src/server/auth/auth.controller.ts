@@ -72,7 +72,7 @@ export class AuthController {
       throw new BadRequestException('密码不一致！');
     }
 
-    return await this.userService.insert(registerUserDto);
+    await this.userService.insert(registerUserDto);
   }
 
   @Get('getPermissionsByToken')

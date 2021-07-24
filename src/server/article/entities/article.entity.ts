@@ -12,9 +12,9 @@ import {
   ManyToOne,
   BeforeUpdate,
 } from 'typeorm';
-import { BaseEntity, StatusType } from '../../base.entity';
+import { BaseEntity } from '../../base.entity';
 import { ArticleCat } from '../../article-cat/entities/article-cat.entity';
-import { ArticleType, IsCommentType } from '../../../constants/dicts';
+import { ArticleType, IsCommentType, StatusType } from '../../../constants/dicts';
 
 @Entity('cms_article')
 export class Article extends BaseEntity {

@@ -189,7 +189,7 @@ export const exportExcel = async (columns, rows, sheetName, style = { row: { hei
 };
 
 /**
- * 根据列类型描述收集行数据，由于增加了图片类型，需要同时写入sheet
+ * 根据列类型描述收集行数据，由于增加了图片类型，需要同时写入 sheet
  * @param {*} columns 数据列描述对象
  * @param {*} row 行数数据项
  * @param {*} rowIndex 行号

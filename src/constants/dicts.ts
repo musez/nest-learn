@@ -1,3 +1,17 @@
+// 状态类型
+export enum StatusType {
+  ENABLE = 1,// 启用或发布
+  DISABLE = 0,// 禁用或未发布
+  DRAFT = 2,
+  RECYCLE = 3
+}
+
+// 删除类型
+export enum DeleteType {
+  DEFAULT = 0,// 未删除
+  DEL = 1,// 删除
+}
+
 // 用户类型
 export enum UserType {
   NORMAL = 0,
