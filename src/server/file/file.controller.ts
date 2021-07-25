@@ -88,7 +88,7 @@ export class FileController {
     fileEntity.path = file.path;
     fileEntity.size = file.size;
     fileEntity.fileUrl = `${file.destination}/${file.filename}`;
-    fileEntity.createBy = curUser&&curUser.id;
+    fileEntity.createBy = curUser!.id;
 
     return this.fileService.insert(fileEntity, curUser);
   }
@@ -156,12 +156,12 @@ export class FileController {
       fileEntity.path = file.path;
       fileEntity.size = file.size;
       fileEntity.fileUrl = `${file.destination}/${file.filename}`;
-      fileEntity.createBy = curUser&&curUser.id;
+      fileEntity.createBy = curUser!.id;
 
       filesEntity.push(fileEntity);
     });
 
-    return this.fileService.batchInsert(filesEntity);
+    return this.fileService.batchInsert(filesEntity, curUser);
   }
 
   @Get('findListPage')

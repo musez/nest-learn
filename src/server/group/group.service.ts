@@ -24,10 +24,10 @@ export class GroupService {
   /**
    * 添加
    */
-  async insert(createGroupDto: CreateGroupDto, curUser?): Promise<CreateGroupDto> {
+  async insert(createGroupDto: CreateGroupDto, curUser): Promise<CreateGroupDto> {
     let group = new Group();
     group = Utils.dto2entity(createGroupDto, group);
-    group.createBy = curUser&&curUser.id;
+    group.createBy = curUser!.id;
     return await this.groupRepository.save(group);
   }
 
@@ -108,24 +108,24 @@ export class GroupService {
   /**
    * 修改
    */
-  async update(updateGroupDto: UpdateGroupDto, curUser?): Promise<void> {
+  async update(updateGroupDto: UpdateGroupDto, curUser): Promise<void> {
     const { id } = updateGroupDto;
 
     let group = new Group();
     group = Utils.dto2entity(updateGroupDto, group);
-    group.updateBy = curUser&&curUser.id;
+    group.updateBy = curUser!.id;
     await this.groupRepository.update(id, group);
   }
 
   /**
    * 删除
    */
-  async deleteById(baseFindByIdDto: BaseFindByIdDto, curUser?): Promise<void> {
+  async deleteById(baseFindByIdDto: BaseFindByIdDto, curUser): Promise<void> {
     const { id } = baseFindByIdDto;
 
     await this.groupRepository.createQueryBuilder()
       .update(Group)
-      .set({ deleteStatus: 1, deleteBy: curUser&&curUser.id })
+      .set({ deleteStatus: 1, deleteBy: curUser!.id, deleteTime: Utils.now() })
       .where('id = :id', { id: id })
       .execute();
   }
@@ -133,12 +133,12 @@ export class GroupService {
   /**
    * 删除（批量）
    */
-  async deleteByIds(baseFindByIdsDto: BaseFindByIdsDto, curUser?): Promise<void> {
+  async deleteByIds(baseFindByIdsDto: BaseFindByIdsDto, curUser): Promise<void> {
     const { ids } = baseFindByIdsDto;
 
     await this.groupRepository.createQueryBuilder()
       .update(Group)
-      .set({ deleteStatus: 1, deleteBy: curUser&&curUser.id })
+      .set({ deleteStatus: 1, deleteBy: curUser!.id, deleteTime: Utils.now() })
       .where('id in (:ids)', { ids: ids })
       .execute();
   }

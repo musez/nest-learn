@@ -18,14 +18,14 @@ export class FileService {
   /**
    * 添加
    */
-  async insert(file, curUser?): Promise<CreateFileDto> {
+  async insert(file, curUser): Promise<CreateFileDto> {
     return await this.fileRepository.save(file);
   }
 
   /**
    * 添加（批量）
    */
-  async batchInsert(files, curUser?): Promise<CreateFileDto[]> {
+  async batchInsert(files, curUser): Promise<CreateFileDto[]> {
     return await this.fileRepository.save(files);
   }
 
@@ -103,12 +103,12 @@ export class FileService {
   /**
    * 删除
    */
-  async deleteById(baseFindByIdDto: BaseFindByIdDto, curUser?): Promise<void> {
+  async deleteById(baseFindByIdDto: BaseFindByIdDto, curUser): Promise<void> {
     const { id } = baseFindByIdDto;
 
     await this.fileRepository.createQueryBuilder()
       .update(File)
-      .set({ deleteStatus: 1, deleteBy: curUser&&curUser.id })
+      .set({ deleteStatus: 1, deleteBy: curUser!.id, deleteTime: Utils.now() })
       .where('id = :id', { id: id })
       .execute();
   }
@@ -116,12 +116,12 @@ export class FileService {
   /**
    * 删除（批量）
    */
-  async deleteByIds(baseFindByIdsDto: BaseFindByIdsDto, curUser?): Promise<void> {
+  async deleteByIds(baseFindByIdsDto: BaseFindByIdsDto, curUser): Promise<void> {
     const { ids } = baseFindByIdsDto;
 
     await this.fileRepository.createQueryBuilder()
       .update(File)
-      .set({ deleteStatus: 1, deleteBy: curUser&&curUser.id })
+      .set({ deleteStatus: 1, deleteBy: curUser!.id, deleteTime: Utils.now() })
       .where('id in (:ids)', { ids: ids })
       .execute();
   }

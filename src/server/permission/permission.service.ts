@@ -20,7 +20,7 @@ export class PermissionService {
   /**
    * 添加
    */
-  async insert(createPermissionDto: CreatePermissionDto, curUser?): Promise<Permission> {
+  async insert(createPermissionDto: CreatePermissionDto, curUser): Promise<Permission> {
     const { parentId, ...result } = createPermissionDto;
 
     const child = new Permission();
@@ -225,7 +225,7 @@ export class PermissionService {
   /**
    * 修改
    */
-  async update(updatePermissionDto: UpdatePermissionDto, curUser?) {
+  async update(updatePermissionDto: UpdatePermissionDto, curUser) {
     const { id, parentId, ...result } = updatePermissionDto;
 
     const child = new Permission();
@@ -239,12 +239,12 @@ export class PermissionService {
   /**
    * 删除
    */
-  async deleteById(baseFindByIdDto: BaseFindByIdDto, curUser?): Promise<void> {
+  async deleteById(baseFindByIdDto: BaseFindByIdDto, curUser): Promise<void> {
     const { id } = baseFindByIdDto;
 
     await this.permissionRepository.createQueryBuilder()
       .update(Permission)
-      .set({ deleteStatus: 1, deleteBy: curUser&&curUser.id })
+      .set({ deleteStatus: 1, deleteBy: curUser!.id, deleteTime: Utils.now() })
       .where('id = :id', { id: id })
       .execute();
   }
@@ -252,12 +252,12 @@ export class PermissionService {
   /**
    * 删除（批量）
    */
-  async deleteByIds(baseFindByIdsDto: BaseFindByIdsDto, curUser?): Promise<void> {
+  async deleteByIds(baseFindByIdsDto: BaseFindByIdsDto, curUser): Promise<void> {
     const { ids } = baseFindByIdsDto;
 
     await this.permissionRepository.createQueryBuilder()
       .update(Permission)
-      .set({ deleteStatus: 1, deleteBy: curUser&&curUser.id })
+      .set({ deleteStatus: 1, deleteBy: curUser!.id, deleteTime: Utils.now() })
       .where('id in (:ids)', { ids: ids })
       .execute();
   }

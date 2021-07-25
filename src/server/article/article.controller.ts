@@ -77,7 +77,7 @@ export class ArticleController {
   async exportExcel(@Query() searchArticleDto: SearchArticleDto, @Res() res): Promise<any> {
     const list = await this.articleService.selectList(searchArticleDto);
 
-    const titleList = [
+    const columns = [
       { key: 'title', value: '标题' },
       { key: 'summary', value: '摘要' },
       { key: 'author', value: '作者' },
@@ -99,7 +99,7 @@ export class ArticleController {
       { key: 'createTime', value: '创建时间' },
       { key: 'updateTime', value: '修改时间' },
     ];
-    const result = this.excelService.exportExcel(titleList, list);
+    const result = this.excelService.exportExcel(columns, list);
 
     res.setHeader(
       'Content-Type',
@@ -126,9 +126,25 @@ export class ArticleController {
     return this.articleService.update(updateArticleDto, curUser);
   }
 
-  @Post('delete')
-  @Auth('cms:article:delete')
-  @ApiOperation({ summary: '删除' })
+  @Post('inRecycle')
+  @Auth('cms:article:inRecycle')
+  @ApiOperation({ summary: '回收站移入' })
+  async inRecycle(@CurUser() curUser, @Body() baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto): Promise<any> {
+    baseModifyStatusByIdsDto.status = 3;
+    return await this.articleService.updateRecycle(baseModifyStatusByIdsDto, curUser);
+  }
+
+  @Post('outRecycle')
+  @Auth('cms:article:outRecycle')
+  @ApiOperation({ summary: '回收站移出' })
+  async outRecycle(@CurUser() curUser, @Body() baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto): Promise<any> {
+    baseModifyStatusByIdsDto.status = 2;
+    return await this.articleService.updateRecycle(baseModifyStatusByIdsDto, curUser);
+  }
+
+  @Post('deleteRecycle')
+  @Auth('cms:article:deleteRecycle')
+  @ApiOperation({ summary: '回收站删除' })
   async delete(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
     const { id } = baseFindByIdDto;
     const isExistId = await this.articleService.isExistId(id);
@@ -140,25 +156,9 @@ export class ArticleController {
     return await this.articleService.deleteById(baseFindByIdDto, curUser);
   }
 
-  @Post('inRecycle')
-  @Auth('cms:article:inRecycle')
-  @ApiOperation({ summary: '移入回收站' })
-  async inRecycle(@CurUser() curUser, @Body() baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto): Promise<any> {
-    baseModifyStatusByIdsDto.status = 3;
-    return await this.articleService.updateRecycle(baseModifyStatusByIdsDto, curUser);
-  }
-
-  @Post('outRecycle')
-  @Auth('cms:article:outRecycle')
-  @ApiOperation({ summary: '移出回收站' })
-  async outRecycle(@CurUser() curUser, @Body() baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto): Promise<any> {
-    baseModifyStatusByIdsDto.status = 2;
-    return await this.articleService.updateRecycle(baseModifyStatusByIdsDto, curUser);
-  }
-
   @Post('clearRecycle')
   @Auth('cms:article:clearRecycle')
-  @ApiOperation({ summary: '清空回收站/删除（批量）' })
+  @ApiOperation({ summary: '回收站清空/删除（批量）' })
   async clearRecycle(@CurUser() curUser, @Body() baseFindByIdsDto: BaseFindByIdsDto): Promise<any> {
     return await this.articleService.clearRecycle(baseFindByIdsDto, curUser);
   }

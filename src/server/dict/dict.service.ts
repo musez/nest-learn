@@ -22,10 +22,10 @@ export class DictService {
   /**
    * 添加
    */
-  async insert(createDictDto: CreateDictDto, curUser?) {
+  async insert(createDictDto: CreateDictDto, curUser) {
     let dict = new Dict();
     dict = Utils.dto2entity(createDictDto, dict);
-    dict.createBy = curUser&&curUser.id;
+    dict.createBy = curUser!.id;
 
     return await this.dictRepository.save(dict);
   }
@@ -108,12 +108,12 @@ export class DictService {
   /**
    * 修改
    */
-  async update(updateDictDto: UpdateDictDto, curUser?): Promise<any> {
+  async update(updateDictDto: UpdateDictDto, curUser): Promise<any> {
     const { id } = updateDictDto;
 
     let dict = new Dict();
     dict = Utils.dto2entity(updateDictDto, dict);
-    dict.updateBy = curUser&&curUser.id;
+    dict.updateBy = curUser!.id;
     const result = await this.dictRepository.update(id, updateDictDto);
 
     return result;
@@ -122,12 +122,12 @@ export class DictService {
   /**
    * 删除
    */
-  async deleteById(baseFindByIdDto: BaseFindByIdDto, curUser?): Promise<void> {
+  async deleteById(baseFindByIdDto: BaseFindByIdDto, curUser): Promise<void> {
     const { id } = baseFindByIdDto;
 
     await this.dictRepository.createQueryBuilder()
       .update(Dict)
-      .set({ deleteStatus: 1, deleteBy: curUser&&curUser.id })
+      .set({ deleteStatus: 1, deleteBy: curUser!.id, deleteTime: Utils.now() })
       .where('id = :id', { id: id })
       .execute();
   }
@@ -135,12 +135,12 @@ export class DictService {
   /**
    * 删除（批量）
    */
-  async deleteByIds(baseFindByIdsDto: BaseFindByIdsDto, curUser?): Promise<void> {
+  async deleteByIds(baseFindByIdsDto: BaseFindByIdsDto, curUser): Promise<void> {
     const { ids } = baseFindByIdsDto;
 
     await this.dictRepository.createQueryBuilder()
       .update(Dict)
-      .set({ deleteStatus: 1, deleteBy: curUser&&curUser.id })
+      .set({ deleteStatus: 1, deleteBy: curUser!.id, deleteTime: Utils.now() })
       .where('id in (:ids)', { ids: ids })
       .execute();
   }

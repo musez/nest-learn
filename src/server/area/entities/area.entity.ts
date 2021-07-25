@@ -34,7 +34,7 @@ export class Area {
   @Column('varchar', { comment: '地区名称' })
   areaName: string;
 
-  @Column('tinyint', { comment: '地区级别（1：省份 province；2：市 city；3：区县 district；4：街道 street）', nullable: true })
+  @Column('tinyint', { comment: '地区级别（1：省份 province；2：市 city；3：区县 district；4：街道办 street）', nullable: true })
   level: number;
 
   @Column('varchar', { comment: '城市编码', nullable: true })

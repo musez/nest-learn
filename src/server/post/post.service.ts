@@ -16,7 +16,7 @@ export class PostService {
   ) {
   }
 
-  async insert(createPostDto: CreatePostDto, curUser?) {
+  async insert(createPostDto: CreatePostDto, curUser) {
     const { name } = createPostDto;
 
     const isExist = await this.postRepository.findOne({ name: name });
@@ -26,7 +26,7 @@ export class PostService {
 
     let post = new SysPost();
     post = Utils.dto2entity(createPostDto, post);
-    post.createBy = curUser&&curUser.id;
+    post.createBy = curUser!.id;
     return await this.postRepository.save(post);
   }
 
@@ -112,7 +112,7 @@ export class PostService {
   /**
    * 修改
    */
-  async update(updatePostDto: UpdatePostDto, curUser?): Promise<void> {
+  async update(updatePostDto: UpdatePostDto, curUser): Promise<void> {
     const { id } = updatePostDto;
     const isExist = await this.postRepository.findOne(id);
     if (Utils.isNil(isExist)) {
@@ -121,7 +121,7 @@ export class PostService {
 
     let post = new SysPost();
     post = Utils.dto2entity(updatePostDto, post);
-    post.updateBy = curUser&&curUser.id;
+    post.updateBy = curUser!.id;
 
     await this.postRepository.update(id, post);
   }
@@ -129,7 +129,7 @@ export class PostService {
   /**
    * 删除
    */
-  async deleteById(baseFindByIdDto: BaseFindByIdDto, curUser?): Promise<void> {
+  async deleteById(baseFindByIdDto: BaseFindByIdDto, curUser): Promise<void> {
     const { id } = baseFindByIdDto;
     const isExist = await this.postRepository.findOne(id);
     if (Utils.isNil(isExist)) {
@@ -139,7 +139,7 @@ export class PostService {
     // await this.postRepository.delete(isExist);
     await this.postRepository.createQueryBuilder()
       .update(SysPost)
-      .set({ deleteStatus: 1, deleteBy: curUser&&curUser.id })
+      .set({ deleteStatus: 1, deleteBy: curUser!.id, deleteTime: Utils.now() })
       .where('id = :id', { id: id })
       .execute();
   }
@@ -147,12 +147,12 @@ export class PostService {
   /**
    * 删除（批量）
    */
-  async deleteByIds(baseFindByIdsDto: BaseFindByIdsDto, curUser?): Promise<void> {
+  async deleteByIds(baseFindByIdsDto: BaseFindByIdsDto, curUser): Promise<void> {
     const { ids } = baseFindByIdsDto;
 
     await this.postRepository.createQueryBuilder()
       .update(SysPost)
-      .set({ deleteStatus: 1, deleteBy: curUser&&curUser.id })
+      .set({ deleteStatus: 1, deleteBy: curUser!.id, deleteTime: Utils.now() })
       .where('id in (:ids)', { ids: ids })
       .execute();
   }

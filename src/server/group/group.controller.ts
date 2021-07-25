@@ -83,14 +83,14 @@ export class GroupController {
   async exportExcel(@Query() searchGroupDto: SearchGroupDto, @Res() res): Promise<any> {
     const list = await this.groupService.selectList(searchGroupDto);
 
-    const titleList = [
+    const columns = [
       { key: 'name', value: '名称' },
       { key: 'status', value: '状态' },
       { key: 'description', value: '备注' },
       { key: 'createTime', value: '创建时间' },
       { key: 'updateTime', value: '修改时间' },
     ];
-    const result = this.excelService.exportExcel(titleList, list);
+    const result = this.excelService.exportExcel(columns, list);
 
     res.setHeader(
       'Content-Type',

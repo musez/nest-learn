@@ -20,7 +20,7 @@ export class ArticleService {
   /**
    * 添加
    */
-  async insert(createArticleDto: CreateArticleDto, curUser?): Promise<CreateArticleDto> {
+  async insert(createArticleDto: CreateArticleDto, curUser): Promise<CreateArticleDto> {
     return await this.articleRepository.save(createArticleDto);
   }
 
@@ -118,7 +118,7 @@ export class ArticleService {
   /**
    * 修改
    */
-  async update(updateArticleDto: UpdateArticleDto, curUser?): Promise<void> {
+  async update(updateArticleDto: UpdateArticleDto, curUser): Promise<void> {
     const { id } = updateArticleDto;
 
     let article = new Article();
@@ -128,51 +128,40 @@ export class ArticleService {
   }
 
   /**
-   * 删除
-   */
-  async deleteById(baseFindByIdDto: BaseFindByIdDto, curUser?): Promise<void> {
-    const { id } = baseFindByIdDto;
-
-    // await this.articleRepository.createQueryBuilder()
-    //   .delete()
-    //   .from(Article)
-    //   .where('id = :id', { id: id })
-    //   .execute();
-    await this.articleRepository.createQueryBuilder()
-      .update(Article)
-      .set({ deleteStatus: 1, deleteBy: curUser&&curUser.id })
-      .where('id = :id', { id: id })
-      .execute();
-  }
-
-  /**
    * 回收站状态修改
    */
-  async updateRecycle(baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto, curUser?): Promise<void> {
+  async updateRecycle(baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto, curUser): Promise<void> {
     const { ids, status } = baseModifyStatusByIdsDto;
 
     await this.articleRepository.createQueryBuilder()
       .update(Article)
-      .set({ status: status, updateBy: curUser&&curUser.id })
+      .set({ status: status, updateBy: curUser!.id })
       .where('id in (:ids)', { ids: ids })
       .execute();
   }
 
   /**
-   * 清空回收站
+   * 回收站删除
    */
-  async clearRecycle(baseFindByIdsDto: BaseFindByIdsDto, curUser?): Promise<void> {
-    const { ids } = baseFindByIdsDto;
-
-    // await this.articleRepository.createQueryBuilder()
-    //   .delete()
-    //   .from(Article)
-    //   .where('id in (:ids)', { ids: ids })
-    //   .execute();
+  async deleteById(baseFindByIdDto: BaseFindByIdDto, curUser): Promise<void> {
+    const { id } = baseFindByIdDto;
 
     await this.articleRepository.createQueryBuilder()
       .update(Article)
-      .set({ deleteStatus: 1, deleteBy: curUser&&curUser.id })
+      .set({ deleteStatus: 1, deleteBy: curUser!.id, deleteTime: Utils.now() })
+      .where('id = :id', { id: id })
+      .execute();
+  }
+
+  /**
+   * 回收站清空
+   */
+  async clearRecycle(baseFindByIdsDto: BaseFindByIdsDto, curUser): Promise<void> {
+    const { ids } = baseFindByIdsDto;
+
+    await this.articleRepository.createQueryBuilder()
+      .update(Article)
+      .set({ deleteStatus: 1, deleteBy: curUser!.id, deleteTime: Utils.now() })
       .where('id in (:ids)', { ids: ids })
       .execute();
   }

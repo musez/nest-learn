@@ -91,6 +91,15 @@ export class UserController {
   async exportExcel(@Query() searchUserDto: SearchUserDto, @Res() res): Promise<any> {
     const list = await this.userService.selectList(searchUserDto);
 
+    list.forEach(v => {
+      if (v.userinfo) {
+        v.provinceId = v.userinfo.provinceId;
+        v.cityId = v.userinfo.cityId;
+        v.districtId = v.userinfo.districtId;
+        v.address = v.userinfo.address;
+      }
+    });
+
     const columns = [
       { key: 'userName', name: '用户名', type: 'String', size: 10 },
       { key: 'userType', name: '用户类型', type: 'String', size: 10 },
@@ -99,11 +108,16 @@ export class UserController {
       { key: 'email', name: '邮箱', type: 'String', size: 15 },
       { key: 'sex', name: '性别', type: 'String', size: 10 },
       { key: 'birthday', name: '生日', type: 'String', size: 15 },
+      { key: 'provinceId', name: '省份', type: 'String', size: 15 },
+      { key: 'cityId', name: '城市', type: 'String', size: 15 },
+      { key: 'districtId', name: '区县', type: 'String', size: 15 },
+      { key: 'address', name: '详细地址', type: 'String', size: 30 },
       { key: 'status', name: '状态', type: 'String', size: 10 },
       { key: 'description', name: '备注', type: 'String', size: 20 },
       { key: 'createTime', name: '创建时间', type: 'String', size: 20 },
       { key: 'updateTime', name: '修改时间', type: 'String', size: 20 },
     ];
+
     const result = await this.excelService.exportExcel(columns, list);
     res.setHeader(
       'Content-Type',

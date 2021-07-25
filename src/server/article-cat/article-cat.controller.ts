@@ -85,14 +85,14 @@ export class ArticleCatController {
   async exportExcel(@Query()  searchArticleCatDto: SearchArticleCatDto, @Res() res): Promise<any> {
     const list = await this.articleCatService.selectList(searchArticleCatDto);
 
-    const titleList = [
+    const columns = [
       { key: 'catName', value: '栏目名称' },
       { key: 'status', value: '状态' },
       { key: 'description', value: '备注' },
       { key: 'createTime', value: '创建时间' },
       { key: 'updateTime', value: '修改时间' },
     ];
-    const result = this.excelService.exportExcel(titleList, list);
+    const result = this.excelService.exportExcel(columns, list);
 
     res.setHeader(
       'Content-Type',

@@ -80,7 +80,7 @@ export class AreaController {
   async exportExcel(@Query() searchAreaDto: SearchAreaDto, @Res() res): Promise<any> {
     const list = await this.areaService.selectList(searchAreaDto);
 
-    const titleList = [
+    const columns = [
       { key: 'areaName', value: '地区名称' },
       { key: 'areaCode', value: '地区编码' },
       { key: 'level', value: '地区级别' },
@@ -89,7 +89,7 @@ export class AreaController {
       { key: 'createTime', value: '创建时间' },
       { key: 'updateTime', value: '修改时间' },
     ];
-    const result = this.excelService.exportExcel(titleList, list);
+    const result = this.excelService.exportExcel(columns, list);
 
     res.setHeader(
       'Content-Type',

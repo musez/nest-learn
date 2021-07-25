@@ -83,7 +83,7 @@ export class OrgController {
   async exportExcel(@Query() searchOrgDto: SearchOrgDto, @Res() res): Promise<any> {
     const list = await this.orgService.selectList(searchOrgDto);
 
-    const titleList = [
+    const columns = [
       { key: 'name', value: '名称' },
       { key: 'shortName', value: '简称' },
       { key: 'orgType', value: '机构类型' },
@@ -94,7 +94,7 @@ export class OrgController {
       { key: 'createTime', value: '创建时间' },
       { key: 'updateTime', value: '修改时间' },
     ];
-    const result = this.excelService.exportExcel(titleList, list);
+    const result = this.excelService.exportExcel(columns, list);
 
     res.setHeader(
       'Content-Type',

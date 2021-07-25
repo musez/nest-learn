@@ -20,10 +20,10 @@ export class ArticleCatService {
   /**
    * 添加
    */
-  async insert(createArticleCatDto: CreateArticleCatDto, curUser?): Promise<CreateArticleCatDto> {
+  async insert(createArticleCatDto: CreateArticleCatDto, curUser): Promise<CreateArticleCatDto> {
     let articleCat = new ArticleCat();
     articleCat = Utils.dto2entity(createArticleCatDto, articleCat);
-    articleCat.createBy = curUser&&curUser.id;
+    articleCat.createBy = curUser!.id;
     return await this.articleCatRepository.save(createArticleCatDto);
   }
 
@@ -202,7 +202,7 @@ export class ArticleCatService {
   /**
    * 修改
    */
-  async update(updateArticleCatDto: UpdateArticleCatDto, curUser?): Promise<void> {
+  async update(updateArticleCatDto: UpdateArticleCatDto, curUser): Promise<void> {
     const { id } = updateArticleCatDto;
 
     let articleCat = new ArticleCat();
@@ -214,12 +214,12 @@ export class ArticleCatService {
   /**
    * 删除
    */
-  async deleteById(baseFindByIdDto: BaseFindByIdDto, curUser?): Promise<void> {
+  async deleteById(baseFindByIdDto: BaseFindByIdDto, curUser): Promise<void> {
     const { id } = baseFindByIdDto;
 
     await this.articleCatRepository.createQueryBuilder()
       .update(ArticleCat)
-      .set({ deleteStatus: 1, deleteBy: curUser&&curUser.id })
+      .set({ deleteStatus: 1, deleteBy: curUser!.id, deleteTime: Utils.now() })
       .where('id = :id', { id: id })
       .execute();
   }
@@ -227,12 +227,12 @@ export class ArticleCatService {
   /**
    * 删除（批量）
    */
-  async deleteByIds(baseFindByIdsDto: BaseFindByIdsDto, curUser?): Promise<void> {
+  async deleteByIds(baseFindByIdsDto: BaseFindByIdsDto, curUser): Promise<void> {
     const { ids } = baseFindByIdsDto;
 
     await this.articleCatRepository.createQueryBuilder()
       .update(ArticleCat)
-      .set({ deleteStatus: 1, deleteBy: curUser&&curUser.id })
+      .set({ deleteStatus: 1, deleteBy: curUser!.id, deleteTime: Utils.now() })
       .where('id in (:ids)', { ids: ids })
       .execute();
   }

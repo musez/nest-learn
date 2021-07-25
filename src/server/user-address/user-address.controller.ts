@@ -14,6 +14,7 @@ import { Query } from '@nestjs/common';
 import { UserAddress } from './entities/user-address.entity';
 import { Res } from '@nestjs/common';
 import { SearchUserAddressDto } from './dto/search-user-address.dto';
+import { LimitUserAddressDto } from './dto/limit-user-address.dto';
 
 @ApiTags('用户地址')
 @ApiBasicAuth('token')
@@ -26,46 +27,52 @@ export class UserAddressController {
   }
 
   @Post('add')
-  @Auth('cms:article:findList')
+  @Auth('mall:userAddress:add')
   @ApiOperation({ summary: '添加' })
   async add(@CurUser() curUser, @Body() createDto: CreateUserAddressDto) {
     return this.userAddressService.insert(createDto, curUser);
   }
 
   @Get('findList')
-  @Auth('cms:article:findList')
+  @Auth('mall:userAddress:findList')
   @ApiOperation({ summary: '获取列表' })
   async findList(@Query() searchDto: SearchUserAddressDto): Promise<UserAddress[]> {
     return await this.userAddressService.selectList(searchDto);
   }
 
   @Get('findListPage')
-  @Auth('cms:article:findListPage')
+  @Auth('mall:userAddress:findListPage')
   @ApiOperation({ summary: '获取列表（分页）' })
-  async findListPage(@Query() limitDto: LimitArticleDto): Promise<any> {
+  async findListPage(@Query() limitDto: LimitUserAddressDto): Promise<any> {
     return await this.userAddressService.selectListPage(limitDto);
   }
 
   @Get('findById')
-  @Auth('cms:article:findById')
+  @Auth('mall:userAddress:findById')
   @ApiOperation({ summary: '获取详情（主键 id）' })
   async findById(@Query() baseFindByIdDto: BaseFindByIdDto): Promise<UserAddress> {
     return await this.userAddressService.selectById(baseFindByIdDto);
   }
 
   @Get('exportExcel')
-  @Auth('account:article:exportExcel')
+  @Auth('mall:userAddress:exportExcel')
   @ApiOperation({ summary: '列表（Excel 导出）' })
   async exportExcel(@Query() searchDto: SearchUserAddressDto, @Res() res): Promise<any> {
     const list = await this.userAddressService.selectList(searchDto);
-
-    const titleList = [
-      { key: 'status', value: '状态' },
-      { key: 'description', value: '备注' },
-      { key: 'createTime', value: '创建时间' },
-      { key: 'updateTime', value: '修改时间' },
+    const columns = [
+      { key: 'name', name: '姓名', type: 'String', size: 10 },
+      { key: 'mobile', name: '手机号', type: 'String', size: 15 },
+      { key: 'sex', name: '性别', type: 'String', size: 10 },
+      { key: 'status', name: '状态', type: 'String', size: 10 },
+      { key: 'provinceId', name: '省份', type: 'String', size: 10 },
+      { key: 'cityId', name: '城市', type: 'String', size: 15 },
+      { key: 'districtId', name: '区县', type: 'String', size: 15 },
+      { key: 'address', name: '详细地址', type: 'String', size: 30 },
+      { key: 'description', name: '备注', type: 'String', size: 20 },
+      { key: 'createTime', name: '创建时间', type: 'String', size: 20 },
+      { key: 'updateTime', name: '修改时间', type: 'String', size: 20 },
     ];
-    const result = this.excelService.exportExcel(titleList, list);
+    const result = this.excelService.exportExcel(columns, list);
 
     res.setHeader(
       'Content-Type',
@@ -73,14 +80,14 @@ export class UserAddressController {
     );
     res.setHeader(
       'Content-Disposition',
-      'attachment; filename=' + encodeURIComponent(`文章_${Utils.dayjsFormat('YYYYMMDD')}`) + '.xlsx',// 中文名需要进行 url 转码
+      'attachment; filename=' + encodeURIComponent(`用户地址_${Utils.dayjsFormat('YYYYMMDD')}`) + '.xlsx',// 中文名需要进行 url 转码
     );
-    res.setTimeout(30 * 60 * 1000); // 防止网络原因造成超时。
+    // res.setTimeout(30 * 60 * 1000); // 防止网络原因造成超时。
     res.end(result, 'binary');
   }
 
   @Post('update')
-  @Auth('cms:article:update')
+  @Auth('mall:userAddress:update')
   @ApiOperation({ summary: '修改' })
   async update(@CurUser() curUser, @Body() updateDto: UpdateUserAddressDto): Promise<any> {
     const { id } = updateDto;
@@ -93,7 +100,7 @@ export class UserAddressController {
   }
 
   @Post('delete')
-  @Auth('cms:article:delete')
+  @Auth('mall:userAddress:delete')
   @ApiOperation({ summary: '删除' })
   async delete(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
     const { id } = baseFindByIdDto;
@@ -104,5 +111,12 @@ export class UserAddressController {
     }
 
     return await this.userAddressService.deleteById(baseFindByIdDto, curUser);
+  }
+
+  @Post('deleteBatch')
+  @Auth('mall:userAddress:deleteBatch')
+  @ApiOperation({ summary: '删除（批量）' })
+  async deleteBatch(@CurUser() curUser, @Body() baseFindByIdsDto: BaseFindByIdsDto): Promise<any> {
+    return await this.userAddressService.deleteByIds(baseFindByIdsDto, curUser);
   }
 }

@@ -90,7 +90,9 @@ export class UserService {
     } else {
       user.userPwd = this.cryptoUtil.encryptPassword(userPwd);
     }
-    user.createBy = curUser && curUser.id;
+    if (curUser) {
+      user.createBy = curUser!.id;
+    }
 
     const userinfo = new Userinfo();
     if (!Utils.isBlank(createUserDto.provinceId)) {
@@ -123,7 +125,7 @@ export class UserService {
   /**
    * 添加（批量）
    */
-  async insertBatch(createUserDto: CreateUserDto[], curUser?): Promise<CreateUserDto[] | void> {
+  async insertBatch(createUserDto: CreateUserDto[], curUser): Promise<CreateUserDto[] | void> {
     const userList: CreateUserDto[] = [],
       userinfoList: CreateUserinfoDto[] = [];
 
@@ -137,7 +139,7 @@ export class UserService {
       } else {
         user.userPwd = this.cryptoUtil.encryptPassword(userPwd);
       }
-      user.createBy = curUser && curUser.id;
+      user.createBy = curUser!.id;
 
       const userinfo = new Userinfo();
       if (!Utils.isBlank(item.provinceId)) {
@@ -328,12 +330,12 @@ export class UserService {
   /**
    * 修改
    */
-  async update(updateUserDto: UpdateUserDto, curUser?): Promise<UpdateUserDto | void> {
+  async update(updateUserDto: UpdateUserDto, curUser): Promise<UpdateUserDto | void> {
     const { id } = updateUserDto;
 
     let user = new User();
     user = Utils.dto2entity(updateUserDto, user);
-    user.updateBy = curUser && curUser.id;
+    user.updateBy = curUser!.id;
 
     const userinfo = new Userinfo();
     // userinfo = Utils.dto2entity(updateUserDto, userinfo);
@@ -366,12 +368,12 @@ export class UserService {
   /**
    * 修改状态
    */
-  async updateStatus(baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto, curUser?): Promise<any> {
+  async updateStatus(baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto, curUser): Promise<any> {
     const { ids, status } = baseModifyStatusByIdsDto;
 
     const ret = this.userRepository.createQueryBuilder()
       .update(User)
-      .set({ status: status, updateBy: curUser && curUser.id })
+      .set({ status: status, updateBy: curUser!.id })
       .where('id in (:ids)', { ids: ids })
       .execute();
 
@@ -385,12 +387,12 @@ export class UserService {
   /**
    * 删除
    */
-  async deleteById(baseFindByIdDto: BaseFindByIdDto, curUser?): Promise<void> {
+  async deleteById(baseFindByIdDto: BaseFindByIdDto, curUser): Promise<void> {
     const { id } = baseFindByIdDto;
 
     const ret = await this.userRepository.createQueryBuilder()
       .update(User)
-      .set({ deleteStatus: 1, deleteBy: curUser && curUser.id })
+      .set({ deleteStatus: 1, deleteBy: curUser!.id, deleteTime: Utils.now() })
       .where('id = :id', { id: id })
       .execute();
 
@@ -404,12 +406,12 @@ export class UserService {
   /**
    * 删除（批量）
    */
-  async deleteByIds(baseFindByIdsDto: BaseFindByIdsDto, curUser?): Promise<void> {
+  async deleteByIds(baseFindByIdsDto: BaseFindByIdsDto, curUser): Promise<void> {
     const { ids } = baseFindByIdsDto;
 
     const ret = await this.userRepository.createQueryBuilder()
       .update(User)
-      .set({ deleteStatus: 1, deleteBy: curUser && curUser.id })
+      .set({ deleteStatus: 1, deleteBy: curUser!.id, deleteTime: Utils.now() })
       .where('ids in (:ids)', { ids: ids })
       .execute();
 

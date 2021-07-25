@@ -25,10 +25,10 @@ export class RoleService {
   /**
    * 添加
    */
-  async insert(createRoleDto: CreateRoleDto, curUser?): Promise<CreateRoleDto> {
+  async insert(createRoleDto: CreateRoleDto, curUser): Promise<CreateRoleDto> {
     let role = new Role();
     role = Utils.dto2entity(createRoleDto, role);
-    role.createBy = curUser && curUser.id;
+    role.createBy = curUser!.id;
     return await this.roleRepository.save(role);
   }
 
@@ -111,12 +111,12 @@ export class RoleService {
   /**
    * 修改
    */
-  async update(updateRoleDto: UpdateRoleDto, curUser?): Promise<void> {
+  async update(updateRoleDto: UpdateRoleDto, curUser): Promise<void> {
     const { id } = updateRoleDto;
 
     let role = new Role();
     role = Utils.dto2entity(updateRoleDto, role);
-    role.updateBy = curUser && curUser.id;
+    role.updateBy = curUser!.id;
 
     await this.roleRepository.update(id, role);
   }
@@ -124,12 +124,12 @@ export class RoleService {
   /**
    * 删除
    */
-  async deleteById(baseFindByIdDto: BaseFindByIdDto, curUser?): Promise<void> {
+  async deleteById(baseFindByIdDto: BaseFindByIdDto, curUser): Promise<void> {
     const { id } = baseFindByIdDto;
 
     await this.roleRepository.createQueryBuilder()
       .update(Role)
-      .set({ deleteStatus: 1, deleteBy: curUser && curUser.id })
+      .set({ deleteStatus: 1, deleteBy: curUser!.id, deleteTime: Utils.now() })
       .where('id = :id', { id: id })
       .execute();
   }
@@ -137,12 +137,12 @@ export class RoleService {
   /**
    * 删除（批量）
    */
-  async deleteByIds(baseFindByIdsDto: BaseFindByIdsDto, curUser?): Promise<void> {
+  async deleteByIds(baseFindByIdsDto: BaseFindByIdsDto, curUser): Promise<void> {
     const { ids } = baseFindByIdsDto;
 
     await this.roleRepository.createQueryBuilder()
       .update(Role)
-      .set({ deleteStatus: 1, deleteBy: curUser && curUser.id })
+      .set({ deleteStatus: 1, deleteBy: curUser!.id, deleteTime: Utils.now() })
       .where('id in (:ids)', { ids: ids })
       .execute();
   }

@@ -74,7 +74,7 @@ export class PermissionController {
   async exportExcel(@Query() searchPermissionDto: SearchPermissionDto, @Res() res): Promise<any> {
     const list = await this.permissionService.selectList(searchPermissionDto);
 
-    const titleList = [
+    const columns = [
       { key: 'name', value: '名称' },
       { key: 'type', value: '权限类型' },
       { key: 'code', value: '权限 CODE 代码' },
@@ -88,7 +88,7 @@ export class PermissionController {
       { key: 'createTime', value: '创建时间' },
       { key: 'updateTime', value: '修改时间' },
     ];
-    const result = this.excelService.exportExcel(titleList, list);
+    const result = this.excelService.exportExcel(columns, list);
 
     res.setHeader(
       'Content-Type',

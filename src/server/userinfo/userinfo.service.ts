@@ -58,7 +58,7 @@ export class UserinfoService {
   /**
    * 删除
    */
-  // async deleteByUserId(id: string,curUser?): Promise<any> {
+  // async deleteByUserId(id: string,curUser): Promise<any> {
   //   let res = await this.userinfoRepository.createQueryBuilder()
   //     .delete()
   //     .from(Userinfo)

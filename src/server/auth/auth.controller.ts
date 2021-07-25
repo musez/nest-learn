@@ -51,7 +51,7 @@ export class AuthController {
 
     const validateCaptcha = await this.authService.validateCaptcha(captchaId, captchaText);
     if (validateCaptcha) {
-      await this.userService.incrementLoginCount(curUser && curUser.id);// 登录次数 +1
+      await this.userService.incrementLoginCount(curUser!.id);// 登录次数 +1
       return this.authService.login(curUser);
     } else {
       throw new UnauthorizedException('验证码错误！');

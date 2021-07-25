@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateUserAddressDto } from './dto/create-user-address.dto';
 import { UpdateUserAddressDto } from './dto/update-user-address.dto';
 import { Utils } from '../../utils';
@@ -20,7 +20,7 @@ export class UserAddressService {
   /**
    * 添加
    */
-  async insert(createDto: CreateUserAddressDto, curUser?): Promise<CreateUserAddressDto> {
+  async insert(createDto: CreateUserAddressDto, curUser): Promise<CreateUserAddressDto> {
     return await this.repository.save(createDto);
   }
 
@@ -37,9 +37,6 @@ export class UserAddressService {
     if (!Utils.isBlank(mobile)) {
       queryConditionList.push('mobile LIKE :mobile');
     }
-    if (!Utils.isBlank(status)) {
-      queryConditionList.push('status = :status');
-    }
     queryConditionList.push('deleteStatus = 0');
     const queryCondition = queryConditionList.join(' AND ');
 
@@ -47,7 +44,6 @@ export class UserAddressService {
       .where(queryCondition, {
         name: `%${name}%`,
         mobile: `%${mobile}%`,
-        status: status,
       })
       .orderBy({ 'createTime': 'DESC' })
       .getMany();
@@ -70,9 +66,6 @@ export class UserAddressService {
     if (!Utils.isBlank(mobile)) {
       queryConditionList.push('mobile LIKE :mobile');
     }
-    if (!Utils.isBlank(status)) {
-      queryConditionList.push('status = :status');
-    }
     queryConditionList.push('deleteStatus = 0');
     const queryCondition = queryConditionList.join(' AND ');
 
@@ -80,7 +73,6 @@ export class UserAddressService {
       .where(queryCondition, {
         name: `%${name}%`,
         mobile: `%${mobile}%`,
-        status: status,
       })
       .skip(offset)
       .take(limit)
@@ -118,7 +110,7 @@ export class UserAddressService {
   /**
    * 修改
    */
-  async update(updateDto: UpdateUserAddressDto, curUser?): Promise<void> {
+  async update(updateDto: UpdateUserAddressDto, curUser): Promise<void> {
     const { id } = updateDto;
 
     let userAddress = new UserAddress();
@@ -130,13 +122,32 @@ export class UserAddressService {
   /**
    * 删除
    */
-  async deleteById(baseFindByIdDto: BaseFindByIdDto, curUser?): Promise<void> {
+  async deleteById(baseFindByIdDto: BaseFindByIdDto, curUser): Promise<void> {
     const { id } = baseFindByIdDto;
 
     await this.repository.createQueryBuilder()
       .update(UserAddress)
-      .set({ deleteStatus: 1, deleteBy: curUser&&curUser.id })
+      .set({ deleteStatus: 1, deleteBy: curUser!.id, deleteTime: Utils.now() })
       .where('id = :id', { id: id })
       .execute();
+  }
+
+  /**
+   * 删除（批量）
+   */
+  async deleteByIds(baseFindByIdsDto: BaseFindByIdsDto, curUser): Promise<void> {
+    const { ids } = baseFindByIdsDto;
+
+    const ret = await this.repository.createQueryBuilder()
+      .update(UserAddress)
+      .set({ deleteStatus: 1, deleteBy: curUser!.id, deleteTime: Utils.now() })
+      .where('ids in (:ids)', { ids: ids })
+      .execute();
+
+    if (!ret) {
+      throw new BadRequestException('删除异常！');
+    }
+
+    return null;
   }
 }

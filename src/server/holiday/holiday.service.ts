@@ -20,9 +20,9 @@ export class HolidayService {
   /**
    * 添加
    */
-  async insert(createHolidayDto: CreateHolidayDto, curUser?): Promise<CreateHolidayDto> {
+  async insert(createHolidayDto: CreateHolidayDto, curUser): Promise<CreateHolidayDto> {
     const holiday = new Holiday();
-    holiday.createBy = curUser && curUser.id;
+    holiday.createBy = curUser!.id;
     await this.holidayRepository.save(createHolidayDto);
 
     return createHolidayDto;
@@ -31,14 +31,14 @@ export class HolidayService {
   /**
    * 添加（批量）
    */
-  async insertBatch(createHolidayDto: CreateHolidayDto[], curUser?): Promise<CreateHolidayDto[]> {
+  async insertBatch(createHolidayDto: CreateHolidayDto[], curUser): Promise<CreateHolidayDto[]> {
     const holidayList: CreateHolidayDto[] = [];
 
     createHolidayDto.forEach(item => {
       let holiday = new Holiday();
       holiday = Utils.dto2entityImport(item, holiday);
 
-      holiday.createBy = curUser && curUser.id;
+      holiday.createBy = curUser!.id;
       holidayList.push(holiday);
     });
     await this.holidayRepository.save(holidayList);
@@ -148,7 +148,7 @@ export class HolidayService {
   /**
    * 获取 n 天内的日期
    */
-  async selectDays(dayList, curUser?): Promise<any> {
+  async selectDays(dayList, curUser): Promise<any> {
     const queryConditionList = [];
     if (dayList.length > 0) {
       queryConditionList.push('date IN (:date)');
@@ -173,7 +173,7 @@ export class HolidayService {
   /**
    * 修改
    */
-  async update(updateHolidayDto: UpdateHolidayDto, curUser?): Promise<void> {
+  async update(updateHolidayDto: UpdateHolidayDto, curUser): Promise<void> {
     const { id } = updateHolidayDto;
 
     const isExistId = await this.isExistId(id);
@@ -183,7 +183,7 @@ export class HolidayService {
 
     let holiday = new Holiday();
     holiday = Utils.dto2entity(updateHolidayDto, holiday);
-    holiday.updateBy = curUser && curUser.id;
+    holiday.updateBy = curUser!.id;
 
     await this.holidayRepository.update(id, holiday);
   }
@@ -191,12 +191,12 @@ export class HolidayService {
   /**
    * 修改状态
    */
-  async updateStatus(baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto, curUser?): Promise<any> {
+  async updateStatus(baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto, curUser): Promise<any> {
     const { ids, status } = baseModifyStatusByIdsDto;
 
     return this.holidayRepository.createQueryBuilder()
       .update(Holiday)
-      .set({ status: status, updateBy: curUser && curUser.id })
+      .set({ status: status, updateBy: curUser!.id })
       .where('id in (:ids)', { ids: ids })
       .execute();
   }
@@ -204,12 +204,12 @@ export class HolidayService {
   /**
    * 删除
    */
-  async deleteById(baseFindByIdDto: BaseFindByIdDto, curUser?): Promise<void> {
+  async deleteById(baseFindByIdDto: BaseFindByIdDto, curUser): Promise<void> {
     const { id } = baseFindByIdDto;
 
     await this.holidayRepository.createQueryBuilder()
       .update(Holiday)
-      .set({ deleteStatus: 1, deleteBy: curUser && curUser.id })
+      .set({ deleteStatus: 1, deleteBy: curUser!.id, deleteTime: Utils.now() })
       .where('id = :id', { id: id })
       .execute();
   }
@@ -217,12 +217,12 @@ export class HolidayService {
   /**
    * 删除（批量）
    */
-  async deleteByIds(baseFindByIdsDto: BaseFindByIdsDto, curUser?): Promise<void> {
+  async deleteByIds(baseFindByIdsDto: BaseFindByIdsDto, curUser): Promise<void> {
     const { ids } = baseFindByIdsDto;
 
     await this.holidayRepository.createQueryBuilder()
       .update(Holiday)
-      .set({ deleteStatus: 1, deleteBy: curUser && curUser.id })
+      .set({ deleteStatus: 1, deleteBy: curUser!.id, deleteTime: Utils.now() })
       .where('ids in (:ids)', { ids: ids })
       .execute();
   }
