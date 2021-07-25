@@ -15,7 +15,7 @@ export class UserAddress extends BaseEntity {
     this.provinceId = undefined;
     this.cityId = undefined;
     this.districtId = undefined;
-    this.streetId = undefined;
+    // this.streetId = undefined;
     this.address = undefined;
   }
 
@@ -37,8 +37,8 @@ export class UserAddress extends BaseEntity {
   @Column({ comment: '区/县', nullable: true })
   districtId: number;
 
-  @Column({ comment: '街道办', nullable: true })
-  streetId: number;
+  // @Column({ comment: '街道办', nullable: true })
+  // streetId: number;
 
   @Column({ comment: '详细地址', length: 100, nullable: true })
   address: string;

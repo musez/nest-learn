@@ -5,7 +5,7 @@ import { CurUser } from '../../common/decorators/cur-user.decorator';
 import { ConfigService } from '@nestjs/config';
 import * as request from 'request';
 
-@ApiTags('用户')
+@ApiTags('微信')
 @Controller('wechat')
 export class WechatController {
   constructor(

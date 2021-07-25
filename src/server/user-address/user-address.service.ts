@@ -1,26 +1,142 @@
 import { Injectable } from '@nestjs/common';
 import { CreateUserAddressDto } from './dto/create-user-address.dto';
 import { UpdateUserAddressDto } from './dto/update-user-address.dto';
+import { Utils } from '../../utils';
+import { BaseFindByIdDto, BaseFindByIdsDto, BaseModifyStatusByIdsDto } from '../base.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { UserAddress } from './entities/user-address.entity';
+import { Repository } from 'typeorm';
+import { SearchUserAddressDto } from './dto/search-user-address.dto';
+import { LimitUserAddressDto } from './dto/limit-user-address.dto';
 
 @Injectable()
 export class UserAddressService {
-  create(createUserAddressDto: CreateUserAddressDto) {
-    return 'This action adds a new userAddress';
+  constructor(
+    @InjectRepository(UserAddress)
+    private readonly repository: Repository<UserAddress>,
+  ) {
   }
 
-  findAll() {
-    return `This action returns all userAddress`;
+  /**
+   * 添加
+   */
+  async insert(createDto: CreateUserAddressDto, curUser?): Promise<CreateUserAddressDto> {
+    return await this.repository.save(createDto);
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} userAddress`;
+  /**
+   * 获取列表
+   */
+  async selectList(searchDto: SearchUserAddressDto): Promise<any[]> {
+    const { name, mobile } = searchDto;
+
+    const queryConditionList = [];
+    if (!Utils.isBlank(name)) {
+      queryConditionList.push('name LIKE :name');
+    }
+    if (!Utils.isBlank(mobile)) {
+      queryConditionList.push('mobile LIKE :mobile');
+    }
+    if (!Utils.isBlank(status)) {
+      queryConditionList.push('status = :status');
+    }
+    queryConditionList.push('deleteStatus = 0');
+    const queryCondition = queryConditionList.join(' AND ');
+
+    return await this.repository.createQueryBuilder()
+      .where(queryCondition, {
+        name: `%${name}%`,
+        mobile: `%${mobile}%`,
+        status: status,
+      })
+      .orderBy({ 'createTime': 'DESC' })
+      .getMany();
   }
 
-  update(id: number, updateUserAddressDto: UpdateUserAddressDto) {
-    return `This action updates a #${id} userAddress`;
+  /**
+   * 获取列表（分页）
+   */
+  async selectListPage(limitDto: LimitUserAddressDto): Promise<any> {
+    // eslint-disable-next-line prefer-const
+    let { page, limit, name, mobile } = limitDto;
+    page = page ? Number(page) : 1;
+    limit = limit ? Number(limit) : 10;
+    const offset = (page - 1) * limit;
+
+    const queryConditionList = [];
+    if (!Utils.isBlank(name)) {
+      queryConditionList.push('name LIKE :name');
+    }
+    if (!Utils.isBlank(mobile)) {
+      queryConditionList.push('mobile LIKE :mobile');
+    }
+    if (!Utils.isBlank(status)) {
+      queryConditionList.push('status = :status');
+    }
+    queryConditionList.push('deleteStatus = 0');
+    const queryCondition = queryConditionList.join(' AND ');
+
+    const res = await this.repository.createQueryBuilder()
+      .where(queryCondition, {
+        name: `%${name}%`,
+        mobile: `%${mobile}%`,
+        status: status,
+      })
+      .skip(offset)
+      .take(limit)
+      .orderBy({ 'createTime': 'DESC' })
+      .getManyAndCount();
+
+    return {
+      list: res[0],
+      total: res[1],
+      page: page,
+      limit: limit,
+    };
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} userAddress`;
+  /**
+   * 获取详情（主键 id）
+   */
+  async selectById(baseFindByIdDto: BaseFindByIdDto): Promise<UserAddress> {
+    const { id } = baseFindByIdDto;
+    return await this.repository.findOne(id);
+  }
+
+  /**
+   * 是否存在（主键 id）
+   */
+  async isExistId(id: string): Promise<boolean> {
+    const isExist = await this.repository.findOne(id);
+    if (Utils.isNil(isExist)) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+
+  /**
+   * 修改
+   */
+  async update(updateDto: UpdateUserAddressDto, curUser?): Promise<void> {
+    const { id } = updateDto;
+
+    let userAddress = new UserAddress();
+    userAddress = Utils.dto2entity(updateDto, userAddress);
+
+    await this.repository.update(id, userAddress);
+  }
+
+  /**
+   * 删除
+   */
+  async deleteById(baseFindByIdDto: BaseFindByIdDto, curUser?): Promise<void> {
+    const { id } = baseFindByIdDto;
+
+    await this.repository.createQueryBuilder()
+      .update(UserAddress)
+      .set({ deleteStatus: 1, deleteBy: curUser&&curUser.id })
+      .where('id = :id', { id: id })
+      .execute();
   }
 }
