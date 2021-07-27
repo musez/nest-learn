@@ -72,7 +72,7 @@ export class UserAddressController {
       { key: 'createTime', name: '创建时间', type: 'String', size: 20 },
       { key: 'updateTime', name: '修改时间', type: 'String', size: 20 },
     ];
-    const result = this.excelService.exportExcel(columns, list);
+    const result = await this.excelService.exportExcel(columns, list);
 
     res.setHeader(
       'Content-Type',

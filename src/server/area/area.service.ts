@@ -37,7 +37,7 @@ export class AreaService {
       .select(['a.*'])
       .addSelect(subQuery =>
         subQuery.select('COUNT(*)')
-          .from(Permission, 'subA')
+          .from(Area, 'subA')
           .where('subA.parentId = a.id'), 'hasChildren')
       .orderBy({ 'createTime': 'DESC' })
       .where(queryCondition, {

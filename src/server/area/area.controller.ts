@@ -18,7 +18,6 @@ import { BaseFindByIdDto, BaseFindByPIdDto } from '../base.dto';
 import { SearchAreaDto } from './dto/search-area.dto';
 import { Auth } from '../../common/decorators/auth.decorator';
 import { AuthGuard } from '../../common/guards/auth.guard';
-import { SearchPostDto } from '../post/dto/search-post.dto';
 import { Utils } from '../../utils';
 import { ExcelService } from '../excel/excel.service';
 
@@ -81,15 +80,15 @@ export class AreaController {
     const list = await this.areaService.selectList(searchAreaDto);
 
     const columns = [
-      { key: 'areaName', value: '地区名称' },
-      { key: 'areaCode', value: '地区编码' },
-      { key: 'level', value: '地区级别' },
-      { key: 'cityCode', value: '城市编码' },
-      { key: 'center', value: '城市中心点' },
-      { key: 'createTime', value: '创建时间' },
-      { key: 'updateTime', value: '修改时间' },
+      { key: 'areaName', name: '地区名称', type: 'String', size: 10 },
+      { key: 'areaCode', name: '地区编码', type: 'String', size: 10 },
+      { key: 'level', name: '地区级别', type: 'String', size: 10 },
+      { key: 'cityCode', name: '城市编码', type: 'String', size: 10 },
+      { key: 'center', name: '城市中心点', type: 'String', size: 10 },
+      { key: 'createTime', name: '创建时间', type: 'String', size: 20 },
+      { key: 'updateTime', name: '修改时间', type: 'String', size: 20 },
     ];
-    const result = this.excelService.exportExcel(columns, list);
+    const result = await this.excelService.exportExcel(columns, list);
 
     res.setHeader(
       'Content-Type',
@@ -99,7 +98,7 @@ export class AreaController {
       'Content-Disposition',
       'attachment; filename=' + encodeURIComponent(`地区_${Utils.dayjsFormat('YYYYMMDD')}`) + '.xlsx',// 中文名需要进行 url 转码
     );
-    res.setTimeout(30 * 60 * 1000); // 防止网络原因造成超时。
+    // res.setTimeout(30 * 60 * 1000); // 防止网络原因造成超时。
     res.end(result, 'binary');
   }
 }

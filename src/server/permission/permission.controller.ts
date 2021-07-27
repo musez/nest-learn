@@ -75,20 +75,20 @@ export class PermissionController {
     const list = await this.permissionService.selectList(searchPermissionDto);
 
     const columns = [
-      { key: 'name', value: '名称' },
-      { key: 'type', value: '权限类型' },
-      { key: 'code', value: '权限 CODE 代码' },
-      { key: 'routerComponent', value: '路由 component' },
-      { key: 'routerHidden', value: '路由 hidden' },
-      { key: 'routerIcon', value: '路由 icon' },
-      { key: 'sort', value: '权限 sort' },
-      { key: 'routerPath', value: '路由 path' },
-      { key: 'status', value: '状态' },
-      { key: 'description', value: '备注' },
-      { key: 'createTime', value: '创建时间' },
-      { key: 'updateTime', value: '修改时间' },
+      { key: 'name', name: '名称', type: 'String', size: 10 },
+      { key: 'type', name: '权限类型', type: 'String', size: 10 },
+      { key: 'code', name: '权限 CODE 代码', type: 'String', size: 10 },
+      { key: 'routerComponent', name: '路由 component', type: 'String', size: 10 },
+      { key: 'routerHidden', name: '路由 hidden', type: 'String', size: 10 },
+      { key: 'routerIcon', name: '路由 icon', type: 'String', size: 10 },
+      { key: 'sort', name: '权限 sort', type: 'String', size: 10 },
+      { key: 'routerPath', name: '路由 path', type: 'String', size: 10 },
+      { key: 'status', name: '状态', type: 'String', size: 10 },
+      { key: 'description', name: '备注', type: 'String', size: 20 },
+      { key: 'createTime', name: '创建时间', type: 'String', size: 20 },
+      { key: 'updateTime', name: '修改时间', type: 'String', size: 20 },
     ];
-    const result = this.excelService.exportExcel(columns, list);
+    const result = await this.excelService.exportExcel(columns, list);
 
     res.setHeader(
       'Content-Type',

@@ -84,13 +84,13 @@ export class GroupController {
     const list = await this.groupService.selectList(searchGroupDto);
 
     const columns = [
-      { key: 'name', value: '名称' },
-      { key: 'status', value: '状态' },
-      { key: 'description', value: '备注' },
-      { key: 'createTime', value: '创建时间' },
-      { key: 'updateTime', value: '修改时间' },
+      { key: 'name', name: '名称', type: 'String', size: 10 },
+      { key: 'status', name: '状态', type: 'String', size: 10 },
+      { key: 'description', name: '备注', type: 'String', size: 20 },
+      { key: 'createTime', name: '创建时间', type: 'String', size: 20 },
+      { key: 'updateTime', name: '修改时间', type: 'String', size: 20 },
     ];
-    const result = this.excelService.exportExcel(columns, list);
+    const result = await this.excelService.exportExcel(columns, list);
 
     res.setHeader(
       'Content-Type',

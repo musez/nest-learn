@@ -63,13 +63,13 @@ export class AuthController {
   async register(@Body() registerUserDto: RegisterUserDto): Promise<CreateUserDto | void> {
     const { userName, userPwd, userPwdConfirm } = registerUserDto;
 
+    if (userPwd !== userPwdConfirm) {
+      throw new BadRequestException('密码不一致！');
+    }
+
     const isExistUserName = await this.userService.isExistUserName(userName);
     if (isExistUserName) {
       throw new BadRequestException(`用户名：${userName} 已存在！`);
-    }
-
-    if (userPwd !== userPwdConfirm) {
-      throw new BadRequestException('密码不一致！');
     }
 
     await this.userService.insert(registerUserDto);

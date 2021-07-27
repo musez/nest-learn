@@ -84,17 +84,17 @@ export class OrgController {
     const list = await this.orgService.selectList(searchOrgDto);
 
     const columns = [
-      { key: 'name', value: '名称' },
-      { key: 'shortName', value: '简称' },
-      { key: 'orgType', value: '机构类型' },
-      { key: 'orgType', value: '机构类型' },
-      { key: 'orgLevel', value: '机构级次码' },
-      { key: 'status', value: '状态' },
-      { key: 'description', value: '备注' },
-      { key: 'createTime', value: '创建时间' },
-      { key: 'updateTime', value: '修改时间' },
+      { key: 'name', name: '名称', type: 'String', size: 10 },
+      { key: 'shortName', name: '简称', type: 'String', size: 10 },
+      { key: 'orgType', name: '机构类型', type: 'String', size: 10 },
+      { key: 'orgType', name: '机构类型', type: 'String', size: 10 },
+      { key: 'orgLevel', name: '机构级次码', type: 'String', size: 10 },
+      { key: 'status', name: '状态', type: 'String', size: 10 },
+      { key: 'description', name: '备注', type: 'String', size: 20 },
+      { key: 'createTime', name: '创建时间', type: 'String', size: 20 },
+      { key: 'updateTime', name: '修改时间', type: 'String', size: 20 },
     ];
-    const result = this.excelService.exportExcel(columns, list);
+    const result = await this.excelService.exportExcel(columns, list);
 
     res.setHeader(
       'Content-Type',

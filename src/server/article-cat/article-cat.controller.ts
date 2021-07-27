@@ -9,7 +9,7 @@ import {
   UseInterceptors,
   ClassSerializerInterceptor,
   BadRequestException,
-  Res
+  Res,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -82,17 +82,17 @@ export class ArticleCatController {
   @Get('exportExcel')
   @Auth('account:articleCat:exportExcel')
   @ApiOperation({ summary: '列表（Excel 导出）' })
-  async exportExcel(@Query()  searchArticleCatDto: SearchArticleCatDto, @Res() res): Promise<any> {
+  async exportExcel(@Query() searchArticleCatDto: SearchArticleCatDto, @Res() res): Promise<any> {
     const list = await this.articleCatService.selectList(searchArticleCatDto);
 
     const columns = [
-      { key: 'catName', value: '栏目名称' },
-      { key: 'status', value: '状态' },
-      { key: 'description', value: '备注' },
-      { key: 'createTime', value: '创建时间' },
-      { key: 'updateTime', value: '修改时间' },
+      { key: 'catName', name: '栏目名称', type: 'String', size: 10 },
+      { key: 'status', name: '状态', type: 'String', size: 10 },
+      { key: 'description', name: '备注', type: 'String', size: 20 },
+      { key: 'createTime', name: '创建时间', type: 'String', size: 20 },
+      { key: 'updateTime', name: '修改时间', type: 'String', size: 20 },
     ];
-    const result = this.excelService.exportExcel(columns, list);
+    const result = await this.excelService.exportExcel(columns, list);
 
     res.setHeader(
       'Content-Type',

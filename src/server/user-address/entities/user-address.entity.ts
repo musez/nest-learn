@@ -1,7 +1,6 @@
 import { Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { SexType } from '../../../constants/dicts';
 import { BaseEntity } from '../../base.entity';
-import { ApiPropertyOptional } from '@nestjs/swagger';
 import { User } from '../../user/entities/user.entity';
 
 @Entity('sys_user_address')
@@ -37,7 +36,7 @@ export class UserAddress extends BaseEntity {
   @Column({ comment: '区/县', nullable: true })
   districtId: number;
 
-  // @Column({ comment: '街道办', nullable: true })
+  // @Column({ comment: '街道/办', nullable: true })
   // streetId: number;
 
   @Column({ comment: '详细地址', length: 100, nullable: true })

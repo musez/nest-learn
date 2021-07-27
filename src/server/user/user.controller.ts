@@ -110,7 +110,7 @@ export class UserController {
       { key: 'birthday', name: '生日', type: 'String', size: 15 },
       { key: 'provinceId', name: '省份', type: 'String', size: 15 },
       { key: 'cityId', name: '城市', type: 'String', size: 15 },
-      { key: 'districtId', name: '区县', type: 'String', size: 15 },
+      { key: 'districtId', name: '区/县', type: 'String', size: 15 },
       { key: 'address', name: '详细地址', type: 'String', size: 30 },
       { key: 'status', name: '状态', type: 'String', size: 10 },
       { key: 'description', name: '备注', type: 'String', size: 20 },
@@ -150,17 +150,17 @@ export class UserController {
   @UseInterceptors(FileInterceptor('file'))
   async importExcel(@CurUser() curUser, @UploadedFile() file): Promise<any> {
     const columns = [
-      { key: 'userName', name: '用户名', type: 'String', index: 1 },
-      { key: 'userType', name: '用户类型', type: 'Number', index: 2 },
-      { key: 'name', name: '姓名', type: 'String', index: 3 },
-      { key: 'mobile', name: '手机号', type: 'String', index: 4 },
-      { key: 'email', name: '邮箱', type: 'String', index: 5 },
-      { key: 'sex', name: '性别', type: 'Number', index: 6 },
-      { key: 'birthday', name: '生日', type: 'Date', index: 7, format: 'YYYY-MM-DD' },
-      { key: 'status', name: '状态', type: 'Number', index: 8 },
-      { key: 'description', name: '备注', type: 'String', index: 9 },
-      { key: 'createTime', name: '创建时间', type: 'Date', index: 10, format: 'YYYY-MM-DD HH:mm:ss' },
-      { key: 'updateTime', name: '修改时间', type: 'Date', index: 11, format: 'YYYY-MM-DD HH:mm:ss' },
+      { key: 'userName', name: '用户名', type: 'String' },
+      { key: 'userType', name: '用户类型', type: 'Number' },
+      { key: 'name', name: '姓名', type: 'String' },
+      { key: 'mobile', name: '手机号', type: 'String' },
+      { key: 'email', name: '邮箱', type: 'String' },
+      { key: 'sex', name: '性别', type: 'Number' },
+      { key: 'birthday', name: '生日', type: 'Date', format: 'YYYY-MM-DD' },
+      { key: 'status', name: '状态', type: 'Number' },
+      { key: 'description', name: '备注', type: 'String' },
+      { key: 'createTime', name: '创建时间', type: 'Date', format: 'YYYY-MM-DD HH:mm:ss' },
+      { key: 'updateTime', name: '修改时间', type: 'Date', format: 'YYYY-MM-DD HH:mm:ss' },
     ];
 
     const rows = await this.excelService.importExcel(columns, file);

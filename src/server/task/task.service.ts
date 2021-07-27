@@ -22,23 +22,23 @@ export class TaskService {
   // 0 */30 9-17 * * *：上午九时至下午五时，每三十分钟一次
   // 0 30 11 * * 1-5：星期一至星期五上午11:30
 
-  @Cron('45 * * * * *')
-  handleCron() {
-    this.logger.debug('该方法将在 45 秒标记处每分钟运行一次');
-  }
-
-  @Interval(10000)
-  handleInterval() {
-    this.logger.debug('2');
-  }
-
-  @Timeout(5000)
-  handleTimeout() {
-    this.logger.debug('3');
-  }
-
-  @Interval(10000)
-  sendEmail() {
-    this.logger.debug('3');
-  }
+  // @Cron('45 * * * * *')
+  // handleCron() {
+  //   this.logger.debug('该方法将在 45 秒标记处每分钟运行一次');
+  // }
+  //
+  // @Interval(10000)
+  // handleInterval() {
+  //   this.logger.debug('2');
+  // }
+  //
+  // @Timeout(5000)
+  // handleTimeout() {
+  //   this.logger.debug('3');
+  // }
+  //
+  // @Interval(10000)
+  // sendEmail() {
+  //   this.logger.debug('3');
+  // }
 }
