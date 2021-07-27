@@ -39,6 +39,8 @@ import { Auth } from '../../common/decorators/auth.decorator';
 import { AuthGuard } from '../../common/guards/auth.guard';
 import { ExcelService } from '../excel/excel.service';
 import { Utils } from './../../utils/index';
+import { SexType, StatusType, UserType } from '../../constants/enums';
+import { SexDict, StatusDict, UserDict } from '../../constants/dicts';
 
 @ApiTags('用户')
 @Controller('user')
@@ -102,17 +104,17 @@ export class UserController {
 
     const columns = [
       { key: 'userName', name: '用户名', type: 'String', size: 10 },
-      { key: 'userType', name: '用户类型', type: 'String', size: 10 },
+      { key: 'userType', name: '用户类型', type: 'Enum', size: 10, default: UserDict },
       { key: 'name', name: '姓名', type: 'String', size: 10 },
       { key: 'mobile', name: '手机号', type: 'String', size: 15 },
       { key: 'email', name: '邮箱', type: 'String', size: 15 },
-      { key: 'sex', name: '性别', type: 'String', size: 10 },
+      { key: 'sex', name: '性别', type: 'Enum', size: 10, default: SexDict },
       { key: 'birthday', name: '生日', type: 'String', size: 15 },
       { key: 'provinceId', name: '省份', type: 'String', size: 15 },
       { key: 'cityId', name: '城市', type: 'String', size: 15 },
       { key: 'districtId', name: '区/县', type: 'String', size: 15 },
       { key: 'address', name: '详细地址', type: 'String', size: 30 },
-      { key: 'status', name: '状态', type: 'String', size: 10 },
+      { key: 'status', name: '状态', type: 'Enum', size: 10, default: StatusDict },
       { key: 'description', name: '备注', type: 'String', size: 20 },
       { key: 'createTime', name: '创建时间', type: 'String', size: 20 },
       { key: 'updateTime', name: '修改时间', type: 'String', size: 20 },

@@ -31,6 +31,8 @@ import { Auth } from '../../common/decorators/auth.decorator';
 import { AuthGuard } from '../../common/guards/auth.guard';
 import { Utils } from '../../utils';
 import { ExcelService } from '../excel/excel.service';
+import { ArticleType, IsCommentType, StatusType } from '../../constants/enums';
+import { ArticleDict, IsCommentDict } from '../../constants/dicts';
 
 @Controller('article')
 @ApiTags('文章')
@@ -83,7 +85,7 @@ export class ArticleController {
       { key: 'author', name: '作者', type: 'String', size: 10 },
       { key: 'source', name: '来源', type: 'String', size: 10 },
       { key: 'keywords', name: '关键字', type: 'String', size: 10 },
-      { key: 'type', name: '文章类型', type: 'String', size: 10 },
+      { key: 'type', name: '文章类型', type: 'Enum', size: 10, default: ArticleDict },
       { key: 'contentUrl', name: '链接', type: 'String', size: 10 },
       { key: 'weight', name: '权重', type: 'String', size: 10 },
       { key: 'publicTime', name: '发布时间', type: 'String', size: 10 },
@@ -93,8 +95,8 @@ export class ArticleController {
       { key: 'collectCount', name: '收藏量', type: 'String', size: 10 },
       { key: 'shareCount', name: '分享量', type: 'String', size: 10 },
       { key: 'commentCount', name: '评论', type: 'String', size: 10 },
-      { key: 'isComment', name: '是否可以评论', type: 'String', size: 10 },
-      { key: 'status', name: '状态', type: 'String', size: 10 },
+      { key: 'isComment', name: '是否可以评论', type: 'Enum', size: 10, default: IsCommentDict },
+      { key: 'status', name: '状态', type: 'Enum', size: 10, default: StatusType },
       { key: 'description', name: '备注', type: 'String', size: 20 },
       { key: 'createTime', name: '创建时间', type: 'String', size: 20 },
       { key: 'updateTime', name: '修改时间', type: 'String', size: 20 },

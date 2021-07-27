@@ -30,6 +30,8 @@ import { AuthGuard } from '../../common/guards/auth.guard';
 import { Auth } from '../../common/decorators/auth.decorator';
 import { Utils } from '../../utils';
 import { ExcelService } from '../excel/excel.service';
+import { StatusType } from '../../constants/enums';
+import { OrgDict, StatusDict } from '../../constants/dicts';
 
 @Controller('org')
 @ApiTags('组织机构')
@@ -86,10 +88,9 @@ export class OrgController {
     const columns = [
       { key: 'name', name: '名称', type: 'String', size: 10 },
       { key: 'shortName', name: '简称', type: 'String', size: 10 },
-      { key: 'orgType', name: '机构类型', type: 'String', size: 10 },
-      { key: 'orgType', name: '机构类型', type: 'String', size: 10 },
+      { key: 'orgType', name: '机构类型', type: 'Enum', size: 10,default: OrgDict },
       { key: 'orgLevel', name: '机构级次码', type: 'String', size: 10 },
-      { key: 'status', name: '状态', type: 'String', size: 10 },
+      { key: 'status', name: '状态', type: 'Enum', size: 10, default: StatusDict },
       { key: 'description', name: '备注', type: 'String', size: 20 },
       { key: 'createTime', name: '创建时间', type: 'String', size: 20 },
       { key: 'updateTime', name: '修改时间', type: 'String', size: 20 },

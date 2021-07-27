@@ -5,7 +5,7 @@ import {
   UpdateDateColumn,
   DeleteDateColumn,
 } from 'typeorm';
-import { DeleteType, StatusType } from 'src/constants/dicts';
+import { DeleteType, StatusType } from 'src/constants/enums';
 
 export abstract class BaseEntity {
   constructor() {

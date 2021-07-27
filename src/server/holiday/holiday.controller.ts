@@ -35,8 +35,8 @@ import { ExcelService } from '../excel/excel.service';
 
 @Controller('holiday')
 @ApiTags('节假日')
-// @ApiBasicAuth('token')
-// @UseGuards(JwtAuthGuard, AuthGuard)
+@ApiBasicAuth('token')
+@UseGuards(JwtAuthGuard, AuthGuard)
 export class HolidayController {
   constructor(
     private readonly holidayService: HolidayService,

@@ -10,6 +10,12 @@ export class BaseUserAddressDto {
   @IsUUID('all')
   readonly id: string;
 
+  @ApiProperty({ description: '用户 id', example: null })
+  @IsDefined({ message: '用户 id 不能为空！' })
+  @IsNotEmpty({ message: '用户 id 不能为空！' })
+  @IsUUID('all')
+  readonly userId: string;
+
   @ApiPropertyOptional({ description: '姓名', example: '王' })
   @IsOptional()
   @IsString()

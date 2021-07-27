@@ -6,7 +6,7 @@ import {
 } from 'typeorm';
 import { BaseEntity } from '../../base.entity';
 import { Dict } from '../../dict/entities/dict.entity';
-import { DefaultType } from '../../../constants/dicts';
+import { DefaultType } from '../../../constants/enums';
 
 @Entity('sys_dict_item')
 export class DictItem extends BaseEntity {

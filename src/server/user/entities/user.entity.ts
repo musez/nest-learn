@@ -16,7 +16,7 @@ import { BaseEntity } from '../../base.entity';
 import { Userinfo } from '../../userinfo/entities/userinfo.entity';
 import { Group } from '../../group/entities/group.entity';
 import { Role } from '../../role/entities/role.entity';
-import { UserType, SexType } from '../../../constants/dicts';
+import { UserType, SexType } from '../../../constants/enums';
 import { UserAddress } from 'src/server/user-address/entities/user-address.entity';
 
 @Entity('sys_user')

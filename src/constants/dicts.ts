@@ -1,94 +1,105 @@
 // 状态类型
-export enum StatusType {
-  ENABLE = 1,// 启用或发布
-  DISABLE = 0,// 禁用或未发布
-  DRAFT = 2,
-  RECYCLE = 3
-}
+export const StatusDict = {
+  '0': '禁用',// 禁用或未发布
+  '1': '启用',// 启用或发布
+  '2': '草稿',// 草稿
+  '3': '回收站',// 回收站
+};
 
 // 删除类型
-export enum DeleteType {
-  DEFAULT = 0,// 未删除
-  DEL = 1,// 删除
-}
+export const DeleteDict = {
+  '0': '未删除',// 未删除
+  '1': '删除',// 删除
+};
 
 // 用户类型
-export enum UserType {
-  NORMAL = 0,
-  ADMIN = 1,
-  SUPER_ADMIN = 2,
-}
+export const UserDict = {
+  '0': '普通用户',
+  '1': '管理员',
+  '2': '超级管理员',
+};
 
 // 性别类型
-export enum SexType {
-  DEFAULT = 0,
-  FEMALE = 1,
-  MALE = 2,
-}
+export const SexDict = {
+  '0': '保密',
+  '1': '女',
+  '2': '男',
+};
 
 // 文章类型
-export enum ArticleType {
-  TEXT = 0,
-  LINK = 1,
-  PICTURE = 2,
-  PICTURE_GROUP = 3,
-  VIDEO = 4,
-  AUDIO = 5,
-}
+export const ArticleDict = {
+  '0': '文本',
+  '1': '链接',
+  '2': '图片',
+  '3': '组图',
+  '4': '视频',
+  '5': '音频',
+};
 
 // 文章允许评论
-export enum IsCommentType {
-  ENABLE = 1,
-  DISABLE = 0,
-}
+export const IsCommentDict = {
+  '1': '启用',
+  '0': '禁用',
+};
 
 // 字典类型
-export enum DictType {
-  TEXT = 0,
-  NUM = 1,
-}
+export const DictDict = {
+  '0': '字符串',
+  '1': '数组',
+};
 
 // 字典状态类型
-export enum DefaultType {
-  NOT_DEFAULT,
-  DEFAULT = 1,
-}
+export const DefaultDict = {
+  '0': '非默认值',
+  '1': '默认值',
+};
 
 // 周几类型
-export enum WeekdayType {
-  SUNDAY = 0,
-  MONDAY = 1,
-  TUESDAY = 2,
-  WEDNESDAY = 3,
-  THURSDAY = 4,
-  FRIDAY = 5,
-  SATURDAY = 6,
-}
+export const WeekdayDict = {
+  '0': '星期天',
+  '1': '星期一',
+  '2': '星期二',
+  '3': '星期三',
+  '4': '星期四',
+  '5': '星期五',
+  '6': '星期六',
+};
 
 // 上班类型
-export enum RestType {
-  DEFAULT = 0,
-  UNREST = 1,
-}
+export const RestDict = {
+  '0': '工作日',
+  '1': '法定节假日',
+  '2': '休息日加班',
+  '3': '休息日',
+};
 
 // 组织机构类型
-export enum OrgType {
-  ORG = 0,
-  DEPT = 1,
-}
+export const OrgDict = {
+  '0': '机构',
+  '1': '部门',
+};
 
 // 权限类别
-export enum PermissionType {
-  NAVIGATION = 0,
-  PAGE = 1,
-  ACTION = 2,
-  FIELD = 3,
-}
+export const PermissionDict = {
+  '0': '目录',
+  '1': '菜单',
+  '2': '操作',
+  '3': '字段',
+  '4': '数据',
+};
 
 // 权限路由 HIDDEN
-export enum PermissionHiddenType {
-  ENABLE = 1,
-  DISABLE = 0,
-}
+export const PermissionHiddenDict = {
+  '1': '隐藏',
+  '0': '显示',
+};
+
+//地区级别
+export const AreaLevelDict = {
+  '1': '省份',
+  '2': '城市',
+  '3': '区/县',
+  '4': '街道/办',
+};
 
 

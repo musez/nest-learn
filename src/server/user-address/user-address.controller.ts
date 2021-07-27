@@ -1,20 +1,18 @@
-import { Controller, Get, Post, Body, Put, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Put, Param, Delete, Query, Res, BadRequestException } from '@nestjs/common';
+import { ApiBasicAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { UserAddressService } from './user-address.service';
 import { CreateUserAddressDto } from './dto/create-user-address.dto';
 import { UpdateUserAddressDto } from './dto/update-user-address.dto';
-import { ApiBasicAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ExcelService } from '../excel/excel.service';
 import { Auth } from '../../common/decorators/auth.decorator';
 import { CurUser } from '../../common/decorators/cur-user.decorator';
-import { LimitArticleDto } from '../article/dto/limit-article.dto';
 import { BaseFindByIdDto, BaseFindByIdsDto, BaseModifyStatusByIdsDto } from '../base.dto';
 import { Utils } from '../../utils';
-import { BadRequestException } from '@nestjs/common';
-import { Query } from '@nestjs/common';
 import { UserAddress } from './entities/user-address.entity';
-import { Res } from '@nestjs/common';
 import { SearchUserAddressDto } from './dto/search-user-address.dto';
 import { LimitUserAddressDto } from './dto/limit-user-address.dto';
+import { StatusType } from '../../constants/enums';
+import { StatusDict } from '../../constants/dicts';
 
 @ApiTags('用户地址')
 @ApiBasicAuth('token')
@@ -30,6 +28,10 @@ export class UserAddressController {
   @Auth('mall:userAddress:add')
   @ApiOperation({ summary: '添加' })
   async add(@CurUser() curUser, @Body() createDto: CreateUserAddressDto) {
+    const { userId } = createDto;
+    if (!userId) {
+      throw new BadRequestException(`数据 userId：${userId} 不存在！`);
+    }
     return this.userAddressService.insert(createDto, curUser);
   }
 
@@ -63,10 +65,10 @@ export class UserAddressController {
       { key: 'name', name: '姓名', type: 'String', size: 10 },
       { key: 'mobile', name: '手机号', type: 'String', size: 15 },
       { key: 'sex', name: '性别', type: 'String', size: 10 },
-      { key: 'status', name: '状态', type: 'String', size: 10 },
+      { key: 'status', name: '状态', type: 'Enum', size: 10, default: StatusDict },
       { key: 'provinceId', name: '省份', type: 'String', size: 10 },
       { key: 'cityId', name: '城市', type: 'String', size: 15 },
-      { key: 'districtId', name: '区县', type: 'String', size: 15 },
+      { key: 'districtId', name: '区/县', type: 'String', size: 15 },
       { key: 'address', name: '详细地址', type: 'String', size: 30 },
       { key: 'description', name: '备注', type: 'String', size: 20 },
       { key: 'createTime', name: '创建时间', type: 'String', size: 20 },

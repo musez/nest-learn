@@ -20,6 +20,8 @@ import { Auth } from '../../common/decorators/auth.decorator';
 import { SearchRoleDto } from '../role/dto/search-role.dto';
 import { Utils } from '../../utils';
 import { ExcelService } from '../excel/excel.service';
+import { PermissionHiddenType, PermissionType, StatusType } from '../../constants/enums';
+import { PermissionDict, PermissionHiddenDict, StatusDict } from '../../constants/dicts';
 
 @Controller('permission')
 @ApiTags('权限')
@@ -76,14 +78,14 @@ export class PermissionController {
 
     const columns = [
       { key: 'name', name: '名称', type: 'String', size: 10 },
-      { key: 'type', name: '权限类型', type: 'String', size: 10 },
+      { key: 'type', name: '权限类型', type: 'Enum', size: 10, default: PermissionDict },
       { key: 'code', name: '权限 CODE 代码', type: 'String', size: 10 },
       { key: 'routerComponent', name: '路由 component', type: 'String', size: 10 },
-      { key: 'routerHidden', name: '路由 hidden', type: 'String', size: 10 },
+      { key: 'routerHidden', name: '路由 hidden', type: 'Enum', size: 10, default: PermissionHiddenDict },
       { key: 'routerIcon', name: '路由 icon', type: 'String', size: 10 },
       { key: 'sort', name: '权限 sort', type: 'String', size: 10 },
       { key: 'routerPath', name: '路由 path', type: 'String', size: 10 },
-      { key: 'status', name: '状态', type: 'String', size: 10 },
+      { key: 'status', name: '状态', type: 'Enum', size: 10, default: StatusDict },
       { key: 'description', name: '备注', type: 'String', size: 20 },
       { key: 'createTime', name: '创建时间', type: 'String', size: 20 },
       { key: 'updateTime', name: '修改时间', type: 'String', size: 20 },

@@ -29,6 +29,7 @@ import { AuthGuard } from '../../common/guards/auth.guard';
 import { Auth } from '../../common/decorators/auth.decorator';
 import { Utils } from '../../utils';
 import { ExcelService } from '../excel/excel.service';
+import { StatusType } from '../../constants/enums';
 
 @Controller('post')
 @ApiTags('岗位')
@@ -77,7 +78,7 @@ export class PostController {
 
     const columns = [
       { key: 'name', name: '名称', type: 'String', size: 10 },
-      { key: 'status', name: '状态', type: 'String', size: 10 },
+      { key: 'status', name: '状态', type: 'Enum', size: 10, default: StatusType },
       { key: 'description', name: '备注', type: 'String', size: 20 },
       { key: 'createTime', name: '创建时间', type: 'String', size: 20 },
       { key: 'updateTime', name: '修改时间', type: 'String', size: 20 },

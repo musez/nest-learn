@@ -20,6 +20,8 @@ import { Auth } from '../../common/decorators/auth.decorator';
 import { AuthGuard } from '../../common/guards/auth.guard';
 import { Utils } from '../../utils';
 import { ExcelService } from '../excel/excel.service';
+import { AreaLevelType } from '../../constants/enums';
+import { AreaLevelDict } from '../../constants/dicts';
 
 @Controller('area')
 @ApiTags('地区')
@@ -82,7 +84,7 @@ export class AreaController {
     const columns = [
       { key: 'areaName', name: '地区名称', type: 'String', size: 10 },
       { key: 'areaCode', name: '地区编码', type: 'String', size: 10 },
-      { key: 'level', name: '地区级别', type: 'String', size: 10 },
+      { key: 'level', name: '地区级别', type: 'Enum', size: 10, default: AreaLevelDict },
       { key: 'cityCode', name: '城市编码', type: 'String', size: 10 },
       { key: 'center', name: '城市中心点', type: 'String', size: 10 },
       { key: 'createTime', name: '创建时间', type: 'String', size: 20 },

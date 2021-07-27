@@ -1,17 +1,19 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { CreateUserAddressDto } from './dto/create-user-address.dto';
 import { UpdateUserAddressDto } from './dto/update-user-address.dto';
 import { Utils } from '../../utils';
 import { BaseFindByIdDto, BaseFindByIdsDto, BaseModifyStatusByIdsDto } from '../base.dto';
-import { InjectRepository } from '@nestjs/typeorm';
 import { UserAddress } from './entities/user-address.entity';
-import { Repository } from 'typeorm';
 import { SearchUserAddressDto } from './dto/search-user-address.dto';
 import { LimitUserAddressDto } from './dto/limit-user-address.dto';
+import { UserService } from '../user/user.service';
 
 @Injectable()
 export class UserAddressService {
   constructor(
+    private readonly userService: UserService,
     @InjectRepository(UserAddress)
     private readonly repository: Repository<UserAddress>,
   ) {
@@ -20,8 +22,14 @@ export class UserAddressService {
   /**
    * 添加
    */
-  async insert(createDto: CreateUserAddressDto, curUser): Promise<CreateUserAddressDto> {
-    return await this.repository.save(createDto);
+  async insert(createDto: CreateUserAddressDto, curUser): Promise<CreateUserAddressDto | UserAddress> {
+    let userAddress = new UserAddress();
+    userAddress = Utils.dto2entity(createDto, userAddress);
+
+    const ret = await this.userService.selectById({ id: createDto.userId });
+    userAddress.user = ret;
+
+    return await this.repository.save(userAddress);
   }
 
   /**

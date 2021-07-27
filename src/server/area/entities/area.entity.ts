@@ -5,6 +5,7 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { AreaLevelType } from '../../../constants/enums';
 
 @Entity('sys_area')
 export class Area {
@@ -34,8 +35,8 @@ export class Area {
   @Column('varchar', { comment: '地区名称' })
   areaName: string;
 
-  @Column('tinyint', { comment: '地区级别（1：省份 province；2：市 city；3：区县 district；4：街道办 street）', nullable: true })
-  level: number;
+  @Column('tinyint', { comment: '地区级别（1：省份 province；2：城市 city；3：区/县 district；4：街道/办 street）', nullable: true })
+  level: AreaLevelType;
 
   @Column('varchar', { comment: '城市编码', nullable: true })
   cityCode: string;
