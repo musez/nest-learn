@@ -8,7 +8,7 @@ export enum StatusType {
 
 // 删除类型
 export enum DeleteType {
-  DEFAULT = 0,// 未删除
+  UN_DEL = 0,// 未删除
   DEL = 1,// 删除
 }
 
@@ -21,7 +21,7 @@ export enum UserType {
 
 // 性别类型
 export enum SexType {
-  DEFAULT = 0,// 保密
+  SECRET = 0,// 保密
   FEMALE = 1,// 女
   MALE = 2,// 男
 }
@@ -38,8 +38,8 @@ export enum ArticleType {
 
 // 文章允许评论
 export enum IsCommentType {
-  ENABLE = 1,// 启用
   DISABLE = 0,// 禁用
+  ENABLE = 1,// 启用
 }
 
 // 字典类型
@@ -50,7 +50,7 @@ export enum DictType {
 
 // 字典状态类型
 export enum DefaultType {
-  NOT_DEFAULT,// 非默认值
+  UN_DEFAULT = 0,// 非默认值
   DEFAULT = 1,// 默认值
 }
 
@@ -67,10 +67,10 @@ export enum WeekdayType {
 
 // 上班类型
 export enum RestType {
-  DEFAULT = 0,// 工作日
+  WORK = 0,// 工作日
   REST_LAW = 1,// 法定节假日
-  WORK_OVERTIME = 1,// 休息日加班
-  REST = 1,// 休息日
+  WORK_OVERTIME = 2,// 休息日加班
+  REST = 3,// 休息日
 }
 
 // 组织机构类型
@@ -90,8 +90,8 @@ export enum PermissionType {
 
 // 权限路由 HIDDEN
 export enum PermissionHiddenType {
-  ENABLE = 1,// 隐藏
-  DISABLE = 0,// 显示
+  SHOW = 0,// 显示
+  HIDE = 1,// 隐藏
 }
 
 //地区级别

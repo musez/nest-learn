@@ -38,8 +38,8 @@ export const ArticleDict = {
 
 // 文章允许评论
 export const IsCommentDict = {
-  '1': '启用',
   '0': '禁用',
+  '1': '启用',
 };
 
 // 字典类型
@@ -90,8 +90,8 @@ export const PermissionDict = {
 
 // 权限路由 HIDDEN
 export const PermissionHiddenDict = {
-  '1': '隐藏',
   '0': '显示',
+  '1': '隐藏',
 };
 
 //地区级别

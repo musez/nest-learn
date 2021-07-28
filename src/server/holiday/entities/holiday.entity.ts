@@ -22,6 +22,6 @@ export class Holiday extends BaseEntity {
   @Column('tinyint', { comment: '周几（1：一；2：二；3：三；4：四；5：五；6：六；0：日）', nullable: true })
   weekday: WeekdayType;
 
-  @Column('tinyint', { comment: '类型（0：工作日；1：法定节假日；2：休息日加班；3：休息日）', nullable: true, default: RestType.DEFAULT })
+  @Column('tinyint', { comment: '类型（0：工作日；1：法定节假日；2：休息日加班；3：休息日）', nullable: true })
   restType: RestType;
 }

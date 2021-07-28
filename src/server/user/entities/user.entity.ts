@@ -58,7 +58,7 @@ export class User extends BaseEntity {
   @Column('varchar', { comment: '邮箱', length: 20, nullable: true })
   email: string;
 
-  @Column('tinyint', { comment: '性别（0：保密；1：男；2：女）', nullable: true, default: SexType.DEFAULT })
+  @Column('tinyint', { comment: '性别（0：保密；1：男；2：女）', nullable: true, default: SexType.SECRET })
   sex: SexType;
 
   @Column({ type: 'date', comment: '生日', nullable: true })

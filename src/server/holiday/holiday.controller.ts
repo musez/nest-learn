@@ -10,7 +10,7 @@ import {
   BadRequestException,
   UseGuards,
   UseInterceptors,
-  UploadedFile,
+  UploadedFile, Res,
 } from '@nestjs/common';
 import {
   FileInterceptor,
@@ -32,6 +32,8 @@ import { AuthGuard } from '../../common/guards/auth.guard';
 import { Utils } from '../../utils';
 import { BaseDaysDto } from './dto/base-holiday.dto';
 import { ExcelService } from '../excel/excel.service';
+import { SearchUserDto } from '../user/dto/search-user.dto';
+import { RestDict, SexDict, StatusDict, UserDict, WeekdayDict } from '../../constants/dicts';
 
 @Controller('holiday')
 @ApiTags('节假日')
@@ -80,6 +82,36 @@ export class HolidayController {
     return this.holidayService.selectDays(dayList, curUser);
   }
 
+  @Get('exportExcel')
+  @Auth('system:holiday:exportExcel')
+  @ApiOperation({ summary: '列表（Excel 导出）' })
+  async exportExcel(@Query() searchDto: SearchHolidayDto, @Res() res): Promise<any> {
+    const list = await this.holidayService.selectList(searchDto);
+
+    const columns = [
+      { key: 'name', name: '名称', type: 'String', size: 10 },
+      { key: 'date', name: '日期', type: 'String', size: 10 },
+      { key: 'weekday', name: '周几', type: 'Enum', size: 10, default: WeekdayDict },
+      { key: 'restType', name: '类型', type: 'Enum', size: 10, default: RestDict },
+      { key: 'status', name: '状态', type: 'Enum', size: 10, default: StatusDict },
+      { key: 'description', name: '备注', type: 'String', size: 20 },
+      { key: 'createTime', name: '创建时间', type: 'String', size: 20 },
+      { key: 'updateTime', name: '修改时间', type: 'String', size: 20 },
+    ];
+
+    const result = await this.excelService.exportExcel(columns, list);
+    res.setHeader(
+      'Content-Type',
+      'application/vnd.openxmlformats;charset=utf-8',
+    );
+    res.setHeader(
+      'Content-Disposition',
+      'attachment; filename=' + encodeURIComponent(`节假日_${Utils.dayjsFormat('YYYYMMDD')}`) + '.xlsx',// 中文名需要进行 url 转码
+    );
+    // res.setTimeout(30 * 60 * 1000); // 防止网络原因造成超时。
+    res.end(result, 'binary');
+  }
+
   @Post('importExcel')
   @Auth('holiday:user:importExcel')
   @ApiOperation({ summary: '列表（Excel 导入）' })
@@ -99,13 +131,29 @@ export class HolidayController {
   @UseInterceptors(FileInterceptor('file'))
   async importExcel(@CurUser() curUser, @UploadedFile() file): Promise<any> {
     const columns = [
-      { key: 'name', name: '名称', type: 'String', size: 10 },
-      { key: 'date', name: '日期', type: 'String', size: 20 },
-      { key: 'weekday', name: '周几', type: 'Number', size: 10 },
-      { key: 'restType', name: '类型', type: 'Number', size: 10 },
+      { key: 'name', name: '名称', type: 'String', size: 10, index: 1 },
+      { key: 'date', name: '日期', type: 'String', size: 10, index: 2 },
+      { key: 'weekday', name: '周几', type: 'Enum', size: 10, enum: WeekdayDict, index: 3 },
+      { key: 'restType', name: '类型', type: 'Enum', size: 10, enum: RestDict, index: 4 },
+      { key: 'status', name: '状态', type: 'Enum', size: 10, enum: StatusDict, index: 5 },
+      { key: 'description', name: '备注', type: 'String', size: 20, index: 6 },
     ];
     const rows = await this.excelService.importExcel(columns, file);
-    return await this.holidayService.insertBatch(rows, curUser);
+
+    const successRows = [],
+      errorRows = [];
+
+    const ret = await this.holidayService.insertBatch(rows, curUser);
+    if (!ret) {
+      throw new BadRequestException(`操作异常！`);
+    }
+
+    return {
+      successList: ret,
+      successCount: ret.length,
+      errorList: errorRows,
+      errorCount: ret.length,
+    };
   }
 
   @Post('update')

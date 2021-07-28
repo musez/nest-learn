@@ -77,6 +77,11 @@ export const importExcel = async (column, file, hasHeader, type = 'buffer') => {
 const getRowValue = (workbook, column, mediaIndex, cellIndex, value, row) => {
   try {
     const descriptor = _.find(column, { index: cellIndex });
+
+    if (!descriptor) {
+      return;
+    }
+
     switch (descriptor.type) {
       case 'Image':
         try {

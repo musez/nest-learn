@@ -42,7 +42,7 @@ export abstract class BaseEntity {
   @Column({ comment: '修改人 id', nullable: true })
   updateBy: string;
 
-  @Column('tinyint', { comment: '删除状态（0：未删除；1：删除）', default: DeleteType.DEFAULT })
+  @Column('tinyint', { comment: '删除状态（0：未删除；1：删除）', default: DeleteType.UN_DEL })
   deleteStatus: DeleteType;
 
   @DeleteDateColumn({ comment: '删除时间', type: 'datetime', nullable: true })
