@@ -143,6 +143,24 @@ export class HolidayController {
     const successRows = [],
       errorRows = [];
 
+    for (const item of rows) {
+      const { date, restType } = item;
+
+      if (!date) {
+        item.errorMsg = `数据 日期（date） 不能为空！`;
+        errorRows.push(item);
+        return;
+      }
+
+      if (!restType) {
+        item.errorMsg = `数据 类型（restType） 不能为空！`;
+        errorRows.push(item);
+        return;
+      }
+
+      successRows.push(item);
+    }
+
     const ret = await this.holidayService.insertBatch(rows, curUser);
     if (!ret) {
       throw new BadRequestException(`操作异常！`);

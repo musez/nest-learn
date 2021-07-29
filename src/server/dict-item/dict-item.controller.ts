@@ -34,7 +34,7 @@ export class DictItemController {
 
   @Post('addBatch')
   @Auth('system:dictItem:addBatch')
-  @ApiOperation({ summary: '添加' })
+  @ApiOperation({ summary: '添加（批量）' })
   async createBatch(@CurUser() curUser, @Body() createDictItemDto: CreateDictItemDto[]) {
     return await this.dictItemService.insertBatch(createDictItemDto, curUser);
   }

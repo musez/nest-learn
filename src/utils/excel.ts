@@ -151,7 +151,7 @@ const getRowValue = (workbook, column, mediaIndex, cellIndex, value, row) => {
  * @param {String} sheetName  工作表名称
  * @param {path} style 设置每行高度
  */
-export const exportExcel = async (columns, rows, sheetName, style = { row: { height: 32 } }) => {
+export const exportExcel = async (columns, rows, sheetName, style = { row: { height: 18 } }) => {
   try {
     const workbook = new Excel.Workbook();
     const sheet = workbook.addWorksheet(sheetName);
