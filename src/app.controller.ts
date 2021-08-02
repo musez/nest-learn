@@ -12,7 +12,8 @@ export class AppController {
     return { msg: 'Hello nestjs !' };
   }
 
-  // getHello(): string {
-  //   return this.appService.getHello();
-  // }
+  @Get('hello')
+  getHello(): string {
+    return this.appService.getHello();
+  }
 }

@@ -22,13 +22,15 @@ import { DictItemModule } from './server/dict-item/dict-item.module';
 import { AreaModule } from './server/area/area.module';
 import { FileModule } from './server/file/file.module';
 import { UserRoleModule } from './server/user-role/user-role.module';
-import { ArticleModule } from './server/article/article.module';
 import { CacheModule } from './server/cache/cache.module';
 import { CaptchaModule } from './server/captcha/captcha.module';
-import { ArticleCatModule } from './server/article-cat/article-cat.module';
-import { ArticleDataCatModule } from './server/article-data-cat/article-data-cat.module';
 import { OrgModule } from './server/org/org.module';
 import { PostModule } from './server/post/post.module';
+import { ArticleModule } from './server/article/article.module';
+import { ArticleCatModule } from './server/article-cat/article-cat.module';
+import { ArticleDataCatModule } from './server/article-data-cat/article-data-cat.module';
+import { TopicModule } from './server/topic/topic.module';
+import { CommentModule } from './server/comment/comment.module';
 import { ExcelModule } from './server/excel/excel.module';
 import { SystemController } from './server/system/system.controller';
 import { SystemModule } from './server/system/system.module';
@@ -99,6 +101,8 @@ import WechatConfig from './config/wechat.config';
     ArticleModule,
     ArticleCatModule,
     ArticleDataCatModule,
+    TopicModule,
+    CommentModule,
     HolidayModule,
     WechatModule,
     TaskModule,

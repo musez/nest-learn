@@ -11,6 +11,6 @@ export default registerAs('mysql', () => ({
   charset: 'utf8mb4',
   multipleStatements: false,
   dropSchema: false,
-  synchronize: false, // 是否自动将实体类同步到数据库
+  synchronize: true, // 是否自动将实体类同步到数据库
   logging: true,
 }));

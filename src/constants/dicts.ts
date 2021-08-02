@@ -42,6 +42,17 @@ export const IsCommentDict = {
   '1': '启用',
 };
 
+// 评论类型
+export const TopicTypeDict = {
+  '0': '新闻',
+};
+
+// 评论回复类型
+export const replyTypeDict = {
+  '0': '评论',
+  '1': '回复',
+};
+
 // 字典类型
 export const DictDict = {
   '0': '字符串',

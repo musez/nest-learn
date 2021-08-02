@@ -42,6 +42,17 @@ export enum IsCommentType {
   ENABLE = 1,// 启用
 }
 
+// 评论类型
+export enum TopicType {
+  ARTICLE = 0,
+}
+
+// 评论回复类型
+export enum ReplyType {
+  COMMENT = 0,
+  REPLY = 1,
+}
+
 // 字典类型
 export enum DictType {
   TEXT = 0,// 字符串
