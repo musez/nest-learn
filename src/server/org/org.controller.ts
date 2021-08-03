@@ -137,7 +137,7 @@ export class OrgController {
   }
 
   @Post('deleteBatch')
-  @Auth('system:org:deleteBatch')
+  @Auth('account:org:deleteBatch')
   @ApiOperation({ summary: '删除（批量）' })
   async deleteBatch(@CurUser() curUser, @Body() baseFindByIdsDto: BaseFindByIdsDto): Promise<any> {
     return await this.orgService.deleteByIds(baseFindByIdsDto, curUser);

@@ -47,6 +47,7 @@ export class HolidayController {
   }
 
   @Post('add')
+  @Auth('system:holiday:add')
   @ApiOperation({ summary: '添加' })
   async add(@CurUser() curUser, @Body() createHolidayDto: CreateHolidayDto): Promise<CreateHolidayDto> {
     return this.holidayService.insert(createHolidayDto, curUser);
@@ -113,7 +114,7 @@ export class HolidayController {
   }
 
   @Post('importExcel')
-  @Auth('holiday:user:importExcel')
+  @Auth('system:holiday:importExcel')
   @ApiOperation({ summary: '列表（Excel 导入）' })
   @ApiConsumes('multipart/form-data')
   @ApiBody({

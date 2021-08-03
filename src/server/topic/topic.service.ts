@@ -5,9 +5,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Topic } from './entities/topic.entity';
 import { Utils } from '../../utils';
-import { BaseFindByIdDto } from '../base.dto';
+import { BaseFindByIdDto, BaseFindByIdsDto } from '../base.dto';
 import { LimitTopicDto } from './dto/limit-top.dto';
 import { SearchTopicDto } from './dto/search-top.dto';
+import { Org } from '../org/entities/org.entity';
 
 @Injectable()
 export class TopicService {
@@ -125,5 +126,32 @@ export class TopicService {
     article = Utils.dto2entity(updateTopicDto, article);
 
     await this.topicRepository.update(id, article);
+  }
+
+
+  /**
+   * 删除
+   */
+  async deleteById(baseFindByIdDto: BaseFindByIdDto, curUser): Promise<void> {
+    const { id } = baseFindByIdDto;
+
+    await this.topicRepository.createQueryBuilder()
+      .update(Org)
+      .set({ deleteStatus: 1, deleteBy: curUser!.id, deleteTime: Utils.now() })
+      .where('id = :id', { id: id })
+      .execute();
+  }
+
+  /**
+   * 删除（批量）
+   */
+  async deleteByIds(baseFindByIdsDto: BaseFindByIdsDto, curUser): Promise<void> {
+    const { ids } = baseFindByIdsDto;
+
+    await this.topicRepository.createQueryBuilder()
+      .update(Org)
+      .set({ deleteStatus: 1, deleteBy: curUser!.id, deleteTime: Utils.now() })
+      .where('id in (:ids)', { ids: ids })
+      .execute();
   }
 }

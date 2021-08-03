@@ -46,7 +46,7 @@ export class ArticleController {
   }
 
   @Post('add')
-  @Auth('cms:article:findList')
+  @Auth('cms:article:add')
   @ApiOperation({ summary: '添加' })
   async add(@CurUser() curUser, @Body() createArticleDto: CreateArticleDto) {
     return this.articleService.insert(createArticleDto, curUser);

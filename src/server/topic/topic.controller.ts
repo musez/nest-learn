@@ -19,12 +19,13 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { AuthGuard } from '../../common/guards/auth.guard';
 import { Auth } from '../../common/decorators/auth.decorator';
 import { CurUser } from '../../common/decorators/cur-user.decorator';
-import { BaseFindByIdDto } from '../base.dto';
+import { BaseFindByIdDto, BaseFindByIdsDto } from '../base.dto';
 import { Utils } from '../../utils';
 import { ExcelService } from '../excel/excel.service';
 import { SearchTopicDto } from './dto/search-top.dto';
 import { Topic } from './entities/topic.entity';
 import { LimitTopicDto } from './dto/limit-top.dto';
+import { StatusType } from '../../constants/enums';
 
 @ApiTags('评论')
 @Controller('topic')
@@ -38,7 +39,7 @@ export class TopicController {
   }
 
   @Post('add')
-  @Auth('system:topic:findList')
+  @Auth('system:topic:add')
   @ApiOperation({ summary: '添加' })
   async add(@CurUser() curUser, @Body() createTopicDto: CreateTopicDto) {
     return this.topicService.insert(createTopicDto, curUser);
@@ -72,17 +73,14 @@ export class TopicController {
     const list = await this.topicService.selectList(searchTopicDto);
 
     const columns = [
-      // { key: 'title', name: '标题', type: 'String', size: 10 },
-      // { key: 'summary', name: '摘要', type: 'String', size: 10 },
-      // { key: 'author', name: '作者', type: 'String', size: 10 },
-      // { key: 'source', name: '来源', type: 'String', size: 10 },
-      // { key: 'keywords', name: '关键字', type: 'String', size: 10 },
-      // { key: 'type', name: '文章类型', type: 'Enum', size: 10, default: ArticleDict },
-      // { key: 'contentUrl', name: '链接', type: 'String', size: 10 },
-      // { key: 'status', name: '状态', type: 'Enum', size: 10, default: StatusType },
-      // { key: 'description', name: '备注', type: 'String', size: 20 },
-      // { key: 'createTime', name: '创建时间', type: 'String', size: 20 },
-      // { key: 'updateTime', name: '修改时间', type: 'String', size: 20 },
+      { key: 'topicId', name: '主题 id', type: 'String', size: 10 },
+      { key: 'topicType', name: '主题类型', type: 'String', size: 10 },
+      { key: 'content', name: '评论内容', type: 'String', size: 20 },
+      { key: 'fromUid', name: '评论用户 id', type: 'String', size: 10 },
+      { key: 'status', name: '状态', type: 'Enum', size: 10, default: StatusType },
+      { key: 'description', name: '评论用户', type: 'String', size: 20 },
+      { key: 'createTime', name: '创建时间', type: 'String', size: 20 },
+      { key: 'updateTime', name: '修改时间', type: 'String', size: 20 },
     ];
     const result = await this.excelService.exportExcel(columns, list);
 
@@ -109,5 +107,26 @@ export class TopicController {
     }
 
     return this.topicService.update(updateTopicDto, curUser);
+  }
+
+  @Post('delete')
+  @Auth('system:topic:delete')
+  @ApiOperation({ summary: '删除' })
+  async delete(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
+    const { id } = baseFindByIdDto;
+    const isExistId = await this.topicService.isExistId(id);
+
+    if (!isExistId) {
+      throw new BadRequestException(`数据 id：${id} 不存在！`);
+    }
+
+    return await this.topicService.deleteById(baseFindByIdDto, curUser);
+  }
+
+  @Post('deleteBatch')
+  @Auth('system:topic:deleteBatch')
+  @ApiOperation({ summary: '删除（批量）' })
+  async deleteBatch(@CurUser() curUser, @Body() baseFindByIdsDto: BaseFindByIdsDto): Promise<any> {
+    return await this.topicService.deleteByIds(baseFindByIdsDto, curUser);
   }
 }
