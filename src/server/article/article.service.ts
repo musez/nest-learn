@@ -8,6 +8,8 @@ import { BaseFindByIdDto, BaseFindByIdsDto, BaseModifyStatusByIdsDto } from '../
 import { Article } from './entities/article.entity';
 import { SearchArticleDto } from './dto/search-article.dto';
 import { LimitArticleDto } from './dto/limit-article.dto';
+import { ArticleDataCat } from '../article-data-cat/entities/article-data-cat.entity';
+import { ArticleCat } from '../article-cat/entities/article-cat.entity';
 
 @Injectable()
 export class ArticleService {
@@ -43,7 +45,7 @@ export class ArticleService {
     queryConditionList.push('deleteStatus = 0');
     const queryCondition = queryConditionList.join(' AND ');
 
-    return await this.articleRepository.createQueryBuilder()
+    const ret = await this.articleRepository.createQueryBuilder()
       .where(queryCondition, {
         title: `%${title}%`,
         type: type,
@@ -51,6 +53,25 @@ export class ArticleService {
       })
       .orderBy({ 'createTime': 'DESC' })
       .getMany();
+
+    for (let item of ret) {
+      const { id } = item;
+
+      const retRel = await this.articleRepository.createQueryBuilder('article')
+        .innerJoinAndSelect(ArticleDataCat, 'adc', 'article.id = adc.articleId')
+        .innerJoinAndSelect(ArticleCat, 'ac', 'ac.id = adc.catId')
+        .select('ac.id', 'ac.catName')
+        .where('article.id = :id', {
+          id: id,
+        })
+        .getMany();
+
+      item = Object.assign(item, {
+        cats: retRel,
+      });
+    }
+
+    return ret;
   }
 
   /**
@@ -76,7 +97,7 @@ export class ArticleService {
     queryConditionList.push('deleteStatus = 0');
     const queryCondition = queryConditionList.join(' AND ');
 
-    const res = await this.articleRepository.createQueryBuilder()
+    const ret = await this.articleRepository.createQueryBuilder()
       .where(queryCondition, {
         title: `%${title}%`,
         type: type,
@@ -87,9 +108,26 @@ export class ArticleService {
       .orderBy({ 'createTime': 'DESC' })
       .getManyAndCount();
 
+    for (let item of ret[0]) {
+      const { id } = item;
+
+      const retRel = await this.articleRepository.createQueryBuilder('article')
+        .innerJoinAndSelect(ArticleDataCat, 'adc', 'article.id = adc.articleId')
+        .innerJoinAndSelect(ArticleCat, 'ac', 'ac.id = adc.catId')
+        .select('ac.id', 'ac.catName')
+        .where('article.id = :id', {
+          id: id,
+        })
+        .getMany();
+
+      item = Object.assign(item, {
+        cats: retRel,
+      });
+    }
+
     return {
-      list: res[0],
-      total: res[1],
+      list: ret[0],
+      total: ret[1],
       page: page,
       limit: limit,
     };
@@ -100,7 +138,19 @@ export class ArticleService {
    */
   async selectById(baseFindByIdDto: BaseFindByIdDto): Promise<Article> {
     const { id } = baseFindByIdDto;
-    return await this.articleRepository.findOne(id);
+    const ret = await this.articleRepository.findOne(id);
+    const retRel = await this.articleRepository.createQueryBuilder('article')
+      .innerJoinAndSelect(ArticleDataCat, 'adc', 'article.id = adc.articleId')
+      .innerJoinAndSelect(ArticleCat, 'ac', 'ac.id = adc.catId')
+      .select('ac.id', 'ac.catName')
+      .where('article.id = :id', {
+        id: id,
+      })
+      .getMany();
+
+    return Object.assign(ret, {
+      cats: retRel,
+    });
   }
 
   /**

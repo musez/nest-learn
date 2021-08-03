@@ -22,6 +22,9 @@ import { CryptoUtil } from '../../utils/crypto.util';
 import { Role } from '../role/entities/role.entity';
 import { CreateRolePermissionDto } from '../role-permission/dto/create-role-permission.dto';
 import { CreateUserinfoDto } from '../userinfo/dto/create-userinfo.dto';
+import { RolePermission } from '../role-permission/entities/role-permission.entity';
+import { GroupRole } from '../group-role/entities/group-role.entity';
+import { Group } from '../group/entities/group.entity';
 
 @Injectable()
 export class UserService {
@@ -503,6 +506,19 @@ export class UserService {
    * 获取权限
    */
   async selectPermissionsByUserId(baseFindByIdDto: BaseFindByIdDto): Promise<any> {
+    // const userGroupPermissions = await this.userRepository.createQueryBuilder('p')
+    //   .innerJoinAndSelect(RolePermission, 'rp', 'p.id = rp.permissionId')
+    //   .innerJoinAndSelect(Role, 'r', 'rp.roleId = r.id')
+    //   .innerJoinAndSelect(GroupRole, 'gr', 'r.id = gr.roleId')
+    //   .innerJoinAndSelect(Group, 'g', 'gr.groupId = g.id')
+    //   .innerJoinAndSelect(UserGroup, 'ug', 'g.id = ug.groupId')
+    //   .innerJoinAndSelect(User, 'u', 'u.id = ug.userId')
+    //   .select('p')
+    //   .where('u.id = :id AND u.deleteStatus = 0 AND g.deleteStatus = 0 AND r.deleteStatus = 0 AND p.deleteStatus = 0', {
+    //     id: baseFindByIdDto,
+    //   })
+    //   .getMany();
+
     const userGroupPermissions = await this.userRepository.query(`
         SELECT p.*
         FROM cms_nest.sys_permission p
@@ -540,6 +556,19 @@ export class UserService {
    */
   async selectAuthByUserId(baseFindByIdDto: BaseFindByIdDto): Promise<any> {
     const userEntity = await this.selectById(baseFindByIdDto);
+
+    // const userGroupPermissions = await this.userRepository.createQueryBuilder('p')
+    //   .innerJoinAndSelect(RolePermission, 'rp', 'p.id = rp.permissionId')
+    //   .innerJoinAndSelect(Role, 'r', 'rp.roleId = r.id')
+    //   .innerJoinAndSelect(GroupRole, 'gr', 'r.id = gr.roleId')
+    //   .innerJoinAndSelect(Group, 'g', 'gr.groupId = g.id')
+    //   .innerJoinAndSelect(UserGroup, 'ug', 'g.id = ug.groupId')
+    //   .innerJoinAndSelect(User, 'u', 'u.id = ug.userId')
+    //   .select('permission')
+    //   .where('u.id = :id AND u.deleteStatus = 0 AND g.deleteStatus = 0 AND r.deleteStatus = 0 AND p.deleteStatus = 0', {
+    //     id: baseFindByIdDto,
+    //   })
+    //   .getMany();
 
     const userGroupPermissions = await this.userRepository.query(`
         SELECT p.*
