@@ -10,11 +10,10 @@ import {
   OneToMany,
   BeforeUpdate,
 } from 'typeorm';
-import { Exclude } from 'class-transformer';
 import { BaseEntity } from '../../base.entity';
-import { User } from '../../user/entities/user.entity';
-import { Permission } from '../../permission/entities/permission.entity';
-import { Group } from '../../group/entities/group.entity';
+import { RolePermission } from '../../role-permission/entities/role-permission.entity';
+import { GroupRole } from '../../group-role/entities/group-role.entity';
+import { UserRole } from '../../user-role/entities/user-role.entity';
 
 @Entity('sys_role')
 export class Role extends BaseEntity {
@@ -30,14 +29,12 @@ export class Role extends BaseEntity {
   @Column('varchar', { comment: '名称', length: 50 })
   name: string;
 
-  @OneToMany(type => Group, group => group.roles)
-  groups: Group[];
+  @OneToMany(type => GroupRole, groupRoles => groupRoles.role)
+  groupRoles: GroupRole[];
 
-  @OneToMany(type => User, user => user.roles)
-  @JoinTable()
-  users: User[];
+  @OneToMany(type => UserRole, userRole => userRole.role)
+  userRoles: UserRole[];
 
-  @OneToMany(type => Permission, permission => permission.roles)
-  @JoinTable()
-  permissions: Permission[];
+  @OneToMany(type => RolePermission, rolePermission => rolePermission.role)
+  rolePermissions: RolePermission[];
 }

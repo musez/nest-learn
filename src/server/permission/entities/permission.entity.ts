@@ -15,9 +15,9 @@ import {
   TreeParent,
 } from 'typeorm';
 import { BaseEntity } from '../../base.entity';
-import { Role } from '../../role/entities/role.entity';
 import { BaseConstants } from '../../../constants/constants';
 import { PermissionType, PermissionHiddenType } from '../../../constants/enums';
+import { RolePermission } from '../../role-permission/entities/role-permission.entity';
 
 @Entity('sys_permission')
 export class Permission extends BaseEntity {
@@ -65,6 +65,6 @@ export class Permission extends BaseEntity {
   @Column({ comment: '权限路由 PATH', length: 50, nullable: true })
   routerPath: string;
 
-  @OneToMany(type => Role, role => role.permissions)
-  roles: Role[];
+  @OneToMany(type => RolePermission, rolePermission => rolePermission.permission)
+  rolePermissions: RolePermission[];
 }

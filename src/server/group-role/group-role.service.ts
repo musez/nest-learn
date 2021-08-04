@@ -17,6 +17,7 @@ export class GroupRoleService {
    * 添加
    */
   async insertBatch(createGroupRoleDto: CreateGroupRoleDto[]): Promise<CreateGroupRoleDto[]> {
+    // @ts-ignore
     return await this.groupRoleRepository.save(createGroupRoleDto);
   }
 

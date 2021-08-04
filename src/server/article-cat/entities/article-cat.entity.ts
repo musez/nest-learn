@@ -12,6 +12,7 @@ import {
 } from 'typeorm';
 import { BaseEntity } from '../../base.entity';
 import { Article } from '../../article/entities/article.entity';
+import { ArticleDataCat } from '../../article-data-cat/entities/article-data-cat.entity';
 
 @Entity('cms_article_cat')
 export class ArticleCat extends BaseEntity {
@@ -28,6 +29,6 @@ export class ArticleCat extends BaseEntity {
   @Column('varchar', { comment: '栏目名称', length: 255 })
   catName: string;
 
-  @OneToMany(type => Article, article => article.cats)
-  articles: Article[];
+  @OneToMany(type => ArticleDataCat, articleDataCat => articleDataCat.cat)
+  articleDataCats: ArticleDataCat[];
 }

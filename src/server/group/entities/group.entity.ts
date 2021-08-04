@@ -14,8 +14,8 @@ import {
   TreeParent,
 } from 'typeorm';
 import { BaseEntity } from '../../base.entity';
-import { User } from '../../user/entities/user.entity';
-import { Role } from '../../role/entities/role.entity';
+import { GroupRole } from '../../group-role/entities/group-role.entity';
+import { UserGroup } from '../../user-group/entities/user-group.entity';
 
 @Entity('sys_group')
 export class Group extends BaseEntity {
@@ -30,9 +30,9 @@ export class Group extends BaseEntity {
   @Column('varchar', { comment: '名称', length: 50 })
   name: string;
 
-  @OneToMany(type => User, user => user.groups)
-  users: User[];
+  @OneToMany(type => UserGroup, userGroup => userGroup.group)
+  userGroups: UserGroup[];
 
-  @OneToMany(type => Role, role => role.groups)
-  roles: Role[];
+  @OneToMany(type => GroupRole, groupRole => groupRole.group)
+  groupRoles: GroupRole[];
 }

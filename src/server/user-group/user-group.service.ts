@@ -19,6 +19,7 @@ export class UserGroupService {
    * 添加
    */
   async insertBatch(createUserGroupDto: CreateUserGroupDto[]): Promise<CreateUserGroupDto[]> {
+    // @ts-ignore
     return await this.userGroupRepository.save(createUserGroupDto);
   }
 

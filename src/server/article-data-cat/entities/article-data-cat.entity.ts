@@ -7,17 +7,11 @@ export class ArticleDataCat {
   @PrimaryGeneratedColumn('uuid', { comment: '主键 id' })
   id: string;
 
-  @Column({ comment: '用户组 id' })
-  articleId!: string;
-
-  @Column({ comment: '角色 id' })
-  catId!: string;
-
-  @ManyToOne(type => Article, article => article.cats)
+  @ManyToOne(type => Article, article => article.articleDataCats)
   @JoinColumn({ name: 'articleId' })
-  articles: Article;
+  article: Article;
 
-  @ManyToOne(type => ArticleCat, cat => cat.articles)
+  @ManyToOne(type => ArticleCat, cat => cat.articleDataCats)
   @JoinColumn({ name: 'catId' })
-  cats: ArticleCat;
+  cat: ArticleCat;
 }

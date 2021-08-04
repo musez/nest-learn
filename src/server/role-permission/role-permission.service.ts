@@ -19,6 +19,7 @@ export class RolePermissionService {
    * 添加
    */
   async insertBatch(createRolePermissionDto: CreateRolePermissionDto[]): Promise<CreateRolePermissionDto[]> {
+    // @ts-ignore
     return await this.rolePermissionRepository.save(createRolePermissionDto);
   }
 

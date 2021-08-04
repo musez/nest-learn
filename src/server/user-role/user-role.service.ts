@@ -18,6 +18,7 @@ export class UserRoleService {
    * 添加
    */
   async insertBatch(createUserRoleDto: CreateUserRoleDto[]): Promise<CreateUserRoleDto[]> {
+    // @ts-ignore
     return await this.userRoleRepository.save(createUserRoleDto);
   }
 

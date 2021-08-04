@@ -14,10 +14,10 @@ import {
 import { Exclude } from 'class-transformer';
 import { BaseEntity } from '../../base.entity';
 import { Userinfo } from '../../userinfo/entities/userinfo.entity';
-import { Group } from '../../group/entities/group.entity';
-import { Role } from '../../role/entities/role.entity';
 import { UserType, SexType } from '../../../constants/enums';
 import { UserAddress } from 'src/server/user-address/entities/user-address.entity';
+import { UserGroup } from '../../user-group/entities/user-group.entity';
+import { UserRole } from '../../user-role/entities/user-role.entity';
 
 @Entity('sys_user')
 export class User extends BaseEntity {
@@ -86,9 +86,9 @@ export class User extends BaseEntity {
   })
   userAddress: UserAddress;
 
-  @OneToMany(type => Group, group => group.users)
-  groups: Group[];
+  @OneToMany(type => UserGroup, userGroup => userGroup.user)
+  userGroups: UserGroup[];
 
-  @OneToMany(type => Role, role => role.users)
-  roles: Role[];
+  @OneToMany(type => UserRole, userRole => userRole.user)
+  userRoles: UserRole[];
 }

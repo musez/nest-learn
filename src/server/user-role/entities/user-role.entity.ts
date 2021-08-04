@@ -13,17 +13,11 @@ export class UserRole {
   @PrimaryGeneratedColumn('uuid', { comment: '主键 id' })
   id: string;
 
-  @Column({ comment: '用户 id' })
-  userId!: string;
-
-  @Column({ comment: '角色 id' })
-  roleId!: string;
-
-  @ManyToOne(type => User, user => user.roles)
+  @ManyToOne(type => User, user => user.userRoles)
   @JoinColumn({ name: 'userId' })
   user: User;
 
-  @ManyToOne(type => Role, role => role.users)
+  @ManyToOne(type => Role, role => role.userRoles)
   @JoinColumn({ name: 'roleId' })
   role: Role;
 }

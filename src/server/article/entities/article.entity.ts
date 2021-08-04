@@ -15,6 +15,7 @@ import {
 import { BaseEntity } from '../../base.entity';
 import { ArticleCat } from '../../article-cat/entities/article-cat.entity';
 import { ArticleType, IsCommentType, StatusType } from '../../../constants/enums';
+import { ArticleDataCat } from '../../article-data-cat/entities/article-data-cat.entity';
 
 @Entity('cms_article')
 export class Article extends BaseEntity {
@@ -107,6 +108,6 @@ export class Article extends BaseEntity {
   @Column('tinyint', { comment: '状态（0：未发布；1：发布；2：草稿；3：回收站）', default: StatusType.ENABLE })
   status: StatusType;
 
-  @OneToMany(type => ArticleCat, cat => cat.articles)
-  cats: ArticleCat[];
+  @OneToMany(type => ArticleDataCat, articleDataCat => articleDataCat.article)
+  articleDataCats: ArticleDataCat[];
 }

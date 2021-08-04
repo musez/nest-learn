@@ -9,6 +9,7 @@ import { BaseFindByIdDto, BaseFindByIdsDto, BasePageDto } from '../base.dto';
 import { DictItemService } from '../dict-item/dict-item.service';
 import { SearchDictDto } from './dto/search-dict.dto';
 import { LimitDictDto } from './dto/limit-dict.dto';
+import { DictItem } from '../dict-item/entities/dict-item.entity';
 
 @Injectable()
 export class DictService {
@@ -23,8 +24,18 @@ export class DictService {
    * 添加
    */
   async insert(createDictDto: CreateDictDto, curUser) {
+    const dictItems = [];
+    for (const item of createDictDto.dictItems) {
+      let dictItem = new DictItem();
+      dictItem = Utils.dto2entity(createDictDto.dictItems, dictItem);
+      dictItems.push(dictItem);
+
+      await this.dictItemService.insert(dictItem, curUser);
+    }
+
     let dict = new Dict();
     dict = Utils.dto2entity(createDictDto, dict);
+    dict.dictItems = dictItems;
     dict.createBy = curUser!.id;
 
     return await this.dictRepository.save(dict);
