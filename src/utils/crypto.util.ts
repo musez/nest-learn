@@ -1,4 +1,4 @@
-import { createHash } from 'crypto';
+import { createHash, createCipher, createDecipher } from 'crypto';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
@@ -21,5 +21,19 @@ export class CryptoUtil {
   checkPassword(password: string, encryptedPassword): boolean {
     const currentPass = this.encryptPassword(password);
     return currentPass === encryptedPassword;
+  }
+
+  aesEncrypt(data, key) {
+    const cipher = createCipher('aes192', key);
+    let crypted = cipher.update(data, 'utf8', 'hex');
+    crypted += cipher.final('hex');
+    return crypted;
+  }
+
+  aesDecrypt(encrypted, key) {
+    const decipher = createDecipher('aes192', key);
+    let decrypted = decipher.update(encrypted, 'hex', 'utf8');
+    decrypted += decipher.final('utf8');
+    return decrypted;
   }
 }
