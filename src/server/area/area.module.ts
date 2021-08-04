@@ -6,7 +6,7 @@ import { Area } from './entities/area.entity';
 import { UserModule } from '../user/user.module';
 
 @Module({
-  imports: [UserModule, TypeOrmModule.forFeature([Area])],
+  imports: [TypeOrmModule.forFeature([Area])],
   controllers: [AreaController],
   providers: [AreaService],
 })

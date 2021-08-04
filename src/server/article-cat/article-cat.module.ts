@@ -6,7 +6,7 @@ import { ArticleCat } from './entities/article-cat.entity';
 import { UserModule } from '../user/user.module';
 
 @Module({
-  imports: [UserModule, TypeOrmModule.forFeature([ArticleCat])],
+  imports: [TypeOrmModule.forFeature([ArticleCat])],
   controllers: [ArticleCatController],
   providers: [ArticleCatService],
 })

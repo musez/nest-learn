@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Global, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { UserController } from './user.controller';
@@ -7,10 +7,12 @@ import { UserinfoModule } from '../userinfo/userinfo.module';
 import { UserGroupModule } from '../user-group/user-group.module';
 import { UserRoleModule } from '../user-role/user-role.module';
 import { CryptoUtil } from '../../utils/crypto.util';
-import { ExcelModule } from '../excel/excel.module';
+import { GroupModule } from '../group/group.module';
+import { RoleModule } from '../role/role.module';
 
+@Global()
 @Module({
-  imports: [UserinfoModule, UserGroupModule, UserRoleModule, TypeOrmModule.forFeature([User])],
+  imports: [UserinfoModule, GroupModule, RoleModule, UserGroupModule, UserRoleModule, TypeOrmModule.forFeature([User])],
   controllers: [UserController],
   providers: [UserService, CryptoUtil],
   exports: [UserService],

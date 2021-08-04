@@ -27,7 +27,7 @@ export class DictService {
     const dictItems = [];
     for (const item of createDictDto.dictItems) {
       let dictItem = new DictItem();
-      dictItem = Utils.dto2entity(createDictDto.dictItems, dictItem);
+      dictItem = Utils.dto2entity(item, dictItem);
       dictItems.push(dictItem);
 
       await this.dictItemService.insert(dictItem, curUser);
@@ -49,16 +49,17 @@ export class DictService {
 
     const queryConditionList = [];
     if (!Utils.isBlank(dictName)) {
-      queryConditionList.push('dictName LIKE :dictName');
+      queryConditionList.push('dict.dictName LIKE :dictName');
     }
-    queryConditionList.push('deleteStatus = 0');
+    queryConditionList.push('dict.deleteStatus = 0');
     const queryCondition = queryConditionList.join(' AND ');
 
-    return await this.dictRepository.createQueryBuilder()
+    return await this.dictRepository.createQueryBuilder('dict')
+      .leftJoinAndSelect('dict.dictItems', 'dictItems')
       .where(queryCondition, {
         dictName: `%${dictName}%`,
       })
-      .orderBy({ 'createTime': 'DESC' })
+      .orderBy({ 'dict.createTime': 'DESC' })
       .getMany();
   }
 
@@ -74,18 +75,19 @@ export class DictService {
 
     const queryConditionList = [];
     if (!Utils.isBlank(dictName)) {
-      queryConditionList.push('dictName LIKE :dictName');
+      queryConditionList.push('dict.dictName LIKE :dictName');
     }
-    queryConditionList.push('deleteStatus = 0');
+    queryConditionList.push('dict.deleteStatus = 0');
     const queryCondition = queryConditionList.join(' AND ');
 
-    const res = await this.dictRepository.createQueryBuilder()
+    const res = await this.dictRepository.createQueryBuilder('dict')
+      .leftJoinAndSelect('dict.dictItems', 'dictItems')
       .where(queryCondition, {
         dictName: `%${dictName}%`,
       })
       .skip(offset)
       .take(limit)
-      .orderBy({ 'createTime': 'DESC' })
+      .orderBy({ 'dict.createTime': 'DESC' })
       .getManyAndCount();
 
     return {
@@ -122,12 +124,20 @@ export class DictService {
   async update(updateDictDto: UpdateDictDto, curUser): Promise<any> {
     const { id } = updateDictDto;
 
+    const dictItems = [];
+    for (const item of updateDictDto.dictItems) {
+      let dictItem = new DictItem();
+      dictItem = Utils.dto2entity(item, dictItem);
+      dictItems.push(dictItem);
+
+      await this.dictItemService.insert(dictItem, curUser);
+    }
+
     let dict = new Dict();
     dict = Utils.dto2entity(updateDictDto, dict);
+    dict.dictItems = dictItems;
     dict.updateBy = curUser!.id;
-    const result = await this.dictRepository.update(id, updateDictDto);
-
-    return result;
+    return await this.dictRepository.save(dict);
   }
 
   /**

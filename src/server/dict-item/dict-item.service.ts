@@ -30,7 +30,7 @@ export class DictItemService {
   /**
    * 添加（批量）
    */
-  async insertBatch(createDictItemDto: CreateDictItemDto[], curUser): Promise<CreateDictItemDto[]> {
+  async insertBatch(createDictItemDto: CreateDictItemDto[], curUser): Promise<CreateDictItemDto[] | DictItem[]> {
     const dictItems = [];
 
     createDictItemDto.forEach(item => {

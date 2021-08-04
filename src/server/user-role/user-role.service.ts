@@ -17,21 +17,23 @@ export class UserRoleService {
   /**
    * 添加
    */
-  async insertBatch(createUserRoleDto: CreateUserRoleDto[]): Promise<CreateUserRoleDto[]> {
-    // @ts-ignore
-    return await this.userRoleRepository.save(createUserRoleDto);
+  async insertBatch(dto: UserRole[]): Promise<UserRole[]> {
+    return await this.userRoleRepository.save(dto);
   }
 
   /**
    * 获取角色
    */
   async selectByUserId(baseFindByIdDto: BaseFindByIdDto): Promise<UserRole[]> {
-    return await this.userRoleRepository.find({
+    const { id } = baseFindByIdDto;
+    const ret = await this.userRoleRepository.find({
       // relations: ['role'],
       where: {
-        userId: baseFindByIdDto,
+        userId: id,
       },
     });
+
+    return null;
   }
 
   /**

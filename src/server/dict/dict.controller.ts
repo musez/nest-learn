@@ -34,11 +34,6 @@ export class DictController {
   @Auth('system:dict:add')
   @ApiOperation({ summary: '添加' })
   async create(@CurUser() curUser, @Body() createDictDto: CreateDictDto) {
-    const { dictItems } = createDictDto;
-    if (dictItems && dictItems.length > 0) {
-      await this.dictItemService.insertBatch(dictItems, curUser);
-    }
-    delete createDictDto.dictItems;
     return await this.dictService.insert(createDictDto, curUser);
   }
 
@@ -67,18 +62,13 @@ export class DictController {
   @Auth('system:dict:update')
   @ApiOperation({ summary: '修改' })
   async update(@CurUser() curUser, @Body() updateDictDto: UpdateDictDto): Promise<any> {
-    const { id, dictItems } = updateDictDto;
+    const { id } = updateDictDto;
     const isExistId = await this.dictService.isExistId(id);
 
     if (!isExistId) {
       throw new BadRequestException(`数据 id：${id} 不存在！`);
     }
 
-    if (dictItems && dictItems.length > 0) {
-      await this.dictItemService.deleteByDictId(id, curUser);
-      await this.dictItemService.insertBatch(dictItems, curUser);
-    }
-    delete updateDictDto.dictItems;
     return this.dictService.update(updateDictDto, curUser);
   }
 

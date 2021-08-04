@@ -25,6 +25,8 @@ import { CreateUserinfoDto } from '../userinfo/dto/create-userinfo.dto';
 import { RolePermission } from '../role-permission/entities/role-permission.entity';
 import { GroupRole } from '../group-role/entities/group-role.entity';
 import { Group } from '../group/entities/group.entity';
+import { GroupService } from '../group/group.service';
+import { RoleService } from '../role/role.service';
 
 @Injectable()
 export class UserService {
@@ -32,7 +34,9 @@ export class UserService {
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
     private readonly userinfoService: UserinfoService,
+    private readonly groupService: GroupService,
     private readonly userGroupService: UserGroupService,
+    private readonly roleService: RoleService,
     private readonly userRoleService: UserRoleService,
     private readonly cryptoUtil: CryptoUtil,
   ) {
@@ -216,7 +220,7 @@ export class UserService {
     }
 
     const ret = await this.userRepository.createQueryBuilder('user')
-      .leftJoinAndSelect('user.userinfo', 'userinfo')
+      .innerJoinAndSelect('user.userinfo', 'userinfo')
       .where(queryCondition, {
         userName: `%${userName}%`,
         name: `%${name}%`,
@@ -266,7 +270,7 @@ export class UserService {
     const queryCondition = queryConditionList.join(' AND ');
 
     const ret = await this.userRepository.createQueryBuilder('user')
-      .leftJoinAndSelect('user.userinfo', 'userinfo')
+      .innerJoinAndSelect('user.userinfo', 'userinfo')
       .where(queryCondition, {
         userName: `%${userName}%`,
         name: `%${name}%`,
@@ -299,7 +303,9 @@ export class UserService {
   async selectById(baseFindByIdDto: BaseFindByIdDto): Promise<User> {
     const { id } = baseFindByIdDto;
 
-    const ret = await this.userRepository.findOne(id, { relations: ['userinfo'] });
+    const ret = await this.userRepository.findOne(id, {
+      relations: ['userinfo', 'userGroups', 'userRoles'],
+    });
     if (!ret) {
       throw new BadRequestException(`数据 id：${id} 不存在！`);
     }
@@ -431,20 +437,25 @@ export class UserService {
   async bindGroups(bindUserGroupDto: BindUserGroupDto): Promise<void> {
     const { id, groups } = bindUserGroupDto;
 
-    const userGroupList = [];
-    for (let i = 0, len = groups.length; i < len; i++) {
-      const createUserGroupDto = new CreateUserGroupDto();
-      createUserGroupDto.userId = id;
-      createUserGroupDto.groupId = groups[i];
-      userGroupList.push(createUserGroupDto);
+    const userRet = await this.userRepository.findOne({
+      where: {
+        id: id,
+      },
+    });
+
+    const userGroups = [];
+    for (const item of groups) {
+      const groupRet = await this.groupService.selectById({ id: item });
+      const userGroup = new UserGroup();
+      userGroup.user = userRet;
+      userGroup.group = groupRet;
+
+      userGroups.push(userGroup);
     }
 
-    const [deleteRet, deleteUIRet] = await Promise.all([
-      this.userGroupService.deleteByUserId(id),
-      this.userGroupService.insertBatch(userGroupList),
-    ]);
+    const ret = await this.userGroupService.insertBatch(userGroups);
 
-    if (deleteRet && deleteUIRet) {
+    if (ret) {
       return null;
     } else {
       throw new BadRequestException('操作异常！');
@@ -454,11 +465,14 @@ export class UserService {
   /**
    * 获取用户组
    */
-  async selectGroupsByUserId(baseFindByIdDto: BaseFindByIdDto): Promise<UserGroup[]> {
-    const ret = await this.userGroupService.selectByUserId(baseFindByIdDto);
-    if (!ret) {
-      throw new BadRequestException('查询异常！');
-    }
+  async selectGroupsByUserId(baseFindByIdDto: BaseFindByIdDto): Promise<User> {
+    const { id } = baseFindByIdDto;
+    const ret = await this.userRepository.findOne({
+      relations: ['userGroups'],
+      where: {
+        id: id,
+      },
+    });
 
     return ret;
   }
@@ -469,20 +483,25 @@ export class UserService {
   async bindRoles(bindUserRoleDto: BindUserRoleDto): Promise<void> {
     const { id, roles } = bindUserRoleDto;
 
-    const userGroupList = [];
-    for (let i = 0, len = roles.length; i < len; i++) {
-      const createUserRoleDto = new CreateUserRoleDto();
-      createUserRoleDto.userId = id;
-      createUserRoleDto.roleId = roles[i];
-      userGroupList.push(createUserRoleDto);
+    const userRet = await this.userRepository.findOne({
+      where: {
+        id: id,
+      },
+    });
+
+    const userRoles = [];
+    for (const item of roles) {
+      const groupRet = await this.roleService.selectById({ id: item });
+      const userRole = new UserRole();
+      userRole.user = userRet;
+      userRole.role = groupRet;
+
+      userRoles.push(userRole);
     }
 
-    const [deleteRet, deleteUIRet] = await Promise.all([
-      this.userRoleService.deleteByUserId(id),
-      this.userRoleService.insertBatch(userGroupList),
-    ]);
+    const ret = await this.userRoleService.insertBatch(userRoles);
 
-    if (deleteRet && deleteUIRet) {
+    if (ret) {
       return null;
     } else {
       throw new BadRequestException('操作异常！');
@@ -492,12 +511,20 @@ export class UserService {
   /**
    * 获取角色
    */
-  async selectRolesByUserId(baseFindByIdDto: BaseFindByIdDto): Promise<UserRole[]> {
-    const ret = await this.userRoleService.selectByUserId(baseFindByIdDto);
+  async selectRolesByUserId(baseFindByIdDto: BaseFindByIdDto): Promise<User> {
+    // const ret = await this.userRoleService.selectByUserId(baseFindByIdDto);
+    //
+    // if (!ret) {
+    //   throw new BadRequestException('查询异常！');
+    // }
 
-    if (!ret) {
-      throw new BadRequestException('查询异常！');
-    }
+    const { id } = baseFindByIdDto;
+    const ret = await this.userRepository.findOne({
+      relations: ['userRoles'],
+      where: {
+        id: id,
+      },
+    });
 
     return ret;
   }

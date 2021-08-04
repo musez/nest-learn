@@ -32,7 +32,7 @@ import { AuthGuard } from '../../common/guards/auth.guard';
 import { Utils } from '../../utils';
 import { ExcelService } from '../excel/excel.service';
 import { ArticleType, IsCommentType, StatusType } from '../../constants/enums';
-import { ArticleDict, IsCommentDict } from '../../constants/dicts';
+import { ArticleDict, IsCommentDict, StatusDict } from '../../constants/dicts';
 
 @Controller('article')
 @ApiTags('文章')
@@ -96,7 +96,7 @@ export class ArticleController {
       { key: 'shareCount', name: '分享量', type: 'String', size: 10 },
       { key: 'commentCount', name: '评论', type: 'String', size: 10 },
       { key: 'isComment', name: '是否可以评论', type: 'Enum', size: 10, default: IsCommentDict },
-      { key: 'status', name: '状态', type: 'Enum', size: 10, default: StatusType },
+      { key: 'status', name: '状态', type: 'Enum', size: 10, default: StatusDict },
       { key: 'description', name: '备注', type: 'String', size: 20 },
       { key: 'createTime', name: '创建时间', type: 'String', size: 20 },
       { key: 'updateTime', name: '修改时间', type: 'String', size: 20 },
