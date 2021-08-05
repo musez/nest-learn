@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, Like } from 'typeorm';
+import { Repository, Like, In } from 'typeorm';
 import { CreateUserGroupDto } from './dto/create-user-group.dto';
 import { UpdateUserGroupDto } from './dto/update-user-group.dto';
 import { UserGroup } from './entities/user-group.entity';
-import { BaseFindByIdDto } from '../base.dto';
+import { BaseFindByIdDto, BaseFindByIdsDto } from '../base.dto';
 import { UserRole } from '../user-role/entities/user-role.entity';
 
 @Injectable()
@@ -34,9 +34,22 @@ export class UserGroupService {
    */
   async selectByUserId(baseFindByIdDto: BaseFindByIdDto): Promise<UserGroup[]> {
     return await this.userGroupRepository.find({
-      // relations: ['group'],
+      relations: ['group'],
       where: {
         userId: baseFindByIdDto,
+      },
+    });
+  }
+
+  /**
+   * 获取用户组（批量）
+   */
+  async selectByUserIds(dto: BaseFindByIdsDto): Promise<UserGroup[]> {
+    const { ids } = dto;
+    return await this.userGroupRepository.find({
+      relations: ['group'],
+      where: {
+        id: In(ids.split(',')),
       },
     });
   }
@@ -47,7 +60,7 @@ export class UserGroupService {
   async deleteByUserId(id: string): Promise<any> {
     return await this.userGroupRepository.createQueryBuilder()
       .delete()
-      .from(UserRole)
+      .from(UserGroup)
       .where('userId = :id', { id: id })
       .execute();
   }

@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, Like } from 'typeorm';
+import { Repository, Like, In } from 'typeorm';
 import { CreateRolePermissionDto } from './dto/create-role-permission.dto';
 import { UpdateRolePermissionDto } from './dto/update-role-permission.dto';
 import { RolePermission } from './entities/role-permission.entity';
-import { BaseFindByIdDto } from '../base.dto';
+import { BaseFindByIdDto, BaseFindByIdsDto } from '../base.dto';
 import { UserRole } from '../user-role/entities/user-role.entity';
 
 @Injectable()
@@ -18,9 +18,8 @@ export class RolePermissionService {
   /**
    * 添加
    */
-  async insertBatch(createRolePermissionDto: CreateRolePermissionDto[]): Promise<CreateRolePermissionDto[]> {
-    // @ts-ignore
-    return await this.rolePermissionRepository.save(createRolePermissionDto);
+  async insertBatch(dto: RolePermission[]): Promise<RolePermission[]> {
+    return await this.rolePermissionRepository.save(dto);
   }
 
   /**
@@ -28,9 +27,22 @@ export class RolePermissionService {
    */
   async selectByRoleId(baseFindByIdDto: BaseFindByIdDto): Promise<RolePermission[]> {
     return await this.rolePermissionRepository.find({
-      // relations: ['permission'],
+      relations: ['permission'],
       where: {
         roleId: baseFindByIdDto,
+      },
+    });
+  }
+
+  /**
+   * 获取权限（批量）
+   */
+  async selectByRoleIds(dto: BaseFindByIdsDto): Promise<RolePermission[]> {
+    const { ids } = dto;
+    return await this.rolePermissionRepository.find({
+      relations: ['permission'],
+      where: {
+        id: In(ids.split(',')),
       },
     });
   }

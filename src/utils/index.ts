@@ -104,12 +104,10 @@ export class Utils {
 
   static handleDbRet({ fn, argus, iRet, result, err }, dbRow2Obj = false) {
     const ret = dbRow2Obj ? JSON.parse(result) : result;
-    console.log('ret：', ret);
     return ret;
   }
 
   static handleNestRet(ret) {
-    console.log('ret：', ret);
     return ret;
   }
 

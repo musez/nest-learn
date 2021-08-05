@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, Like } from 'typeorm';
+import { Repository, Like, In } from 'typeorm';
 import { CreateUserRoleDto } from './dto/create-user-role.dto';
 import { UpdateUserRoleDto } from './dto/update-user-role.dto';
-import { BaseFindByIdDto } from '../base.dto';
+import { BaseFindByIdDto, BaseFindByIdsDto } from '../base.dto';
 import { UserRole } from './entities/user-role.entity';
 
 @Injectable()
@@ -27,13 +27,26 @@ export class UserRoleService {
   async selectByUserId(baseFindByIdDto: BaseFindByIdDto): Promise<UserRole[]> {
     const { id } = baseFindByIdDto;
     const ret = await this.userRoleRepository.find({
-      // relations: ['role'],
+      relations: ['role'],
       where: {
         userId: id,
       },
     });
 
     return null;
+  }
+
+  /**
+   * 获取用户组（批量）
+   */
+  async selectByUserIds(dto: BaseFindByIdsDto): Promise<UserRole[]> {
+    const { ids } = dto;
+    return await this.userRoleRepository.find({
+      relations: ['role'],
+      where: {
+        id: In(ids.split(',')),
+      },
+    });
   }
 
   /**

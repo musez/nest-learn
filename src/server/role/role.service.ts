@@ -8,16 +8,17 @@ import { Role } from './entities/role.entity';
 import { BaseFindByIdDto, BaseFindByIdsDto } from '../base.dto';
 import { RolePermission } from '../role-permission/entities/role-permission.entity';
 import { BindRolePermissionDto } from './dto/bind-role-permission.dto';
-import { CreateRolePermissionDto } from '../role-permission/dto/create-role-permission.dto';
 import { RolePermissionService } from '../role-permission/role-permission.service';
 import { SearchRoleDto } from './dto/search-role.dto';
 import { LimitRoleDto } from './dto/limit-role.dto';
+import { PermissionService } from '../permission/permission.service';
 
 @Injectable()
 export class RoleService {
   constructor(
     @InjectRepository(Role)
     private readonly roleRepository: Repository<Role>,
+    private readonly permissionService: PermissionService,
     private readonly rolePermissionService: RolePermissionService,
   ) {
   }
@@ -93,7 +94,26 @@ export class RoleService {
    */
   async selectById(baseFindByIdDto: BaseFindByIdDto): Promise<Role> {
     const { id } = baseFindByIdDto;
-    return await this.roleRepository.findOne(id);
+
+    const ret = await this.roleRepository.findOne(id, {
+      relations: ['rolePermissions'],
+    });
+    if (!ret) {
+      throw new BadRequestException(`数据 id：${id} 不存在！`);
+    }
+    if (ret?.rolePermissions) {
+      const ids = ret.rolePermissions.map(v => v.id);
+
+      const rolePermissionRet = await this.rolePermissionService.selectByRoleIds({
+        ids: ids.join(','),
+      });
+
+      // @ts-ignore
+      ret.rolePermissions = rolePermissionRet.map(v => {
+        return v.permission;
+      });
+    }
+    return ret;
   }
 
   /**
@@ -150,8 +170,16 @@ export class RoleService {
   /**
    * 获取权限
    */
-  async selectPermissionsByRoleId(baseFindByIdDto: BaseFindByIdDto): Promise<RolePermission[]> {
-    return await this.rolePermissionService.selectByRoleId(baseFindByIdDto);
+  async selectPermissionsByRoleId(baseFindByIdDto: BaseFindByIdDto): Promise<Role> {
+    const { id } = baseFindByIdDto;
+    const ret = await this.roleRepository.findOne({
+      relations: ['rolePermissions'],
+      where: {
+        id: id,
+      },
+    });
+
+    return ret;
   }
 
   /**
@@ -160,15 +188,33 @@ export class RoleService {
   async bindPermissions(bindRolePermissionDto: BindRolePermissionDto): Promise<void> {
     const { id, permissions } = bindRolePermissionDto;
 
-    const userGroupList = [];
-    for (let i = 0, len = permissions.length; i < len; i++) {
-      const createRolePermissionDto = new CreateRolePermissionDto();
-      createRolePermissionDto.roleId = id;
-      createRolePermissionDto.permissionId = permissions[i];
-      userGroupList.push(createRolePermissionDto);
+    const roleRet = await this.roleRepository.findOne({
+      where: {
+        id: id,
+      },
+    });
+
+    const rolePermissions = [];
+    for (const item of permissions) {
+      const permissionRet = await this.permissionService.selectById({ id: item });
+      const rolePermission = new RolePermission();
+      rolePermission.role = roleRet;
+      rolePermission.permission = permissionRet;
+
+      rolePermissions.push(rolePermission);
     }
 
-    await this.rolePermissionService.deleteByRoleId(id);
-    await this.rolePermissionService.insertBatch(userGroupList);
+    const deleteRet = await this.rolePermissionService.deleteByRoleId(id);
+    if (!deleteRet) {
+      throw new BadRequestException('操作异常！');
+    }
+
+    const ret = await this.rolePermissionService.insertBatch(rolePermissions);
+
+    if (ret) {
+      return null;
+    } else {
+      throw new BadRequestException('操作异常！');
+    }
   }
 }

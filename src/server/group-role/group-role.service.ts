@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, Like } from 'typeorm';
+import { Repository, Like, In } from 'typeorm';
 import { CreateGroupRoleDto } from './dto/create-group-role.dto';
-import { BaseFindByIdDto } from '../base.dto';
+import { BaseFindByIdDto, BaseFindByIdsDto } from '../base.dto';
 import { GroupRole } from './entities/group-role.entity';
+import { RolePermission } from '../role-permission/entities/role-permission.entity';
 
 @Injectable()
 export class GroupRoleService {
@@ -16,9 +17,8 @@ export class GroupRoleService {
   /**
    * 添加
    */
-  async insertBatch(createGroupRoleDto: CreateGroupRoleDto[]): Promise<CreateGroupRoleDto[]> {
-    // @ts-ignore
-    return await this.groupRoleRepository.save(createGroupRoleDto);
+  async insertBatch(dto: GroupRole[]): Promise<GroupRole[]> {
+    return await this.groupRoleRepository.save(dto);
   }
 
   /**
@@ -26,9 +26,22 @@ export class GroupRoleService {
    */
   async selectByGroupId(baseFindByIdDto: BaseFindByIdDto): Promise<GroupRole[]> {
     return await this.groupRoleRepository.find({
-      // relations: ['role'],
+      relations: ['role'],
       where: {
         groupId: baseFindByIdDto,
+      },
+    });
+  }
+
+  /**
+   * 获取用户组（批量）
+   */
+  async selectByGroupIds(dto: BaseFindByIdsDto): Promise<GroupRole[]> {
+    const { ids } = dto;
+    return await this.groupRoleRepository.find({
+      relations: ['role'],
+      where: {
+        id: In(ids.split(',')),
       },
     });
   }

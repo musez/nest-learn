@@ -4,9 +4,10 @@ import { RoleService } from './role.service';
 import { RoleController } from './role.controller';
 import { Role } from './entities/role.entity';
 import { RolePermissionModule } from '../role-permission/role-permission.module';
+import { PermissionModule } from '../permission/permission.module';
 
 @Module({
-  imports: [RolePermissionModule, TypeOrmModule.forFeature([Role])],
+  imports: [PermissionModule, RolePermissionModule, TypeOrmModule.forFeature([Role])],
   controllers: [RoleController],
   providers: [RoleService],
   exports: [RoleService],

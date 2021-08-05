@@ -9,24 +9,21 @@ import { Userinfo } from '../userinfo/entities/userinfo.entity';
 import { BaseFindByIdDto, BaseFindByIdsDto, BaseModifyStatusByIdsDto } from '../base.dto';
 import { BindUserGroupDto } from './dto/bind-user-group.dto';
 import { UserGroupService } from '../user-group/user-group.service';
-import { CreateUserGroupDto } from '../user-group/dto/create-user-group.dto';
 import { UserGroup } from '../user-group/entities/user-group.entity';
 import { BindUserRoleDto } from '../user-role/dto/bind-user-role.dto';
-import { CreateUserRoleDto } from '../user-role/dto/create-user-role.dto';
 import { UserRole } from '../user-role/entities/user-role.entity';
 import { UserRoleService } from '../user-role/user-role.service';
 import { UserinfoService } from '../userinfo/userinfo.service';
 import { SearchUserDto } from './dto/search-user.dto';
 import { LimitUserDto } from './dto/limit-user.dto';
 import { CryptoUtil } from '../../utils/crypto.util';
-import { Role } from '../role/entities/role.entity';
-import { CreateRolePermissionDto } from '../role-permission/dto/create-role-permission.dto';
 import { CreateUserinfoDto } from '../userinfo/dto/create-userinfo.dto';
-import { RolePermission } from '../role-permission/entities/role-permission.entity';
-import { GroupRole } from '../group-role/entities/group-role.entity';
-import { Group } from '../group/entities/group.entity';
 import { GroupService } from '../group/group.service';
 import { RoleService } from '../role/role.service';
+import { RolePermission } from '../role-permission/entities/role-permission.entity';
+import { Role } from '../role/entities/role.entity';
+import { GroupRole } from '../group-role/entities/group-role.entity';
+import { Group } from '../group/entities/group.entity';
 
 @Injectable()
 export class UserService {
@@ -309,6 +306,33 @@ export class UserService {
     if (!ret) {
       throw new BadRequestException(`数据 id：${id} 不存在！`);
     }
+
+    if (ret?.userGroups) {
+      const ids = ret.userGroups.map(v => v.id);
+
+      const userGroupRet = await this.userGroupService.selectByUserIds({
+        ids: ids.join(','),
+      });
+
+      // @ts-ignore
+      ret.userGroups = userGroupRet.map(v => {
+        return v.group;
+      });
+    }
+
+    if (ret?.userRoles) {
+      const ids = ret.userRoles.map(v => v.id);
+
+      const userRoleRet = await this.userRoleService.selectByUserIds({
+        ids: ids.join(','),
+      });
+
+      // @ts-ignore
+      ret.userRoles = userRoleRet.map(v => {
+        return v.role;
+      });
+    }
+
     return ret;
   }
 
@@ -453,6 +477,11 @@ export class UserService {
       userGroups.push(userGroup);
     }
 
+    const deleteRet = await this.userGroupService.deleteByUserId(id);
+    if (!deleteRet) {
+      throw new BadRequestException('操作异常！');
+    }
+
     const ret = await this.userGroupService.insertBatch(userGroups);
 
     if (ret) {
@@ -499,6 +528,11 @@ export class UserService {
       userRoles.push(userRole);
     }
 
+    const deleteRet = await this.userRoleService.deleteByUserId(id);
+    if (!deleteRet) {
+      throw new BadRequestException('操作异常！');
+    }
+
     const ret = await this.userRoleService.insertBatch(userRoles);
 
     if (ret) {
@@ -512,12 +546,6 @@ export class UserService {
    * 获取角色
    */
   async selectRolesByUserId(baseFindByIdDto: BaseFindByIdDto): Promise<User> {
-    // const ret = await this.userRoleService.selectByUserId(baseFindByIdDto);
-    //
-    // if (!ret) {
-    //   throw new BadRequestException('查询异常！');
-    // }
-
     const { id } = baseFindByIdDto;
     const ret = await this.userRepository.findOne({
       relations: ['userRoles'],
@@ -533,45 +561,56 @@ export class UserService {
    * 获取权限
    */
   async selectPermissionsByUserId(baseFindByIdDto: BaseFindByIdDto): Promise<any> {
-    // const userGroupPermissions = await this.userRepository.createQueryBuilder('p')
-    //   .innerJoinAndSelect(RolePermission, 'rp', 'p.id = rp.permissionId')
-    //   .innerJoinAndSelect(Role, 'r', 'rp.roleId = r.id')
-    //   .innerJoinAndSelect(GroupRole, 'gr', 'r.id = gr.roleId')
-    //   .innerJoinAndSelect(Group, 'g', 'gr.groupId = g.id')
-    //   .innerJoinAndSelect(UserGroup, 'ug', 'g.id = ug.groupId')
-    //   .innerJoinAndSelect(User, 'u', 'u.id = ug.userId')
-    //   .select('p')
-    //   .where('u.id = :id AND u.deleteStatus = 0 AND g.deleteStatus = 0 AND r.deleteStatus = 0 AND p.deleteStatus = 0', {
-    //     id: baseFindByIdDto,
-    //   })
-    //   .getMany();
+    const userGroupPermissions = await this.userRepository.createQueryBuilder('p')
+      .innerJoinAndSelect(RolePermission, 'rp', 'p.id = rp.permissionId')
+      .innerJoinAndSelect(Role, 'r', 'rp.roleId = r.id')
+      .innerJoinAndSelect(GroupRole, 'gr', 'r.id = gr.roleId')
+      .innerJoinAndSelect(Group, 'g', 'gr.groupId = g.id')
+      .innerJoinAndSelect(UserGroup, 'ug', 'g.id = ug.groupId')
+      .innerJoinAndSelect(User, 'u', 'u.id = ug.userId')
+      // .select('p')
+      .where('u.id = :id AND u.deleteStatus = 0 AND g.deleteStatus = 0 AND r.deleteStatus = 0 AND p.deleteStatus = 0', {
+        id: baseFindByIdDto,
+      })
+      .getMany();
 
-    const userGroupPermissions = await this.userRepository.query(`
-        SELECT p.*
-        FROM cms_nest.sys_permission p
-                 INNER JOIN cms_nest.sys_role_permission rp ON p.id = rp.permissionId
-                 INNER JOIN cms_nest.sys_role r ON rp.roleId = r.id
-                 INNER JOIN cms_nest.sys_group_role gr ON r.id = gr.roleId
-                 INNER JOIN cms_nest.sys_group g ON gr.groupId = g.id
-                 INNER JOIN cms_nest.sys_user_group ug ON g.id = ug.groupId
-                 INNER JOIN cms_nest.sys_user u ON u.id = ug.userId
-        WHERE u.id = '${baseFindByIdDto}'
-          AND u.deleteStatus = 0
-          AND g.deleteStatus = 0
-          AND r.deleteStatus = 0
-          AND p.deleteStatus = 0`);
+    // const userGroupPermissions = await this.userRepository.query(`
+    //     SELECT p.*
+    //     FROM cms_nest.sys_permission p
+    //              INNER JOIN cms_nest.sys_role_permission rp ON p.id = rp.permissionId
+    //              INNER JOIN cms_nest.sys_role r ON rp.roleId = r.id
+    //              INNER JOIN cms_nest.sys_group_role gr ON r.id = gr.roleId
+    //              INNER JOIN cms_nest.sys_group g ON gr.groupId = g.id
+    //              INNER JOIN cms_nest.sys_user_group ug ON g.id = ug.groupId
+    //              INNER JOIN cms_nest.sys_user u ON u.id = ug.userId
+    //     WHERE u.id = '${baseFindByIdDto}'
+    //       AND u.deleteStatus = 0
+    //       AND g.deleteStatus = 0
+    //       AND r.deleteStatus = 0
+    //       AND p.deleteStatus = 0`);
 
-    const userPermissions = await this.userRepository.query(`
-        SELECT p.*
-        FROM cms_nest.sys_permission p
-                 INNER JOIN cms_nest.sys_role_permission rp ON p.id = rp.permissionId
-                 INNER JOIN cms_nest.sys_role r ON rp.roleId = r.id
-                 INNER JOIN cms_nest.sys_user_role ur ON r.id = ur.roleId
-                 INNER JOIN cms_nest.sys_user u ON u.id = ur.userId
-        WHERE u.id = '${baseFindByIdDto}'
-          AND u.deleteStatus = 0
-          AND r.deleteStatus = 0
-          AND p.deleteStatus = 0`);
+    const userPermissions = await this.userRepository.createQueryBuilder('p')
+      .innerJoinAndSelect(RolePermission, 'rp', 'p.id = rp.permissionId')
+      .innerJoinAndSelect(Role, 'r', 'rp.roleId = r.id')
+      .innerJoinAndSelect(UserRole, 'ur', 'r.id = ur.roleId')
+      .innerJoinAndSelect(User, 'u', 'u.id = ur.userId')
+      // .select('p')
+      .where('u.id = :id AND u.deleteStatus = 0 AND r.deleteStatus = 0 AND p.deleteStatus = 0', {
+        id: baseFindByIdDto,
+      })
+      .getMany();
+
+    // const userPermissions = await this.userRepository.query(`
+    //     SELECT p.*
+    //     FROM cms_nest.sys_permission p
+    //              INNER JOIN cms_nest.sys_role_permission rp ON p.id = rp.permissionId
+    //              INNER JOIN cms_nest.sys_role r ON rp.roleId = r.id
+    //              INNER JOIN cms_nest.sys_user_role ur ON r.id = ur.roleId
+    //              INNER JOIN cms_nest.sys_user u ON u.id = ur.userId
+    //     WHERE u.id = '${baseFindByIdDto}'
+    //       AND u.deleteStatus = 0
+    //       AND r.deleteStatus = 0
+    //       AND p.deleteStatus = 0`);
 
     const res = Utils.uniqBy(Utils.concat(userGroupPermissions, userPermissions), 'id');
 
@@ -584,75 +623,115 @@ export class UserService {
   async selectAuthByUserId(baseFindByIdDto: BaseFindByIdDto): Promise<any> {
     const userEntity = await this.selectById(baseFindByIdDto);
 
-    // const userGroupPermissions = await this.userRepository.createQueryBuilder('p')
-    //   .innerJoinAndSelect(RolePermission, 'rp', 'p.id = rp.permissionId')
-    //   .innerJoinAndSelect(Role, 'r', 'rp.roleId = r.id')
-    //   .innerJoinAndSelect(GroupRole, 'gr', 'r.id = gr.roleId')
-    //   .innerJoinAndSelect(Group, 'g', 'gr.groupId = g.id')
-    //   .innerJoinAndSelect(UserGroup, 'ug', 'g.id = ug.groupId')
-    //   .innerJoinAndSelect(User, 'u', 'u.id = ug.userId')
-    //   .select('permission')
-    //   .where('u.id = :id AND u.deleteStatus = 0 AND g.deleteStatus = 0 AND r.deleteStatus = 0 AND p.deleteStatus = 0', {
-    //     id: baseFindByIdDto,
-    //   })
-    //   .getMany();
+    const userGroupPermissions = await this.userRepository.createQueryBuilder('p')
+      .innerJoinAndSelect(RolePermission, 'rp', 'p.id = rp.permissionId')
+      .innerJoinAndSelect(Role, 'r', 'rp.roleId = r.id')
+      .innerJoinAndSelect(GroupRole, 'gr', 'r.id = gr.roleId')
+      .innerJoinAndSelect(Group, 'g', 'gr.groupId = g.id')
+      .innerJoinAndSelect(UserGroup, 'ug', 'g.id = ug.groupId')
+      .innerJoinAndSelect(User, 'u', 'u.id = ug.userId')
+      // .select('p')
+      .where('u.id = :id AND u.deleteStatus = 0 AND g.deleteStatus = 0 AND r.deleteStatus = 0 AND p.deleteStatus = 0', {
+        id: baseFindByIdDto,
+      })
+      .getMany();
 
-    const userGroupPermissions = await this.userRepository.query(`
-        SELECT p.*
-        FROM cms_nest.sys_permission p
-                 INNER JOIN cms_nest.sys_role_permission rp ON p.id = rp.permissionId
-                 INNER JOIN cms_nest.sys_role r ON rp.roleId = r.id
-                 INNER JOIN cms_nest.sys_group_role gr ON r.id = gr.roleId
-                 INNER JOIN cms_nest.sys_group g ON gr.groupId = g.id
-                 INNER JOIN cms_nest.sys_user_group ug ON g.id = ug.groupId
-                 INNER JOIN cms_nest.sys_user u on u.id = ug.userId
-        WHERE u.id = '${baseFindByIdDto}'
-          AND u.deleteStatus = 0
-          AND g.deleteStatus = 0
-          AND r.deleteStatus = 0
-          AND p.deleteStatus = 0`);
+    // const userGroupPermissions = await this.userRepository.query(`
+    //     SELECT p.*
+    //     FROM cms_nest.sys_permission p
+    //              INNER JOIN cms_nest.sys_role_permission rp ON p.id = rp.permissionId
+    //              INNER JOIN cms_nest.sys_role r ON rp.roleId = r.id
+    //              INNER JOIN cms_nest.sys_group_role gr ON r.id = gr.roleId
+    //              INNER JOIN cms_nest.sys_group g ON gr.groupId = g.id
+    //              INNER JOIN cms_nest.sys_user_group ug ON g.id = ug.groupId
+    //              INNER JOIN cms_nest.sys_user u on u.id = ug.userId
+    //     WHERE u.id = '${baseFindByIdDto}'
+    //       AND u.deleteStatus = 0
+    //       AND g.deleteStatus = 0
+    //       AND r.deleteStatus = 0
+    //       AND p.deleteStatus = 0`);
 
-    const userPermissions = await this.userRepository.query(`
-        SELECT p.*
-        FROM cms_nest.sys_permission p
-                 INNER JOIN cms_nest.sys_role_permission rp ON p.id = rp.permissionId
-                 INNER JOIN cms_nest.sys_role r ON rp.roleId = r.id
-                 INNER JOIN cms_nest.sys_user_role ur ON r.id = ur.roleId
-                 INNER JOIN cms_nest.sys_user u ON u.id = ur.userId
-        WHERE u.id = '${baseFindByIdDto}'
-          AND u.deleteStatus = 0
-          AND r.deleteStatus = 0
-          AND p.deleteStatus = 0`);
+    const userPermissions = await this.userRepository.createQueryBuilder('p')
+      .innerJoinAndSelect(RolePermission, 'rp', 'p.id = rp.permissionId')
+      .innerJoinAndSelect(Role, 'r', 'rp.roleId = r.id')
+      .innerJoinAndSelect(UserRole, 'ur', 'r.id = ur.roleId')
+      .innerJoinAndSelect(User, 'u', 'u.id = ug.userId')
+      // .select('p')
+      .where('u.id = :id AND u.deleteStatus = 0 AND r.deleteStatus = 0 AND p.deleteStatus = 0', {
+        id: baseFindByIdDto,
+      })
+      .getMany();
 
-    const userGroupRole = await this.userRepository.query(`
-        SELECT r.*
-        FROM cms_nest.sys_role r
-                 INNER JOIN cms_nest.sys_group_role gr ON r.id = gr.roleId
-                 INNER JOIN cms_nest.sys_group g ON gr.groupId = g.id
-                 INNER JOIN cms_nest.sys_user_group ug ON g.id = ug.groupId
-                 INNER JOIN cms_nest.sys_user u ON u.id = ug.userId
-        WHERE u.id = '${baseFindByIdDto}'
-          AND u.deleteStatus = 0
-          AND g.deleteStatus = 0
-          AND r.deleteStatus = 0`);
+    // const userPermissions = await this.userRepository.query(`
+    //     SELECT p.*
+    //     FROM cms_nest.sys_permission p
+    //              INNER JOIN cms_nest.sys_role_permission rp ON p.id = rp.permissionId
+    //              INNER JOIN cms_nest.sys_role r ON rp.roleId = r.id
+    //              INNER JOIN cms_nest.sys_user_role ur ON r.id = ur.roleId
+    //              INNER JOIN cms_nest.sys_user u ON u.id = ur.userId
+    //     WHERE u.id = '${baseFindByIdDto}'
+    //       AND u.deleteStatus = 0
+    //       AND r.deleteStatus = 0
+    //       AND p.deleteStatus = 0`);
 
-    const userRole = await this.userRepository.query(`
-        SELECT r.*
-        FROM cms_nest.sys_role r
-                 INNER JOIN cms_nest.sys_user_role ur ON r.id = ur.roleId
-                 INNER JOIN cms_nest.sys_user u ON u.id = ur.userId
-        WHERE u.id = '${baseFindByIdDto}'
-          AND u.deleteStatus = 0
-          AND r.deleteStatus = 0`);
+    const userGroupRole = await this.userRepository.createQueryBuilder('r')
+      .innerJoinAndSelect(GroupRole, 'gr', 'r.id = gr.roleId')
+      .innerJoinAndSelect(Group, 'g', 'gr.groupId = g.id')
+      .innerJoinAndSelect(UserGroup, 'ug', 'g.id = ug.groupId')
+      .innerJoinAndSelect(User, 'u', 'u.id = ug.userId')
+      // .select('r')
+      .where('u.id = :id AND u.deleteStatus = 0 AND g.deleteStatus = 0 AND r.deleteStatus = 0', {
+        id: baseFindByIdDto,
+      })
+      .getMany();
 
-    const userGroup = await this.userRepository.query(`
-        SELECT g.*
-        FROM cms_nest.sys_group g
-                 INNER JOIN cms_nest.sys_user_group ug ON g.id = ug.groupId
-                 INNER JOIN cms_nest.sys_user u ON u.id = ug.userId
-        WHERE u.id = '${baseFindByIdDto}'
-          AND u.deleteStatus = 0
-          AND g.deleteStatus = 0`);
+    // const userGroupRole = await this.userRepository.query(`
+    //     SELECT r.*
+    //     FROM cms_nest.sys_role r
+    //              INNER JOIN cms_nest.sys_group_role gr ON r.id = gr.roleId
+    //              INNER JOIN cms_nest.sys_group g ON gr.groupId = g.id
+    //              INNER JOIN cms_nest.sys_user_group ug ON g.id = ug.groupId
+    //              INNER JOIN cms_nest.sys_user u ON u.id = ug.userId
+    //     WHERE u.id = '${baseFindByIdDto}'
+    //       AND u.deleteStatus = 0
+    //       AND g.deleteStatus = 0
+    //       AND r.deleteStatus = 0`);
+
+    const userRole = await this.userRepository.createQueryBuilder('r')
+      .innerJoinAndSelect(UserRole, 'ur', 'r.id = ur.roleId')
+      .innerJoinAndSelect(User, 'u', 'u.id = ug.userId')
+      // .select('r')
+      .where('u.id = :id AND u.deleteStatus = 0 AND r.deleteStatus = 0', {
+        id: baseFindByIdDto,
+      })
+      .getMany();
+
+    // const userRole = await this.userRepository.query(`
+    //     SELECT r.*
+    //     FROM cms_nest.sys_role r
+    //              INNER JOIN cms_nest.sys_user_role ur ON r.id = ur.roleId
+    //              INNER JOIN cms_nest.sys_user u ON u.id = ur.userId
+    //     WHERE u.id = '${baseFindByIdDto}'
+    //       AND u.deleteStatus = 0
+    //       AND r.deleteStatus = 0`);
+
+    const userGroup = await this.userRepository.createQueryBuilder('g')
+      .innerJoinAndSelect(GroupRole, 'gr', 'g.id = ug.groupId')
+      .innerJoinAndSelect(User, 'u', 'u.id = ug.userId')
+      // .select('g')
+      .where('u.id = :id AND u.deleteStatus = 0 AND g.deleteStatus = 0', {
+        id: baseFindByIdDto,
+      })
+      .getMany();
+
+    // const userGroup = await this.userRepository.query(`
+    //     SELECT g.*
+    //     FROM cms_nest.sys_group g
+    //              INNER JOIN cms_nest.sys_user_group ug ON g.id = ug.groupId
+    //              INNER JOIN cms_nest.sys_user u ON u.id = ug.userId
+    //     WHERE u.id = '${baseFindByIdDto}'
+    //       AND u.deleteStatus = 0
+    //       AND g.deleteStatus = 0`);
 
     const res = Utils.assign(userEntity, {
       permissions: Utils.uniqBy(Utils.concat(userGroupPermissions, userPermissions), 'id'),

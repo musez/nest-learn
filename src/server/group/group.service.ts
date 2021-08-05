@@ -9,14 +9,15 @@ import { BaseFindByIdDto, BaseFindByIdsDto } from '../base.dto';
 import { GroupRoleService } from '../group-role/group-role.service';
 import { GroupRole } from '../group-role/entities/group-role.entity';
 import { BindGroupRoleDto } from '../group-role/dto/bind-group-role.dto';
-import { CreateGroupRoleDto } from '../group-role/dto/create-group-role.dto';
 import { LimitGroupDto } from './dto/limit-group.dto';
+import { RoleService } from '../role/role.service';
 
 @Injectable()
 export class GroupService {
   constructor(
     @InjectRepository(Group)
     private readonly groupRepository: Repository<Group>,
+    private readonly roleService: RoleService,
     private readonly groupRoleService: GroupRoleService,
   ) {
   }
@@ -90,7 +91,26 @@ export class GroupService {
    * 获取详情（主键 id）
    */
   async selectById(baseFindByIdDto: BaseFindByIdDto): Promise<Group> {
-    return await this.groupRepository.findOne(baseFindByIdDto);
+    const { id } = baseFindByIdDto;
+    const ret = await this.groupRepository.findOne(id, {
+      relations: ['groupRoles'],
+    });
+    if (!ret) {
+      throw new BadRequestException(`数据 id：${id} 不存在！`);
+    }
+    if (ret?.groupRoles) {
+      const ids = ret.groupRoles.map(v => v.id);
+
+      const groupRoleRet = await this.groupRoleService.selectByGroupIds({
+        ids: ids.join(','),
+      });
+
+      // @ts-ignore
+      ret.groupRoles = groupRoleRet.map(v => {
+        return v.role;
+      });
+    }
+    return ret;
   }
 
   /**
@@ -146,8 +166,16 @@ export class GroupService {
   /**
    * 获取角色
    */
-  async selectRolesByGroupId(baseFindByIdDto: BaseFindByIdDto): Promise<GroupRole[]> {
-    return await this.groupRoleService.selectByGroupId(baseFindByIdDto);
+  async selectRolesByGroupId(baseFindByIdDto: BaseFindByIdDto): Promise<Group> {
+    const { id } = baseFindByIdDto;
+    const ret = await this.groupRepository.findOne({
+      relations: ['groupRoles'],
+      where: {
+        id: id,
+      },
+    });
+
+    return ret;
   }
 
   /**
@@ -156,15 +184,32 @@ export class GroupService {
   async bindRoles(bindGroupRoleDto: BindGroupRoleDto): Promise<void> {
     const { id, roles } = bindGroupRoleDto;
 
-    const userGroupList = [];
-    for (let i = 0, len = roles.length; i < len; i++) {
-      const createGroupRoleDto = new CreateGroupRoleDto();
-      createGroupRoleDto.groupId = id;
-      createGroupRoleDto.roleId = roles[i];
-      userGroupList.push(createGroupRoleDto);
+    const groupRet = await this.groupRepository.findOne({
+      where: {
+        id: id,
+      },
+    });
+
+    const groupRoles = [];
+    for (const item of roles) {
+      const roleRet = await this.roleService.selectById({ id: item });
+      const groupRole = new GroupRole();
+      groupRole.group = groupRet;
+      groupRole.role = roleRet;
+      groupRoles.push(groupRole);
     }
 
-    await this.groupRoleService.deleteByGroupId(id);
-    await this.groupRoleService.insertBatch(userGroupList);
+    const deleteRet = await this.groupRoleService.deleteByGroupId(id);
+    if (!deleteRet) {
+      throw new BadRequestException('操作异常！');
+    }
+
+    const ret = await this.groupRoleService.insertBatch(groupRoles);
+
+    if (ret) {
+      return null;
+    } else {
+      throw new BadRequestException('操作异常！');
+    }
   }
 }
