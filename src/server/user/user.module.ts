@@ -9,10 +9,11 @@ import { UserRoleModule } from '../user-role/user-role.module';
 import { CryptoUtil } from '../../utils/crypto.util';
 import { GroupModule } from '../group/group.module';
 import { RoleModule } from '../role/role.module';
+import { PermissionModule } from '../permission/permission.module';
 
 @Global()
 @Module({
-  imports: [UserinfoModule, GroupModule, RoleModule, UserGroupModule, UserRoleModule, TypeOrmModule.forFeature([User])],
+  imports: [UserinfoModule, GroupModule, RoleModule, PermissionModule, UserGroupModule, UserRoleModule, TypeOrmModule.forFeature([User])],
   controllers: [UserController],
   providers: [UserService, CryptoUtil],
   exports: [UserService],

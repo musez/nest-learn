@@ -12,6 +12,11 @@ import { RolePermissionService } from '../role-permission/role-permission.servic
 import { SearchRoleDto } from './dto/search-role.dto';
 import { LimitRoleDto } from './dto/limit-role.dto';
 import { PermissionService } from '../permission/permission.service';
+import { GroupRole } from '../group-role/entities/group-role.entity';
+import { Group } from '../group/entities/group.entity';
+import { UserGroup } from '../user-group/entities/user-group.entity';
+import { User } from '../user/entities/user.entity';
+import { UserRole } from '../user-role/entities/user-role.entity';
 
 @Injectable()
 export class RoleService {
@@ -126,6 +131,33 @@ export class RoleService {
     } else {
       return true;
     }
+  }
+
+  /**
+   * 获取角色（用户 id）
+   */
+  async selectByUserId(baseFindByIdDto: BaseFindByIdDto): Promise<any> {
+    const userGroupRole = await this.roleRepository.createQueryBuilder('r')
+      .innerJoinAndSelect(GroupRole, 'gr', 'r.id = gr.roleId')
+      .innerJoinAndSelect(Group, 'g', 'gr.groupId = g.id')
+      .innerJoinAndSelect(UserGroup, 'ug', 'g.id = ug.groupId')
+      .innerJoinAndSelect(User, 'u', 'u.id = ug.userId')
+      // .select('r')
+      .where('u.id = :id AND u.deleteStatus = 0 AND g.deleteStatus = 0 AND r.deleteStatus = 0', {
+        id: baseFindByIdDto,
+      })
+      .getMany();
+
+    const userRole = await this.roleRepository.createQueryBuilder('r')
+      .innerJoinAndSelect(UserRole, 'ur', 'r.id = ur.roleId')
+      .innerJoinAndSelect(User, 'u', 'u.id = ug.userId')
+      // .select('r')
+      .where('u.id = :id AND u.deleteStatus = 0 AND r.deleteStatus = 0', {
+        id: baseFindByIdDto,
+      })
+      .getMany();
+
+    return Utils.uniqBy(Utils.concat(userGroupRole, userRole), 'id');
   }
 
   /**

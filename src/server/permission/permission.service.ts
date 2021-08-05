@@ -8,6 +8,13 @@ import { CreatePermissionDto } from './dto/create-permission.dto';
 import { BaseFindByIdDto, BaseFindByIdsDto, BaseFindByPIdDto } from '../base.dto';
 import { SearchPermissionDto } from './dto/search-permission.dto';
 import { LimitPermissionDto } from './dto/limit-permission.dto';
+import { RolePermission } from '../role-permission/entities/role-permission.entity';
+import { Role } from '../role/entities/role.entity';
+import { GroupRole } from '../group-role/entities/group-role.entity';
+import { Group } from '../group/entities/group.entity';
+import { UserGroup } from '../user-group/entities/user-group.entity';
+import { User } from '../user/entities/user.entity';
+import { UserRole } from '../user-role/entities/user-role.entity';
 
 @Injectable()
 export class PermissionService {
@@ -208,6 +215,39 @@ export class PermissionService {
   async selectById(baseFindByIdDto: BaseFindByIdDto): Promise<Permission> {
     const { id } = baseFindByIdDto;
     return await this.permissionRepository.findOne(id);
+  }
+
+  /**
+   * 获取权限（用户 id）
+   */
+  async selectByUserId(baseFindByIdDto: BaseFindByIdDto): Promise<any> {
+    const userGroupPermissions = await this.permissionRepository.createQueryBuilder('p')
+      .innerJoinAndSelect(RolePermission, 'rp', 'p.id = rp.permissionId')
+      .innerJoinAndSelect(Role, 'r', 'rp.roleId = r.id')
+      .innerJoinAndSelect(GroupRole, 'gr', 'r.id = gr.roleId')
+      .innerJoinAndSelect(Group, 'g', 'gr.groupId = g.id')
+      .innerJoinAndSelect(UserGroup, 'ug', 'g.id = ug.groupId')
+      .innerJoinAndSelect(User, 'u', 'u.id = ug.userId')
+      // .select('p')
+      .where('u.id = :id AND u.deleteStatus = 0 AND g.deleteStatus = 0 AND r.deleteStatus = 0 AND p.deleteStatus = 0', {
+        id: baseFindByIdDto,
+      })
+      .getMany();
+
+    const userPermissions = await this.permissionRepository.createQueryBuilder('p')
+      .innerJoinAndSelect(RolePermission, 'rp', 'p.id = rp.permissionId')
+      .innerJoinAndSelect(Role, 'r', 'rp.roleId = r.id')
+      .innerJoinAndSelect(UserRole, 'ur', 'r.id = ur.roleId')
+      .innerJoinAndSelect(User, 'u', 'u.id = ur.userId')
+      // .select('p')
+      .where('u.id = :id AND u.deleteStatus = 0 AND r.deleteStatus = 0 AND p.deleteStatus = 0', {
+        id: baseFindByIdDto,
+      })
+      .getMany();
+
+    const res = Utils.uniqBy(Utils.concat(userGroupPermissions, userPermissions), 'id');
+
+    return res;
   }
 
   /**
