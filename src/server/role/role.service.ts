@@ -150,7 +150,7 @@ export class RoleService {
 
     const userRole = await this.roleRepository.createQueryBuilder('r')
       .innerJoinAndSelect(UserRole, 'ur', 'r.id = ur.roleId')
-      .innerJoinAndSelect(User, 'u', 'u.id = ug.userId')
+      .innerJoinAndSelect(User, 'u', 'u.id = ur.userId')
       // .select('r')
       .where('u.id = :id AND u.deleteStatus = 0 AND r.deleteStatus = 0', {
         id: baseFindByIdDto,

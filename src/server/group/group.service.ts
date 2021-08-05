@@ -12,6 +12,7 @@ import { BindGroupRoleDto } from '../group-role/dto/bind-group-role.dto';
 import { LimitGroupDto } from './dto/limit-group.dto';
 import { RoleService } from '../role/role.service';
 import { User } from '../user/entities/user.entity';
+import { UserGroup } from '../user-group/entities/user-group.entity';
 
 @Injectable()
 export class GroupService {
@@ -119,7 +120,7 @@ export class GroupService {
    */
   async selectByUserId(baseFindByIdDto: BaseFindByIdDto): Promise<any> {
     const userGroup = await this.groupRepository.createQueryBuilder('g')
-      .innerJoinAndSelect(GroupRole, 'gr', 'g.id = ug.groupId')
+      .innerJoinAndSelect(UserGroup, 'ug', 'g.id = ug.groupId')
       .innerJoinAndSelect(User, 'u', 'u.id = ug.userId')
       // .select('g')
       .where('u.id = :id AND u.deleteStatus = 0 AND g.deleteStatus = 0', {
