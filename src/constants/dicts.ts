@@ -48,7 +48,7 @@ export const TopicTypeDict = {
 };
 
 // 评论回复类型
-export const replyTypeDict = {
+export const ReplyTypeDict = {
   '0': '评论',
   '1': '回复',
 };

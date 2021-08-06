@@ -1,5 +1,4 @@
 module.exports = {
-
   'jpeg': 'image/jpeg',// JPEG 图像
   'jpg': 'image/jpg',// JPG 图像
   'gif': 'image/gif',// GIF 图像

@@ -10,6 +10,10 @@ export class BaseArticleDto {
   @IsUUID('all')
   readonly id: string;
 
+  @ApiPropertyOptional({ description: '栏目 ids', example: null })
+  @IsOptional()
+  readonly cats?: string;
+
   @ApiProperty({ description: '标题', example: null })
   @IsDefined({ message: '标题不能为空！' })
   @IsNotEmpty({ message: '标题不能为空！' })

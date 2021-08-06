@@ -1,26 +1,47 @@
 import { Injectable } from '@nestjs/common';
 import { CreateArticleDataCatDto } from './dto/create-article-data-cat.dto';
 import { UpdateArticleDataCatDto } from './dto/update-article-data-cat.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { In, Repository } from 'typeorm';
+import { ArticleDataCat } from './entities/article-data-cat.entity';
+import { BaseFindByIdDto, BaseFindByIdsDto } from '../base.dto';
 
 @Injectable()
 export class ArticleDataCatService {
-  create(createArticleDataCatDto: CreateArticleDataCatDto) {
-    return 'This action adds a new articleDataCat';
+  constructor(
+    @InjectRepository(ArticleDataCat)
+    private readonly articleDataCatRepository: Repository<ArticleDataCat>,
+  ) {
   }
 
-  findAll() {
-    return `This action returns all articleDataCat`;
+  /**
+   * 添加（批量）
+   */
+  async insertBatch(dto: ArticleDataCat[]): Promise<CreateArticleDataCatDto[] | ArticleDataCat[]> {
+    return await this.articleDataCatRepository.save(dto);
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} articleDataCat`;
+  /**
+   * 获取分类（批量）
+   */
+  async selectByArticleDataCatIds(dto: BaseFindByIdsDto): Promise<ArticleDataCat[]> {
+    const { ids } = dto;
+    return await this.articleDataCatRepository.find({
+      relations: ['cat'],
+      where: {
+        id: In(ids.split(',')),
+      },
+    });
   }
 
-  update(id: number, updateArticleDataCatDto: UpdateArticleDataCatDto) {
-    return `This action updates a #${id} articleDataCat`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} articleDataCat`;
+  /**
+   * 删除
+   */
+  async deleteByArticleId(id: string): Promise<any> {
+    return await this.articleDataCatRepository.createQueryBuilder()
+      .delete()
+      .from(ArticleDataCat)
+      .where('articleId = :id', { id: id })
+      .execute();
   }
 }
