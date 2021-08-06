@@ -47,7 +47,7 @@ export class Permission extends BaseEntity {
   @Column('tinyint', { comment: '权限类别（1：目录；2：菜单；3：操作；4：字段；5：数据）' })
   type: PermissionType;
 
-  @Column({ comment: '权限 CODE 代码', length: 50 })
+  @Column({ comment: '权限 CODE 代码', length: 50, nullable: true })
   code: string;
 
   @Column({ comment: '权限 SORT', default: 0, nullable: true })

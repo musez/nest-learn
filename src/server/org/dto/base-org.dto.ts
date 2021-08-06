@@ -31,9 +31,8 @@ export class BaseOrgDto {
 
   @ApiPropertyOptional({ description: '机构简称', example: null })
   @IsOptional()
-  @IsNotEmpty({ message: '机构简称不能为空' })
   @MaxLength(BaseConstants.NAME_MAX_LENGTH, { message: '机构简称不能大于 $constraint1 位！' })
-  readonly shortName: string;
+  readonly shortName?: string;
 
   @ApiPropertyOptional({ description: '机构类型', example: 0 })
   @IsOptional()
@@ -43,9 +42,8 @@ export class BaseOrgDto {
 
   @ApiPropertyOptional({ description: '机构级次码', example: null })
   @IsOptional()
-  @IsNotEmpty({ message: '机构级次码不能为空' })
   @MaxLength(OrgConstants.ORG_LEVEL_MAX_LENGTH, { message: '机构级次码不能大于 $constraint1 位！' })
-  readonly orgLevel: string;
+  readonly orgLevel?: string;
 
   @ApiProperty({ description: '状态（0：禁用；1：启用）', example: 0 })
   @IsDefined({ message: '状态不能为空！' })

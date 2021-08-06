@@ -28,14 +28,11 @@ export class PermissionService {
    * 添加
    */
   async insert(createPermissionDto: CreatePermissionDto, curUser): Promise<Permission> {
-    const { parentId, ...result } = createPermissionDto;
+    let permission = new Permission();
+    permission = Utils.dto2entity(createPermissionDto, permission);
+    permission.createBy = curUser!.id;
 
-    const child = new Permission();
-    for (const key in result) {
-      child[key] = result[key];
-    }
-
-    return await this.permissionRepository.save(child);
+    return await this.permissionRepository.save(permission);
   }
 
   /**
@@ -268,12 +265,11 @@ export class PermissionService {
   async update(updatePermissionDto: UpdatePermissionDto, curUser) {
     const { id, parentId, ...result } = updatePermissionDto;
 
-    const child = new Permission();
-    for (const key in result) {
-      child[key] = result[key];
-    }
+    let permission = new Permission();
+    permission = Utils.dto2entity(updatePermissionDto, permission);
+    permission.updateBy = curUser!.id;
 
-    return await this.permissionRepository.update(id, child);
+    return await this.permissionRepository.update(id, permission);
   }
 
   /**

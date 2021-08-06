@@ -33,12 +33,12 @@ export class Org extends BaseEntity {
   @Column('varchar', { comment: '机构名称', length: 50 })
   name: string;
 
-  @Column('varchar', { comment: '机构简称', length: 50 })
+  @Column('varchar', { comment: '机构简称', length: 50, nullable: true })
   shortName: string;
 
   @Column('tinyint', { comment: '机构类型（0：机构；1：部门；)' })
   orgType: OrgType;
 
-  @Column('varchar', { comment: '机构级次码', length: 100 })
+  @Column('varchar', { comment: '机构级次码', length: 100, nullable: true })
   orgLevel: string;
 }

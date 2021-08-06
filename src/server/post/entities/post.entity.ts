@@ -11,7 +11,6 @@ import {
   OneToOne,
   BeforeUpdate,
 } from 'typeorm';
-import { Exclude } from 'class-transformer';
 import { BaseEntity } from '../../base.entity';
 
 @Entity('sys_post')

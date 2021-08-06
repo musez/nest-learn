@@ -26,10 +26,10 @@ export class BasePermissionDto {
   @IsInt({ message: '权限类别必须为数字！' })
   readonly type: number;
 
-  @ApiProperty({ description: '权限 CODE 代码', example: null })
-  @IsDefined({ message: '权限 CODE 代码不能为空！' })
+  @ApiPropertyOptional({ description: '权限 CODE 代码', example: null })
+  @IsOptional()
   @IsNotEmpty({ message: '权限 CODE 代码不能为空！' })
-  readonly code: string;
+  readonly code?: string;
 
   @ApiPropertyOptional({ description: '权限路由 SORT', example: 0 })
   @IsOptional()

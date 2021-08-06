@@ -60,7 +60,7 @@ export class Article extends BaseEntity {
   @Column('varchar', { comment: '关键字（多个使用逗号“，”分隔）', length: 100, nullable: true })
   keywords: string;
 
-  @Column('tinyint', { comment: '文章类型（1：文本；2：链接；3：组图；4：视频；5：音频）' })
+  @Column('tinyint', { comment: '文章类型（0：文本；1：链接；2：图片；3：组图；4：视频；5：音频）' })
   type: ArticleType;
 
   @Column('varchar', { comment: '缩略图', length: 255, nullable: true })

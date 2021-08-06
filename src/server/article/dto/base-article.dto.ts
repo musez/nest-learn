@@ -36,7 +36,7 @@ export class BaseArticleDto {
   @MaxLength(ArticleConstants.KEYWORDS_MAX_LENGTH, { message: '关键字不能大于 $constraint1 位！' })
   readonly keywords?: string;
 
-  @ApiProperty({ description: '文章类型（1：文本；2：链接；3：组图；4：视频；5：音频）', default: 0 })
+  @ApiProperty({ description: '文章类型（0：文本；1：链接；2：图片；3：组图；4：视频；5：音频）', default: 0 })
   @IsDefined({ message: '文章类型不能为空！' })
   @IsNotEmpty({ message: '文章类型不能为空！' })
   @Transform(value => Number.parseInt(value))
