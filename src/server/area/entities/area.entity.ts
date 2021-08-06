@@ -3,9 +3,10 @@ import {
   PrimaryGeneratedColumn,
   Column,
   CreateDateColumn,
-  UpdateDateColumn,
+  UpdateDateColumn, AfterLoad,
 } from 'typeorm';
 import { AreaLevelType } from '../../../constants/enums';
+import * as dayjs from 'dayjs';
 
 @Entity('sys_area')
 export class Area {
@@ -22,6 +23,18 @@ export class Area {
   //   this.updateTime = undefined;
   //   this.updateBy = undefined;
   // }
+
+  @AfterLoad()
+  updateDate() {
+    if (this.createTime) {
+      // @ts-ignore
+      this.createTime = dayjs(this.createTime).format('YYYY-MM-DD hh:mm:ss');
+    }
+    if (this.updateTime) {
+      // @ts-ignore
+      this.updateTime = dayjs(this.updateTime).format('YYYY-MM-DD hh:mm:ss');
+    }
+  }
 
   @PrimaryGeneratedColumn({ comment: '主键 id' })
   id: number;

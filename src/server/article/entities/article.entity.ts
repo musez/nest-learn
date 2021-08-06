@@ -10,12 +10,13 @@ import {
   ManyToMany,
   OneToMany,
   ManyToOne,
-  BeforeUpdate,
+  BeforeUpdate, AfterLoad,
 } from 'typeorm';
 import { BaseEntity } from '../../base.entity';
 import { ArticleCat } from '../../article-cat/entities/article-cat.entity';
 import { ArticleType, IsCommentType, StatusType } from '../../../constants/enums';
 import { ArticleDataCat } from '../../article-data-cat/entities/article-data-cat.entity';
+import * as dayjs from 'dayjs';
 
 @Entity('cms_article')
 export class Article extends BaseEntity {
@@ -43,6 +44,14 @@ export class Article extends BaseEntity {
     this.isComment = undefined;
     this.commentCount = undefined;
     this.status = undefined;
+  }
+
+  @AfterLoad()
+  updateDate() {
+    if (this.publicTime) {
+      // @ts-ignore
+      this.publicTime = dayjs(this.publicTime).format('YYYY-MM-DD hh:mm:ss');
+    }
   }
 
   @Column('varchar', { comment: '标题', length: 255 })

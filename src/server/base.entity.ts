@@ -3,9 +3,11 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
-  DeleteDateColumn,
+  DeleteDateColumn, AfterLoad,
 } from 'typeorm';
 import { DeleteType, StatusType } from 'src/constants/enums';
+import { Utils } from '../utils';
+import * as dayjs from 'dayjs';
 
 export abstract class BaseEntity {
   constructor() {
@@ -19,6 +21,22 @@ export abstract class BaseEntity {
     this.deleteStatus = undefined;
     this.deleteTime = undefined;
     this.deleteBy = undefined;
+  }
+
+  @AfterLoad()
+  updateDate() {
+    if (this.createTime) {
+      // @ts-ignore
+      this.createTime = dayjs(this.createTime).format('YYYY-MM-DD hh:mm:ss');
+    }
+    if (this.updateTime) {
+      // @ts-ignore
+      this.updateTime = dayjs(this.updateTime).format('YYYY-MM-DD hh:mm:ss');
+    }
+    if (this.deleteTime) {
+      // @ts-ignore
+      this.deleteTime = dayjs(this.deleteTime).format('YYYY-MM-DD hh:mm:ss');
+    }
   }
 
   @PrimaryGeneratedColumn('uuid', { comment: '主键 id' })
@@ -45,7 +63,8 @@ export abstract class BaseEntity {
   @Column('tinyint', { comment: '删除状态（0：未删除；1：删除）', default: DeleteType.UN_DEL })
   deleteStatus: DeleteType;
 
-  @DeleteDateColumn({ comment: '删除时间', type: 'datetime', nullable: true })
+  // @DeleteDateColumn({ comment: '删除时间', type: 'datetime', nullable: true })
+  @Column({ comment: '删除时间', type: 'datetime', nullable: true })
   deleteTime: Date;
 
   @Column({ comment: '删除人 id', nullable: true })

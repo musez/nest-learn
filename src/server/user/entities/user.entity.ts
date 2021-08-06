@@ -9,7 +9,7 @@ import {
   ManyToMany,
   OneToMany,
   OneToOne,
-  BeforeUpdate,
+  BeforeUpdate, AfterLoad,
 } from 'typeorm';
 import { Exclude } from 'class-transformer';
 import { BaseEntity } from '../../base.entity';
@@ -18,6 +18,7 @@ import { UserType, SexType } from '../../../constants/enums';
 import { UserAddress } from 'src/server/user-address/entities/user-address.entity';
 import { UserGroup } from '../../user-group/entities/user-group.entity';
 import { UserRole } from '../../user-role/entities/user-role.entity';
+import * as dayjs from 'dayjs';
 
 @Entity('sys_user')
 export class User extends BaseEntity {
@@ -37,6 +38,14 @@ export class User extends BaseEntity {
     // this.userinfo = undefined;
     // this.groups = undefined;
     // this.roles = undefined;
+  }
+
+  @AfterLoad()
+  updateDate() {
+    if (this.loginTime) {
+      // @ts-ignore
+      this.loginTime = dayjs(this.loginTime).format('YYYY-MM-DD hh:mm:ss');
+    }
   }
 
   @Column('varchar', { comment: '名称', length: 50, unique: true })
