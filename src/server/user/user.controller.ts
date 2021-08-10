@@ -39,7 +39,7 @@ import { Auth } from '../../common/decorators/auth.decorator';
 import { AuthGuard } from '../../common/guards/auth.guard';
 import { ExcelService } from '../excel/excel.service';
 import { Utils } from './../../utils/index';
-import { SexType, StatusType, UserType } from '../../constants/enums';
+import { SexType, StatusType, UserType } from '../../constants/dicts.enum';
 import { SexDict, StatusDict, UserDict } from '../../constants/dicts';
 
 @ApiTags('用户')

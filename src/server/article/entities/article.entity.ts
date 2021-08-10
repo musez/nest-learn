@@ -14,7 +14,7 @@ import {
 } from 'typeorm';
 import { BaseEntity } from '../../base.entity';
 import { ArticleCat } from '../../article-cat/entities/article-cat.entity';
-import { ArticleType, IsCommentType, StatusType } from '../../../constants/enums';
+import { ArticleType, IsCommentType, StatusType } from '../../../constants/dicts.enum';
 import { ArticleDataCat } from '../../article-data-cat/entities/article-data-cat.entity';
 import * as dayjs from 'dayjs';
 

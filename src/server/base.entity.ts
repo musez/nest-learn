@@ -5,7 +5,7 @@ import {
   UpdateDateColumn,
   DeleteDateColumn, AfterLoad,
 } from 'typeorm';
-import { DeleteType, StatusType } from 'src/constants/enums';
+import { DeleteType, StatusType } from 'src/constants/dicts.enum';
 import { Utils } from '../utils';
 import * as dayjs from 'dayjs';
 

@@ -14,7 +14,7 @@ import {
 import { Exclude } from 'class-transformer';
 import { BaseEntity } from '../../base.entity';
 import { Userinfo } from '../../userinfo/entities/userinfo.entity';
-import { UserType, SexType } from '../../../constants/enums';
+import { UserType, SexType } from '../../../constants/dicts.enum';
 import { UserAddress } from 'src/server/user-address/entities/user-address.entity';
 import { UserGroup } from '../../user-group/entities/user-group.entity';
 import { UserRole } from '../../user-role/entities/user-role.entity';

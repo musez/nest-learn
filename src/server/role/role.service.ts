@@ -66,8 +66,8 @@ export class RoleService {
   async selectListPage(limitRoleDto: LimitRoleDto): Promise<any> {
     // eslint-disable-next-line prefer-const
     let { page, limit, name } = limitRoleDto;
-    page = page ? Number(page) : 1;
-    limit = limit ? Number(limit) : 10;
+    page = page ? page : 1;
+    limit = limit ? limit : 10;
     const offset = (page - 1) * limit;
 
     const queryConditionList = [];

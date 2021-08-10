@@ -11,7 +11,7 @@ import { Utils } from '../../utils';
 import { UserAddress } from './entities/user-address.entity';
 import { SearchUserAddressDto } from './dto/search-user-address.dto';
 import { LimitUserAddressDto } from './dto/limit-user-address.dto';
-import { StatusType } from '../../constants/enums';
+import { StatusType } from '../../constants/dicts.enum';
 import { StatusDict } from '../../constants/dicts';
 
 @ApiTags('用户地址')

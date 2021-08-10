@@ -4,6 +4,7 @@
 import { ExceptionFilter, Catch, ArgumentsHost, HttpException, HttpStatus } from '@nestjs/common';
 import dayjs = require('dayjs');
 import { Logger } from '../../utils/log4js';
+import { ApiException } from '../exception/api-exception';
 
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
@@ -23,14 +24,25 @@ export class AllExceptionsFilter implements ExceptionFilter {
     // `;
     // Logger.error(logFormat);
 
-    // 此刻的时间
     const nowDate = dayjs(Date.now()).format('YYYY-MM-DD HH:mm:ss');
-    response.status(status).json({
-      code: status,
-      data: null,
-      message: `Service Error: ${exception}`,
-      time: nowDate,
-      path: request.url,
-    });
+    if (exception instanceof ApiException) {
+      // 此刻的时间
+      response.status(200).json({
+        code: exception.getErrorCode(),
+        data: null,
+        message: exception.getErrorMessage(),
+        time: nowDate,
+        path: request.url,
+      });
+    } else {
+      // 此刻的时间
+      response.status(200).json({
+        code: status,
+        data: null,
+        message: `Service Error: ${exception}`,
+        time: nowDate,
+        path: request.url,
+      });
+    }
   }
 }

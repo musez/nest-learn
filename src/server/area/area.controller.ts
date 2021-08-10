@@ -20,7 +20,7 @@ import { Auth } from '../../common/decorators/auth.decorator';
 import { AuthGuard } from '../../common/guards/auth.guard';
 import { Utils } from '../../utils';
 import { ExcelService } from '../excel/excel.service';
-import { AreaLevelType } from '../../constants/enums';
+import { AreaLevelType } from '../../constants/dicts.enum';
 import { AreaLevelDict } from '../../constants/dicts';
 
 @Controller('area')

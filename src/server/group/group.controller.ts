@@ -37,7 +37,7 @@ import { AuthGuard } from '../../common/guards/auth.guard';
 import { Auth } from '../../common/decorators/auth.decorator';
 import { Utils } from '../../utils';
 import { ExcelService } from '../excel/excel.service';
-import { StatusType } from '../../constants/enums';
+import { StatusType } from '../../constants/dicts.enum';
 import { StatusDict } from '../../constants/dicts';
 
 @Controller('group')

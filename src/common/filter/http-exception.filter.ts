@@ -22,7 +22,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
 
     // 此刻的时间
     const nowDate = dayjs(Date.now()).format('YYYY-MM-DD HH:mm:ss');
-    response.status(status).json({
+    response.status(200).json({
       code: status,
       data: null,
       message: `${status >= 500 ? 'Service Error' : 'Client Error'}`,

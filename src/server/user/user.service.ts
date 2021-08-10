@@ -176,7 +176,7 @@ export class UserService {
    * 获取列表
    */
   async selectList(searchUserDto: SearchUserDto): Promise<any[]> {
-    const { side, userName, name, userType, mobile, email } = searchUserDto;
+    const { userName, name, userType, mobile, email } = searchUserDto;
 
     const queryConditionList = [];
     const orderCondition = {};
@@ -197,19 +197,6 @@ export class UserService {
     }
     queryConditionList.push('deleteStatus = 0');
     const queryCondition = queryConditionList.join(' AND ');
-
-    if (!Utils.isBlank(side)) {
-      const sideArr = side.split(',');
-
-      sideArr.map((v) => {
-        const item = v.split(' ');
-        const key = item[0], value = item[1];
-
-        if (key && value) {
-          return orderCondition[key] = value;
-        }
-      });
-    }
 
     const ret = await this.userRepository.createQueryBuilder('user')
       .innerJoinAndSelect('user.userinfo', 'userinfo')
@@ -238,8 +225,8 @@ export class UserService {
   async selectListPage(limitUserDto: LimitUserDto): Promise<any> {
     // eslint-disable-next-line prefer-const
     let { page, limit, userName, name, userType, mobile, email } = limitUserDto;
-    page = page ? Number(page) : 1;
-    limit = limit ? Number(limit) : 10;
+    page = page ? page : 1;
+    limit = limit ? limit : 10;
     const offset = (page - 1) * limit;
 
     const queryConditionList = [];

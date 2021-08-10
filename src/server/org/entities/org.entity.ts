@@ -13,7 +13,7 @@ import {
 } from 'typeorm';
 import { Exclude } from 'class-transformer';
 import { BaseEntity } from '../../base.entity';
-import { OrgType } from '../../../constants/enums';
+import { OrgType } from '../../../constants/dicts.enum';
 
 @Entity('sys_org')
 export class Org extends BaseEntity {

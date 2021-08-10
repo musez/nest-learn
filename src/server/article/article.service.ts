@@ -93,8 +93,8 @@ export class ArticleService {
   async selectListPage(limitArticleDto: LimitArticleDto): Promise<any> {
     // eslint-disable-next-line prefer-const
     let { page, limit, title, type, status } = limitArticleDto;
-    page = page ? Number(page) : 1;
-    limit = limit ? Number(limit) : 10;
+    page = page ? page : 1;
+    limit = limit ? limit : 10;
     const offset = (page - 1) * limit;
 
     const queryConditionList = [];

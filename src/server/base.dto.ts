@@ -1,29 +1,30 @@
 import { IsDefined, IsOptional, IsNotEmpty, IsString, IsInt, IsEmail, IsUUID } from 'class-validator';
-import { Transform } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class BasePageDto {
   @ApiPropertyOptional({ description: '当前页数', example: 1 })
   @IsOptional()
   @Transform(value => Number.parseInt(value))
+  // @Type(() => Number)
   @IsInt({ message: '当前页数必须为数字' })
   readonly page?: number;
 
   @ApiPropertyOptional({ description: '每页条数', example: 10 })
   @IsOptional()
+  // @Type(() => Number)
   @Transform(value => Number.parseInt(value))
   @IsInt({ message: '每页条数必须为数字' })
   readonly limit?: number;
+
+  @ApiPropertyOptional({ description: '排序的方式: ASC, DESC' })
+  readonly order: 'DESC' | 'ASC';
 }
 
 export class BaseSearchDto {
   @ApiPropertyOptional({ description: '关键字', example: '王' })
   @IsOptional()
   readonly keyword?: string;
-
-  @ApiPropertyOptional({ description: '排序', example: 'createTime DESC, updateTime DESC' })
-  @IsOptional()
-  readonly side?: string;
 }
 
 export class BaseModifyStatusByIdsDto {

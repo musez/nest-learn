@@ -20,7 +20,7 @@ export class ValidationPipe implements PipeTransform {
       Logger.error(`字段校验不通过: ${msg}`);
       throw new BadRequestException(`字段校验不通过: ${msg}`);
     }
-    return value;
+    return object;
   }
 
   private toValidate(metatype: any): boolean {

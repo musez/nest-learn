@@ -16,7 +16,7 @@ import {
 } from 'typeorm';
 import { BaseEntity } from '../../base.entity';
 import { BaseConstants } from '../../../constants/constants';
-import { PermissionType, PermissionHiddenType } from '../../../constants/enums';
+import { PermissionType, PermissionHiddenType } from '../../../constants/dicts.enum';
 import { RolePermission } from '../../role-permission/entities/role-permission.entity';
 
 @Entity('sys_permission')

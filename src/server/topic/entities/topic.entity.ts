@@ -1,6 +1,6 @@
 import { Column, Entity } from 'typeorm';
 import { BaseEntity } from '../../base.entity';
-import { TopicType } from '../../../constants/enums';
+import { TopicType } from '../../../constants/dicts.enum';
 
 @Entity('sys_topic')
 export class Topic extends BaseEntity {

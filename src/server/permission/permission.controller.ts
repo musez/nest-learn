@@ -19,7 +19,7 @@ import { AuthGuard } from '../../common/guards/auth.guard';
 import { Auth } from '../../common/decorators/auth.decorator';
 import { Utils } from '../../utils';
 import { ExcelService } from '../excel/excel.service';
-import { PermissionHiddenType, PermissionType, StatusType } from '../../constants/enums';
+import { PermissionHiddenType, PermissionType, StatusType } from '../../constants/dicts.enum';
 import { PermissionDict, PermissionHiddenDict, StatusDict } from '../../constants/dicts';
 
 @Controller('permission')

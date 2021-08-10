@@ -3,10 +3,15 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Logger } from '../../utils/log4js';
 
+interface Response<T> {
+  data: T;
+}
+
 @Injectable()
-export class TransformInterceptor implements NestInterceptor {
-  intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
-    const req = context.getArgByIndex(1).req;
+export class TransformInterceptor<T> implements NestInterceptor<T, Response<T>> {
+  intercept(context: ExecutionContext, next: CallHandler<T>): Observable<any> {
+    const request = context.switchToHttp().getRequest<Request>();
+    // const req = context.getArgByIndex(1).req;
     return next.handle().pipe(
       map(data => {
         // const logFormat = ` <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -23,7 +28,7 @@ export class TransformInterceptor implements NestInterceptor {
           data,
           code: 200,
           message: '请求成功！',
-        }
+        };
       }),
     );
   }

@@ -59,8 +59,8 @@ export class PostService {
    */
   async selectListPage(limitPostDto: LimitPostDto): Promise<any> {
     let { page, limit, name } = limitPostDto;
-    page = page ? Number(page) : 1;
-    limit = limit ? Number(limit) : 10;
+    page = page ? page : 1;
+    limit = limit ? limit : 10;
     const offset = (page - 1) * limit;
 
     const queryConditionList = [];

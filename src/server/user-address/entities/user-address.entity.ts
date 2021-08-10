@@ -1,5 +1,5 @@
 import { Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { SexType } from '../../../constants/enums';
+import { SexType } from '../../../constants/dicts.enum';
 import { BaseEntity } from '../../base.entity';
 import { User } from '../../user/entities/user.entity';
 

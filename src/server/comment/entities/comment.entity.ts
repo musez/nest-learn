@@ -1,6 +1,6 @@
 import { Column, Entity } from 'typeorm';
 import { BaseEntity } from '../../base.entity';
-import { ReplyType } from '../../../constants/enums';
+import { ReplyType } from '../../../constants/dicts.enum';
 
 @Entity('sys_comment')
 export class Comment extends BaseEntity {

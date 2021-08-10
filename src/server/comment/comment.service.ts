@@ -60,8 +60,8 @@ export class CommentService {
   async selectListPage(limitCommentDto: LimitCommentDto): Promise<any> {
     // eslint-disable-next-line prefer-const
     let { page, limit, content, replyType, status } = limitCommentDto;
-    page = page ? Number(page) : 1;
-    limit = limit ? Number(limit) : 10;
+    page = page ? page : 1;
+    limit = limit ? limit : 10;
     const offset = (page - 1) * limit;
 
     const queryConditionList = [];

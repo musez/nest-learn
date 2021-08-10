@@ -5,7 +5,7 @@ import {
   CreateDateColumn,
   UpdateDateColumn, AfterLoad,
 } from 'typeorm';
-import { AreaLevelType } from '../../../constants/enums';
+import { AreaLevelType } from '../../../constants/dicts.enum';
 import * as dayjs from 'dayjs';
 
 @Entity('sys_area')

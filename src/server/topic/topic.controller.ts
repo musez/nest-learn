@@ -25,7 +25,7 @@ import { ExcelService } from '../excel/excel.service';
 import { SearchTopicDto } from './dto/search-top.dto';
 import { Topic } from './entities/topic.entity';
 import { LimitTopicDto } from './dto/limit-top.dto';
-import { StatusType } from '../../constants/enums';
+import { StatusType } from '../../constants/dicts.enum';
 
 @ApiTags('评论')
 @Controller('topic')

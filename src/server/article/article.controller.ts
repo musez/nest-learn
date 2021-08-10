@@ -31,7 +31,7 @@ import { Auth } from '../../common/decorators/auth.decorator';
 import { AuthGuard } from '../../common/guards/auth.guard';
 import { Utils } from '../../utils';
 import { ExcelService } from '../excel/excel.service';
-import { ArticleType, IsCommentType, StatusType } from '../../constants/enums';
+import { ArticleType, IsCommentType, StatusType } from '../../constants/dicts.enum';
 import { ArticleDict, IsCommentDict, StatusDict } from '../../constants/dicts';
 
 @Controller('article')

@@ -1,6 +1,6 @@
 import { BaseEntity } from '../../base.entity';
 import { Column, Entity } from 'typeorm';
-import { WeekdayType, RestType } from '../../../constants/enums';
+import { WeekdayType, RestType } from '../../../constants/dicts.enum';
 
 @Entity('sys_holiday')
 export class Holiday extends BaseEntity {
