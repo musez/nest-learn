@@ -112,10 +112,8 @@ export class UserService {
     // userinfo = Utils.dto2entity(createUserDto, userinfo);
     userinfo.user = user;// 联接两者
 
-    const [saveRet, saveUIRet] = await Promise.all([
-      this.userRepository.save(user),
-      this.userinfoService.insert(userinfo),
-    ]);
+    const saveRet = await this.userRepository.save(user);
+    const saveUIRet = await this.userinfoService.insert(userinfo);
 
     if (saveRet && saveUIRet) {
       return createUserDto;
@@ -143,6 +141,7 @@ export class UserService {
       }
       user.createBy = curUser!.id;
 
+
       const userinfo = new Userinfo();
       if (!Utils.isBlank(item.provinceId)) {
         userinfo.provinceId = item.provinceId;
@@ -163,10 +162,8 @@ export class UserService {
       userinfoList.push(userinfo);
     });
 
-    const [saveRet, saveUIRet] = await Promise.all([
-      this.userRepository.save(userList),
-      this.userinfoService.insertBatch(userinfoList),
-    ]);
+    const saveRet = this.userRepository.save(userList);
+    const saveUIRet = this.userinfoService.insertBatch(userinfoList);
 
     if (saveRet && saveUIRet) {
       return createUserDto;
@@ -193,10 +190,10 @@ export class UserService {
       queryConditionList.push('user.userType = :userType');
     }
     if (!Utils.isBlank(mobile)) {
-      queryConditionList.push('user.mobile = :mobile');
+      queryConditionList.push('user.mobile LIKE :mobile');
     }
     if (!Utils.isBlank(email)) {
-      queryConditionList.push('user.email = :email');
+      queryConditionList.push('user.email LIKE :email');
     }
     queryConditionList.push('deleteStatus = 0');
     const queryCondition = queryConditionList.join(' AND ');
@@ -220,8 +217,8 @@ export class UserService {
         userName: `%${userName}%`,
         name: `%${name}%`,
         userType: userType,
-        mobile: mobile,
-        email: email,
+        mobile: `%${mobile}%`,
+        email: `%${email}%`,
       })
       .orderBy({
         'user.createTime': 'DESC',
@@ -256,10 +253,10 @@ export class UserService {
       queryConditionList.push('user.userType = :userType');
     }
     if (!Utils.isBlank(mobile)) {
-      queryConditionList.push('user.mobile = :mobile');
+      queryConditionList.push('user.mobile LIKE :mobile');
     }
     if (!Utils.isBlank(email)) {
-      queryConditionList.push('user.email = :email');
+      queryConditionList.push('user.email LIKE :email');
     }
     queryConditionList.push('deleteStatus = 0');
     const queryCondition = queryConditionList.join(' AND ');
@@ -270,8 +267,8 @@ export class UserService {
         userName: `%${userName}%`,
         name: `%${name}%`,
         userType: userType,
-        mobile: mobile,
-        email: email,
+        mobile: `%${mobile}%`,
+        email: `%${email}%`,
       })
       .skip(offset)
       .take(limit)

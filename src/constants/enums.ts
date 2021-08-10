@@ -92,11 +92,11 @@ export enum OrgType {
 
 // 权限类别
 export enum PermissionType {
-  DIRECTORY = 0,// 目录
-  PAGE = 1,// 菜单
-  ACTION = 2,// 操作
-  FIELD = 3,// 字段
-  DATA = 4,// 数据
+  DIRECTORY = 1,// 目录
+  PAGE = 2,// 菜单
+  ACTION = 3,// 操作
+  FIELD = 4,// 字段
+  DATA = 5,// 数据
 }
 
 // 权限路由 HIDDEN

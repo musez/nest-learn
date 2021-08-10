@@ -47,7 +47,8 @@ export class PermissionService {
     const queryConditionList = [];
     let parentIds = null;
     if (!Utils.isBlank(parentId)) {
-      if (kinship === 0) {
+      // @ts-ignore
+      if (parseInt(kinship) === 0) {
         parentIds = parentId;
         queryConditionList.push('parentId = :parentIds');
       } else {

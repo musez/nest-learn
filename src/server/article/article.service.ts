@@ -105,7 +105,9 @@ export class ArticleService {
       queryConditionList.push('article.type = :type');
     }
     if (!Utils.isBlank(status)) {
-      queryConditionList.push('article.status = :status');
+      // @ts-ignore
+      status = status.split(',');
+      queryConditionList.push('status IN (:...status)');
     }
     queryConditionList.push('article.deleteStatus = 0');
     const queryCondition = queryConditionList.join(' AND ');
