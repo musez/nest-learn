@@ -30,9 +30,6 @@ async function bootstrap() {
   app.use(helmet());
 
   // 配置 public 文件夹为静态目录，以达到可直接访问下面文件的目的
-  // app.useStaticAssets(join(__dirname, '..', 'uploads'), {
-  //   prefix: '/uploads',
-  // });
   app.useStaticAssets(join(__dirname, '..', 'public'), {
     prefix: '/static/',
   });
