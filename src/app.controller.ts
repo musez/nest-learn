@@ -9,7 +9,7 @@ export class AppController {
   @Get()
   @Render('index')
   index() {
-    return { msg: 'Hello nestjs !' };
+    return { message: 'Hello nestjs !' };
   }
 
   @Get('hello')

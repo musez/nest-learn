@@ -1,14 +1,20 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
+import { ErrorCode } from '../../constants/error';
 import { ApiErrorCode } from '../../constants/api-error-code.enum';
 
+/**
+ * 定义 API 异常类
+ *
+ * @export
+ * @class ApiException
+ * @extends {HttpException}
+ */
 export class ApiException extends HttpException {
   private errorMessage: string;
   private errorCode: ApiErrorCode;
 
-  constructor(errorMessage: string, errorCode: ApiErrorCode, statusCode: HttpStatus) {
-
-    super(errorMessage, statusCode);
-
+  constructor(errorMessage: string, errorCode: ApiErrorCode) {
+    super({ errorCode, errorMessage }, HttpStatus.OK);
     this.errorMessage = errorMessage;
     this.errorCode = errorCode;
   }

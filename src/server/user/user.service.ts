@@ -21,6 +21,7 @@ import { CreateUserinfoDto } from '../userinfo/dto/create-userinfo.dto';
 import { GroupService } from '../group/group.service';
 import { RoleService } from '../role/role.service';
 import { PermissionService } from '../permission/permission.service';
+import { ApiException } from '../../common/exception/api-exception';
 
 @Injectable()
 export class UserService {
@@ -286,7 +287,7 @@ export class UserService {
       relations: ['userinfo', 'userGroups', 'userRoles'],
     });
     if (!ret) {
-      throw new BadRequestException(`数据 id：${id} 不存在！`);
+      throw new ApiException(`数据 id：${id} 不存在！`, 10001);
     }
 
     if (ret?.userGroups) {

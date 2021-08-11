@@ -6,12 +6,15 @@ class CodeAndMsg {
 }
 
 export class ErrorCode {
+  static readonly TIMEOUT: CodeAndMsg = { CODE: -1, MESSAGE: '系统繁忙！' };
   static readonly SUCCESS: CodeAndMsg = { CODE: 200, MESSAGE: '请求成功！' };
   static readonly ERROR: CodeAndMsg = { CODE: 500, MESSAGE: '请求失败！' };
   static readonly ParamsError: CodeAndMsg = { CODE: 400, MESSAGE: '参数错误！' };
 
   static readonly Forbidden: CodeAndMsg = { CODE: 403, MESSAGE: '没有权限执行此操作！' };
   static readonly NotFound: CodeAndMsg = { CODE: 404, MESSAGE: '找不到请求的资源！' };
+
+  static readonly DataNotExists: CodeAndMsg = { CODE: 800, MESSAGE: '数据不存在！' };
 
   static readonly LoginError: CodeAndMsg = { CODE: 1000, MESSAGE: '用户名或密码错误！' };
   static readonly LoginTimeout: CodeAndMsg = { CODE: 1001, MESSAGE: '登录超时！' };
@@ -35,6 +38,7 @@ export class ErrorCode {
 
   static readonly UserNameExists: CodeAndMsg = { CODE: 1009, MESSAGE: '用户名已存在！' };
   static readonly PhoneExists: CodeAndMsg = { CODE: 1010, MESSAGE: '手机号已存在！' };
+  static readonly UserIdNotExists: CodeAndMsg = { CODE: 1011, MESSAGE: '用户不存在！' };
 
   static CodeToMessage(code: number): string {
     for (const key of Object.keys(this)) {
