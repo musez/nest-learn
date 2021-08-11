@@ -16,10 +16,10 @@ export class Topic extends BaseEntity {
   @Column('uuid', { comment: '主题 id' })
   topicId: string;
 
-  @Column('tinyint', { comment: '主题类型' })
+  @Column('tinyint', { comment: '主题类型'})
   topicType: TopicType;
 
-  @Column('text', { comment: '评论内容' })
+  @Column('text', { comment: '评论内容', nullable: true })
   content: string;
 
   @Column('uuid', { comment: '评论用户 id' })

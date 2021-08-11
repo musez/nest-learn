@@ -5,9 +5,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Comment } from './entities/comment.entity';
 import { Utils } from '../../utils';
-import { BaseFindByIdDto } from '../base.dto';
+import { BaseFindByIdDto, BaseFindByIdsDto } from '../base.dto';
 import { LimitCommentDto } from './dto/limit-comment.dto';
 import { SearchCommentDto } from './dto/search-comment.dto';
+import { Org } from '../org/entities/org.entity';
 
 @Injectable()
 export class CommentService {
@@ -16,7 +17,6 @@ export class CommentService {
     private readonly commentRepository: Repository<Comment>,
   ) {
   }
-
 
   /**
    * 添加
@@ -126,5 +126,31 @@ export class CommentService {
     article = Utils.dto2entity(updateCommentDto, article);
 
     await this.commentRepository.update(id, article);
+  }
+
+  /**
+   * 删除
+   */
+  async deleteById(baseFindByIdDto: BaseFindByIdDto, curUser): Promise<void> {
+    const { id } = baseFindByIdDto;
+
+    await this.commentRepository.createQueryBuilder()
+      .update(Org)
+      .set({ deleteStatus: 1, deleteBy: curUser!.id, deleteTime: Utils.now() })
+      .where('id = :id', { id: id })
+      .execute();
+  }
+
+  /**
+   * 删除（批量）
+   */
+  async deleteByIds(baseFindByIdsDto: BaseFindByIdsDto, curUser): Promise<void> {
+    const { ids } = baseFindByIdsDto;
+
+    await this.commentRepository.createQueryBuilder()
+      .update(Org)
+      .set({ deleteStatus: 1, deleteBy: curUser!.id, deleteTime: Utils.now() })
+      .where('id in (:ids)', { ids: ids })
+      .execute();
   }
 }

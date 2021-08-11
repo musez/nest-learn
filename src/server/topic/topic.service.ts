@@ -9,6 +9,8 @@ import { BaseFindByIdDto, BaseFindByIdsDto } from '../base.dto';
 import { LimitTopicDto } from './dto/limit-top.dto';
 import { SearchTopicDto } from './dto/search-top.dto';
 import { Org } from '../org/entities/org.entity';
+import { User } from '../user/entities/user.entity';
+import { ArticleCat } from '../article-cat/entities/article-cat.entity';
 
 @Injectable()
 export class TopicService {
@@ -66,18 +68,24 @@ export class TopicService {
 
     const queryConditionList = [];
     if (!Utils.isBlank(content)) {
-      queryConditionList.push('content LIKE :content');
+      queryConditionList.push('topic.content LIKE :content');
     }
     if (!Utils.isBlank(topicType)) {
-      queryConditionList.push('topicType = :topicType');
+      queryConditionList.push('topic.topicType = :topicType');
     }
     if (!Utils.isBlank(status)) {
-      queryConditionList.push('status = :status');
+      queryConditionList.push('topic.status = :status');
     }
-    queryConditionList.push('deleteStatus = 0');
+    queryConditionList.push('topic.deleteStatus = 0');
     const queryCondition = queryConditionList.join(' AND ');
 
-    const res = await this.topicRepository.createQueryBuilder()
+    const res = await this.topicRepository.createQueryBuilder('topic')
+      .select('topic')
+      .leftJoinAndSelect(User, 'u', 'u.id = topic.fromUid')
+      // .addSelect(subQuery =>
+      //   subQuery.select('u.userName')
+      //     .from(User, 'u')
+      //     .where('u.id = fromUid'), 'fromUname')
       .where(queryCondition, {
         content: `%${content}%`,
         topicType: topicType,
@@ -85,7 +93,7 @@ export class TopicService {
       })
       .skip(offset)
       .take(limit)
-      .orderBy({ 'createTime': 'DESC' })
+      .orderBy({ 'topic.createTime': 'DESC' })
       .getManyAndCount();
 
     return {

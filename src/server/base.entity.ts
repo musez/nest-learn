@@ -8,6 +8,7 @@ import {
 import { DeleteType, StatusType } from 'src/constants/dicts.enum';
 import { Utils } from '../utils';
 import * as dayjs from 'dayjs';
+import { Exclude } from 'class-transformer';
 
 export abstract class BaseEntity {
   constructor() {
@@ -60,13 +61,16 @@ export abstract class BaseEntity {
   @Column({ comment: '修改人 id', nullable: true })
   updateBy: string;
 
-  @Column('tinyint', { comment: '删除状态（0：未删除；1：删除）', default: DeleteType.UN_DEL })
+  @Column('tinyint', { comment: '删除状态（0：未删除；1：删除）', default: DeleteType.UN_DEL, select: false })
+  @Exclude()
   deleteStatus: DeleteType;
 
   // @DeleteDateColumn({ comment: '删除时间', type: 'datetime', nullable: true })
-  @Column({ comment: '删除时间', type: 'datetime', nullable: true })
+  @Column({ comment: '删除时间', type: 'datetime', nullable: true, select: false })
+  @Exclude()
   deleteTime: Date;
 
-  @Column({ comment: '删除人 id', nullable: true })
+  @Column({ comment: '删除人 id', nullable: true, select: false })
+  @Exclude()
   deleteBy: string;
 }
