@@ -8,6 +8,7 @@ import { Repository } from 'typeorm';
 import { Holiday } from './entities/holiday.entity';
 import { SearchHolidayDto } from './dto/search-holiday.dto';
 import { LimitHolidayDto } from './dto/limit-holiday.dto';
+import { ApiException } from 'src/common/exception/api-exception';
 
 @Injectable()
 export class HolidayService {
@@ -178,7 +179,7 @@ export class HolidayService {
 
     const isExistId = await this.isExistId(id);
     if (!isExistId) {
-      throw new BadRequestException(`数据 id：${id} 不存在！`);
+      throw new ApiException(`数据 id：${id} 不存在！`, 404);
     }
 
     let holiday = new Holiday();

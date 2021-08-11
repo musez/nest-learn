@@ -13,6 +13,7 @@ import { LimitGroupDto } from './dto/limit-group.dto';
 import { RoleService } from '../role/role.service';
 import { User } from '../user/entities/user.entity';
 import { UserGroup } from '../user-group/entities/user-group.entity';
+import { ApiException } from '../../common/exception/api-exception';
 
 @Injectable()
 export class GroupService {
@@ -98,7 +99,7 @@ export class GroupService {
       relations: ['groupRoles'],
     });
     if (!ret) {
-      throw new BadRequestException(`数据 id：${id} 不存在！`);
+      throw new ApiException(`数据 id：${id} 不存在！`, 404);
     }
     if (ret?.groupRoles) {
       const ids = ret.groupRoles.map(v => v.id);
@@ -219,7 +220,7 @@ export class GroupService {
 
     const deleteRet = await this.groupRoleService.deleteByGroupId(id);
     if (!deleteRet) {
-      throw new BadRequestException('操作异常！');
+      throw new ApiException('操作异常！', 500);
     }
 
     const ret = await this.groupRoleService.insertBatch(groupRoles);
@@ -227,7 +228,7 @@ export class GroupService {
     if (ret) {
       return null;
     } else {
-      throw new BadRequestException('操作异常！');
+      throw new ApiException('操作异常！', 500);
     }
   }
 }

@@ -34,6 +34,7 @@ import { BaseDaysDto } from './dto/base-holiday.dto';
 import { ExcelService } from '../excel/excel.service';
 import { SearchUserDto } from '../user/dto/search-user.dto';
 import { RestDict, SexDict, StatusDict, UserDict, WeekdayDict } from '../../constants/dicts';
+import { ApiException } from '../../common/exception/api-exception';
 
 @Controller('holiday')
 @ApiTags('节假日')
@@ -164,7 +165,7 @@ export class HolidayController {
 
     const ret = await this.holidayService.insertBatch(rows, curUser);
     if (!ret) {
-      throw new BadRequestException(`操作异常！`);
+      throw new ApiException(`操作异常！`,500);
     }
 
     return {
@@ -183,7 +184,7 @@ export class HolidayController {
 
     const isExistId = await this.holidayService.isExistId(id);
     if (!isExistId) {
-      throw new BadRequestException(`数据 id：${id} 不存在！`);
+      throw new ApiException(`数据 id：${id} 不存在！`, 404);
     }
 
     return this.holidayService.update(updateHolidayDto, curUser);
@@ -204,7 +205,7 @@ export class HolidayController {
 
     const isExistId = await this.holidayService.isExistId(id);
     if (!isExistId) {
-      throw new BadRequestException(`数据 id：${id} 不存在！`);
+      throw new ApiException(`数据 id：${id} 不存在！`, 404);
     }
 
     return await this.holidayService.deleteById(baseFindByIdDto, curUser);

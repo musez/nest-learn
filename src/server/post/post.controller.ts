@@ -30,6 +30,7 @@ import { Auth } from '../../common/decorators/auth.decorator';
 import { Utils } from '../../utils';
 import { ExcelService } from '../excel/excel.service';
 import { StatusType } from '../../constants/dicts.enum';
+import { ApiException } from 'src/common/exception/api-exception';
 
 @Controller('post')
 @ApiTags('岗位')
@@ -105,7 +106,7 @@ export class PostController {
     const isExistId = await this.postService.isExistId(id);
 
     if (!isExistId) {
-      throw new BadRequestException(`数据 id：${id} 不存在！`);
+      throw new ApiException(`数据 id：${id} 不存在！`, 404);
     }
     return this.postService.update(updatePostDto, curUser);
   }
@@ -118,7 +119,7 @@ export class PostController {
     const isExistId = await this.postService.isExistId(id);
 
     if (!isExistId) {
-      throw new BadRequestException(`数据 id：${id} 不存在！`);
+      throw new ApiException(`数据 id：${id} 不存在！`, 404);
     }
     return await this.postService.deleteById(baseFindByIdDto, curUser);
   }

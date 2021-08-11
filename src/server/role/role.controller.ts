@@ -34,6 +34,7 @@ import { Utils } from '../../utils';
 import { ExcelService } from '../excel/excel.service';
 import { StatusType } from '../../constants/dicts.enum';
 import { StatusDict } from '../../constants/dicts';
+import { ApiException } from 'src/common/exception/api-exception';
 
 @Controller('role')
 @ApiTags('角色')
@@ -109,7 +110,7 @@ export class RoleController {
     const isExistId = await this.roleService.isExistId(id);
 
     if (!isExistId) {
-      throw new BadRequestException(`数据 id：${id} 不存在！`);
+      throw new ApiException(`数据 id：${id} 不存在！`, 404);
     }
     return this.roleService.update(updateRoleDto, curUser);
   }
@@ -122,7 +123,7 @@ export class RoleController {
     const isExistId = await this.roleService.isExistId(id);
 
     if (!isExistId) {
-      throw new BadRequestException(`数据 id：${id} 不存在！`);
+      throw new ApiException(`数据 id：${id} 不存在！`, 404);
     }
     return await this.roleService.deleteById(baseFindByIdDto, curUser);
   }
@@ -142,7 +143,7 @@ export class RoleController {
     const isExistId = await this.roleService.isExistId(id);
 
     if (!isExistId) {
-      throw new BadRequestException(`数据 id：${id} 不存在！`);
+      throw new ApiException(`数据 id：${id} 不存在！`, 404);
     }
     return await this.roleService.selectPermissionsByRoleId(baseFindByIdDto);
   }
@@ -155,7 +156,7 @@ export class RoleController {
     const isExistId = await this.roleService.isExistId(id);
 
     if (!isExistId) {
-      throw new BadRequestException(`数据 id：${id} 不存在！`);
+      throw new ApiException(`数据 id：${id} 不存在！`, 404);
     }
     return await this.roleService.bindPermissions(bindRolePermissionDto);
   }

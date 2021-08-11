@@ -33,6 +33,7 @@ import { Utils } from '../../utils';
 import { ExcelService } from '../excel/excel.service';
 import { ArticleType, IsCommentType, StatusType } from '../../constants/dicts.enum';
 import { ArticleDict, IsCommentDict, StatusDict } from '../../constants/dicts';
+import { ApiException } from '../../common/exception/api-exception';
 
 @Controller('article')
 @ApiTags('文章')
@@ -122,7 +123,7 @@ export class ArticleController {
     const { id } = updateArticleDto;
     const isExistId = await this.articleService.isExistId(id);
     if (!isExistId) {
-      throw new BadRequestException(`数据 id：${id} 不存在！`);
+      throw new ApiException(`数据 id：${id} 不存在！`, 404);
     }
 
     return this.articleService.update(updateArticleDto, curUser);
@@ -133,7 +134,7 @@ export class ArticleController {
   @ApiOperation({ summary: '回收站移入' })
   async inRecycle(@CurUser() curUser, @Body() baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto): Promise<any> {
     baseModifyStatusByIdsDto.status = 3;
-    return await this.articleService.updateRecycle(baseModifyStatusByIdsDto, curUser);
+    return await this.articleService.updateStatus(baseModifyStatusByIdsDto, curUser);
   }
 
   @Post('outRecycle')
@@ -141,7 +142,7 @@ export class ArticleController {
   @ApiOperation({ summary: '回收站移出' })
   async outRecycle(@CurUser() curUser, @Body() baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto): Promise<any> {
     baseModifyStatusByIdsDto.status = 2;
-    return await this.articleService.updateRecycle(baseModifyStatusByIdsDto, curUser);
+    return await this.articleService.updateStatus(baseModifyStatusByIdsDto, curUser);
   }
 
   @Post('deleteRecycle')
@@ -152,7 +153,7 @@ export class ArticleController {
     const isExistId = await this.articleService.isExistId(id);
 
     if (!isExistId) {
-      throw new BadRequestException(`数据 id：${id} 不存在！`);
+      throw new ApiException(`数据 id：${id} 不存在！`, 404);
     }
 
     return await this.articleService.deleteById(baseFindByIdDto, curUser);
@@ -162,6 +163,6 @@ export class ArticleController {
   @Auth('cms:article:clearRecycle')
   @ApiOperation({ summary: '回收站清空/删除（批量）' })
   async clearRecycle(@CurUser() curUser, @Body() baseFindByIdsDto: BaseFindByIdsDto): Promise<any> {
-    return await this.articleService.clearRecycle(baseFindByIdsDto, curUser);
+    return await this.articleService.deleteAll(baseFindByIdsDto, curUser);
   }
 }

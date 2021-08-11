@@ -1,4 +1,5 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
+import { ApiException } from 'src/common/exception/api-exception';
 import * as svgCaptcha from 'svg-captcha';
 import { CacheService } from '../cache/cache.service';
 
@@ -50,7 +51,7 @@ export class CaptchaService {
     const captcha = await this.cacheService.get(key);
 
     if (!captcha) {
-      throw new ForbiddenException('验证码错误！');
+      throw new ApiException('验证码错误！', 1007);
     }
 
     return captcha;

@@ -9,6 +9,7 @@ import { UserAddress } from './entities/user-address.entity';
 import { SearchUserAddressDto } from './dto/search-user-address.dto';
 import { LimitUserAddressDto } from './dto/limit-user-address.dto';
 import { UserService } from '../user/user.service';
+import { ApiException } from 'src/common/exception/api-exception';
 
 @Injectable()
 export class UserAddressService {
@@ -153,7 +154,7 @@ export class UserAddressService {
       .execute();
 
     if (!ret) {
-      throw new BadRequestException('删除异常！');
+      throw new ApiException('删除异常！',500);
     }
 
     return null;

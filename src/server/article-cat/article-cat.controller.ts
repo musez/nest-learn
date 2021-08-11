@@ -33,6 +33,7 @@ import { Utils } from '../../utils';
 import { ExcelService } from '../excel/excel.service';
 import { StatusType } from '../../constants/dicts.enum';
 import { StatusDict } from '../../constants/dicts';
+import { ApiException } from '../../common/exception/api-exception';
 
 @Controller('articleCat')
 @ApiTags('文章栏目')
@@ -123,7 +124,7 @@ export class ArticleCatController {
     const isExistId = await this.articleCatService.isExistId(id);
 
     if (!isExistId) {
-      throw new BadRequestException(`数据 id：${id} 不存在！`);
+      throw new ApiException(`数据 id：${id} 不存在！`, 404);
     }
 
     return await this.articleCatService.deleteById(baseFindByIdDto, curUser);

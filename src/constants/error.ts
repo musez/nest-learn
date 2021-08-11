@@ -14,8 +14,6 @@ export class ErrorCode {
   static readonly Forbidden: CodeAndMsg = { CODE: 403, MESSAGE: '没有权限执行此操作！' };
   static readonly NotFound: CodeAndMsg = { CODE: 404, MESSAGE: '找不到请求的资源！' };
 
-  static readonly DataNotExists: CodeAndMsg = { CODE: 800, MESSAGE: '数据不存在！' };
-
   static readonly LoginError: CodeAndMsg = { CODE: 1000, MESSAGE: '用户名或密码错误！' };
   static readonly LoginTimeout: CodeAndMsg = { CODE: 1001, MESSAGE: '登录超时！' };
   static readonly InActive: CodeAndMsg = { CODE: 1002, MESSAGE: '账号未激活！' };

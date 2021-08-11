@@ -26,6 +26,7 @@ import { SearchTopicDto } from './dto/search-top.dto';
 import { Topic } from './entities/topic.entity';
 import { LimitTopicDto } from './dto/limit-top.dto';
 import { StatusType } from '../../constants/dicts.enum';
+import { ApiException } from 'src/common/exception/api-exception';
 
 @ApiTags('评论')
 @Controller('topic')
@@ -103,7 +104,7 @@ export class TopicController {
     const { id } = updateTopicDto;
     const isExistId = await this.topicService.isExistId(id);
     if (!isExistId) {
-      throw new BadRequestException(`数据 id：${id} 不存在！`);
+      throw new ApiException(`数据 id：${id} 不存在！`, 404);
     }
 
     return this.topicService.update(updateTopicDto, curUser);
@@ -117,7 +118,7 @@ export class TopicController {
     const isExistId = await this.topicService.isExistId(id);
 
     if (!isExistId) {
-      throw new BadRequestException(`数据 id：${id} 不存在！`);
+      throw new ApiException(`数据 id：${id} 不存在！`, 404);
     }
 
     return await this.topicService.deleteById(baseFindByIdDto, curUser);

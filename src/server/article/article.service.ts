@@ -12,6 +12,7 @@ import { ArticleDataCat } from '../article-data-cat/entities/article-data-cat.en
 import { ArticleCat } from '../article-cat/entities/article-cat.entity';
 import { ArticleCatService } from '../article-cat/article-cat.service';
 import { ArticleDataCatService } from '../article-data-cat/article-data-cat.service';
+import { ApiException } from '../../common/exception/api-exception';
 
 @Injectable()
 export class ArticleService {
@@ -34,7 +35,7 @@ export class ArticleService {
 
     const ret = await this.articleRepository.save(article);
     if (!ret) {
-      throw new BadRequestException('操作异常！');
+      throw new ApiException('操作异常！', 500);
     }
     return await this.bindArticleCats(ret.id, cats);
   }
@@ -155,7 +156,7 @@ export class ArticleService {
       relations: ['articleDataCats'],
     });
     if (!ret) {
-      throw new BadRequestException(`数据 id：${id} 不存在！`);
+      throw new ApiException(`数据 id：${id} 不存在！`, 404);
     }
     if (ret?.articleDataCats) {
       const ids = ret.articleDataCats.map(v => v.id);
@@ -196,7 +197,7 @@ export class ArticleService {
 
     const ret = await this.articleRepository.update(id, article);
     if (!ret) {
-      throw new BadRequestException('操作异常！');
+      throw new ApiException('操作异常！', 500);
     }
 
     return await this.bindArticleCats(id, cats);
@@ -205,7 +206,7 @@ export class ArticleService {
   /**
    * 回收站状态修改
    */
-  async updateRecycle(baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto, curUser): Promise<void> {
+  async updateStatus(baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto, curUser): Promise<void> {
     const { ids, status } = baseModifyStatusByIdsDto;
 
     await this.articleRepository.createQueryBuilder()
@@ -231,7 +232,7 @@ export class ArticleService {
   /**
    * 回收站清空
    */
-  async clearRecycle(baseFindByIdsDto: BaseFindByIdsDto, curUser): Promise<void> {
+  async deleteAll(baseFindByIdsDto: BaseFindByIdsDto, curUser): Promise<void> {
     const { ids } = baseFindByIdsDto;
 
     await this.articleRepository.createQueryBuilder()
@@ -265,7 +266,7 @@ export class ArticleService {
 
     const deleteRet = await this.articleDataCatService.deleteByArticleId(id);
     if (!deleteRet) {
-      throw new BadRequestException('操作异常！');
+      throw new ApiException('操作异常！', 500);
     }
 
     const ret = await this.articleDataCatService.insertBatch(articleDataCats);
@@ -273,7 +274,7 @@ export class ArticleService {
     if (ret) {
       return null;
     } else {
-      throw new BadRequestException('操作异常！');
+      throw new ApiException('操作异常！', 500);
     }
   }
 }

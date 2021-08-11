@@ -1,6 +1,6 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, Like } from 'typeorm';
+import { Repository } from 'typeorm';
 import { Utils } from './../../utils/index';
 import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -22,6 +22,7 @@ import { GroupService } from '../group/group.service';
 import { RoleService } from '../role/role.service';
 import { PermissionService } from '../permission/permission.service';
 import { ApiException } from '../../common/exception/api-exception';
+import { ApiErrorCode } from '../../constants/api-error-code.enum';
 
 @Injectable()
 export class UserService {
@@ -67,13 +68,13 @@ export class UserService {
     });
 
     if (!findOneRet) {
-      throw new BadRequestException(`数据 id：${baseFindByIdDto} 不存在！`);
+      throw new ApiException(`数据 id：${baseFindByIdDto} 不存在！`, 404);
     }
 
     const incrementRet = await this.userRepository.increment(findOneRet, 'loginCount', 1);
 
     if (!incrementRet) {
-      throw new BadRequestException('登录次数异常！');
+      throw new ApiException('登录次数异常！',500);
     }
 
     return incrementRet;
@@ -119,7 +120,7 @@ export class UserService {
     if (saveRet && saveUIRet) {
       return createUserDto;
     } else {
-      throw new BadRequestException('保存异常！');
+      throw new ApiException('保存异常！',500);
     }
   }
 
@@ -169,7 +170,7 @@ export class UserService {
     if (saveRet && saveUIRet) {
       return createUserDto;
     } else {
-      throw new BadRequestException('保存异常！');
+      throw new ApiException('保存异常！',500);
     }
   }
 
@@ -214,7 +215,7 @@ export class UserService {
       .getMany();
 
     if (!ret) {
-      throw new BadRequestException('查询异常！');
+      throw new ApiException('查询异常！',500);
     }
 
     return ret;
@@ -266,7 +267,7 @@ export class UserService {
       .getManyAndCount();
 
     if (!ret) {
-      throw new BadRequestException('查询异常！');
+      throw new ApiException('查询异常！',500);
     }
 
     return {
@@ -287,7 +288,7 @@ export class UserService {
       relations: ['userinfo', 'userGroups', 'userRoles'],
     });
     if (!ret) {
-      throw new ApiException(`数据 id：${id} 不存在！`, 10001);
+      throw new ApiException(`数据 id：${id} 不存在！`, 404);
     }
 
     if (ret?.userGroups) {
@@ -377,7 +378,7 @@ export class UserService {
     if (updateRet && updateUIRet) {
       return updateUserDto;
     } else {
-      throw new BadRequestException('更新异常！');
+      throw new ApiException('更新异常！',500);
     }
   }
 
@@ -394,7 +395,7 @@ export class UserService {
       .execute();
 
     if (!ret) {
-      throw new BadRequestException('更新异常！');
+      throw new ApiException('更新异常！',500);
     }
 
     return ret;
@@ -413,7 +414,7 @@ export class UserService {
       .execute();
 
     if (!ret) {
-      throw new BadRequestException('删除异常！');
+      throw new ApiException('删除异常！',500);
     }
 
     return null;
@@ -432,7 +433,7 @@ export class UserService {
       .execute();
 
     if (!ret) {
-      throw new BadRequestException('删除异常！');
+      throw new ApiException('删除异常！',500);
     }
 
     return null;
@@ -462,7 +463,7 @@ export class UserService {
 
     const deleteRet = await this.userGroupService.deleteByUserId(id);
     if (!deleteRet) {
-      throw new BadRequestException('操作异常！');
+      throw new ApiException('操作异常！', 500);
     }
 
     const ret = await this.userGroupService.insertBatch(userGroups);
@@ -470,7 +471,7 @@ export class UserService {
     if (ret) {
       return null;
     } else {
-      throw new BadRequestException('操作异常！');
+      throw new ApiException('操作异常！', 500);
     }
   }
 
@@ -513,7 +514,7 @@ export class UserService {
 
     const deleteRet = await this.userRoleService.deleteByUserId(id);
     if (!deleteRet) {
-      throw new BadRequestException('操作异常！');
+      throw new ApiException('操作异常！', 500);
     }
 
     const ret = await this.userRoleService.insertBatch(userRoles);
@@ -521,7 +522,7 @@ export class UserService {
     if (ret) {
       return null;
     } else {
-      throw new BadRequestException('操作异常！');
+      throw new ApiException('操作异常！', 500);
     }
   }
 

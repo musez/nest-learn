@@ -22,6 +22,7 @@ import { CreateUserDto } from '../user/dto/create-user.dto';
 import { UserService } from '../user/user.service';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { CurUser } from '../../common/decorators/cur-user.decorator';
+import { ApiException } from '../../common/exception/api-exception';
 
 @ApiTags('认证')
 @Controller('auth')
@@ -54,7 +55,7 @@ export class AuthController {
       await this.userService.incrementLoginCount(curUser!.id);// 登录次数 +1
       return this.authService.login(curUser);
     } else {
-      throw new UnauthorizedException('验证码错误！');
+      throw new ApiException('验证码错误！', 1007);
     }
   }
 
@@ -64,12 +65,12 @@ export class AuthController {
     const { userName, userPwd, userPwdConfirm } = registerUserDto;
 
     if (userPwd !== userPwdConfirm) {
-      throw new BadRequestException('密码不一致！');
+      throw new ApiException('密码不一致！', 1008);
     }
 
     const isExistUserName = await this.userService.isExistUserName(userName);
     if (isExistUserName) {
-      throw new BadRequestException(`用户名：${userName} 已存在！`);
+      throw new ApiException(`用户名：${userName} 已存在！`, 1009);
     }
 
     await this.userService.insert(registerUserDto);
@@ -83,7 +84,7 @@ export class AuthController {
     const { id } = curUser;
     const isExistId = await this.userService.isExistId(id);
     if (!isExistId) {
-      throw new BadRequestException(`数据 id：${id} 不存在！`);
+      throw new ApiException(`数据 id：${id} 不存在！`, 404);
     }
 
     return await this.userService.selectPermissionsByUserId(id);
@@ -98,7 +99,7 @@ export class AuthController {
 
     const isExistId = await this.userService.isExistId(id);
     if (!isExistId) {
-      throw new BadRequestException(`数据 id：${id} 不存在！`);
+      throw new ApiException(`数据 id：${id} 不存在！`, 404);
     }
 
     return await this.userService.selectAuthByUserId(id);

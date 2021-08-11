@@ -18,6 +18,7 @@ import { LimitDictDto } from './dto/limit-dict.dto';
 import { DictItemService } from '../dict-item/dict-item.service';
 import { Auth } from '../../common/decorators/auth.decorator';
 import { AuthGuard } from '../../common/guards/auth.guard';
+import { ApiException } from '../../common/exception/api-exception';
 
 @ApiTags('字典')
 @Controller('dict')
@@ -66,7 +67,7 @@ export class DictController {
     const isExistId = await this.dictService.isExistId(id);
 
     if (!isExistId) {
-      throw new BadRequestException(`数据 id：${id} 不存在！`);
+      throw new ApiException(`数据 id：${id} 不存在！`, 404);
     }
 
     return this.dictService.update(updateDictDto, curUser);
@@ -80,7 +81,7 @@ export class DictController {
     const isExistId = await this.dictService.isExistId(id);
 
     if (!isExistId) {
-      throw new BadRequestException(`数据 id：${id} 不存在！`);
+      throw new ApiException(`数据 id：${id} 不存在！`, 404);
     }
 
     return await this.dictService.deleteById(baseFindByIdDto, curUser);

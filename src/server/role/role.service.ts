@@ -17,6 +17,7 @@ import { Group } from '../group/entities/group.entity';
 import { UserGroup } from '../user-group/entities/user-group.entity';
 import { User } from '../user/entities/user.entity';
 import { UserRole } from '../user-role/entities/user-role.entity';
+import { ApiException } from 'src/common/exception/api-exception';
 
 @Injectable()
 export class RoleService {
@@ -104,7 +105,7 @@ export class RoleService {
       relations: ['rolePermissions'],
     });
     if (!ret) {
-      throw new BadRequestException(`数据 id：${id} 不存在！`);
+      throw new ApiException(`数据 id：${id} 不存在！`, 404);
     }
     if (ret?.rolePermissions) {
       const ids = ret.rolePermissions.map(v => v.id);
@@ -238,7 +239,7 @@ export class RoleService {
 
     const deleteRet = await this.rolePermissionService.deleteByRoleId(id);
     if (!deleteRet) {
-      throw new BadRequestException('操作异常！');
+      throw new ApiException('操作异常！', 500);
     }
 
     const ret = await this.rolePermissionService.insertBatch(rolePermissions);
@@ -246,7 +247,7 @@ export class RoleService {
     if (ret) {
       return null;
     } else {
-      throw new BadRequestException('操作异常！');
+      throw new ApiException('操作异常！', 500);
     }
   }
 }

@@ -39,6 +39,7 @@ import { Utils } from '../../utils';
 import { ExcelService } from '../excel/excel.service';
 import { StatusType } from '../../constants/dicts.enum';
 import { StatusDict } from '../../constants/dicts';
+import { ApiException } from '../../common/exception/api-exception';
 
 @Controller('group')
 @ApiTags('用户组')
@@ -114,7 +115,7 @@ export class GroupController {
     const isExistId = await this.groupService.isExistId(id);
 
     if (!isExistId) {
-      throw new BadRequestException(`数据 id：${id} 不存在！`);
+      throw new ApiException(`数据 id：${id} 不存在！`, 404);
     }
 
     return this.groupService.update(updateGroupDto, curUser);
@@ -128,7 +129,7 @@ export class GroupController {
     const isExistId = await this.groupService.isExistId(id);
 
     if (!isExistId) {
-      throw new BadRequestException(`数据 id：${id} 不存在！`);
+      throw new ApiException(`数据 id：${id} 不存在！`, 404);
     }
 
     return await this.groupService.deleteById(baseFindByIdDto, curUser);
@@ -149,7 +150,7 @@ export class GroupController {
     const isExistId = await this.groupService.isExistId(id);
 
     if (!isExistId) {
-      throw new BadRequestException(`数据 id：${id} 不存在！`);
+      throw new ApiException(`数据 id：${id} 不存在！`, 404);
     }
 
     return await this.groupService.selectRolesByGroupId(baseFindByIdDto);
@@ -163,7 +164,7 @@ export class GroupController {
     const isExistId = await this.groupService.isExistId(id);
 
     if (!isExistId) {
-      throw new BadRequestException(`数据 id：${id} 不存在！`);
+      throw new ApiException(`数据 id：${id} 不存在！`, 404);
     }
 
     return await this.groupService.bindRoles(bindGroupRoleDto);

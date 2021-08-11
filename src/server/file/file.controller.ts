@@ -30,6 +30,7 @@ import { BaseFindByIdDto, BaseFindByIdsDto, BasePageDto } from '../base.dto';
 import { CurUser } from '../../common/decorators/cur-user.decorator';
 import { Auth } from '../../common/decorators/auth.decorator';
 import { AuthGuard } from '../../common/guards/auth.guard';
+import { ApiException } from '../../common/exception/api-exception';
 
 @Controller('file')
 @ApiTags('文件')
@@ -70,7 +71,7 @@ export class FileController {
   @UseInterceptors(FileInterceptor('file'))
   upload(@CurUser() curUser, @UploadedFile() file, @Body() body) {
     if (Utils.isNil(file)) {
-      throw new BadRequestException(`文件不能为空！`);
+      throw new ApiException(`文件不能为空！`, 404);
     }
 
     // 获取 body 中的文本参数
@@ -133,7 +134,7 @@ export class FileController {
   }]))
   uploads(@CurUser() curUser, @UploadedFiles() files, @Body() body) {
     if (Utils.isNil(files.files)) {
-      throw new BadRequestException(`文件不能为空！`);
+      throw new ApiException(`文件不能为空！`, 404);
     }
 
     // 获取 body 中的文本参数
@@ -214,7 +215,7 @@ export class FileController {
     const isExistId = await this.fileService.isExistId(id);
 
     if (!isExistId) {
-      throw new BadRequestException(`数据 id：${id} 不存在！`);
+      throw new ApiException(`数据 id：${id} 不存在！`, 404);
     }
 
     return await this.fileService.deleteById(baseFindByIdDto, curUser);

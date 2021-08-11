@@ -2,6 +2,7 @@ import { ExceptionFilter, Catch, ArgumentsHost, HttpException, HttpStatus } from
 import { Request, Response } from 'express';
 import dayjs = require('dayjs');
 import { Logger } from '../../utils/log4js';
+import { ApiException } from '../exception/api-exception';
 
 // 捕获请求异常类型
 // 可以传递多个参数，所以你可以通过逗号分隔来为多个类型的异常设置过滤器。
@@ -33,13 +34,24 @@ export class HttpExceptionFilter implements ExceptionFilter {
 
     // 此刻的时间
     const nowDate = dayjs(Date.now()).format('YYYY-MM-DD HH:mm:ss');
-    response.status(200).json({
-      code: status,
-      data: null,
-      message: `${status >= 500 ? 'Service Error' : 'Client Error'}`,
-      time: nowDate,
-      path: request.url,
-      error: exception.message,
-    });
+
+    if (exception instanceof ApiException) {
+      response.status(200).json({
+        code: exception.getErrorCode(),
+        data: null,
+        message: exception.getErrorMessage(),
+        time: nowDate,
+        path: request.url,
+      });
+    } else {
+      response.status(200).json({
+        code: status,
+        data: null,
+        message: `${status >= 500 ? '服务端错误！' : '客户端错误！'}`,
+        time: nowDate,
+        path: request.url,
+        error: exception.message,
+      });
+    }
   }
 }

@@ -32,6 +32,7 @@ import { Utils } from '../../utils';
 import { ExcelService } from '../excel/excel.service';
 import { StatusType } from '../../constants/dicts.enum';
 import { OrgDict, StatusDict } from '../../constants/dicts';
+import { ApiException } from 'src/common/exception/api-exception';
 
 @Controller('org')
 @ApiTags('组织机构')
@@ -117,7 +118,7 @@ export class OrgController {
     const isExistId = await this.orgService.isExistId(id);
 
     if (!isExistId) {
-      throw new BadRequestException(`数据 id：${id} 不存在！`);
+      throw new ApiException(`数据 id：${id} 不存在！`, 404);
     }
     return this.orgService.update(updateOrgDto, curUser);
   }
@@ -130,7 +131,7 @@ export class OrgController {
     const isExistId = await this.orgService.isExistId(id);
 
     if (!isExistId) {
-      throw new BadRequestException(`数据 id：${id} 不存在！`);
+      throw new ApiException(`数据 id：${id} 不存在！`, 404);
     }
 
     return await this.orgService.deleteById(baseFindByIdDto, curUser);

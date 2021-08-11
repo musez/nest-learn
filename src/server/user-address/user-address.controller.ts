@@ -13,6 +13,7 @@ import { SearchUserAddressDto } from './dto/search-user-address.dto';
 import { LimitUserAddressDto } from './dto/limit-user-address.dto';
 import { StatusType } from '../../constants/dicts.enum';
 import { StatusDict } from '../../constants/dicts';
+import { ApiException } from 'src/common/exception/api-exception';
 
 @ApiTags('用户地址')
 @ApiBasicAuth('token')
@@ -30,7 +31,7 @@ export class UserAddressController {
   async add(@CurUser() curUser, @Body() createDto: CreateUserAddressDto) {
     const { userId } = createDto;
     if (!userId) {
-      throw new BadRequestException(`数据 userId：${userId} 不存在！`);
+      throw new ApiException(`数据 userId：${userId} 不存在！`, 404);
     }
     return this.userAddressService.insert(createDto, curUser);
   }
@@ -95,7 +96,7 @@ export class UserAddressController {
     const { id } = updateDto;
     const isExistId = await this.userAddressService.isExistId(id);
     if (!isExistId) {
-      throw new BadRequestException(`数据 id：${id} 不存在！`);
+      throw new ApiException(`数据 id：${id} 不存在！`, 404);
     }
 
     return this.userAddressService.update(updateDto, curUser);
@@ -109,7 +110,7 @@ export class UserAddressController {
     const isExistId = await this.userAddressService.isExistId(id);
 
     if (!isExistId) {
-      throw new BadRequestException(`数据 id：${id} 不存在！`);
+      throw new ApiException(`数据 id：${id} 不存在！`, 404);
     }
 
     return await this.userAddressService.deleteById(baseFindByIdDto, curUser);

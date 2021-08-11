@@ -21,6 +21,7 @@ import { Utils } from '../../utils';
 import { ExcelService } from '../excel/excel.service';
 import { PermissionHiddenType, PermissionType, StatusType } from '../../constants/dicts.enum';
 import { PermissionDict, PermissionHiddenDict, StatusDict } from '../../constants/dicts';
+import { ApiException } from 'src/common/exception/api-exception';
 
 @Controller('permission')
 @ApiTags('权限')
@@ -111,7 +112,7 @@ export class PermissionController {
     const isExistId = await this.permissionService.isExistId(id);
 
     if (!isExistId) {
-      throw new BadRequestException(`数据 id：${id} 不存在！`);
+      throw new ApiException(`数据 id：${id} 不存在！`, 404);
     }
     return this.permissionService.update(updatePermissionDto, curUser);
   }
@@ -124,7 +125,7 @@ export class PermissionController {
     const isExistId = await this.permissionService.isExistId(id);
 
     if (!isExistId) {
-      throw new BadRequestException(`数据 id：${id} 不存在！`);
+      throw new ApiException(`数据 id：${id} 不存在！`, 404);
     }
     return await this.permissionService.deleteById(baseFindByIdDto, curUser);
   }

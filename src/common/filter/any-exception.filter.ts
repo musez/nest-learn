@@ -24,25 +24,14 @@ export class AllExceptionsFilter implements ExceptionFilter {
     // `;
     // Logger.error(logFormat);
 
+    // 此刻的时间
     const nowDate = dayjs(Date.now()).format('YYYY-MM-DD HH:mm:ss');
-    if (exception instanceof ApiException) {
-      // 此刻的时间
-      response.status(200).json({
-        code: exception.getErrorCode(),
-        data: null,
-        message: exception.getErrorMessage(),
-        time: nowDate,
-        path: request.url,
-      });
-    } else {
-      // 此刻的时间
-      response.status(200).json({
-        code: status,
-        data: null,
-        message: `Service Error: ${exception}`,
-        time: nowDate,
-        path: request.url,
-      });
-    }
+    response.status(200).json({
+      code: status,
+      data: null,
+      message: `Service Error: ${exception}`,
+      time: nowDate,
+      path: request.url,
+    });
   }
 }
