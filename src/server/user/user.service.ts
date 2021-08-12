@@ -22,7 +22,7 @@ import { GroupService } from '../group/group.service';
 import { RoleService } from '../role/role.service';
 import { PermissionService } from '../permission/permission.service';
 import { ApiException } from '../../common/exception/api-exception';
-import { ApiErrorCode } from '../../constants/api-error-code.enum';
+import { Area } from '../area/entities/area.entity';
 
 @Injectable()
 export class UserService {
@@ -74,7 +74,7 @@ export class UserService {
     const incrementRet = await this.userRepository.increment(findOneRet, 'loginCount', 1);
 
     if (!incrementRet) {
-      throw new ApiException('登录次数异常！',500);
+      throw new ApiException('登录次数异常！', 500);
     }
 
     return incrementRet;
@@ -120,7 +120,7 @@ export class UserService {
     if (saveRet && saveUIRet) {
       return createUserDto;
     } else {
-      throw new ApiException('保存异常！',500);
+      throw new ApiException('保存异常！', 500);
     }
   }
 
@@ -142,7 +142,6 @@ export class UserService {
         user.userPwd = this.cryptoUtil.encryptPassword(userPwd);
       }
       user.createBy = curUser!.id;
-
 
       const userinfo = new Userinfo();
       if (!Utils.isBlank(item.provinceId)) {
@@ -170,7 +169,7 @@ export class UserService {
     if (saveRet && saveUIRet) {
       return createUserDto;
     } else {
-      throw new ApiException('保存异常！',500);
+      throw new ApiException('保存异常！', 500);
     }
   }
 
@@ -181,7 +180,6 @@ export class UserService {
     const { userName, name, userType, mobile, email } = searchUserDto;
 
     const queryConditionList = [];
-    const orderCondition = {};
     if (!Utils.isBlank(userName)) {
       queryConditionList.push('user.userName LIKE :userName');
     }
@@ -202,6 +200,11 @@ export class UserService {
 
     const ret = await this.userRepository.createQueryBuilder('user')
       .innerJoinAndSelect('user.userinfo', 'userinfo')
+      .leftJoinAndSelect(Area, 'p', 'p.id = userinfo.provinceId')
+      .leftJoinAndSelect(Area, 'c', 'c.id = userinfo.cityId')
+      .leftJoinAndSelect(Area, 'd', 'd.id = userinfo.districtId')
+      .select('user.*, userinfo.provinceId, userinfo.cityId, userinfo.districtId, userinfo.address ')
+      .addSelect(`p.areaName AS provinceName, c.areaName AS cityName, d.areaName AS districtName`)
       .where(queryCondition, {
         userName: `%${userName}%`,
         name: `%${name}%`,
@@ -212,10 +215,30 @@ export class UserService {
       .orderBy({
         'user.createTime': 'DESC',
       })
-      .getMany();
+      .getRawMany();
+
+    ret.forEach(v => {
+      const ui = {
+        provinceId: v.provinceId,
+        cityId: v.cityId,
+        districtId: v.districtId,
+        address: v.address,
+        provinceName: v.provinceName,
+        cityName: v.cityName,
+        districtName: v.districtName,
+      };
+      v['userinfo'] = ui;
+
+      delete v.provinceId;
+      delete v.cityId;
+      delete v.address;
+      delete v.provinceName;
+      delete v.cityName;
+      delete v.districtName;
+    });
 
     if (!ret) {
-      throw new ApiException('查询异常！',500);
+      throw new ApiException('查询异常！', 500);
     }
 
     return ret;
@@ -252,6 +275,11 @@ export class UserService {
 
     const ret = await this.userRepository.createQueryBuilder('user')
       .innerJoinAndSelect('user.userinfo', 'userinfo')
+      .leftJoinAndSelect(Area, 'p', 'p.id = userinfo.provinceId')
+      .leftJoinAndSelect(Area, 'c', 'c.id = userinfo.cityId')
+      .leftJoinAndSelect(Area, 'd', 'd.id = userinfo.districtId')
+      .select('user.*, userinfo.provinceId, userinfo.cityId, userinfo.districtId, userinfo.address ')
+      .addSelect(`p.areaName AS provinceName, c.areaName AS cityName, d.areaName AS districtName`)
       .where(queryCondition, {
         userName: `%${userName}%`,
         name: `%${name}%`,
@@ -264,15 +292,51 @@ export class UserService {
       .orderBy({
         'user.createTime': 'DESC',
       })
-      .getManyAndCount();
+      .getRawMany();
+
+    ret.forEach(v => {
+      const ui = {
+        provinceId: v.provinceId,
+        cityId: v.cityId,
+        districtId: v.districtId,
+        address: v.address,
+        provinceName: v.provinceName,
+        cityName: v.cityName,
+        districtName: v.districtName,
+      };
+      v['userinfo'] = ui;
+
+      delete v.provinceId;
+      delete v.cityId;
+      delete v.address;
+      delete v.provinceName;
+      delete v.cityName;
+      delete v.districtName;
+    });
+
+    const retCount = await this.userRepository.createQueryBuilder('user')
+      .innerJoinAndSelect('user.userinfo', 'userinfo')
+      .leftJoinAndSelect(Area, 'p', 'p.id = userinfo.provinceId')
+      .leftJoinAndSelect(Area, 'c', 'c.id = userinfo.cityId')
+      .leftJoinAndSelect(Area, 'd', 'd.id = userinfo.districtId')
+      .select('user.*, userinfo.provinceId, userinfo.cityId, userinfo.districtId, userinfo.address ')
+      .addSelect(`p.areaName AS provinceName, c.areaName AS cityName, d.areaName AS districtName`)
+      .where(queryCondition, {
+        userName: `%${userName}%`,
+        name: `%${name}%`,
+        userType: userType,
+        mobile: `%${mobile}%`,
+        email: `%${email}%`,
+      })
+      .getCount();
 
     if (!ret) {
-      throw new ApiException('查询异常！',500);
+      throw new ApiException('查询异常！', 500);
     }
 
     return {
-      list: ret[0],
-      total: ret[1],
+      list: ret,
+      total: retCount,
       page: page,
       limit: limit,
     };
@@ -378,7 +442,7 @@ export class UserService {
     if (updateRet && updateUIRet) {
       return updateUserDto;
     } else {
-      throw new ApiException('更新异常！',500);
+      throw new ApiException('更新异常！', 500);
     }
   }
 
@@ -395,7 +459,7 @@ export class UserService {
       .execute();
 
     if (!ret) {
-      throw new ApiException('更新异常！',500);
+      throw new ApiException('更新异常！', 500);
     }
 
     return ret;
@@ -414,7 +478,7 @@ export class UserService {
       .execute();
 
     if (!ret) {
-      throw new ApiException('删除异常！',500);
+      throw new ApiException('删除异常！', 500);
     }
 
     return null;
@@ -433,7 +497,7 @@ export class UserService {
       .execute();
 
     if (!ret) {
-      throw new ApiException('删除异常！',500);
+      throw new ApiException('删除异常！', 500);
     }
 
     return null;
