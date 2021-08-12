@@ -68,7 +68,7 @@ export class TopicController {
   }
 
   @Get('exportExcel')
-  @Auth('account:topic:exportExcel')
+  @Auth('system:topic:exportExcel')
   @ApiOperation({ summary: '列表（Excel 导出）' })
   async exportExcel(@Query() searchTopicDto: SearchTopicDto, @Res() res): Promise<any> {
     const list = await this.topicService.selectList(searchTopicDto);

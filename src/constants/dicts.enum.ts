@@ -49,8 +49,8 @@ export enum TopicType {
 
 // 评论回复类型
 export enum ReplyType {
-  COMMENT = 0,
-  REPLY = 1,
+  COMMENT = 0,// 评论
+  REPLY = 1,// 回复
 }
 
 // 字典类型

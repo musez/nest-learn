@@ -21,7 +21,7 @@ export class Comment extends BaseEntity {
   @Column('uuid', { comment: '回复目标 id' })
   replyId: string;
 
-  @Column('tinyint', { comment: '回复类型' })
+  @Column('tinyint', { comment: '回复类型（0：评论；1：回复）' })
   replyType: ReplyType;
 
   @Column('text', { comment: '回复内容', nullable: true })

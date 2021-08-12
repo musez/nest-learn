@@ -18,7 +18,7 @@ export class BasePageDto {
   readonly limit?: number;
 
   @ApiPropertyOptional({ description: '排序的方式: ASC, DESC' })
-  readonly order: 'DESC' | 'ASC';
+  readonly order: string;
 }
 
 export class BaseSearchDto {

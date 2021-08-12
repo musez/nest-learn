@@ -35,25 +35,28 @@ export class TopicService {
 
     const queryConditionList = [];
     if (!Utils.isBlank(content)) {
-      queryConditionList.push('content LIKE :content');
+      queryConditionList.push('topic.content LIKE :content');
     }
     if (!Utils.isBlank(topicType)) {
-      queryConditionList.push('topicType = :topicType');
+      queryConditionList.push('topic.topicType = :topicType');
     }
     if (!Utils.isBlank(status)) {
-      queryConditionList.push('status = :status');
+      queryConditionList.push('topic.status = :status');
     }
-    queryConditionList.push('deleteStatus = 0');
+    queryConditionList.push('topic.deleteStatus = 0');
     const queryCondition = queryConditionList.join(' AND ');
 
-    return await this.topicRepository.createQueryBuilder()
+    return await this.topicRepository.createQueryBuilder('topic')
+      .leftJoinAndSelect(User, 'u', 'u.id = topic.fromUid')
+      .select('topic.*')
+      .addSelect('u.userName', 'fromUname')
       .where(queryCondition, {
         content: `%${content}%`,
         topicType: topicType,
         status: status,
       })
-      .orderBy({ 'createTime': 'DESC' })
-      .getMany();
+      .orderBy({ 'topic.createTime': 'DESC' })
+      .getRawMany();
   }
 
   /**
@@ -79,13 +82,10 @@ export class TopicService {
     queryConditionList.push('topic.deleteStatus = 0');
     const queryCondition = queryConditionList.join(' AND ');
 
-    const res = await this.topicRepository.createQueryBuilder('topic')
-      .select('topic')
+    const ret = await this.topicRepository.createQueryBuilder('topic')
       .leftJoinAndSelect(User, 'u', 'u.id = topic.fromUid')
-      // .addSelect(subQuery =>
-      //   subQuery.select('u.userName')
-      //     .from(User, 'u')
-      //     .where('u.id = fromUid'), 'fromUname')
+      .select('topic.*')
+      .addSelect('u.userName', 'fromUname')
       .where(queryCondition, {
         content: `%${content}%`,
         topicType: topicType,
@@ -94,11 +94,22 @@ export class TopicService {
       .skip(offset)
       .take(limit)
       .orderBy({ 'topic.createTime': 'DESC' })
-      .getManyAndCount();
+      .getRawMany();
+
+    const retCount = await this.topicRepository.createQueryBuilder('topic')
+      .leftJoinAndSelect(User, 'u', 'u.id = topic.fromUid')
+      .select('topic.*')
+      .addSelect('u.userName', 'fromUname')
+      .where(queryCondition, {
+        content: `%${content}%`,
+        topicType: topicType,
+        status: status,
+      })
+      .getCount();
 
     return {
-      list: res[0],
-      total: res[1],
+      list: ret,
+      total: retCount,
       page: page,
       limit: limit,
     };

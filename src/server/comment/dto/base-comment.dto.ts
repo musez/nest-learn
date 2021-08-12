@@ -44,7 +44,7 @@ export class BaseCommentDto {
   @IsUUID('all')
   readonly toUid: string;
 
-  @ApiProperty({ description: '状态（0：禁用；1：启用）', example: 0 })
+  @ApiProperty({ description: '状态（0：禁用；1：启用）' })
   @IsDefined({ message: '状态不能为空！' })
   @IsNotEmpty({ message: '状态不能为空！' })
   @Transform(value => Number.parseInt(value))

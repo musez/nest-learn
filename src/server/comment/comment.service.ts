@@ -9,6 +9,7 @@ import { BaseFindByIdDto, BaseFindByIdsDto } from '../base.dto';
 import { LimitCommentDto } from './dto/limit-comment.dto';
 import { SearchCommentDto } from './dto/search-comment.dto';
 import { Org } from '../org/entities/org.entity';
+import { User } from '../user/entities/user.entity';
 
 @Injectable()
 export class CommentService {
@@ -33,25 +34,32 @@ export class CommentService {
 
     const queryConditionList = [];
     if (!Utils.isBlank(content)) {
-      queryConditionList.push('content LIKE :content');
+      queryConditionList.push('comment.content LIKE :content');
     }
     if (!Utils.isBlank(replyType)) {
-      queryConditionList.push('replyType = :replyType');
+      queryConditionList.push('comment.replyType = :replyType');
     }
     if (!Utils.isBlank(status)) {
-      queryConditionList.push('status = :status');
+      queryConditionList.push('comment.status = :status');
     }
-    queryConditionList.push('deleteStatus = 0');
+    queryConditionList.push('comment.deleteStatus = 0');
     const queryCondition = queryConditionList.join(' AND ');
 
-    return await this.commentRepository.createQueryBuilder()
+    return await this.commentRepository.createQueryBuilder('comment')
+      .leftJoinAndSelect(User, 'uf', 'uf.id = comment.fromUid')
+      .leftJoinAndSelect(User, 'ut', 'ut.id = comment.fromUid')
+      .select('comment.*')
+      .addSelect(`
+       uf.userName AS fromUname,
+       ut.userName AS toUname
+       `)
       .where(queryCondition, {
         content: `%${content}%`,
         replyType: replyType,
         status: status,
       })
-      .orderBy({ 'createTime': 'DESC' })
-      .getMany();
+      .orderBy({ 'comment.createTime': 'DESC' })
+      .getRawMany();
   }
 
   /**
@@ -66,18 +74,25 @@ export class CommentService {
 
     const queryConditionList = [];
     if (!Utils.isBlank(content)) {
-      queryConditionList.push('content LIKE :content');
+      queryConditionList.push('comment.content LIKE :content');
     }
     if (!Utils.isBlank(replyType)) {
-      queryConditionList.push('replyType = :replyType');
+      queryConditionList.push('comment.replyType = :replyType');
     }
     if (!Utils.isBlank(status)) {
-      queryConditionList.push('status = :status');
+      queryConditionList.push('comment.status = :status');
     }
-    queryConditionList.push('deleteStatus = 0');
+    queryConditionList.push('comment.deleteStatus = 0');
     const queryCondition = queryConditionList.join(' AND ');
 
-    const res = await this.commentRepository.createQueryBuilder()
+    const ret = await this.commentRepository.createQueryBuilder('comment')
+      .leftJoinAndSelect(User, 'uf', 'uf.id = comment.fromUid')
+      .leftJoinAndSelect(User, 'ut', 'ut.id = comment.toUid')
+      .select('comment.*')
+      .addSelect(`
+       uf.userName AS fromUname,
+       ut.userName AS toUname
+       `)
       .where(queryCondition, {
         content: `%${content}%`,
         replyType: replyType,
@@ -85,12 +100,27 @@ export class CommentService {
       })
       .skip(offset)
       .take(limit)
-      .orderBy({ 'createTime': 'DESC' })
-      .getManyAndCount();
+      .orderBy({ 'comment.createTime': 'DESC' })
+      .getRawMany();
+
+    const retCount = await this.commentRepository.createQueryBuilder('comment')
+      .leftJoinAndSelect(User, 'uf', 'uf.id = comment.fromUid')
+      .leftJoinAndSelect(User, 'ut', 'ut.id = comment.fromUid')
+      .select('comment.*')
+      .addSelect(`
+       uf.userName AS fromUname,
+       ut.userName AS toUname
+       `)
+      .where(queryCondition, {
+        content: `%${content}%`,
+        replyType: replyType,
+        status: status,
+      })
+      .getCount();
 
     return {
-      list: res[0],
-      total: res[1],
+      list: ret,
+      total: retCount,
       page: page,
       limit: limit,
     };

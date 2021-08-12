@@ -13,7 +13,6 @@ import {
   BeforeUpdate, AfterLoad,
 } from 'typeorm';
 import { BaseEntity } from '../../base.entity';
-import { ArticleCat } from '../../article-cat/entities/article-cat.entity';
 import { ArticleType, IsCommentType, StatusType } from '../../../constants/dicts.enum';
 import { ArticleDataCat } from '../../article-data-cat/entities/article-data-cat.entity';
 import * as dayjs from 'dayjs';
@@ -108,13 +107,13 @@ export class Article extends BaseEntity {
   @Column('int', { comment: '分享量', default: () => 0 })
   shareCount: number;
 
-  @Column('tinyint', { comment: '允许评论', default: IsCommentType.ENABLE })
+  @Column('tinyint', { comment: '允许评论（0：禁用；1：启用）', default: IsCommentType.ENABLE })
   isComment: IsCommentType;
 
   @Column('int', { comment: '评论量', default: () => 0 })
   commentCount: number;
 
-  @Column('tinyint', { comment: '状态（0：未发布；1：发布；2：草稿；3：回收站）', default: StatusType.ENABLE })
+  @Column('tinyint', { comment: '状态（0：未发布；1：发布；2：草稿；3：回收站）', default: StatusType.DRAFT })
   status: StatusType;
 
   @OneToMany(type => ArticleDataCat, articleDataCat => articleDataCat.article)
