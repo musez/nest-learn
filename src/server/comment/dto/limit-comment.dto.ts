@@ -4,6 +4,9 @@ import { IsDefined, IsInt, IsNotEmpty } from 'class-validator';
 import { Transform } from 'class-transformer';
 
 export class LimitCommentDto extends PartialType(BasePageDto) {
+  @ApiPropertyOptional({ description: '评论 id' })
+  readonly commentId?: string;
+
   @ApiPropertyOptional({ description: '评论内容' })
   readonly content?: string;
 

@@ -18,8 +18,8 @@ export class Comment extends BaseEntity {
   @Column('uuid', { comment: '评论 id' })
   commentId: string;
 
-  // 表示回复目标的 id，如果 reply_type 是 comment 的话，那么 reply_id ＝commit_id，如果 reply_type 是 reply 的话，这表示这条回复的父回复
-  @Column('uuid', { comment: '回复目标 id。如果 reply_type 是 comment 的话，那么 reply_id ＝commit_id，如果 reply_type 是 reply 的话，这表示这条回复的父回复' })
+  // 表示回复目标的 id，如果 replyType 是 comment 的话，那么 replyId = commentId，如果 replyType 是 reply 的话，这表示这条回复的父回复
+  @Column('uuid', { comment: '回复目标 id。如果 replyType 是 comment 的话，那么 replyId = commentId，如果 replyType 是 reply 的话，这表示这条回复的父回复' })
   replyId: string;
 
   // 表示回复的类型，因为回复可以是针对评论的回复（comment），也可以是针对回复的回复（reply）， 通过这个字段来区分两种情景

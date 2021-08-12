@@ -31,9 +31,12 @@ export class TopicService {
    * 获取列表
    */
   async selectList(searchTopicDto: SearchTopicDto): Promise<any[]> {
-    const { content, topicType, status } = searchTopicDto;
+    const {topicId, content, topicType, status } = searchTopicDto;
 
     const queryConditionList = [];
+    if (!Utils.isBlank(topicId)) {
+      queryConditionList.push('topic.topicId = :topicId');
+    }
     if (!Utils.isBlank(content)) {
       queryConditionList.push('topic.content LIKE :content');
     }
@@ -51,6 +54,7 @@ export class TopicService {
       .select('topic.*')
       .addSelect('u.userName', 'fromUname')
       .where(queryCondition, {
+        topicId: topicId,
         content: `%${content}%`,
         topicType: topicType,
         status: status,

@@ -13,6 +13,8 @@ import { ArticleCat } from '../article-cat/entities/article-cat.entity';
 import { ArticleCatService } from '../article-cat/article-cat.service';
 import { ArticleDataCatService } from '../article-data-cat/article-data-cat.service';
 import { ApiException } from '../../common/exception/api-exception';
+import { TopicService } from '../topic/topic.service';
+import { CommentService } from '../comment/comment.service';
 
 @Injectable()
 export class ArticleService {
@@ -21,6 +23,8 @@ export class ArticleService {
     private readonly articleRepository: Repository<Article>,
     private readonly articleCatService: ArticleCatService,
     private readonly articleDataCatService: ArticleDataCatService,
+    private readonly topicService: TopicService,
+    private readonly commentService: CommentService,
   ) {
   }
 
@@ -276,5 +280,27 @@ export class ArticleService {
     } else {
       throw new ApiException('操作异常！', 500);
     }
+  }
+
+  /**
+   * 绑定栏目
+   */
+  async selectCommentById(baseFindByIdDto: BaseFindByIdDto): Promise<any> {
+    const { id } = baseFindByIdDto;
+
+    const [topicRet, commentRet] = await Promise.all([
+      this.topicService.selectList({
+        topicId: id,
+        topicType: 0,
+      }),
+      this.commentService.selectList({
+        commentId: id,
+      }),
+    ]);
+
+    return {
+      topic: topicRet,
+      comment: commentRet,
+    };
   }
 }

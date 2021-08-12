@@ -165,4 +165,11 @@ export class ArticleController {
   async clearRecycle(@CurUser() curUser, @Body() baseFindByIdsDto: BaseFindByIdsDto): Promise<any> {
     return await this.articleService.deleteAll(baseFindByIdsDto, curUser);
   }
+
+  @Get('findCommentById')
+  @Auth('cms:article:findCommentById')
+  @ApiOperation({ summary: '获取评论和回复（主键 id）' })
+  async findCommentById(@Query() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
+    return await this.articleService.selectCommentById(baseFindByIdDto);
+  }
 }

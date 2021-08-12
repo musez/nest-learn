@@ -4,7 +4,7 @@ export enum ApiErrorCode {
   ERROR = 500, // 失败
 
   PARAMS_ERROR = 400, // 参数错误
-  FORBIDDEN = 403, // 没有权限执行此操作
+  FORBIDDEN = 401, // 没有权限执行此操作
   NOT_FOUND = 404, // 找不到请求的资源
 
   LOGIN_ERROR = 1000, // 用户名或密码错误

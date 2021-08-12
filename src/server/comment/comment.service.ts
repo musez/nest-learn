@@ -30,9 +30,12 @@ export class CommentService {
    * 获取列表
    */
   async selectList(searchCommentDto: SearchCommentDto): Promise<any[]> {
-    const { content, replyType, status } = searchCommentDto;
+    const { commentId, content, replyType, status } = searchCommentDto;
 
     const queryConditionList = [];
+    if (!Utils.isBlank(commentId)) {
+      queryConditionList.push('comment.commentId = :commentId');
+    }
     if (!Utils.isBlank(content)) {
       queryConditionList.push('comment.content LIKE :content');
     }
@@ -54,6 +57,7 @@ export class CommentService {
        ut.userName AS toUname
        `)
       .where(queryCondition, {
+        commentId: commentId,
         content: `%${content}%`,
         replyType: replyType,
         status: status,
