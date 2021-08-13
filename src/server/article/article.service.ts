@@ -283,7 +283,7 @@ export class ArticleService {
   }
 
   /**
-   * 绑定栏目
+   * 获取评论
    */
   async selectCommentById(baseFindByIdDto: BaseFindByIdDto): Promise<any> {
     const { id } = baseFindByIdDto;
@@ -298,9 +298,25 @@ export class ArticleService {
       }),
     ]);
 
-    return {
-      topic: topicRet,
-      comment: commentRet,
-    };
+    const replayTree = Utils.construct(commentRet, {
+      id: 'id',
+      pid: 'replyId',
+      children: 'children',
+    });
+
+    topicRet.forEach(topic => {
+      replayTree.forEach(comment => {
+        if (topic.id === comment.replyId) {
+          if (topic?.children) {
+            topic['children'].push(comment);
+          } else {
+            topic['children'] = [];
+            topic['children'].push(comment);
+          }
+        }
+      });
+    });
+
+    return topicRet;
   }
 }

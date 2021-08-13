@@ -50,7 +50,7 @@ export class CommentService {
 
     return await this.commentRepository.createQueryBuilder('comment')
       .leftJoinAndSelect(User, 'uf', 'uf.id = comment.fromUid')
-      .leftJoinAndSelect(User, 'ut', 'ut.id = comment.fromUid')
+      .leftJoinAndSelect(User, 'ut', 'ut.id = comment.toUid')
       .select('comment.*')
       .addSelect(`
        uf.userName AS fromUname,
@@ -62,7 +62,7 @@ export class CommentService {
         replyType: replyType,
         status: status,
       })
-      .orderBy({ 'comment.createTime': 'DESC' })
+      .orderBy({ 'comment.createTime': 'ASC' })
       .getRawMany();
   }
 
@@ -71,12 +71,15 @@ export class CommentService {
    */
   async selectListPage(limitCommentDto: LimitCommentDto): Promise<any> {
     // eslint-disable-next-line prefer-const
-    let { page, limit, content, replyType, status } = limitCommentDto;
+    let { page, limit, commentId, content, replyType, status } = limitCommentDto;
     page = page ? page : 1;
     limit = limit ? limit : 10;
     const offset = (page - 1) * limit;
 
     const queryConditionList = [];
+    if (!Utils.isBlank(commentId)) {
+      queryConditionList.push('comment.commentId = :commentId');
+    }
     if (!Utils.isBlank(content)) {
       queryConditionList.push('comment.content LIKE :content');
     }
@@ -89,7 +92,7 @@ export class CommentService {
     queryConditionList.push('comment.deleteStatus = 0');
     const queryCondition = queryConditionList.join(' AND ');
 
-    const ret = await this.commentRepository.createQueryBuilder('comment')
+    const queryBuilder = this.commentRepository.createQueryBuilder('comment')
       .leftJoinAndSelect(User, 'uf', 'uf.id = comment.fromUid')
       .leftJoinAndSelect(User, 'ut', 'ut.id = comment.toUid')
       .select('comment.*')
@@ -98,28 +101,19 @@ export class CommentService {
        ut.userName AS toUname
        `)
       .where(queryCondition, {
+        commentId: commentId,
         content: `%${content}%`,
         replyType: replyType,
         status: status,
-      })
+      });
+
+    const ret = await queryBuilder
       .skip(offset)
       .take(limit)
-      .orderBy({ 'comment.createTime': 'DESC' })
+      .orderBy({ 'comment.createTime': 'ASC' })
       .getRawMany();
 
-    const retCount = await this.commentRepository.createQueryBuilder('comment')
-      .leftJoinAndSelect(User, 'uf', 'uf.id = comment.fromUid')
-      .leftJoinAndSelect(User, 'ut', 'ut.id = comment.fromUid')
-      .select('comment.*')
-      .addSelect(`
-       uf.userName AS fromUname,
-       ut.userName AS toUname
-       `)
-      .where(queryCondition, {
-        content: `%${content}%`,
-        replyType: replyType,
-        status: status,
-      })
+    const retCount = await queryBuilder
       .getCount();
 
     return {
