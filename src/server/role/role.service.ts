@@ -101,13 +101,16 @@ export class RoleService {
   async selectById(baseFindByIdDto: BaseFindByIdDto): Promise<Role> {
     const { id } = baseFindByIdDto;
 
-    const ret = await this.roleRepository.findOne(id, {
+    const ret = await this.roleRepository.findOne({
       relations: ['rolePermissions'],
+      where: {
+        id: id,
+      },
     });
     if (!ret) {
       throw new ApiException(`数据 id：${id} 不存在！`, 404);
     }
-    if (ret?.rolePermissions) {
+    if (ret?.rolePermissions?.length > 0) {
       const ids = ret.rolePermissions.map(v => v.id);
 
       const rolePermissionRet = await this.rolePermissionService.selectByRoleIds({
@@ -138,23 +141,22 @@ export class RoleService {
    * 获取角色（用户 id）
    */
   async selectByUserId(baseFindByIdDto: BaseFindByIdDto): Promise<any> {
+    const { id } = baseFindByIdDto;
     const userGroupRole = await this.roleRepository.createQueryBuilder('r')
       .innerJoinAndSelect(GroupRole, 'gr', 'r.id = gr.roleId')
       .innerJoinAndSelect(Group, 'g', 'gr.groupId = g.id')
       .innerJoinAndSelect(UserGroup, 'ug', 'g.id = ug.groupId')
       .innerJoinAndSelect(User, 'u', 'u.id = ug.userId')
-      // .select('r')
       .where('u.id = :id AND u.deleteStatus = 0 AND g.deleteStatus = 0 AND r.deleteStatus = 0', {
-        id: baseFindByIdDto,
+        id: id,
       })
       .getMany();
 
     const userRole = await this.roleRepository.createQueryBuilder('r')
       .innerJoinAndSelect(UserRole, 'ur', 'r.id = ur.roleId')
       .innerJoinAndSelect(User, 'u', 'u.id = ur.userId')
-      // .select('r')
       .where('u.id = :id AND u.deleteStatus = 0 AND r.deleteStatus = 0', {
-        id: baseFindByIdDto,
+        id: id,
       })
       .getMany();
 

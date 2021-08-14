@@ -2,11 +2,8 @@ import {
   Controller,
   Get,
   Post,
-  Request,
   UseGuards,
   Body,
-  BadRequestException,
-  UnauthorizedException,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -102,6 +99,6 @@ export class AuthController {
       throw new ApiException(`数据 id：${id} 不存在！`, 404);
     }
 
-    return await this.userService.selectAuthByUserId(id);
+    return await this.userService.selectAuthByUserId({ id });
   }
 }

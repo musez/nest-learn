@@ -103,7 +103,7 @@ export class DictService {
    */
   async selectById(baseFindByIdDto: BaseFindByIdDto): Promise<Dict> {
     const { id } = baseFindByIdDto;
-    return await this.dictRepository.findOne(id, {});
+    return await this.dictRepository.findOne(id);
   }
 
   /**

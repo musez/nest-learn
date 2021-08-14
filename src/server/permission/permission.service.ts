@@ -219,6 +219,7 @@ export class PermissionService {
    * 获取权限（用户 id）
    */
   async selectByUserId(baseFindByIdDto: BaseFindByIdDto): Promise<any> {
+    const { id } = baseFindByIdDto;
     const userGroupPermissions = await this.permissionRepository.createQueryBuilder('p')
       .innerJoinAndSelect(RolePermission, 'rp', 'p.id = rp.permissionId')
       .innerJoinAndSelect(Role, 'r', 'rp.roleId = r.id')
@@ -226,9 +227,8 @@ export class PermissionService {
       .innerJoinAndSelect(Group, 'g', 'gr.groupId = g.id')
       .innerJoinAndSelect(UserGroup, 'ug', 'g.id = ug.groupId')
       .innerJoinAndSelect(User, 'u', 'u.id = ug.userId')
-      // .select('p')
       .where('u.id = :id AND u.deleteStatus = 0 AND g.deleteStatus = 0 AND r.deleteStatus = 0 AND p.deleteStatus = 0', {
-        id: baseFindByIdDto,
+        id: id,
       })
       .getMany();
 
@@ -237,9 +237,8 @@ export class PermissionService {
       .innerJoinAndSelect(Role, 'r', 'rp.roleId = r.id')
       .innerJoinAndSelect(UserRole, 'ur', 'r.id = ur.roleId')
       .innerJoinAndSelect(User, 'u', 'u.id = ur.userId')
-      // .select('p')
       .where('u.id = :id AND u.deleteStatus = 0 AND r.deleteStatus = 0 AND p.deleteStatus = 0', {
-        id: baseFindByIdDto,
+        id: id,
       })
       .getMany();
 

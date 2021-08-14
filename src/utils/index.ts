@@ -98,6 +98,10 @@ export class Utils {
     return _.concat(...args);
   }
 
+  static flatMapDeep(...args) {
+    return _.flatMapDeep(...args);
+  }
+
   static construct(...args) {
     return construct(...args);
   }
@@ -130,5 +134,52 @@ export class Utils {
       event.initMouseEvent('click', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
     }
     aLink.dispatchEvent(event);
+  }
+
+  /**
+   * 根据 ID 获取该节点的所有父节点的对象
+   */
+  static getParentId(list, id) {
+    for (let i in list) {
+      if (list[i].id == id) {
+        return [list[i]];
+      }
+      if (list[i].children) {
+        let node = this.getParentId(list[i].children, id);
+        if (node !== undefined) {
+          return node.concat(list[i]);
+        }
+      }
+    }
+  }
+
+  /**
+   * 根据 ID 获取该节点的对象
+   */
+  static getId(list, id) {
+    for (let i in list) {
+      if (list[i].id == id) {
+        return [list[i]];
+      }
+      if (list[i].children) {
+        let node = this.getParentId(list[i].children, id);
+        if (node !== undefined) {
+          return node;
+        }
+      }
+    }
+  }
+
+  /**
+   * 根据 ID 获取所有子节点的对象，首先把该节点的对象找出来，上面 getId() 这个方法
+   */
+  static getNodeId(list, newNodeId = []) {
+    for (let i in list) {
+      newNodeId.push(list[i]);
+      if (list[i].children) {
+        this.getNodeId(list[i].children, newNodeId);
+      }
+    }
+    return newNodeId;
   }
 }

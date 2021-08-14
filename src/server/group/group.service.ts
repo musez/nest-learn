@@ -1,6 +1,6 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, Like } from 'typeorm';
+import { Repository } from 'typeorm';
 import { Utils } from './../../utils/index';
 import { CreateGroupDto } from './dto/create-group.dto';
 import { UpdateGroupDto } from './dto/update-group.dto';
@@ -95,13 +95,16 @@ export class GroupService {
    */
   async selectById(baseFindByIdDto: BaseFindByIdDto): Promise<Group> {
     const { id } = baseFindByIdDto;
-    const ret = await this.groupRepository.findOne(id, {
+    const ret = await this.groupRepository.findOne({
       relations: ['groupRoles'],
+      where: {
+        id: id,
+      },
     });
     if (!ret) {
       throw new ApiException(`数据 id：${id} 不存在！`, 404);
     }
-    if (ret?.groupRoles) {
+    if (ret?.groupRoles?.length > 0) {
       const ids = ret.groupRoles.map(v => v.id);
 
       const groupRoleRet = await this.groupRoleService.selectByGroupIds({
@@ -120,12 +123,12 @@ export class GroupService {
    * 获取角色（用户 id）
    */
   async selectByUserId(baseFindByIdDto: BaseFindByIdDto): Promise<any> {
+    const { id } = baseFindByIdDto;
     const userGroup = await this.groupRepository.createQueryBuilder('g')
       .innerJoinAndSelect(UserGroup, 'ug', 'g.id = ug.groupId')
       .innerJoinAndSelect(User, 'u', 'u.id = ug.userId')
-      // .select('g')
       .where('u.id = :id AND u.deleteStatus = 0 AND g.deleteStatus = 0', {
-        id: baseFindByIdDto,
+        id: id,
       })
       .getMany();
 

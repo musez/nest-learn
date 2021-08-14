@@ -8,21 +8,21 @@ import { exec } from 'child_process';
 export class TaskService {
   private readonly logger = new Logger(TaskService.name);
 
-  @Cron('45 * * * * *')
-  handleMysqlBak() {
-    exec('mysqldump -uroot -pdmkj_root cms_nest > e:/bak/sql/mysql.sql', (err, stdout, stderr) => {
-      // 将 mysql 执行命令作为参数输入
-
-      if (err) {
-        console.log(err);
-        return;
-      }
-      console.log('同步备份中.....');
-      console.log(`stdout: ${stdout}`);
-      console.log(`stderr: ${stderr}`);
-    });
-    console.log('备份结束');
-  }
+  // @Cron('45 * * * * *')
+  // handleMysqlBak() {
+  //   exec('mysqldump -uroot -pdmkj_root cms_nest > e:/bak/sql/mysql.sql', (err, stdout, stderr) => {
+  //     // 将 mysql 执行命令作为参数输入
+  //
+  //     if (err) {
+  //       console.log(err);
+  //       return;
+  //     }
+  //     console.log('同步备份中.....');
+  //     console.log(`stdout: ${stdout}`);
+  //     console.log(`stderr: ${stderr}`);
+  //   });
+  //   console.log('备份结束');
+  // }
 
   // * * * * * *
   // | | | | | |

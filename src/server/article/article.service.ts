@@ -1,6 +1,6 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, Like } from 'typeorm';
+import { Repository } from 'typeorm';
 import { Utils } from './../../utils/index';
 import { CreateArticleDto } from './dto/create-article.dto';
 import { UpdateArticleDto } from './dto/update-article.dto';
@@ -15,6 +15,7 @@ import { ArticleDataCatService } from '../article-data-cat/article-data-cat.serv
 import { ApiException } from '../../common/exception/api-exception';
 import { TopicService } from '../topic/topic.service';
 import { CommentService } from '../comment/comment.service';
+import { LimitArticleTopDto } from './dto/limit-article-topic.dto';
 
 @Injectable()
 export class ArticleService {
@@ -156,13 +157,16 @@ export class ArticleService {
    */
   async selectById(baseFindByIdDto: BaseFindByIdDto): Promise<Article> {
     const { id } = baseFindByIdDto;
-    const ret = await this.articleRepository.findOne(id, {
+    const ret = await this.articleRepository.findOne({
       relations: ['articleDataCats'],
+      where: {
+        id: id,
+      },
     });
     if (!ret) {
       throw new ApiException(`数据 id：${id} 不存在！`, 404);
     }
-    if (ret?.articleDataCats) {
+    if (ret?.articleDataCats?.length > 0) {
       const ids = ret.articleDataCats.map(v => v.id);
 
       const articleDataCatRet = await this.articleDataCatService.selectByArticleDataCatIds({
@@ -298,16 +302,28 @@ export class ArticleService {
       }),
     ]);
 
-    const replayTree = Utils.construct(commentRet, {
+    // 转化成树
+    const commentTree = Utils.construct(commentRet, {
       id: 'id',
       pid: 'replyId',
       children: 'children',
     });
 
+    // 扁平化树
+    commentTree.forEach(comment => {
+      let children = [];
+
+      if (comment?.children?.length) {
+        children = Utils.getNodeId(comment.children);
+      }
+      comment['children'] = children;
+    });
+
+    // 扁平化树与评论组装
     topicRet.forEach(topic => {
-      replayTree.forEach(comment => {
+      commentTree.forEach(comment => {
         if (topic.id === comment.replyId) {
-          if (topic?.children) {
+          if (topic?.children?.length) {
             topic['children'].push(comment);
           } else {
             topic['children'] = [];
@@ -318,5 +334,64 @@ export class ArticleService {
     });
 
     return topicRet;
+  }
+
+  /**
+   * 获取评论
+   */
+  async selectCommentPageById(limitArticleTopDto: LimitArticleTopDto): Promise<any> {
+    const { id, page, limit } = limitArticleTopDto;
+
+    const [topicRet, commentRet] = await Promise.all([
+      this.topicService.selectListPage({
+        page,
+        limit,
+        topicId: id,
+        topicType: 0,
+      }),
+      this.commentService.selectList({
+        commentId: id,
+      }),
+    ]);
+
+    // 转化成树
+    const commentTree = Utils.construct(commentRet, {
+      id: 'id',
+      pid: 'replyId',
+      children: 'children',
+    });
+
+    // 扁平化树
+    commentTree.forEach(comment => {
+      let children = [];
+
+      if (comment?.children?.length > 0) {
+        children = Utils.getNodeId(comment.children);
+      }
+      comment['children'] = children;
+    });
+
+    const { list, total } = topicRet;
+
+    // 扁平化树与评论组装
+    list.forEach(topic => {
+      commentTree.forEach(comment => {
+        if (topic.id === comment.replyId) {
+          if (topic?.children?.length) {
+            topic['children'].push(comment);
+          } else {
+            topic['children'] = [];
+            topic['children'].push(comment);
+          }
+        }
+      });
+    });
+
+    return {
+      list: list,
+      total: total,
+      page: page,
+      limit: limit,
+    };
   }
 }

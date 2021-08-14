@@ -58,20 +58,20 @@ export class UserService {
   /**
    * 修改登录次数
    */
-  async incrementLoginCount(baseFindByIdDto: BaseFindByIdDto): Promise<any> {
+  async incrementLoginCount(id: string): Promise<any> {
     const findOneRet = await this.userRepository.findOne({
       where: {
-        id: baseFindByIdDto,
+        id: id,
         deleteStatus: 0,
       },
       select: ['id'],
     });
 
     if (!findOneRet) {
-      throw new ApiException(`数据 id：${baseFindByIdDto} 不存在！`, 404);
+      throw new ApiException(`数据 id：${id} 不存在！`, 404);
     }
 
-    const incrementRet = await this.userRepository.increment(findOneRet, 'loginCount', 1);
+    const incrementRet = await this.userRepository.increment({ id: id }, 'loginCount', 1);
 
     if (!incrementRet) {
       throw new ApiException('登录次数异常！', 500);
@@ -348,14 +348,17 @@ export class UserService {
   async selectById(baseFindByIdDto: BaseFindByIdDto): Promise<User> {
     const { id } = baseFindByIdDto;
 
-    const ret = await this.userRepository.findOne(id, {
+    const ret = await this.userRepository.findOne({
       relations: ['userinfo', 'userGroups', 'userRoles'],
+      where: {
+        id: id,
+      },
     });
     if (!ret) {
       throw new ApiException(`数据 id：${id} 不存在！`, 404);
     }
 
-    if (ret?.userGroups) {
+    if (ret?.userGroups?.length > 0) {
       const ids = ret.userGroups.map(v => v.id);
 
       const userGroupRet = await this.userGroupService.selectByUserIds({
@@ -368,7 +371,7 @@ export class UserService {
       });
     }
 
-    if (ret?.userRoles) {
+    if (ret?.userRoles?.length > 0) {
       const ids = ret.userRoles.map(v => v.id);
 
       const userRoleRet = await this.userRoleService.selectByUserIds({
@@ -617,7 +620,6 @@ export class UserService {
    */
   async selectAuthByUserId(baseFindByIdDto: BaseFindByIdDto): Promise<any> {
     const userRet = await this.selectById(baseFindByIdDto);
-
     const [permissionRet, roleRet, groupRet] = await Promise.all([
       this.permissionService.selectByUserId(baseFindByIdDto),
       this.roleService.selectByUserId(baseFindByIdDto),
