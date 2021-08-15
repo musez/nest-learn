@@ -51,9 +51,12 @@ export class HolidayService {
    * 获取列表
    */
   async selectList(searchHolidayDto: SearchHolidayDto): Promise<any[]> {
-    const { name, weekday, restType } = searchHolidayDto;
+    const { year, name, weekday, restType } = searchHolidayDto;
 
     const queryConditionList = [];
+    if (!Utils.isBlank(year)) {
+      queryConditionList.push('date LIKE :year');
+    }
     if (!Utils.isBlank(name)) {
       queryConditionList.push('name LIKE :name');
     }
@@ -69,6 +72,7 @@ export class HolidayService {
 
     return await this.holidayRepository.createQueryBuilder()
       .where(queryCondition, {
+        year: `${year}%`,
         name: `%${name}%`,
         weekday: weekday,
         restType: restType,
@@ -85,12 +89,15 @@ export class HolidayService {
    */
   async selectListPage(limitHolidayDto: LimitHolidayDto): Promise<any> {
     // eslint-disable-next-line prefer-const
-    let { page, limit, name, weekday, restType } = limitHolidayDto;
+    let { page, limit, year, name, weekday, restType } = limitHolidayDto;
     page = page ? page : 1;
     limit = limit ? limit : 10;
     const offset = (page - 1) * limit;
 
     const queryConditionList = [];
+    if (!Utils.isBlank(year)) {
+      queryConditionList.push('date LIKE :year');
+    }
     if (!Utils.isBlank(name)) {
       queryConditionList.push('name LIKE :name');
     }
@@ -106,6 +113,7 @@ export class HolidayService {
 
     const res = await this.holidayRepository.createQueryBuilder()
       .where(queryCondition, {
+        year: `${year}%`,
         name: `%${name}%`,
         weekday: weekday,
         restType: restType,

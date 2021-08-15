@@ -17,6 +17,7 @@ import {
   FilesInterceptor,
   FileFieldsInterceptor,
 } from '@nestjs/platform-express';
+import *  as dayjs from 'dayjs';
 import { HolidayService } from './holiday.service';
 import { CreateHolidayDto } from './dto/create-holiday.dto';
 import { UpdateHolidayDto } from './dto/update-holiday.dto';
@@ -142,6 +143,13 @@ export class HolidayController {
     ];
     const rows = await this.excelService.importExcel(columns, file);
 
+    // 自动获取周几
+    rows.forEach(v => {
+      if (v.date) {
+        v.weekday = dayjs(v.date).day();
+      }
+    });
+
     const successRows = [],
       errorRows = [];
 
@@ -165,7 +173,7 @@ export class HolidayController {
 
     const ret = await this.holidayService.insertBatch(rows, curUser);
     if (!ret) {
-      throw new ApiException(`操作异常！`,500);
+      throw new ApiException(`操作异常！`, 500);
     }
 
     return {

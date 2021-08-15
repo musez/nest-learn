@@ -3,6 +3,9 @@ import { IsNotEmpty, IsString, IsInt, IsUUID } from 'class-validator';
 import { BasePageDto } from '../../base.dto';
 
 export class LimitHolidayDto extends PartialType(BasePageDto) {
+  @ApiPropertyOptional({ description: '年份' })
+  readonly year?: number;
+
   @ApiPropertyOptional({ description: '名称' })
   readonly name?: string;
 
