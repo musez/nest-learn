@@ -273,7 +273,7 @@ export class UserService {
     queryConditionList.push('deleteStatus = 0');
     const queryCondition = queryConditionList.join(' AND ');
 
-    const ret = await this.userRepository.createQueryBuilder('user')
+    const queryBuilder = this.userRepository.createQueryBuilder('user')
       .innerJoinAndSelect('user.userinfo', 'userinfo')
       .leftJoinAndSelect(Area, 'p', 'p.id = userinfo.provinceId')
       .leftJoinAndSelect(Area, 'c', 'c.id = userinfo.cityId')
@@ -286,7 +286,9 @@ export class UserService {
         userType: userType,
         mobile: `%${mobile}%`,
         email: `%${email}%`,
-      })
+      });
+
+    const ret = await queryBuilder
       .skip(offset)
       .take(limit)
       .orderBy({
@@ -314,20 +316,7 @@ export class UserService {
       delete v.districtName;
     });
 
-    const retCount = await this.userRepository.createQueryBuilder('user')
-      .innerJoinAndSelect('user.userinfo', 'userinfo')
-      .leftJoinAndSelect(Area, 'p', 'p.id = userinfo.provinceId')
-      .leftJoinAndSelect(Area, 'c', 'c.id = userinfo.cityId')
-      .leftJoinAndSelect(Area, 'd', 'd.id = userinfo.districtId')
-      .select('user.*, userinfo.provinceId, userinfo.cityId, userinfo.districtId, userinfo.address ')
-      .addSelect(`p.areaName AS provinceName, c.areaName AS cityName, d.areaName AS districtName`)
-      .where(queryCondition, {
-        userName: `%${userName}%`,
-        name: `%${name}%`,
-        userType: userType,
-        mobile: `%${mobile}%`,
-        email: `%${email}%`,
-      })
+    const retCount = await queryBuilder
       .getCount();
 
     if (!ret) {

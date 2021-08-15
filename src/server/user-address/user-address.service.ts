@@ -16,7 +16,7 @@ export class UserAddressService {
   constructor(
     private readonly userService: UserService,
     @InjectRepository(UserAddress)
-    private readonly repository: Repository<UserAddress>,
+    private readonly userAddressRepository: Repository<UserAddress>,
   ) {
   }
 
@@ -30,7 +30,7 @@ export class UserAddressService {
     const ret = await this.userService.selectById({ id: createDto.userId });
     userAddress.user = ret;
 
-    return await this.repository.save(userAddress);
+    return await this.userAddressRepository.save(userAddress);
   }
 
   /**
@@ -49,7 +49,7 @@ export class UserAddressService {
     queryConditionList.push('deleteStatus = 0');
     const queryCondition = queryConditionList.join(' AND ');
 
-    return await this.repository.createQueryBuilder()
+    return await this.userAddressRepository.createQueryBuilder()
       .where(queryCondition, {
         name: `%${name}%`,
         mobile: `%${mobile}%`,
@@ -78,7 +78,7 @@ export class UserAddressService {
     queryConditionList.push('deleteStatus = 0');
     const queryCondition = queryConditionList.join(' AND ');
 
-    const res = await this.repository.createQueryBuilder()
+    const res = await this.userAddressRepository.createQueryBuilder()
       .where(queryCondition, {
         name: `%${name}%`,
         mobile: `%${mobile}%`,
@@ -101,14 +101,14 @@ export class UserAddressService {
    */
   async selectById(baseFindByIdDto: BaseFindByIdDto): Promise<UserAddress> {
     const { id } = baseFindByIdDto;
-    return await this.repository.findOne(id);
+    return await this.userAddressRepository.findOne(id);
   }
 
   /**
    * 是否存在（主键 id）
    */
   async isExistId(id: string): Promise<boolean> {
-    const isExist = await this.repository.findOne(id);
+    const isExist = await this.userAddressRepository.findOne(id);
     if (Utils.isNil(isExist)) {
       return false;
     } else {
@@ -125,7 +125,7 @@ export class UserAddressService {
     let userAddress = new UserAddress();
     userAddress = Utils.dto2entity(updateDto, userAddress);
 
-    await this.repository.update(id, userAddress);
+    await this.userAddressRepository.update(id, userAddress);
   }
 
   /**
@@ -134,7 +134,7 @@ export class UserAddressService {
   async deleteById(baseFindByIdDto: BaseFindByIdDto, curUser): Promise<void> {
     const { id } = baseFindByIdDto;
 
-    await this.repository.createQueryBuilder()
+    await this.userAddressRepository.createQueryBuilder()
       .update(UserAddress)
       .set({ deleteStatus: 1, deleteBy: curUser!.id, deleteTime: Utils.now() })
       .where('id = :id', { id: id })
@@ -147,7 +147,7 @@ export class UserAddressService {
   async deleteByIds(baseFindByIdsDto: BaseFindByIdsDto, curUser): Promise<void> {
     const { ids } = baseFindByIdsDto;
 
-    const ret = await this.repository.createQueryBuilder()
+    const ret = await this.userAddressRepository.createQueryBuilder()
       .update(UserAddress)
       .set({ deleteStatus: 1, deleteBy: curUser!.id, deleteTime: Utils.now() })
       .where('ids in (:ids)', { ids: ids })

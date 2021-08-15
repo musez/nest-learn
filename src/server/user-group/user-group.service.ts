@@ -32,14 +32,15 @@ export class UserGroupService {
   /**
    * 获取用户组
    */
-  async selectByUserId(baseFindByIdDto: BaseFindByIdDto): Promise<UserGroup[]> {
-    return await this.userGroupRepository.find({
-      relations: ['group'],
-      where: {
-        userId: baseFindByIdDto,
-      },
-    });
-  }
+  // async selectByUserId(baseFindByIdDto: BaseFindByIdDto): Promise<UserGroup[]> {
+  //   const { id } = baseFindByIdDto;
+  //   return await this.userGroupRepository.find({
+  //     relations: ['group'],
+  //     where: {
+  //       userId: id,
+  //     },
+  //   });
+  // }
 
   /**
    * 获取用户组（批量）

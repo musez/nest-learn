@@ -24,14 +24,15 @@ export class GroupRoleService {
   /**
    * 获取用户组
    */
-  async selectByGroupId(baseFindByIdDto: BaseFindByIdDto): Promise<GroupRole[]> {
-    return await this.groupRoleRepository.find({
-      relations: ['role'],
-      where: {
-        groupId: baseFindByIdDto,
-      },
-    });
-  }
+  // async selectByGroupId(baseFindByIdDto: BaseFindByIdDto): Promise<GroupRole[]> {
+  //   const { id } = baseFindByIdDto;
+  //   return await this.groupRoleRepository.find({
+  //     relations: ['role'],
+  //     where: {
+  //       groupId: id,
+  //     },
+  //   });
+  // }
 
   /**
    * 获取用户组（批量）

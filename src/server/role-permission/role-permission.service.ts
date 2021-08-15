@@ -25,14 +25,16 @@ export class RolePermissionService {
   /**
    * 获取权限
    */
-  async selectByRoleId(baseFindByIdDto: BaseFindByIdDto): Promise<RolePermission[]> {
-    return await this.rolePermissionRepository.find({
-      relations: ['permission'],
-      where: {
-        roleId: baseFindByIdDto,
-      },
-    });
-  }
+  // async selectByRoleId(baseFindByIdDto: BaseFindByIdDto): Promise<RolePermission[]> {
+  //   const { id } = baseFindByIdDto;
+  //
+  //   return await this.rolePermissionRepository.find({
+  //     relations: ['permission'],
+  //     where: {
+  //       roleId: id,
+  //     },
+  //   });
+  // }
 
   /**
    * 获取权限（批量）
