@@ -33,12 +33,11 @@ export class BaseModifyStatusByIdsDto {
   @IsNotEmpty({ message: '主键 ids 不能为空！' })
   readonly ids: string;
 
-  @ApiProperty({ description: '状态', example: 1 })
-  @IsDefined({ message: '状态不能为空！' })
-  @IsNotEmpty({ message: '状态不能为空' })
+  @ApiPropertyOptional({ description: '状态', example: 1 })
+  @IsOptional()
   @Transform(value => Number.parseInt(value))
   @IsInt({ message: '排序必须为数字！' })
-  status: number;
+  status?: number;
 }
 
 export class BaseFindByIdDto {

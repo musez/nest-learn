@@ -1,6 +1,6 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, Like } from 'typeorm';
+import { Repository } from 'typeorm';
 import { CreateArticleCatDto } from './dto/create-article-cat.dto';
 import { UpdateArticleCatDto } from './dto/update-article-cat.dto';
 import { ArticleCat } from './entities/article-cat.entity';

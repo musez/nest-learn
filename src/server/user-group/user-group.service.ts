@@ -1,11 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, Like, In } from 'typeorm';
+import { Repository, In } from 'typeorm';
 import { CreateUserGroupDto } from './dto/create-user-group.dto';
 import { UpdateUserGroupDto } from './dto/update-user-group.dto';
 import { UserGroup } from './entities/user-group.entity';
 import { BaseFindByIdDto, BaseFindByIdsDto } from '../base.dto';
-import { UserRole } from '../user-role/entities/user-role.entity';
 
 @Injectable()
 export class UserGroupService {

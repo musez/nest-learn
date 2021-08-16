@@ -1,10 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, Like, In } from 'typeorm';
+import { Repository, In } from 'typeorm';
 import { CreateGroupRoleDto } from './dto/create-group-role.dto';
 import { BaseFindByIdDto, BaseFindByIdsDto } from '../base.dto';
 import { GroupRole } from './entities/group-role.entity';
-import { RolePermission } from '../role-permission/entities/role-permission.entity';
 
 @Injectable()
 export class GroupRoleService {

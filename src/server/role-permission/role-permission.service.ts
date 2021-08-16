@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, Like, In } from 'typeorm';
+import { Repository, In } from 'typeorm';
 import { CreateRolePermissionDto } from './dto/create-role-permission.dto';
 import { UpdateRolePermissionDto } from './dto/update-role-permission.dto';
 import { RolePermission } from './entities/role-permission.entity';
-import { BaseFindByIdDto, BaseFindByIdsDto } from '../base.dto';
+import { BaseFindByIdsDto } from '../base.dto';
 import { UserRole } from '../user-role/entities/user-role.entity';
 
 @Injectable()

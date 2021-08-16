@@ -1,11 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, Like } from 'typeorm';
+import { Repository } from 'typeorm';
 import { Utils } from './../../utils/index';
 import { Area } from './entities/area.entity';
-import { BaseFindByIdDto, BaseFindByPIdDto } from '../base.dto';
+import { BaseFindByPIdDto } from '../base.dto';
 import { LimitAreaDto } from './dto/limit-area.dto';
-import { Permission } from '../permission/entities/permission.entity';
 import { SearchAreaDto } from './dto/search-area.dto';
 
 @Injectable()
