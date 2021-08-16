@@ -32,7 +32,7 @@ export class OrgService {
    */
   async selectList(searchOrgDto: SearchOrgDto): Promise<any[]> {
     // eslint-disable-next-line prefer-const
-    let { parentId, kinship, name } = searchOrgDto;
+    let { parentId, kinship, name, status } = searchOrgDto;
 
     kinship = kinship ? kinship : 0;
 
@@ -52,6 +52,9 @@ export class OrgService {
     if (!Utils.isBlank(name)) {
       queryConditionList.push('name LIKE :name');
     }
+    if (!Utils.isBlank(status)) {
+      queryConditionList.push('status = :status');
+    }
     queryConditionList.push('deleteStatus = 0');
     const queryCondition = queryConditionList.join(' AND ');
 
@@ -64,6 +67,7 @@ export class OrgService {
       .where(queryCondition, {
         parentIds: parentIds,
         name: `%${name}%`,
+        status: status,
       })
       .orderBy({ 'createTime': 'DESC' })
       .getRawMany();
@@ -75,7 +79,7 @@ export class OrgService {
    */
   async selectListPage(limitOrgDto: LimitOrgDto): Promise<any> {
     // eslint-disable-next-line prefer-const
-    let { page, limit, parentId, name } = limitOrgDto;
+    let { page, limit, parentId, name, status } = limitOrgDto;
     page = page ? page : 1;
     limit = limit ? limit : 10;
     const offset = (page - 1) * limit;
@@ -89,6 +93,9 @@ export class OrgService {
     if (!Utils.isBlank(name)) {
       queryConditionList.push('org.name LIKE :name');
     }
+    if (!Utils.isBlank(status)) {
+      queryConditionList.push('status = :status');
+    }
     queryConditionList.push('deleteStatus = 0');
     const queryCondition = queryConditionList.join(' AND ');
 
@@ -97,6 +104,7 @@ export class OrgService {
       .where(queryCondition, {
         parentIds: parentIds,
         name: `%${name}%`,
+        status: status,
       })
       .skip(offset)
       .take(limit)

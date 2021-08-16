@@ -39,11 +39,14 @@ export class GroupService {
    * 获取列表
    */
   async selectList(query): Promise<any[]> {
-    const { name } = query;
+    const { name ,status} = query;
 
     const queryConditionList = [];
     if (!Utils.isBlank(name)) {
       queryConditionList.push('name LIKE :name');
+    }
+    if (!Utils.isBlank(status)) {
+      queryConditionList.push('status = :status');
     }
     queryConditionList.push('deleteStatus = 0');
     const queryCondition = queryConditionList.join(' AND ');
@@ -51,6 +54,7 @@ export class GroupService {
     return await this.groupRepository.createQueryBuilder()
       .where(queryCondition, {
         name: `%${name}%`,
+        status: status,
       })
       .orderBy({ 'createTime': 'DESC' })
       .getMany();
@@ -61,7 +65,7 @@ export class GroupService {
    */
   async selectListPage(limitGroupDto: LimitGroupDto): Promise<any> {
     // eslint-disable-next-line prefer-const
-    let { page, limit, name } = limitGroupDto;
+    let { page, limit, name, status } = limitGroupDto;
     page = page ? page : 1;
     limit = limit ? limit : 10;
     const offset = (page - 1) * limit;
@@ -70,12 +74,16 @@ export class GroupService {
     if (!Utils.isBlank(name)) {
       queryConditionList.push('name LIKE :name');
     }
+    if (!Utils.isBlank(status)) {
+      queryConditionList.push('status = :status');
+    }
     queryConditionList.push('deleteStatus = 0');
     const queryCondition = queryConditionList.join(' AND ');
 
     const res = await this.groupRepository.createQueryBuilder()
       .where(queryCondition, {
         name: `%${name}%`,
+        status: status,
       })
       .skip(offset)
       .take(limit)

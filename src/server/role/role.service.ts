@@ -49,12 +49,16 @@ export class RoleService {
     if (!Utils.isBlank(name)) {
       queryConditionList.push('name LIKE :name');
     }
+    if (!Utils.isBlank(status)) {
+      queryConditionList.push('status = :status');
+    }
     queryConditionList.push('deleteStatus = 0');
     const queryCondition = queryConditionList.join(' AND ');
 
     return await this.roleRepository.createQueryBuilder()
       .where(queryCondition, {
         name: `%${name}%`,
+        status: status,
       })
       .orderBy({ 'createTime': 'DESC' })
       .getMany();
@@ -66,7 +70,7 @@ export class RoleService {
    */
   async selectListPage(limitRoleDto: LimitRoleDto): Promise<any> {
     // eslint-disable-next-line prefer-const
-    let { page, limit, name } = limitRoleDto;
+    let { page, limit, name, status } = limitRoleDto;
     page = page ? page : 1;
     limit = limit ? limit : 10;
     const offset = (page - 1) * limit;
@@ -75,12 +79,16 @@ export class RoleService {
     if (!Utils.isBlank(name)) {
       queryConditionList.push('name LIKE :name');
     }
+    if (!Utils.isBlank(status)) {
+      queryConditionList.push('status = :status');
+    }
     queryConditionList.push('deleteStatus = 0');
     const queryCondition = queryConditionList.join(' AND ');
 
     const res = await this.roleRepository.createQueryBuilder()
       .where(queryCondition, {
         name: `%${name}%`,
+        status: status,
       })
       .skip(offset)
       .take(limit)

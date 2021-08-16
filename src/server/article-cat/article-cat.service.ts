@@ -31,7 +31,7 @@ export class ArticleCatService {
    * 获取列表
    */
   async selectList(searchArticleCatDto: SearchArticleCatDto): Promise<any[]> {
-    const { parentId, kinship, catName } = searchArticleCatDto;
+    const { parentId, kinship, catName, status } = searchArticleCatDto;
 
     const queryConditionList = [];
     let parentIds = null;
@@ -51,6 +51,9 @@ export class ArticleCatService {
     if (!Utils.isBlank(catName)) {
       queryConditionList.push('catName LIKE :catName');
     }
+    if (!Utils.isBlank(status)) {
+      queryConditionList.push('status = :status');
+    }
     queryConditionList.push('deleteStatus = 0');
     const queryCondition = queryConditionList.join(' AND ');
 
@@ -64,6 +67,7 @@ export class ArticleCatService {
       .where(queryCondition, {
         parentIds: parentIds,
         catName: `%${catName}%`,
+        status: status,
       })
       .getRawMany();
     return res;
@@ -74,7 +78,7 @@ export class ArticleCatService {
    */
   async selectListPage(limitArticleCatDto: LimitArticleCatDto): Promise<any> {
     // eslint-disable-next-line prefer-const
-    let { page, limit, parentId, catName } = limitArticleCatDto;
+    let { page, limit, parentId, catName, status } = limitArticleCatDto;
     page = page ? page : 1;
     limit = limit ? limit : 10;
     const offset = (page - 1) * limit;
@@ -88,6 +92,9 @@ export class ArticleCatService {
     if (!Utils.isBlank(catName)) {
       queryConditionList.push('catName LIKE :catName');
     }
+    if (!Utils.isBlank(status)) {
+      queryConditionList.push('status = :status');
+    }
     queryConditionList.push('deleteStatus = 0');
     const queryCondition = queryConditionList.join(' AND ');
 
@@ -95,6 +102,7 @@ export class ArticleCatService {
       .where(queryCondition, {
         parentIds: parentIds,
         catName: `%${catName}%`,
+        status: status,
       })
       .skip(offset)
       .take(limit)

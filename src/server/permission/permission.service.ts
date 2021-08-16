@@ -40,7 +40,7 @@ export class PermissionService {
    */
   async selectList(searchPermissionDto: SearchPermissionDto): Promise<any[]> {
     // eslint-disable-next-line prefer-const
-    let { parentId, kinship, name, type } = searchPermissionDto;
+    let { parentId, kinship, name, type, status } = searchPermissionDto;
 
     kinship = kinship ? kinship : 0;
 
@@ -68,6 +68,9 @@ export class PermissionService {
         queryConditionList.push('type = type');
       }
     }
+    if (!Utils.isBlank(status)) {
+      queryConditionList.push('status = :status');
+    }
     queryConditionList.push('deleteStatus = 0');
     const queryCondition = queryConditionList.join(' AND ');
 
@@ -81,6 +84,7 @@ export class PermissionService {
         parentIds: parentIds,
         name: `%${name}%`,
         type: type,
+        status: status,
       })
       .orderBy({
         'sort': 'ASC',
@@ -96,7 +100,7 @@ export class PermissionService {
    */
   async selectListPage(limitPermissionDto: LimitPermissionDto): Promise<any> {
     // eslint-disable-next-line prefer-const
-    let { page, limit, parentId, name } = limitPermissionDto;
+    let { page, limit, parentId, name, status } = limitPermissionDto;
 
     page = page ? page : 1;
     limit = limit ? limit : 10;
@@ -111,6 +115,9 @@ export class PermissionService {
     if (!Utils.isBlank(name)) {
       queryConditionList.push('name LIKE :name');
     }
+    if (!Utils.isBlank(status)) {
+      queryConditionList.push('status = :status');
+    }
     queryConditionList.push('deleteStatus = 0');
     const queryCondition = queryConditionList.join(' AND ');
 
@@ -118,6 +125,7 @@ export class PermissionService {
       .where(queryCondition, {
         parentIds: parentIds,
         name: `%${name}%`,
+        status: status,
       })
       .skip(offset)
       .take(limit)

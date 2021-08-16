@@ -51,7 +51,7 @@ export class HolidayService {
    * 获取列表
    */
   async selectList(searchHolidayDto: SearchHolidayDto): Promise<any[]> {
-    const { year, name, weekday, restType } = searchHolidayDto;
+    const { year, name, weekday, restType, status } = searchHolidayDto;
 
     const queryConditionList = [];
     if (!Utils.isBlank(year)) {
@@ -66,7 +66,9 @@ export class HolidayService {
     if (!Utils.isBlank(restType)) {
       queryConditionList.push('restType = :restType');
     }
-
+    if (!Utils.isBlank(status)) {
+      queryConditionList.push('status = :status');
+    }
     queryConditionList.push('deleteStatus = 0');
     const queryCondition = queryConditionList.join(' AND ');
 
@@ -76,6 +78,7 @@ export class HolidayService {
         name: `%${name}%`,
         weekday: weekday,
         restType: restType,
+        status: status,
       })
       .orderBy({
         'date': 'ASC',
@@ -89,7 +92,7 @@ export class HolidayService {
    */
   async selectListPage(limitHolidayDto: LimitHolidayDto): Promise<any> {
     // eslint-disable-next-line prefer-const
-    let { page, limit, year, name, weekday, restType } = limitHolidayDto;
+    let { page, limit, year, name, weekday, restType, status } = limitHolidayDto;
     page = page ? page : 1;
     limit = limit ? limit : 10;
     const offset = (page - 1) * limit;
@@ -107,7 +110,9 @@ export class HolidayService {
     if (!Utils.isBlank(restType)) {
       queryConditionList.push('restType = :restType');
     }
-
+    if (!Utils.isBlank(status)) {
+      queryConditionList.push('status = :status');
+    }
     queryConditionList.push('deleteStatus = 0');
     const queryCondition = queryConditionList.join(' AND ');
 
@@ -117,6 +122,7 @@ export class HolidayService {
         name: `%${name}%`,
         weekday: weekday,
         restType: restType,
+        status: status,
       })
       .skip(offset)
       .take(limit)

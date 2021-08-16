@@ -3,6 +3,6 @@ import { IsNotEmpty, IsString, IsInt, IsUUID, MaxLength } from 'class-validator'
 import { LimitRoleDto } from './limit-role.dto';
 
 export class SearchRoleDto extends PickType(LimitRoleDto,
-  ['name'],
+  ['name', 'status'],
 ) {
 }

@@ -12,6 +12,11 @@ import { v4 as uuidv4 } from 'uuid';
 const image = ['gif', 'png', 'jpg', 'jpeg', 'bmp', 'webp'];
 const video = ['mp4', 'webm'];
 const audio = ['mp3', 'wav', 'ogg'];
+const excel = ['xlsx', 'xls'];
+const word = ['doc', 'docx'];
+const ppt = ['ppt', 'pptx'];
+const rar = ['rar', 'zip'];
+const pdf = ['pdf'];
 
 export const checkDirAndCreate = filePath => {
   const pathArr = filePath.split('/');
@@ -45,6 +50,21 @@ export const checkDirAndCreate = filePath => {
           audio.filter(item => item === mimeType).length > 0
             ? (temp = 'audio')
             : '';
+          excel.filter(item => item === mimeType).length > 0
+            ? (temp = 'excel')
+            : '';
+          word.filter(item => item === mimeType).length > 0
+            ? (temp = 'word')
+            : '';
+          ppt.filter(item => item === mimeType).length > 0
+            ? (temp = 'ppt')
+            : '';
+          rar.filter(item => item === mimeType).length > 0
+            ? (temp = 'rar')
+            : '';
+          pdf.filter(item => item === mimeType).length > 0
+            ? (temp = 'pdf')
+            : '';
           const filePath = `public/uploads/${temp}/${dayjs().format('YYYY-MM-DD')}`;
           checkDirAndCreate(filePath); // 判断文件夹是否存在，不存在则自动生成
           return cb(null, `./${filePath}`);
@@ -67,6 +87,21 @@ export const checkDirAndCreate = filePath => {
           : '';
         audio.filter(item => item === mimeType).length > 0
           ? (temp = 'audio')
+          : '';
+        excel.filter(item => item === mimeType).length > 0
+          ? (temp = 'excel')
+          : '';
+        word.filter(item => item === mimeType).length > 0
+          ? (temp = 'word')
+          : '';
+        ppt.filter(item => item === mimeType).length > 0
+          ? (temp = 'ppt')
+          : '';
+        rar.filter(item => item === mimeType).length > 0
+          ? (temp = 'rar')
+          : '';
+        pdf.filter(item => item === mimeType).length > 0
+          ? (temp = 'pdf')
           : '';
         if (temp === 'other') {
           return cb(new BadRequestException('文件格式错误！'), false);

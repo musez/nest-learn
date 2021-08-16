@@ -177,7 +177,7 @@ export class UserService {
    * 获取列表
    */
   async selectList(searchUserDto: SearchUserDto): Promise<any[]> {
-    const { userName, name, userType, mobile, email } = searchUserDto;
+    const { userName, name, userType, mobile, email, status } = searchUserDto;
 
     const queryConditionList = [];
     if (!Utils.isBlank(userName)) {
@@ -195,6 +195,9 @@ export class UserService {
     if (!Utils.isBlank(email)) {
       queryConditionList.push('user.email LIKE :email');
     }
+    if (!Utils.isBlank(status)) {
+      queryConditionList.push('user.status = :status');
+    }
     queryConditionList.push('deleteStatus = 0');
     const queryCondition = queryConditionList.join(' AND ');
 
@@ -211,6 +214,7 @@ export class UserService {
         userType: userType,
         mobile: `%${mobile}%`,
         email: `%${email}%`,
+        status: status,
       })
       .orderBy({
         'user.createTime': 'DESC',
@@ -249,11 +253,11 @@ export class UserService {
    */
   async selectListPage(limitUserDto: LimitUserDto): Promise<any> {
     // eslint-disable-next-line prefer-const
-    let { page, limit, userName, name, userType, mobile, email } = limitUserDto;
+    let { page, limit, userName, name, userType, mobile, email, status } = limitUserDto;
     page = page ? page : 1;
     limit = limit ? limit : 10;
     const offset = (page - 1) * limit;
-
+    console.log('selectListPage', page, limit, offset);
     const queryConditionList = [];
     if (!Utils.isBlank(userName)) {
       queryConditionList.push('user.userName LIKE :userName');
@@ -269,6 +273,9 @@ export class UserService {
     }
     if (!Utils.isBlank(email)) {
       queryConditionList.push('user.email LIKE :email');
+    }
+    if (!Utils.isBlank(status)) {
+      queryConditionList.push('user.status = :status');
     }
     queryConditionList.push('deleteStatus = 0');
     const queryCondition = queryConditionList.join(' AND ');
@@ -286,6 +293,7 @@ export class UserService {
         userType: userType,
         mobile: `%${mobile}%`,
         email: `%${email}%`,
+        status: status,
       });
 
     const ret = await queryBuilder

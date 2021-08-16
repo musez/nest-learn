@@ -45,11 +45,14 @@ export class DictService {
    * 获取列表
    */
   async selectList(searchDictDto: SearchDictDto): Promise<Dict[]> {
-    const { dictName } = searchDictDto;
+    const { dictName, status } = searchDictDto;
 
     const queryConditionList = [];
     if (!Utils.isBlank(dictName)) {
       queryConditionList.push('dict.dictName LIKE :dictName');
+    }
+    if (!Utils.isBlank(status)) {
+      queryConditionList.push('dict.status = :status');
     }
     queryConditionList.push('dict.deleteStatus = 0');
     const queryCondition = queryConditionList.join(' AND ');
@@ -58,6 +61,7 @@ export class DictService {
       .leftJoinAndSelect('dict.dictItems', 'dictItems')
       .where(queryCondition, {
         dictName: `%${dictName}%`,
+        status: status,
       })
       .orderBy({ 'dict.createTime': 'DESC' })
       .getMany();
@@ -68,7 +72,7 @@ export class DictService {
    */
   async selectListPage(limitDictDto: LimitDictDto): Promise<any> {
     // eslint-disable-next-line prefer-const
-    let { page, limit, dictName } = limitDictDto;
+    let { page, limit, dictName, status } = limitDictDto;
     page = page ? page : 1;
     limit = limit ? limit : 10;
     const offset = (page - 1) * limit;
@@ -77,6 +81,9 @@ export class DictService {
     if (!Utils.isBlank(dictName)) {
       queryConditionList.push('dict.dictName LIKE :dictName');
     }
+    if (!Utils.isBlank(status)) {
+      queryConditionList.push('dict.status = :status');
+    }
     queryConditionList.push('dict.deleteStatus = 0');
     const queryCondition = queryConditionList.join(' AND ');
 
@@ -84,6 +91,7 @@ export class DictService {
       .leftJoinAndSelect('dict.dictItems', 'dictItems')
       .where(queryCondition, {
         dictName: `%${dictName}%`,
+        status: status,
       })
       .skip(offset)
       .take(limit)

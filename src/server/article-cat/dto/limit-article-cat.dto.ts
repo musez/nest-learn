@@ -15,4 +15,10 @@ export class LimitArticleCatDto extends PartialType(BasePageDto) {
 
   @ApiPropertyOptional({ description: '栏目名称' })
   readonly catName?: string;
+
+  @ApiPropertyOptional({ description: '状态（0：未发布；1：发布；）' })
+  @IsOptional()
+  @Transform(value => Number.parseInt(value))
+  @IsInt({ message: '状态必须为数字！' })
+  readonly status?: number;
 }

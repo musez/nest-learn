@@ -6,6 +6,7 @@ import { File } from './entities/file.entity';
 import { BaseFindByIdDto, BaseFindByIdsDto, BasePageDto } from '../base.dto';
 import { Utils } from '../../utils';
 import { LimitFileDto } from './dto/limit-file.dto';
+import { SearchFileDto } from './dto/search-file.dto';
 
 @Injectable()
 export class FileService {
@@ -34,7 +35,7 @@ export class FileService {
    */
   async selectListPage(limitFileDto: LimitFileDto): Promise<any> {
     // eslint-disable-next-line prefer-const
-    let { page, limit, originalName, fileDisName } = limitFileDto;
+    let { page, limit, originalName, fileDisName, status } = limitFileDto;
     page = page ? page : 1;
     limit = limit ? limit : 10;
     const offset = (page - 1) * limit;
@@ -46,6 +47,9 @@ export class FileService {
     if (!Utils.isBlank(fileDisName)) {
       queryConditionList.push('fileDisName LIKE :fileDisName');
     }
+    if (!Utils.isBlank(status)) {
+      queryConditionList.push('status = :status');
+    }
     queryConditionList.push('deleteStatus = 0');
     const queryCondition = queryConditionList.join(' AND ');
 
@@ -53,6 +57,7 @@ export class FileService {
       .where(queryCondition, {
         originalName: `%${originalName}%`,
         fileDisName: `%${fileDisName}%`,
+        status: status,
       })
       .skip(offset)
       .take(limit)

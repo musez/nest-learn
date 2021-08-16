@@ -2,6 +2,6 @@ import { ApiProperty, ApiPropertyOptional, PartialType, PickType } from '@nestjs
 import { LimitPermissionDto } from './limit-permission.dto';
 
 export class SearchPermissionDto extends PickType(LimitPermissionDto,
-  ['parentId', 'kinship', 'name', 'type'],
+  ['parentId', 'kinship', 'name', 'type', 'status'],
 ) {
 }

@@ -49,7 +49,7 @@ export class ArticleService {
    * 获取列表
    */
   async selectList(searchArticleDto: SearchArticleDto): Promise<any[]> {
-    const { title, type, status } = searchArticleDto;
+    let { title, type, status } = searchArticleDto;
 
     const queryConditionList = [];
     if (!Utils.isBlank(title)) {
@@ -59,7 +59,9 @@ export class ArticleService {
       queryConditionList.push('type = :type');
     }
     if (!Utils.isBlank(status)) {
-      queryConditionList.push('status = :status');
+      // @ts-ignore
+      status = status.split(',');
+      queryConditionList.push('status IN (:...status)');
     }
     queryConditionList.push('deleteStatus = 0');
     const queryCondition = queryConditionList.join(' AND ');
