@@ -40,6 +40,7 @@ export const checkDirAndCreate = filePath => {
         destination: (req, file, cb) => {
           // 根据上传的文件类型将图片视频音频和其他类型文件分别存到对应英文文件夹
           const mimeType = file.mimetype.split('/')[1];
+          console.log('mimeType',mimeType);
           let temp = 'other';
           image.filter(item => item === mimeType).length > 0
             ? (temp = 'image')
@@ -50,21 +51,21 @@ export const checkDirAndCreate = filePath => {
           audio.filter(item => item === mimeType).length > 0
             ? (temp = 'audio')
             : '';
-          excel.filter(item => item === mimeType).length > 0
-            ? (temp = 'excel')
-            : '';
-          word.filter(item => item === mimeType).length > 0
-            ? (temp = 'word')
-            : '';
-          ppt.filter(item => item === mimeType).length > 0
-            ? (temp = 'ppt')
-            : '';
-          rar.filter(item => item === mimeType).length > 0
-            ? (temp = 'rar')
-            : '';
-          pdf.filter(item => item === mimeType).length > 0
-            ? (temp = 'pdf')
-            : '';
+          // excel.filter(item => item === mimeType).length > 0
+          //   ? (temp = 'excel')
+          //   : '';
+          // word.filter(item => item === mimeType).length > 0
+          //   ? (temp = 'word')
+          //   : '';
+          // ppt.filter(item => item === mimeType).length > 0
+          //   ? (temp = 'ppt')
+          //   : '';
+          // rar.filter(item => item === mimeType).length > 0
+          //   ? (temp = 'rar')
+          //   : '';
+          // pdf.filter(item => item === mimeType).length > 0
+          //   ? (temp = 'pdf')
+          //   : '';
           const filePath = `public/uploads/${temp}/${dayjs().format('YYYY-MM-DD')}`;
           checkDirAndCreate(filePath); // 判断文件夹是否存在，不存在则自动生成
           return cb(null, `./${filePath}`);
@@ -78,6 +79,7 @@ export const checkDirAndCreate = filePath => {
       }),
       fileFilter(req, file, cb) {
         const mimeType = file.mimetype.split('/')[1].toLowerCase();
+        console.log('mimeType',mimeType);
         let temp = 'other';
         image.filter(item => item === mimeType).length > 0
           ? (temp = 'image')
@@ -88,24 +90,24 @@ export const checkDirAndCreate = filePath => {
         audio.filter(item => item === mimeType).length > 0
           ? (temp = 'audio')
           : '';
-        excel.filter(item => item === mimeType).length > 0
-          ? (temp = 'excel')
-          : '';
-        word.filter(item => item === mimeType).length > 0
-          ? (temp = 'word')
-          : '';
-        ppt.filter(item => item === mimeType).length > 0
-          ? (temp = 'ppt')
-          : '';
-        rar.filter(item => item === mimeType).length > 0
-          ? (temp = 'rar')
-          : '';
-        pdf.filter(item => item === mimeType).length > 0
-          ? (temp = 'pdf')
-          : '';
-        if (temp === 'other') {
-          return cb(new BadRequestException('文件格式错误！'), false);
-        }
+        // excel.filter(item => item === mimeType).length > 0
+        //   ? (temp = 'excel')
+        //   : '';
+        // word.filter(item => item === mimeType).length > 0
+        //   ? (temp = 'word')
+        //   : '';
+        // ppt.filter(item => item === mimeType).length > 0
+        //   ? (temp = 'ppt')
+        //   : '';
+        // rar.filter(item => item === mimeType).length > 0
+        //   ? (temp = 'rar')
+        //   : '';
+        // pdf.filter(item => item === mimeType).length > 0
+        //   ? (temp = 'pdf')
+        //   : '';
+        // if (temp === 'other') {
+        //   return cb(new BadRequestException('文件格式错误！'), false);
+        // }
         return cb(null, true);
       },
     }),
