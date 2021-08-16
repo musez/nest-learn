@@ -57,7 +57,7 @@ export class BaseHolidayDto {
 }
 
 export class BaseDaysDto {
-  @ApiPropertyOptional({ description: '获取 n 天内的日期', example: 7 })
+  @ApiProperty({ description: '获取 n 天内的日期', example: 7 })
   @IsDefined({ message: 'n 不能为空！' })
   @IsNotEmpty({ message: 'n 不能为空' })
   @Transform(value => Number.parseInt(value))

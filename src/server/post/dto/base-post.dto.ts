@@ -1,4 +1,14 @@
-import { IsDefined, IsNotEmpty, IsString, IsInt, IsEmail, MinLength, MaxLength, IsUUID } from 'class-validator';
+import {
+  IsDefined,
+  IsNotEmpty,
+  IsString,
+  IsInt,
+  IsEmail,
+  MinLength,
+  MaxLength,
+  IsUUID,
+  IsOptional,
+} from 'class-validator';
 import { Transform } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { BaseConstants } from '../../../constants/constants';
@@ -17,6 +27,7 @@ export class BasePostDto {
   readonly name: string;
 
   @ApiPropertyOptional({ description: '排序', example: 0 })
+  @IsOptional()
   @Transform(value => Number.parseInt(value))
   @IsInt({ message: '排序必须为数字！' })
   readonly sort?: number;

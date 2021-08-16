@@ -1,6 +1,7 @@
 import { ApiProperty, ApiPropertyOptional, PartialType } from '@nestjs/swagger';
-import { IsNotEmpty, IsString, IsInt, IsUUID } from 'class-validator';
+import { IsNotEmpty, IsString, IsInt, IsUUID, IsOptional } from 'class-validator';
 import { BasePageDto } from '../../base.dto';
+import { Transform } from 'class-transformer';
 
 export class LimitUserDto extends PartialType(BasePageDto) {
   @ApiPropertyOptional({ description: '用户名' })
@@ -17,4 +18,10 @@ export class LimitUserDto extends PartialType(BasePageDto) {
 
   @ApiPropertyOptional({ description: '邮箱' })
   readonly email?: string;
+
+  @ApiPropertyOptional({ description: '状态' })
+  @IsOptional()
+  @Transform(value => Number.parseInt(value))
+  @IsInt({ message: '状态必须为数字！' })
+  readonly status?: number;
 }
