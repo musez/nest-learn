@@ -1,4 +1,11 @@
-import { IsDefined, IsNotEmpty, IsString, IsInt, IsEmail, IsUUID } from 'class-validator';
+import {
+  IsDefined,
+  IsNotEmpty,
+  IsString,
+  IsInt,
+  IsEmail,
+  IsUUID,
+} from 'class-validator';
 import { ApiProperty, ApiPropertyOptional, PartialType } from '@nestjs/swagger';
 import { CreateGroupRoleDto } from './create-group-role.dto';
 

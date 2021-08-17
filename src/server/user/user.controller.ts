@@ -30,7 +30,11 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { LimitUserDto } from './dto/limit-user.dto';
-import { BaseFindByIdDto, BaseFindByIdsDto, BaseModifyStatusByIdsDto } from '../base.dto';
+import {
+  BaseFindByIdDto,
+  BaseFindByIdsDto,
+  BaseModifyStatusByIdsDto,
+} from '../base.dto';
 import { BindUserGroupDto } from './dto/bind-user-group.dto';
 import { BindUserRoleDto } from '../user-role/dto/bind-user-role.dto';
 import { CurUser } from '../../common/decorators/cur-user.decorator';
@@ -41,7 +45,7 @@ import { ExcelService } from '../excel/excel.service';
 import { Utils } from './../../utils/index';
 import { SexType, StatusType, UserType } from '../../constants/dicts.enum';
 import { SexDict, StatusDict, UserDict } from '../../constants/dicts';
-import { ApiException } from 'src/common/exception/api-exception';
+import { ApiException } from '../../common/exception/api-exception';
 
 @ApiTags('用户')
 @Controller('user')
@@ -51,12 +55,14 @@ export class UserController {
   constructor(
     private readonly userService: UserService,
     private readonly excelService: ExcelService,
-  ) {
-  }
+  ) {}
 
   @Post('add')
   @ApiOperation({ summary: '添加' })
-  async add(@CurUser() curUser, @Body() createUserDto: CreateUserDto): Promise<CreateUserDto | void> {
+  async add(
+    @CurUser() curUser,
+    @Body() createUserDto: CreateUserDto,
+  ): Promise<CreateUserDto | void> {
     const { userName } = createUserDto;
 
     const isExistUserName = await this.userService.isExistUserName(userName);
@@ -91,10 +97,13 @@ export class UserController {
   @Get('exportExcel')
   @Auth('account:user:exportExcel')
   @ApiOperation({ summary: '列表（Excel 导出）' })
-  async exportExcel(@Query() searchUserDto: SearchUserDto, @Res() res): Promise<any> {
+  async exportExcel(
+    @Query() searchUserDto: SearchUserDto,
+    @Res() res,
+  ): Promise<any> {
     const list = await this.userService.selectList(searchUserDto);
 
-    list.forEach(v => {
+    list.forEach((v) => {
       if (v.userinfo) {
         v.provinceId = v.userinfo.provinceId;
         v.cityId = v.userinfo.cityId;
@@ -105,7 +114,13 @@ export class UserController {
 
     const columns = [
       { key: 'userName', name: '用户名', type: 'String', size: 10 },
-      { key: 'userType', name: '用户类型', type: 'Enum', size: 10, default: UserDict },
+      {
+        key: 'userType',
+        name: '用户类型',
+        type: 'Enum',
+        size: 10,
+        default: UserDict,
+      },
       { key: 'name', name: '姓名', type: 'String', size: 10 },
       { key: 'mobile', name: '手机号', type: 'String', size: 15 },
       { key: 'email', name: '邮箱', type: 'String', size: 15 },
@@ -115,7 +130,13 @@ export class UserController {
       { key: 'cityId', name: '城市', type: 'String', size: 15 },
       { key: 'districtId', name: '区/县', type: 'String', size: 15 },
       { key: 'address', name: '详细地址', type: 'String', size: 30 },
-      { key: 'status', name: '状态', type: 'Enum', size: 10, default: StatusDict },
+      {
+        key: 'status',
+        name: '状态',
+        type: 'Enum',
+        size: 10,
+        default: StatusDict,
+      },
       { key: 'description', name: '备注', type: 'String', size: 20 },
       { key: 'createTime', name: '创建时间', type: 'String', size: 20 },
       { key: 'updateTime', name: '修改时间', type: 'String', size: 20 },
@@ -128,7 +149,9 @@ export class UserController {
     );
     res.setHeader(
       'Content-Disposition',
-      'attachment; filename=' + encodeURIComponent(`用户_${Utils.dayjsFormat('YYYYMMDD')}`) + '.xlsx',// 中文名需要进行 url 转码
+      'attachment; filename=' +
+        encodeURIComponent(`用户_${Utils.dayjsFormat('YYYYMMDD')}`) +
+        '.xlsx', // 中文名需要进行 url 转码
     );
     // res.setTimeout(30 * 60 * 1000); // 防止网络原因造成超时。
     res.end(result, 'binary');
@@ -154,17 +177,35 @@ export class UserController {
   async importExcel(@CurUser() curUser, @UploadedFile() file): Promise<any> {
     const columns = [
       { key: 'userName', name: '用户名', type: 'String', index: 1 },
-      { key: 'userType', name: '用户类型', type: 'Enum', enum: UserDict, index: 2 },
+      {
+        key: 'userType',
+        name: '用户类型',
+        type: 'Enum',
+        enum: UserDict,
+        index: 2,
+      },
       { key: 'name', name: '姓名', type: 'String', index: 3 },
       { key: 'mobile', name: '手机号', type: 'String', index: 4 },
       { key: 'email', name: '邮箱', type: 'String', index: 5 },
       { key: 'sex', name: '性别', type: 'Enum', enum: SexDict, index: 6 },
-      { key: 'birthday', name: '生日', type: 'Date', format: 'YYYY-MM-DD', index: 7 },
+      {
+        key: 'birthday',
+        name: '生日',
+        type: 'Date',
+        format: 'YYYY-MM-DD',
+        index: 7,
+      },
       { key: 'provinceId', name: '省份', type: 'String', size: 15, index: 8 },
       { key: 'cityId', name: '城市', type: 'String', size: 15, index: 9 },
       { key: 'districtId', name: '区/县', type: 'String', size: 15, index: 10 },
       { key: 'address', name: '详细地址', type: 'String', size: 30, index: 11 },
-      { key: 'status', name: '状态', type: 'Enum', enum: StatusDict, index: 12 },
+      {
+        key: 'status',
+        name: '状态',
+        type: 'Enum',
+        enum: StatusDict,
+        index: 12,
+      },
       { key: 'description', name: '备注', type: 'String', index: 13 },
     ];
 
@@ -186,7 +227,7 @@ export class UserController {
     const ret = await this.userService.insertBatch(successRows, curUser);
 
     if (!ret) {
-      throw new ApiException(`操作异常！`,500);
+      throw new ApiException(`操作异常！`, 500);
     }
 
     return {
@@ -200,7 +241,10 @@ export class UserController {
   @Post('update')
   @Auth('account:user:update')
   @ApiOperation({ summary: '修改' })
-  async update(@CurUser() curUser, @Body() updateUserDto: UpdateUserDto): Promise<any> {
+  async update(
+    @CurUser() curUser,
+    @Body() updateUserDto: UpdateUserDto,
+  ): Promise<any> {
     const { id } = updateUserDto;
 
     const isExistId = await this.userService.isExistId(id);
@@ -214,14 +258,20 @@ export class UserController {
   @Post('updateStatus')
   @Auth('account:user:updateStatus')
   @ApiOperation({ summary: '修改状态' })
-  async updateStatus(@CurUser() curUser, @Body() baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto): Promise<any> {
+  async updateStatus(
+    @CurUser() curUser,
+    @Body() baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto,
+  ): Promise<any> {
     return this.userService.updateStatus(baseModifyStatusByIdsDto, curUser);
   }
 
   @Post('delete')
   @Auth('account:user:delete')
   @ApiOperation({ summary: '删除' })
-  async delete(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
+  async delete(
+    @CurUser() curUser,
+    @Body() baseFindByIdDto: BaseFindByIdDto,
+  ): Promise<any> {
     const { id } = baseFindByIdDto;
 
     const isExistId = await this.userService.isExistId(id);
@@ -235,14 +285,20 @@ export class UserController {
   @Post('deleteBatch')
   @Auth('system:user:deleteBatch')
   @ApiOperation({ summary: '删除（批量）' })
-  async deleteBatch(@CurUser() curUser, @Body() baseFindByIdsDto: BaseFindByIdsDto): Promise<any> {
+  async deleteBatch(
+    @CurUser() curUser,
+    @Body() baseFindByIdsDto: BaseFindByIdsDto,
+  ): Promise<any> {
     return await this.userService.deleteByIds(baseFindByIdsDto, curUser);
   }
 
   @Post('bindGroups')
   @Auth('account:user:bindGroups')
   @ApiOperation({ summary: '绑定用户组' })
-  async bindGroups(@CurUser() curUser, @Body() bindUserGroupDto: BindUserGroupDto): Promise<any> {
+  async bindGroups(
+    @CurUser() curUser,
+    @Body() bindUserGroupDto: BindUserGroupDto,
+  ): Promise<any> {
     const { id } = bindUserGroupDto;
 
     const isExistId = await this.userService.isExistId(id);
@@ -255,7 +311,10 @@ export class UserController {
   @Get('getGroups')
   @Auth('account:user:getGroups')
   @ApiOperation({ summary: '获取用户组' })
-  async findGroupsByUserId(@CurUser() curUser, @Query() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
+  async findGroupsByUserId(
+    @CurUser() curUser,
+    @Query() baseFindByIdDto: BaseFindByIdDto,
+  ): Promise<any> {
     const { id } = baseFindByIdDto;
 
     const isExistId = await this.userService.isExistId(id);
@@ -268,7 +327,10 @@ export class UserController {
   @Post('bindRoles')
   @Auth('account:user:bindRoles')
   @ApiOperation({ summary: '绑定角色' })
-  async bindRoles(@CurUser() curUser, @Body() bindUserRoleDto: BindUserRoleDto): Promise<any> {
+  async bindRoles(
+    @CurUser() curUser,
+    @Body() bindUserRoleDto: BindUserRoleDto,
+  ): Promise<any> {
     const { id } = bindUserRoleDto;
 
     const isExistId = await this.userService.isExistId(id);
@@ -281,7 +343,10 @@ export class UserController {
   @Get('getRoles')
   @Auth('account:user:getRoles')
   @ApiOperation({ summary: '获取角色' })
-  async findRolesByUserId(@CurUser() curUser, @Query() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
+  async findRolesByUserId(
+    @CurUser() curUser,
+    @Query() baseFindByIdDto: BaseFindByIdDto,
+  ): Promise<any> {
     const { id } = baseFindByIdDto;
 
     const isExistId = await this.userService.isExistId(id);

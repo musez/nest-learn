@@ -14,13 +14,15 @@ export class DictItemService {
   constructor(
     @InjectRepository(DictItem)
     private readonly dictItemRepository: Repository<DictItem>,
-  ) {
-  }
+  ) {}
 
   /**
    * 添加
    */
-  async insert(createDictItemDto: CreateDictItemDto, curUser): Promise<CreateDictItemDto> {
+  async insert(
+    createDictItemDto: CreateDictItemDto,
+    curUser,
+  ): Promise<CreateDictItemDto> {
     let dictItem = new DictItem();
     dictItem = Utils.dto2entity(createDictItemDto, dictItem);
     dictItem.createBy = curUser!.id;
@@ -30,10 +32,13 @@ export class DictItemService {
   /**
    * 添加（批量）
    */
-  async insertBatch(createDictItemDto: CreateDictItemDto[], curUser): Promise<CreateDictItemDto[] | DictItem[]> {
+  async insertBatch(
+    createDictItemDto: CreateDictItemDto[],
+    curUser,
+  ): Promise<CreateDictItemDto[] | DictItem[]> {
     const dictItems = [];
 
-    createDictItemDto.forEach(item => {
+    createDictItemDto.forEach((item) => {
       let dictItem = new DictItem();
       dictItem = Utils.dto2entity(item, dictItem);
       dictItem.createBy = curUser!.id;
@@ -59,14 +64,15 @@ export class DictItemService {
     queryConditionList.push('deleteStatus = 0');
     const queryCondition = queryConditionList.join(' AND ');
 
-    return await this.dictItemRepository.createQueryBuilder()
+    return await this.dictItemRepository
+      .createQueryBuilder()
       .where(queryCondition, {
         itemText: `%${itemText}%`,
         dictId: dictId,
       })
       .orderBy({
-        'sort': 'ASC',
-        'createTime': 'DESC',
+        sort: 'ASC',
+        createTime: 'DESC',
       })
       .getMany();
   }
@@ -88,15 +94,16 @@ export class DictItemService {
     queryConditionList.push('deleteStatus = 0');
     const queryCondition = queryConditionList.join(' AND ');
 
-    const res = await this.dictItemRepository.createQueryBuilder()
+    const res = await this.dictItemRepository
+      .createQueryBuilder()
       .where(queryCondition, {
         itemText: `%${itemText}%`,
       })
       .skip(offset)
       .take(limit)
       .orderBy({
-        'sort': 'ASC',
-        'createTime': 'DESC',
+        sort: 'ASC',
+        createTime: 'DESC',
       })
       .getManyAndCount();
 
@@ -121,13 +128,14 @@ export class DictItemService {
     queryConditionList.push('deleteStatus = 0');
     const queryCondition = queryConditionList.join(' AND ');
 
-    return await this.dictItemRepository.createQueryBuilder()
+    return await this.dictItemRepository
+      .createQueryBuilder()
       .where(queryCondition, {
         id: id,
       })
       .orderBy({
-        'sort': 'ASC',
-        'createTime': 'DESC',
+        sort: 'ASC',
+        createTime: 'DESC',
       })
       .getMany();
   }
@@ -136,7 +144,8 @@ export class DictItemService {
    * 删除（字典 id）
    */
   async deleteByDictId(id: string, curUser): Promise<void> {
-    await this.dictItemRepository.createQueryBuilder()
+    await this.dictItemRepository
+      .createQueryBuilder()
       .update(DictItem)
       .set({ deleteStatus: 1, deleteBy: curUser!.id, deleteTime: Utils.now() })
       .where('dictId = :id', { id: id })

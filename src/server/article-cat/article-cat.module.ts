@@ -10,5 +10,4 @@ import { ArticleCat } from './entities/article-cat.entity';
   providers: [ArticleCatService],
   exports: [ArticleCatService],
 })
-export class ArticleCatModule {
-}
+export class ArticleCatModule {}

@@ -1,5 +1,11 @@
 import { ApiProperty, PartialType } from '@nestjs/swagger';
-import { IsDefined, IsNotEmpty, IsString, IsInt, IsUUID } from 'class-validator';
+import {
+  IsDefined,
+  IsNotEmpty,
+  IsString,
+  IsInt,
+  IsUUID,
+} from 'class-validator';
 import { CreateFileDto } from './create-file.dto';
 
 export class UpdateFileDto extends PartialType(CreateFileDto) {

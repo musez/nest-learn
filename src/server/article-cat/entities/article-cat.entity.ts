@@ -29,6 +29,6 @@ export class ArticleCat extends BaseEntity {
   @Column('varchar', { comment: '栏目名称', length: 255 })
   catName: string;
 
-  @OneToMany(type => ArticleDataCat, articleDataCat => articleDataCat.cat)
+  @OneToMany((type) => ArticleDataCat, (articleDataCat) => articleDataCat.cat)
   articleDataCats: ArticleDataCat[];
 }

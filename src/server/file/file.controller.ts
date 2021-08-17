@@ -1,5 +1,11 @@
 import {
-  Controller, Get, Post, Body, Query, UseInterceptors, UploadedFile,
+  Controller,
+  Get,
+  Post,
+  Body,
+  Query,
+  UseInterceptors,
+  UploadedFile,
   UploadedFiles,
   UseGuards,
   BadRequestException,
@@ -36,8 +42,7 @@ import { ApiException } from '../../common/exception/api-exception';
 @ApiTags('文件')
 @ApiBasicAuth('token')
 export class FileController {
-  constructor(private readonly fileService: FileService) {
-  }
+  constructor(private readonly fileService: FileService) {}
 
   @Post('upload')
   @UseGuards(JwtAuthGuard, AuthGuard)
@@ -123,15 +128,26 @@ export class FileController {
       },
     },
   })
-  @UseInterceptors(FileFieldsInterceptor([{
-    name: 'files', maxCount: 10,
-  }, {
-    name: 'fileDisName', maxCount: 10,
-  }, {
-    name: 'extId', maxCount: 1,
-  }, {
-    name: 'description', maxCount: 1,
-  }]))
+  @UseInterceptors(
+    FileFieldsInterceptor([
+      {
+        name: 'files',
+        maxCount: 10,
+      },
+      {
+        name: 'fileDisName',
+        maxCount: 10,
+      },
+      {
+        name: 'extId',
+        maxCount: 1,
+      },
+      {
+        name: 'description',
+        maxCount: 1,
+      },
+    ]),
+  )
   uploads(@CurUser() curUser, @UploadedFiles() files, @Body() body) {
     if (Utils.isNil(files.files)) {
       throw new ApiException(`文件不能为空！`, 404);
@@ -210,7 +226,10 @@ export class FileController {
   @UseGuards(JwtAuthGuard, AuthGuard)
   @Auth('system:file:delete')
   @ApiOperation({ summary: '删除' })
-  async delete(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
+  async delete(
+    @CurUser() curUser,
+    @Body() baseFindByIdDto: BaseFindByIdDto,
+  ): Promise<any> {
     const { id } = baseFindByIdDto;
     const isExistId = await this.fileService.isExistId(id);
 
@@ -225,7 +244,10 @@ export class FileController {
   @UseGuards(JwtAuthGuard, AuthGuard)
   @Auth('system:file:deleteBatch')
   @ApiOperation({ summary: '删除（批量）' })
-  async deleteBatch(@CurUser() curUser, @Body() baseFindByIdsDto: BaseFindByIdsDto): Promise<any> {
+  async deleteBatch(
+    @CurUser() curUser,
+    @Body() baseFindByIdsDto: BaseFindByIdsDto,
+  ): Promise<any> {
     return await this.fileService.deleteByIds(baseFindByIdsDto, curUser);
   }
 }

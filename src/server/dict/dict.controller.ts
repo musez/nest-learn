@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Query, UseGuards, BadRequestException } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Query,
+  UseGuards,
+  BadRequestException,
+} from '@nestjs/common';
 import {
   ApiTags,
   ApiQuery,
@@ -28,8 +36,7 @@ export class DictController {
   constructor(
     private readonly dictService: DictService,
     private readonly dictItemService: DictItemService,
-  ) {
-  }
+  ) {}
 
   @Post('add')
   @Auth('system:dict:add')
@@ -62,7 +69,10 @@ export class DictController {
   @Post('update')
   @Auth('system:dict:update')
   @ApiOperation({ summary: '修改' })
-  async update(@CurUser() curUser, @Body() updateDictDto: UpdateDictDto): Promise<any> {
+  async update(
+    @CurUser() curUser,
+    @Body() updateDictDto: UpdateDictDto,
+  ): Promise<any> {
     const { id } = updateDictDto;
     const isExistId = await this.dictService.isExistId(id);
 
@@ -76,7 +86,10 @@ export class DictController {
   @Post('delete')
   @Auth('system:dict:delete')
   @ApiOperation({ summary: '删除' })
-  async delete(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
+  async delete(
+    @CurUser() curUser,
+    @Body() baseFindByIdDto: BaseFindByIdDto,
+  ): Promise<any> {
     const { id } = baseFindByIdDto;
     const isExistId = await this.dictService.isExistId(id);
 
@@ -90,14 +103,19 @@ export class DictController {
   @Post('deleteBatch')
   @Auth('system:dict:deleteBatch')
   @ApiOperation({ summary: '删除（批量）' })
-  async deleteBatch(@CurUser() curUser, @Body() baseFindByIdsDto: BaseFindByIdsDto): Promise<any> {
+  async deleteBatch(
+    @CurUser() curUser,
+    @Body() baseFindByIdsDto: BaseFindByIdsDto,
+  ): Promise<any> {
     return await this.dictService.deleteByIds(baseFindByIdsDto, curUser);
   }
 
   @Get('findDictItemById')
   @Auth('system:dict:findDictItemById')
   @ApiOperation({ summary: '获取字典详情（主键 id）' })
-  async findDictItemById(@Query() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
+  async findDictItemById(
+    @Query() baseFindByIdDto: BaseFindByIdDto,
+  ): Promise<any> {
     return await this.dictItemService.selectByDictId(baseFindByIdDto);
   }
 }

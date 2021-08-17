@@ -12,8 +12,7 @@ export class RolePermissionService {
   constructor(
     @InjectRepository(RolePermission)
     private readonly rolePermissionRepository: Repository<RolePermission>,
-  ) {
-  }
+  ) {}
 
   /**
    * 添加
@@ -53,7 +52,8 @@ export class RolePermissionService {
    * 删除用户组
    */
   async deleteByRoleId(id: string): Promise<any> {
-    return await this.rolePermissionRepository.createQueryBuilder()
+    return await this.rolePermissionRepository
+      .createQueryBuilder()
       .delete()
       .from(UserRole)
       .where('roleId = :id', { id: id })

@@ -12,11 +12,7 @@ import {
   BadRequestException,
   Res,
 } from '@nestjs/common';
-import {
-  ApiTags,
-  ApiBasicAuth,
-  ApiOperation,
-} from '@nestjs/swagger';
+import { ApiTags, ApiBasicAuth, ApiOperation } from '@nestjs/swagger';
 import { OrgService } from './org.service';
 import { CreateOrgDto } from './dto/create-org.dto';
 import { UpdateOrgDto } from './dto/update-org.dto';
@@ -25,14 +21,18 @@ import { CurUser } from '../../common/decorators/cur-user.decorator';
 import { SearchOrgDto } from './dto/search-org.dto';
 import { Org } from './entities/org.entity';
 import { LimitOrgDto } from './dto/limit-org.dto';
-import { BaseFindByIdDto, BaseFindByIdsDto, BaseFindByPIdDto } from '../base.dto';
+import {
+  BaseFindByIdDto,
+  BaseFindByIdsDto,
+  BaseFindByPIdDto,
+} from '../base.dto';
 import { AuthGuard } from '../../common/guards/auth.guard';
 import { Auth } from '../../common/decorators/auth.decorator';
 import { Utils } from '../../utils';
 import { ExcelService } from '../excel/excel.service';
 import { StatusType } from '../../constants/dicts.enum';
 import { OrgDict, StatusDict } from '../../constants/dicts';
-import { ApiException } from 'src/common/exception/api-exception';
+import { ApiException } from '../../common/exception/api-exception';
 
 @Controller('org')
 @ApiTags('组织机构')
@@ -42,8 +42,7 @@ export class OrgController {
   constructor(
     private readonly orgService: OrgService,
     private readonly excelService: ExcelService,
-  ) {
-  }
+  ) {}
 
   @Post('add')
   @Auth('account:org:add')
@@ -83,15 +82,30 @@ export class OrgController {
   @Get('exportExcel')
   @Auth('account:org:exportExcel')
   @ApiOperation({ summary: '列表（Excel 导出）' })
-  async exportExcel(@Query() searchOrgDto: SearchOrgDto, @Res() res): Promise<any> {
+  async exportExcel(
+    @Query() searchOrgDto: SearchOrgDto,
+    @Res() res,
+  ): Promise<any> {
     const list = await this.orgService.selectList(searchOrgDto);
 
     const columns = [
       { key: 'name', name: '名称', type: 'String', size: 10 },
       { key: 'shortName', name: '简称', type: 'String', size: 10 },
-      { key: 'orgType', name: '机构类型', type: 'Enum', size: 10,default: OrgDict },
+      {
+        key: 'orgType',
+        name: '机构类型',
+        type: 'Enum',
+        size: 10,
+        default: OrgDict,
+      },
       { key: 'orgLevel', name: '机构级次码', type: 'String', size: 10 },
-      { key: 'status', name: '状态', type: 'Enum', size: 10, default: StatusDict },
+      {
+        key: 'status',
+        name: '状态',
+        type: 'Enum',
+        size: 10,
+        default: StatusDict,
+      },
       { key: 'description', name: '备注', type: 'String', size: 20 },
       { key: 'createTime', name: '创建时间', type: 'String', size: 20 },
       { key: 'updateTime', name: '修改时间', type: 'String', size: 20 },
@@ -104,7 +118,9 @@ export class OrgController {
     );
     res.setHeader(
       'Content-Disposition',
-      'attachment; filename=' + encodeURIComponent(`组织机构_${Utils.dayjsFormat('YYYYMMDD')}`) + '.xlsx',// 中文名需要进行 url 转码
+      'attachment; filename=' +
+        encodeURIComponent(`组织机构_${Utils.dayjsFormat('YYYYMMDD')}`) +
+        '.xlsx', // 中文名需要进行 url 转码
     );
     res.setTimeout(30 * 60 * 1000); // 防止网络原因造成超时。
     res.end(result, 'binary');
@@ -113,7 +129,10 @@ export class OrgController {
   @Post('update')
   @Auth('account:org:update')
   @ApiOperation({ summary: '修改' })
-  async update(@CurUser() curUser, @Body() updateOrgDto: UpdateOrgDto): Promise<any> {
+  async update(
+    @CurUser() curUser,
+    @Body() updateOrgDto: UpdateOrgDto,
+  ): Promise<any> {
     const { id } = updateOrgDto;
     const isExistId = await this.orgService.isExistId(id);
 
@@ -126,7 +145,10 @@ export class OrgController {
   @Post('delete')
   @Auth('account:org:delete')
   @ApiOperation({ summary: '删除' })
-  async delete(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
+  async delete(
+    @CurUser() curUser,
+    @Body() baseFindByIdDto: BaseFindByIdDto,
+  ): Promise<any> {
     const { id } = baseFindByIdDto;
     const isExistId = await this.orgService.isExistId(id);
 
@@ -140,7 +162,10 @@ export class OrgController {
   @Post('deleteBatch')
   @Auth('account:org:deleteBatch')
   @ApiOperation({ summary: '删除（批量）' })
-  async deleteBatch(@CurUser() curUser, @Body() baseFindByIdsDto: BaseFindByIdsDto): Promise<any> {
+  async deleteBatch(
+    @CurUser() curUser,
+    @Body() baseFindByIdsDto: BaseFindByIdsDto,
+  ): Promise<any> {
     return await this.orgService.deleteByIds(baseFindByIdsDto, curUser);
   }
 }

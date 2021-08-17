@@ -29,12 +29,12 @@ export class Role extends BaseEntity {
   @Column('varchar', { comment: '名称', length: 50 })
   name: string;
 
-  @OneToMany(type => GroupRole, groupRoles => groupRoles.role)
+  @OneToMany((type) => GroupRole, (groupRoles) => groupRoles.role)
   groupRoles: GroupRole[];
 
-  @OneToMany(type => UserRole, userRole => userRole.role)
+  @OneToMany((type) => UserRole, (userRole) => userRole.role)
   userRoles: UserRole[];
 
-  @OneToMany(type => RolePermission, rolePermission => rolePermission.role)
+  @OneToMany((type) => RolePermission, (rolePermission) => rolePermission.role)
   rolePermissions: RolePermission[];
 }

@@ -16,13 +16,15 @@ export class CommentService {
   constructor(
     @InjectRepository(Comment)
     private readonly commentRepository: Repository<Comment>,
-  ) {
-  }
+  ) {}
 
   /**
    * 添加
    */
-  async insert(createCommentDto: CreateCommentDto, curUser): Promise<CreateCommentDto> {
+  async insert(
+    createCommentDto: CreateCommentDto,
+    curUser,
+  ): Promise<CreateCommentDto> {
     return await this.commentRepository.save(createCommentDto);
   }
 
@@ -48,14 +50,17 @@ export class CommentService {
     queryConditionList.push('comment.deleteStatus = 0');
     const queryCondition = queryConditionList.join(' AND ');
 
-    return await this.commentRepository.createQueryBuilder('comment')
+    return await this.commentRepository
+      .createQueryBuilder('comment')
       .leftJoinAndSelect(User, 'uf', 'uf.id = comment.fromUid')
       .leftJoinAndSelect(User, 'ut', 'ut.id = comment.toUid')
       .select('comment.*')
-      .addSelect(`
+      .addSelect(
+        `
        uf.userName AS fromUname,
        ut.userName AS toUname
-       `)
+       `,
+      )
       .where(queryCondition, {
         commentId: commentId,
         content: `%${content}%`,
@@ -71,7 +76,14 @@ export class CommentService {
    */
   async selectListPage(limitCommentDto: LimitCommentDto): Promise<any> {
     // eslint-disable-next-line prefer-const
-    let { page, limit, commentId, content, replyType, status } = limitCommentDto;
+    let {
+      page,
+      limit,
+      commentId,
+      content,
+      replyType,
+      status,
+    } = limitCommentDto;
     page = page ? page : 1;
     limit = limit ? limit : 10;
     const offset = (page - 1) * limit;
@@ -92,14 +104,17 @@ export class CommentService {
     queryConditionList.push('comment.deleteStatus = 0');
     const queryCondition = queryConditionList.join(' AND ');
 
-    const queryBuilder = this.commentRepository.createQueryBuilder('comment')
+    const queryBuilder = this.commentRepository
+      .createQueryBuilder('comment')
       .leftJoinAndSelect(User, 'uf', 'uf.id = comment.fromUid')
       .leftJoinAndSelect(User, 'ut', 'ut.id = comment.toUid')
       .select('comment.*')
-      .addSelect(`
+      .addSelect(
+        `
        uf.userName AS fromUname,
        ut.userName AS toUname
-       `)
+       `,
+      )
       .where(queryCondition, {
         commentId: commentId,
         content: `%${content}%`,
@@ -108,13 +123,14 @@ export class CommentService {
       });
 
     const ret = await queryBuilder
-      .skip(offset)
-      .take(limit)
+      // .skip(offset)
+      // .take(limit)
+      .offset(offset)
+      .limit(limit)
       .orderBy({ 'comment.createTime': 'ASC' })
       .getRawMany();
 
-    const retCount = await queryBuilder
-      .getCount();
+    const retCount = await queryBuilder.getCount();
 
     return {
       list: ret,
@@ -162,7 +178,8 @@ export class CommentService {
   async deleteById(baseFindByIdDto: BaseFindByIdDto, curUser): Promise<void> {
     const { id } = baseFindByIdDto;
 
-    await this.commentRepository.createQueryBuilder()
+    await this.commentRepository
+      .createQueryBuilder()
       .update(Org)
       .set({ deleteStatus: 1, deleteBy: curUser!.id, deleteTime: Utils.now() })
       .where('id = :id', { id: id })
@@ -172,10 +189,14 @@ export class CommentService {
   /**
    * 删除（批量）
    */
-  async deleteByIds(baseFindByIdsDto: BaseFindByIdsDto, curUser): Promise<void> {
+  async deleteByIds(
+    baseFindByIdsDto: BaseFindByIdsDto,
+    curUser,
+  ): Promise<void> {
     const { ids } = baseFindByIdsDto;
 
-    await this.commentRepository.createQueryBuilder()
+    await this.commentRepository
+      .createQueryBuilder()
       .update(Org)
       .set({ deleteStatus: 1, deleteBy: curUser!.id, deleteTime: Utils.now() })
       .where('id in (:ids)', { ids: ids })

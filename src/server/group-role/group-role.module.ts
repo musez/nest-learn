@@ -10,5 +10,4 @@ import { GroupRole } from './entities/group-role.entity';
   providers: [GroupRoleService],
   exports: [GroupRoleService],
 })
-export class GroupRoleModule {
-}
+export class GroupRoleModule {}

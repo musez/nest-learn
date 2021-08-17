@@ -13,8 +13,7 @@ export class FileService {
   constructor(
     @InjectRepository(File)
     private readonly fileRepository: Repository<File>,
-  ) {
-  }
+  ) {}
 
   /**
    * 添加
@@ -53,7 +52,8 @@ export class FileService {
     queryConditionList.push('deleteStatus = 0');
     const queryCondition = queryConditionList.join(' AND ');
 
-    const res = await this.fileRepository.createQueryBuilder()
+    const res = await this.fileRepository
+      .createQueryBuilder()
       .where(queryCondition, {
         originalName: `%${originalName}%`,
         fileDisName: `%${fileDisName}%`,
@@ -62,7 +62,7 @@ export class FileService {
       .skip(offset)
       .take(limit)
       .orderBy({
-        'createTime': 'DESC',
+        createTime: 'DESC',
       })
       .getManyAndCount();
 
@@ -73,7 +73,6 @@ export class FileService {
       limit: limit,
     };
   }
-
 
   /**
    * 获取详情（主键 id）
@@ -111,7 +110,8 @@ export class FileService {
   async deleteById(baseFindByIdDto: BaseFindByIdDto, curUser): Promise<void> {
     const { id } = baseFindByIdDto;
 
-    await this.fileRepository.createQueryBuilder()
+    await this.fileRepository
+      .createQueryBuilder()
       .update(File)
       .set({ deleteStatus: 1, deleteBy: curUser!.id, deleteTime: Utils.now() })
       .where('id = :id', { id: id })
@@ -121,10 +121,14 @@ export class FileService {
   /**
    * 删除（批量）
    */
-  async deleteByIds(baseFindByIdsDto: BaseFindByIdsDto, curUser): Promise<void> {
+  async deleteByIds(
+    baseFindByIdsDto: BaseFindByIdsDto,
+    curUser,
+  ): Promise<void> {
     const { ids } = baseFindByIdsDto;
 
-    await this.fileRepository.createQueryBuilder()
+    await this.fileRepository
+      .createQueryBuilder()
       .update(File)
       .set({ deleteStatus: 1, deleteBy: curUser!.id, deleteTime: Utils.now() })
       .where('id in (:ids)', { ids: ids })

@@ -10,10 +10,15 @@ import {
   ManyToMany,
   OneToMany,
   ManyToOne,
-  BeforeUpdate, AfterLoad,
+  BeforeUpdate,
+  AfterLoad,
 } from 'typeorm';
 import { BaseEntity } from '../../base.entity';
-import { ArticleType, IsCommentType, StatusType } from '../../../constants/dicts.enum';
+import {
+  ArticleType,
+  IsCommentType,
+  StatusType,
+} from '../../../constants/dicts.enum';
 import { ArticleDataCat } from '../../article-data-cat/entities/article-data-cat.entity';
 import * as dayjs from 'dayjs';
 
@@ -65,10 +70,16 @@ export class Article extends BaseEntity {
   @Column('varchar', { comment: '来源', length: 50, nullable: true })
   source: string;
 
-  @Column('varchar', { comment: '关键字（多个使用逗号“，”分隔）', length: 100, nullable: true })
+  @Column('varchar', {
+    comment: '关键字（多个使用逗号“，”分隔）',
+    length: 100,
+    nullable: true,
+  })
   keywords: string;
 
-  @Column('tinyint', { comment: '文章类型（0：文本；1：链接；2：图片；3：组图；4：视频；5：音频）' })
+  @Column('tinyint', {
+    comment: '文章类型（0：文本；1：链接；2：图片；3：组图；4：视频；5：音频）',
+  })
   type: ArticleType;
 
   @Column('varchar', { comment: '缩略图', length: 255, nullable: true })
@@ -107,15 +118,24 @@ export class Article extends BaseEntity {
   @Column('int', { comment: '分享量', default: () => 0 })
   shareCount: number;
 
-  @Column('tinyint', { comment: '允许评论（0：禁用；1：启用）', default: IsCommentType.ENABLE })
+  @Column('tinyint', {
+    comment: '允许评论（0：禁用；1：启用）',
+    default: IsCommentType.ENABLE,
+  })
   isComment: IsCommentType;
 
   @Column('int', { comment: '评论量', default: () => 0 })
   commentCount: number;
 
-  @Column('tinyint', { comment: '状态（0：未发布；1：发布；2：草稿；3：回收站）', default: StatusType.DRAFT })
+  @Column('tinyint', {
+    comment: '状态（0：未发布；1：发布；2：草稿；3：回收站）',
+    default: StatusType.DRAFT,
+  })
   status: StatusType;
 
-  @OneToMany(type => ArticleDataCat, articleDataCat => articleDataCat.article)
+  @OneToMany(
+    (type) => ArticleDataCat,
+    (articleDataCat) => articleDataCat.article,
+  )
   articleDataCats: ArticleDataCat[];
 }

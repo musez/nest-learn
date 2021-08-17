@@ -14,9 +14,7 @@ export class CryptoUtil {
    * @returns string 加密字符串
    */
   encryptPassword(password: string): string {
-    return createHash('sha256')
-      .update(password)
-      .digest('hex');
+    return createHash('sha256').update(password).digest('hex');
   }
 
   /**

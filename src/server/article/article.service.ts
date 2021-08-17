@@ -4,7 +4,11 @@ import { Repository } from 'typeorm';
 import { Utils } from './../../utils/index';
 import { CreateArticleDto } from './dto/create-article.dto';
 import { UpdateArticleDto } from './dto/update-article.dto';
-import { BaseFindByIdDto, BaseFindByIdsDto, BaseModifyStatusByIdsDto } from '../base.dto';
+import {
+  BaseFindByIdDto,
+  BaseFindByIdsDto,
+  BaseModifyStatusByIdsDto,
+} from '../base.dto';
 import { Article } from './entities/article.entity';
 import { SearchArticleDto } from './dto/search-article.dto';
 import { LimitArticleDto } from './dto/limit-article.dto';
@@ -16,6 +20,7 @@ import { ApiException } from '../../common/exception/api-exception';
 import { TopicService } from '../topic/topic.service';
 import { CommentService } from '../comment/comment.service';
 import { LimitArticleTopDto } from './dto/limit-article-topic.dto';
+import { CreateArticleTopicDto } from './dto/create-article-topic.dto';
 
 @Injectable()
 export class ArticleService {
@@ -26,8 +31,7 @@ export class ArticleService {
     private readonly articleDataCatService: ArticleDataCatService,
     private readonly topicService: TopicService,
     private readonly commentService: CommentService,
-  ) {
-  }
+  ) {}
 
   /**
    * 添加
@@ -49,7 +53,8 @@ export class ArticleService {
    * 获取列表
    */
   async selectList(searchArticleDto: SearchArticleDto): Promise<any[]> {
-    let { title, type, status } = searchArticleDto;
+    // eslint-disable-next-line prefer-const
+    let { title, type, status, catId } = searchArticleDto;
 
     const queryConditionList = [];
     if (!Utils.isBlank(title)) {
@@ -63,22 +68,29 @@ export class ArticleService {
       status = status.split(',');
       queryConditionList.push('status IN (:...status)');
     }
+    if (!Utils.isBlank(catId)) {
+      queryConditionList.push('articleDataCats.articleId = article.id');
+      queryConditionList.push('articleDataCats.catId = :catId');
+    }
     queryConditionList.push('deleteStatus = 0');
     const queryCondition = queryConditionList.join(' AND ');
 
-    const ret = await this.articleRepository.createQueryBuilder()
+    const ret = await this.articleRepository
+      .createQueryBuilder()
       .where(queryCondition, {
         title: `%${title}%`,
         type: type,
         status: status,
+        catId: catId,
       })
-      .orderBy({ 'createTime': 'DESC' })
+      .orderBy({ createTime: 'DESC' })
       .getMany();
 
     for (let item of ret) {
       const { id } = item;
 
-      const retRel = await this.articleRepository.createQueryBuilder('article')
+      const retRel = await this.articleRepository
+        .createQueryBuilder('article')
         .innerJoinAndSelect(ArticleDataCat, 'adc', 'article.id = adc.articleId')
         .innerJoinAndSelect(ArticleCat, 'ac', 'ac.id = adc.catId')
         .select('ac.id', 'ac.catName')
@@ -100,7 +112,7 @@ export class ArticleService {
    */
   async selectListPage(limitArticleDto: LimitArticleDto): Promise<any> {
     // eslint-disable-next-line prefer-const
-    let { page, limit, title, type, status } = limitArticleDto;
+    let { page, limit, title, type, status, catId } = limitArticleDto;
     page = page ? page : 1;
     limit = limit ? limit : 10;
     const offset = (page - 1) * limit;
@@ -117,15 +129,21 @@ export class ArticleService {
       status = status.split(',');
       queryConditionList.push('status IN (:...status)');
     }
+    if (!Utils.isBlank(catId)) {
+      queryConditionList.push('articleDataCats.articleId = article.id');
+      queryConditionList.push('articleDataCats.catId = :catId');
+    }
     queryConditionList.push('article.deleteStatus = 0');
     const queryCondition = queryConditionList.join(' AND ');
 
-    const ret = await this.articleRepository.createQueryBuilder('article')
+    const ret = await this.articleRepository
+      .createQueryBuilder('article')
       .innerJoinAndSelect('article.articleDataCats', 'articleDataCats')
       .where(queryCondition, {
         title: `%${title}%`,
         type: type,
         status: status,
+        catId: catId,
       })
       .skip(offset)
       .take(limit)
@@ -135,13 +153,15 @@ export class ArticleService {
     for (let item of ret[0]) {
       const { articleDataCats } = item;
       if (articleDataCats?.length > 0) {
-        const ids = articleDataCats.map(v => v.id);
-        const retRel = await this.articleDataCatService.selectByArticleDataCatIds({
-          ids: ids.join(','),
-        });
+        const ids = articleDataCats.map((v) => v.id);
+        const retRel = await this.articleDataCatService.selectByArticleDataCatIds(
+          {
+            ids: ids.join(','),
+          },
+        );
 
         item = Object.assign(item, {
-          articleDataCats: retRel.map(v => v.cat),
+          articleDataCats: retRel.map((v) => v.cat),
         });
       }
     }
@@ -169,14 +189,16 @@ export class ArticleService {
       throw new ApiException(`数据 id：${id} 不存在！`, 404);
     }
     if (ret?.articleDataCats?.length > 0) {
-      const ids = ret.articleDataCats.map(v => v.id);
+      const ids = ret.articleDataCats.map((v) => v.id);
 
-      const articleDataCatRet = await this.articleDataCatService.selectByArticleDataCatIds({
-        ids: ids.join(','),
-      });
+      const articleDataCatRet = await this.articleDataCatService.selectByArticleDataCatIds(
+        {
+          ids: ids.join(','),
+        },
+      );
 
       // @ts-ignore
-      ret.articleDataCats = articleDataCatRet.map(v => {
+      ret.articleDataCats = articleDataCatRet.map((v) => {
         return v.cat;
       });
     }
@@ -216,10 +238,14 @@ export class ArticleService {
   /**
    * 回收站状态修改
    */
-  async updateStatus(baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto, curUser): Promise<void> {
+  async updateStatus(
+    baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto,
+    curUser,
+  ): Promise<void> {
     const { ids, status } = baseModifyStatusByIdsDto;
 
-    await this.articleRepository.createQueryBuilder()
+    await this.articleRepository
+      .createQueryBuilder()
       .update(Article)
       .set({ status: status, updateBy: curUser!.id })
       .where('id in (:ids)', { ids: ids })
@@ -232,7 +258,8 @@ export class ArticleService {
   async deleteById(baseFindByIdDto: BaseFindByIdDto, curUser): Promise<void> {
     const { id } = baseFindByIdDto;
 
-    await this.articleRepository.createQueryBuilder()
+    await this.articleRepository
+      .createQueryBuilder()
       .update(Article)
       .set({ deleteStatus: 1, deleteBy: curUser!.id, deleteTime: Utils.now() })
       .where('id = :id', { id: id })
@@ -245,7 +272,8 @@ export class ArticleService {
   async deleteAll(baseFindByIdsDto: BaseFindByIdsDto, curUser): Promise<void> {
     const { ids } = baseFindByIdsDto;
 
-    await this.articleRepository.createQueryBuilder()
+    await this.articleRepository
+      .createQueryBuilder()
       .update(Article)
       .set({ deleteStatus: 1, deleteBy: curUser!.id, deleteTime: Utils.now() })
       .where('id in (:ids)', { ids: ids })
@@ -266,7 +294,9 @@ export class ArticleService {
 
     const articleDataCats = [];
     for (const item of articleCats) {
-      const articleCatRet = await this.articleCatService.selectById({ id: item });
+      const articleCatRet = await this.articleCatService.selectById({
+        id: item,
+      });
       const articleDataCat = new ArticleDataCat();
       articleDataCat.article = articleRet;
       articleDataCat.cat = articleCatRet;
@@ -312,7 +342,7 @@ export class ArticleService {
     });
 
     // 扁平化树
-    commentTree.forEach(comment => {
+    commentTree.forEach((comment) => {
       let children = [];
 
       if (comment?.children?.length) {
@@ -322,8 +352,8 @@ export class ArticleService {
     });
 
     // 扁平化树与评论组装
-    topicRet.forEach(topic => {
-      commentTree.forEach(comment => {
+    topicRet.forEach((topic) => {
+      commentTree.forEach((comment) => {
         if (topic.id === comment.replyId) {
           if (topic?.children?.length) {
             topic['children'].push(comment);
@@ -341,7 +371,9 @@ export class ArticleService {
   /**
    * 获取评论
    */
-  async selectCommentPageById(limitArticleTopDto: LimitArticleTopDto): Promise<any> {
+  async selectCommentPageById(
+    limitArticleTopDto: LimitArticleTopDto,
+  ): Promise<any> {
     const { id, page, limit } = limitArticleTopDto;
 
     const [topicRet, commentRet] = await Promise.all([
@@ -364,7 +396,7 @@ export class ArticleService {
     });
 
     // 扁平化树
-    commentTree.forEach(comment => {
+    commentTree.forEach((comment) => {
       let children = [];
 
       if (comment?.children?.length > 0) {
@@ -376,8 +408,8 @@ export class ArticleService {
     const { list, total } = topicRet;
 
     // 扁平化树与评论组装
-    list.forEach(topic => {
-      commentTree.forEach(comment => {
+    list.forEach((topic) => {
+      commentTree.forEach((comment) => {
         if (topic.id === comment.replyId) {
           if (topic?.children?.length) {
             topic['children'].push(comment);
@@ -395,5 +427,34 @@ export class ArticleService {
       page: page,
       limit: limit,
     };
+  }
+
+  /**
+   * 评论
+   */
+  async insertTopic(
+    createArticleTopicDto: CreateArticleTopicDto,
+    curUser?,
+  ): Promise<any> {
+    const { id, type, replyType, replyId, ...form } = createArticleTopicDto;
+
+    if (type === 0) {
+      const params = Object.assign(form, {
+        topicType: 0,
+        topicId: id,
+        fromUid: curUser.id,
+      });
+
+      return await this.topicService.insert(params, curUser);
+    } else if (type === 1) {
+      const params = Object.assign(form, {
+        commentId: id,
+        replyId: replyId,
+        fromUid: curUser.id,
+      });
+
+      // @ts-ignore
+      return await this.commentService.insert(params, curUser);
+    }
   }
 }

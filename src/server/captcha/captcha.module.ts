@@ -9,5 +9,4 @@ import { CacheModule } from '../cache/cache.module';
   providers: [CaptchaService],
   exports: [CaptchaService],
 })
-export class CaptchaModule {
-}
+export class CaptchaModule {}

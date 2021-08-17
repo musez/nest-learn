@@ -1,5 +1,12 @@
 import { ApiProperty, ApiPropertyOptional, PartialType } from '@nestjs/swagger';
-import { IsNotEmpty, IsString, IsInt, IsUUID, MaxLength, IsDefined } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsString,
+  IsInt,
+  IsUUID,
+  MaxLength,
+  IsDefined,
+} from 'class-validator';
 import { BasePageDto } from '../../base.dto';
 
 export class LimitArticleTopDto extends PartialType(BasePageDto) {

@@ -4,7 +4,5 @@ import { Repository } from 'typeorm';
 
 @Injectable()
 export class WechatService {
-  constructor() {
-  }
-
+  constructor() {}
 }

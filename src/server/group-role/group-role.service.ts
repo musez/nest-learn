@@ -10,8 +10,7 @@ export class GroupRoleService {
   constructor(
     @InjectRepository(GroupRole)
     private readonly groupRoleRepository: Repository<GroupRole>,
-  ) {
-  }
+  ) {}
 
   /**
    * 添加
@@ -50,7 +49,8 @@ export class GroupRoleService {
    * 删除用户组
    */
   async deleteByGroupId(id: string): Promise<any> {
-    return await this.groupRoleRepository.createQueryBuilder()
+    return await this.groupRoleRepository
+      .createQueryBuilder()
       .delete()
       .from(GroupRole)
       .where('groupId = :id', { id: id })

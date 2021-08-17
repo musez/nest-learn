@@ -7,5 +7,4 @@ import { AppService } from '../../app.service';
   controllers: [TaskController],
   providers: [AppService, TaskService],
 })
-export class TaskModule {
-}
+export class TaskModule {}

@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Put, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Put,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { CodeGenerateService } from './code-generate.service';
 import { CreateCodeGenerateDto } from './dto/create-code-generate.dto';
 import { UpdateCodeGenerateDto } from './dto/update-code-generate.dto';
@@ -23,7 +31,10 @@ export class CodeGenerateController {
   }
 
   @Put(':id')
-  update(@Param('id') id: string, @Body() updateCodeGenerateDto: UpdateCodeGenerateDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateCodeGenerateDto: UpdateCodeGenerateDto,
+  ) {
     return this.codeGenerateService.update(+id, updateCodeGenerateDto);
   }
 

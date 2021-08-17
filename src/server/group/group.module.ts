@@ -12,5 +12,4 @@ import { RoleModule } from '../role/role.module';
   providers: [GroupService],
   exports: [GroupService],
 })
-export class GroupModule {
-}
+export class GroupModule {}

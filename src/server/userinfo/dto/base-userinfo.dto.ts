@@ -1,4 +1,10 @@
-import { IsNotEmpty, IsString, IsInt, IsEmail, MaxLength } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsString,
+  IsInt,
+  IsEmail,
+  MaxLength,
+} from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { UpdateUserDto } from '../../user/dto/update-user.dto';
 import { UserConstants } from '../../../constants/constants';
@@ -14,7 +20,9 @@ export class BaseUserinfoDto {
   readonly districtId?: number;
 
   @ApiPropertyOptional({ description: '详细地址' })
-  @MaxLength(UserConstants.ADDRESS_MAX_LENGTH, { message: '名称不能大于 $constraint1 位！' })
+  @MaxLength(UserConstants.ADDRESS_MAX_LENGTH, {
+    message: '名称不能大于 $constraint1 位！',
+  })
   readonly address?: string;
 
   @ApiPropertyOptional({ description: '用户' })

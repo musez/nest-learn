@@ -17,8 +17,7 @@ export class DictService {
     @InjectRepository(Dict)
     private readonly dictRepository: Repository<Dict>,
     private readonly dictItemService: DictItemService,
-  ) {
-  }
+  ) {}
 
   /**
    * 添加
@@ -57,7 +56,8 @@ export class DictService {
     queryConditionList.push('dict.deleteStatus = 0');
     const queryCondition = queryConditionList.join(' AND ');
 
-    return await this.dictRepository.createQueryBuilder('dict')
+    return await this.dictRepository
+      .createQueryBuilder('dict')
       .leftJoinAndSelect('dict.dictItems', 'dictItems')
       .where(queryCondition, {
         dictName: `%${dictName}%`,
@@ -87,7 +87,8 @@ export class DictService {
     queryConditionList.push('dict.deleteStatus = 0');
     const queryCondition = queryConditionList.join(' AND ');
 
-    const res = await this.dictRepository.createQueryBuilder('dict')
+    const res = await this.dictRepository
+      .createQueryBuilder('dict')
       .leftJoinAndSelect('dict.dictItems', 'dictItems')
       .where(queryCondition, {
         dictName: `%${dictName}%`,
@@ -154,7 +155,8 @@ export class DictService {
   async deleteById(baseFindByIdDto: BaseFindByIdDto, curUser): Promise<void> {
     const { id } = baseFindByIdDto;
 
-    await this.dictRepository.createQueryBuilder()
+    await this.dictRepository
+      .createQueryBuilder()
       .update(Dict)
       .set({ deleteStatus: 1, deleteBy: curUser!.id, deleteTime: Utils.now() })
       .where('id = :id', { id: id })
@@ -164,10 +166,14 @@ export class DictService {
   /**
    * 删除（批量）
    */
-  async deleteByIds(baseFindByIdsDto: BaseFindByIdsDto, curUser): Promise<void> {
+  async deleteByIds(
+    baseFindByIdsDto: BaseFindByIdsDto,
+    curUser,
+  ): Promise<void> {
     const { ids } = baseFindByIdsDto;
 
-    await this.dictRepository.createQueryBuilder()
+    await this.dictRepository
+      .createQueryBuilder()
       .update(Dict)
       .set({ deleteStatus: 1, deleteBy: curUser!.id, deleteTime: Utils.now() })
       .where('id in (:ids)', { ids: ids })

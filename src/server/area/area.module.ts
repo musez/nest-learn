@@ -10,5 +10,4 @@ import { UserModule } from '../user/user.module';
   controllers: [AreaController],
   providers: [AreaService],
 })
-export class AreaModule {
-}
+export class AreaModule {}

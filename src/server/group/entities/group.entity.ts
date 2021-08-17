@@ -30,9 +30,9 @@ export class Group extends BaseEntity {
   @Column('varchar', { comment: '名称', length: 50 })
   name: string;
 
-  @OneToMany(type => UserGroup, userGroup => userGroup.group)
+  @OneToMany((type) => UserGroup, (userGroup) => userGroup.group)
   userGroups: UserGroup[];
 
-  @OneToMany(type => GroupRole, groupRole => groupRole.group)
+  @OneToMany((type) => GroupRole, (groupRole) => groupRole.group)
   groupRoles: GroupRole[];
 }

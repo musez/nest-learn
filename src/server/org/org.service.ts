@@ -7,15 +7,18 @@ import { Org } from './entities/org.entity';
 import { Utils } from '../../utils';
 import { SearchOrgDto } from './dto/search-org.dto';
 import { LimitOrgDto } from './dto/limit-org.dto';
-import { BaseFindByIdDto, BaseFindByIdsDto, BaseFindByPIdDto } from '../base.dto';
+import {
+  BaseFindByIdDto,
+  BaseFindByIdsDto,
+  BaseFindByPIdDto,
+} from '../base.dto';
 
 @Injectable()
 export class OrgService {
   constructor(
     @InjectRepository(Org)
     private readonly orgRepository: Repository<Org>,
-  ) {
-  }
+  ) {}
 
   /**
    * 添加
@@ -58,18 +61,23 @@ export class OrgService {
     queryConditionList.push('deleteStatus = 0');
     const queryCondition = queryConditionList.join(' AND ');
 
-    const res = await this.orgRepository.createQueryBuilder('o')
+    const res = await this.orgRepository
+      .createQueryBuilder('o')
       .select(['o.*'])
-      .addSelect(subQuery =>
-        subQuery.select('COUNT(*)')
-          .from(Org, 'subO')
-          .where('subO.parentId = o.id'), 'hasChildren')
+      .addSelect(
+        (subQuery) =>
+          subQuery
+            .select('COUNT(*)')
+            .from(Org, 'subO')
+            .where('subO.parentId = o.id'),
+        'hasChildren',
+      )
       .where(queryCondition, {
         parentIds: parentIds,
         name: `%${name}%`,
         status: status,
       })
-      .orderBy({ 'createTime': 'DESC' })
+      .orderBy({ createTime: 'DESC' })
       .getRawMany();
     return res;
   }
@@ -99,7 +107,8 @@ export class OrgService {
     queryConditionList.push('deleteStatus = 0');
     const queryCondition = queryConditionList.join(' AND ');
 
-    const res = await this.orgRepository.createQueryBuilder('org')
+    const res = await this.orgRepository
+      .createQueryBuilder('org')
       .leftJoinAndSelect(Org, 'p', 'p.id = org.parentId')
       .where(queryCondition, {
         parentIds: parentIds,
@@ -230,7 +239,8 @@ export class OrgService {
   async deleteById(baseFindByIdDto: BaseFindByIdDto, curUser): Promise<void> {
     const { id } = baseFindByIdDto;
 
-    await this.orgRepository.createQueryBuilder()
+    await this.orgRepository
+      .createQueryBuilder()
       .update(Org)
       .set({ deleteStatus: 1, deleteBy: curUser!.id, deleteTime: Utils.now() })
       .where('id = :id', { id: id })
@@ -240,10 +250,14 @@ export class OrgService {
   /**
    * 删除（批量）
    */
-  async deleteByIds(baseFindByIdsDto: BaseFindByIdsDto, curUser): Promise<void> {
+  async deleteByIds(
+    baseFindByIdsDto: BaseFindByIdsDto,
+    curUser,
+  ): Promise<void> {
     const { ids } = baseFindByIdsDto;
 
-    await this.orgRepository.createQueryBuilder()
+    await this.orgRepository
+      .createQueryBuilder()
       .update(Org)
       .set({ deleteStatus: 1, deleteBy: curUser!.id, deleteTime: Utils.now() })
       .where('id in (:ids)', { ids: ids })

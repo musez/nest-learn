@@ -1,4 +1,12 @@
-import { IsDefined, IsOptional, IsNotEmpty, IsString, IsInt, MaxLength, IsUUID } from 'class-validator';
+import {
+  IsDefined,
+  IsOptional,
+  IsNotEmpty,
+  IsString,
+  IsInt,
+  MaxLength,
+  IsUUID,
+} from 'class-validator';
 import { Transform } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { BaseConstants } from '../../../constants/constants';
@@ -19,7 +27,7 @@ export class BaseTopicDto {
   @ApiProperty({ description: '主题类型（0：新闻）', default: 0 })
   @IsDefined({ message: '主题类型不能为空！' })
   @IsNotEmpty({ message: '主题类型不能为空！' })
-  @Transform(value => Number.parseInt(value))
+  @Transform((value) => Number.parseInt(value))
   @IsInt({ message: '主题类型为数字！' })
   readonly topicType: number;
 
@@ -34,12 +42,14 @@ export class BaseTopicDto {
 
   @ApiPropertyOptional({ description: '状态（0：禁用；1：启用）', example: 0 })
   @IsOptional()
-  @Transform(value => Number.parseInt(value))
+  @Transform((value) => Number.parseInt(value))
   @IsInt({ message: '状态必须为数字！' })
   readonly status?: number;
 
   @ApiPropertyOptional({ description: '描述', example: null })
   @IsOptional()
-  @MaxLength(BaseConstants.DESCRIPTION_MAX_LENGTH, { message: '描述不能大于 $constraint1 位！' })
+  @MaxLength(BaseConstants.DESCRIPTION_MAX_LENGTH, {
+    message: '描述不能大于 $constraint1 位！',
+  })
   readonly description?: string;
 }

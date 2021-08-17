@@ -22,13 +22,15 @@ export class GroupService {
     private readonly groupRepository: Repository<Group>,
     private readonly roleService: RoleService,
     private readonly groupRoleService: GroupRoleService,
-  ) {
-  }
+  ) {}
 
   /**
    * 添加
    */
-  async insert(createGroupDto: CreateGroupDto, curUser): Promise<CreateGroupDto> {
+  async insert(
+    createGroupDto: CreateGroupDto,
+    curUser,
+  ): Promise<CreateGroupDto> {
     let group = new Group();
     group = Utils.dto2entity(createGroupDto, group);
     group.createBy = curUser!.id;
@@ -39,7 +41,7 @@ export class GroupService {
    * 获取列表
    */
   async selectList(query): Promise<any[]> {
-    const { name ,status} = query;
+    const { name, status } = query;
 
     const queryConditionList = [];
     if (!Utils.isBlank(name)) {
@@ -51,12 +53,13 @@ export class GroupService {
     queryConditionList.push('deleteStatus = 0');
     const queryCondition = queryConditionList.join(' AND ');
 
-    return await this.groupRepository.createQueryBuilder()
+    return await this.groupRepository
+      .createQueryBuilder()
       .where(queryCondition, {
         name: `%${name}%`,
         status: status,
       })
-      .orderBy({ 'createTime': 'DESC' })
+      .orderBy({ createTime: 'DESC' })
       .getMany();
   }
 
@@ -80,14 +83,15 @@ export class GroupService {
     queryConditionList.push('deleteStatus = 0');
     const queryCondition = queryConditionList.join(' AND ');
 
-    const res = await this.groupRepository.createQueryBuilder()
+    const res = await this.groupRepository
+      .createQueryBuilder()
       .where(queryCondition, {
         name: `%${name}%`,
         status: status,
       })
       .skip(offset)
       .take(limit)
-      .orderBy({ 'createTime': 'DESC' })
+      .orderBy({ createTime: 'DESC' })
       .getManyAndCount();
 
     return {
@@ -113,14 +117,14 @@ export class GroupService {
       throw new ApiException(`数据 id：${id} 不存在！`, 404);
     }
     if (ret?.groupRoles?.length > 0) {
-      const ids = ret.groupRoles.map(v => v.id);
+      const ids = ret.groupRoles.map((v) => v.id);
 
       const groupRoleRet = await this.groupRoleService.selectByGroupIds({
         ids: ids.join(','),
       });
 
       // @ts-ignore
-      ret.groupRoles = groupRoleRet.map(v => {
+      ret.groupRoles = groupRoleRet.map((v) => {
         return v.role;
       });
     }
@@ -132,7 +136,8 @@ export class GroupService {
    */
   async selectByUserId(baseFindByIdDto: BaseFindByIdDto): Promise<any> {
     const { id } = baseFindByIdDto;
-    const userGroup = await this.groupRepository.createQueryBuilder('g')
+    const userGroup = await this.groupRepository
+      .createQueryBuilder('g')
       .innerJoinAndSelect(UserGroup, 'ug', 'g.id = ug.groupId')
       .innerJoinAndSelect(User, 'u', 'u.id = ug.userId')
       .where('u.id = :id AND u.deleteStatus = 0 AND g.deleteStatus = 0', {
@@ -173,7 +178,8 @@ export class GroupService {
   async deleteById(baseFindByIdDto: BaseFindByIdDto, curUser): Promise<void> {
     const { id } = baseFindByIdDto;
 
-    await this.groupRepository.createQueryBuilder()
+    await this.groupRepository
+      .createQueryBuilder()
       .update(Group)
       .set({ deleteStatus: 1, deleteBy: curUser!.id, deleteTime: Utils.now() })
       .where('id = :id', { id: id })
@@ -183,10 +189,14 @@ export class GroupService {
   /**
    * 删除（批量）
    */
-  async deleteByIds(baseFindByIdsDto: BaseFindByIdsDto, curUser): Promise<void> {
+  async deleteByIds(
+    baseFindByIdsDto: BaseFindByIdsDto,
+    curUser,
+  ): Promise<void> {
     const { ids } = baseFindByIdsDto;
 
-    await this.groupRepository.createQueryBuilder()
+    await this.groupRepository
+      .createQueryBuilder()
       .update(Group)
       .set({ deleteStatus: 1, deleteBy: curUser!.id, deleteTime: Utils.now() })
       .where('id in (:ids)', { ids: ids })

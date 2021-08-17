@@ -1,4 +1,15 @@
-import { Controller, Get, Post, Body, Put, Param, Delete, Res, Req, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Put,
+  Param,
+  Delete,
+  Res,
+  Req,
+  Query,
+} from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { WechatService } from './wechat.service';
 import { CurUser } from '../../common/decorators/cur-user.decorator';
@@ -11,8 +22,7 @@ export class WechatController {
   constructor(
     private readonly config: ConfigService,
     private readonly wechatService: WechatService,
-  ) {
-  }
+  ) {}
 
   @Get('getCode')
   @ApiOperation({ summary: '获取 code' })
@@ -23,7 +33,17 @@ export class WechatController {
     const scoped = 'snsapi_userinfo';
     const state = '123';
 
-    res.redirect('https://open.weixin.qq.com/connect/oauth2/authorize?appid=' + appID + '&redirect_uri=' + return_uri + '&response_type=code&scope=' + scoped + '&state=' + state + '#wechat_redirect');
+    res.redirect(
+      'https://open.weixin.qq.com/connect/oauth2/authorize?appid=' +
+        appID +
+        '&redirect_uri=' +
+        return_uri +
+        '&response_type=code&scope=' +
+        scoped +
+        '&state=' +
+        state +
+        '#wechat_redirect',
+    );
   }
 
   @Get('getAccessToken')
@@ -34,8 +54,18 @@ export class WechatController {
     const appSecret = this.config.get('wechat.appSecret');
 
     // 请求获取令牌
-    request.get({ url: 'https://api.weixin.qq.com/sns/oauth2/access_token?appid=' + appID + '&secret=' + appSecret + '&code=' + code + '&grant_type=authorization_code' },
-      function(error, response, body) {
+    request.get(
+      {
+        url:
+          'https://api.weixin.qq.com/sns/oauth2/access_token?appid=' +
+          appID +
+          '&secret=' +
+          appSecret +
+          '&code=' +
+          code +
+          '&grant_type=authorization_code',
+      },
+      function (error, response, body) {
         console.log(response.statusCode, body);
         if (response.statusCode == 200) {
           const data = JSON.parse(body);
@@ -43,18 +73,40 @@ export class WechatController {
           const openid = data.openid;
 
           // 调用获取用户信息的api
-          request.get({ url: 'https://api.weixin.qq.com/sns/userinfo?access_token=' + access_token + '&openid=' + openid + '&lang=zh_CN' },
-            function(error, response, body) {
+          request.get(
+            {
+              url:
+                'https://api.weixin.qq.com/sns/userinfo?access_token=' +
+                access_token +
+                '&openid=' +
+                openid +
+                '&lang=zh_CN',
+            },
+            function (error, response, body) {
               console.log(response.statusCode, body);
 
               const userinfo = JSON.parse(body);
-              res.send('\
-                            <h1>' + userinfo.nickname + ' 的个人信息</h1>\
-                            <p><img src=\'' + userinfo.headimgurl + '\' /></p>\
-                            <p>' + userinfo.city + '，' + userinfo.province + '，' + userinfo.country + '</p>\
-                        ');
-            });
+              res.send(
+                '\
+                            <h1>' +
+                  userinfo.nickname +
+                  " 的个人信息</h1>\
+                            <p><img src='" +
+                  userinfo.headimgurl +
+                  "' /></p>\
+                            <p>" +
+                  userinfo.city +
+                  '，' +
+                  userinfo.province +
+                  '，' +
+                  userinfo.country +
+                  '</p>\
+                        ',
+              );
+            },
+          );
         }
-      });
+      },
+    );
   }
 }

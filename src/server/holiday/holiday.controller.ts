@@ -10,21 +10,33 @@ import {
   BadRequestException,
   UseGuards,
   UseInterceptors,
-  UploadedFile, Res,
+  UploadedFile,
+  Res,
 } from '@nestjs/common';
 import {
   FileInterceptor,
   FilesInterceptor,
   FileFieldsInterceptor,
 } from '@nestjs/platform-express';
-import *  as dayjs from 'dayjs';
+import * as dayjs from 'dayjs';
 import { HolidayService } from './holiday.service';
 import { CreateHolidayDto } from './dto/create-holiday.dto';
 import { UpdateHolidayDto } from './dto/update-holiday.dto';
-import { ApiBasicAuth, ApiBody, ApiConsumes, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBasicAuth,
+  ApiBody,
+  ApiConsumes,
+  ApiOperation,
+  ApiQuery,
+  ApiTags,
+} from '@nestjs/swagger';
 import { CurUser } from '../../common/decorators/cur-user.decorator';
 import { Auth } from '../../common/decorators/auth.decorator';
-import { BaseFindByIdDto, BaseFindByIdsDto, BaseModifyStatusByIdsDto } from '../base.dto';
+import {
+  BaseFindByIdDto,
+  BaseFindByIdsDto,
+  BaseModifyStatusByIdsDto,
+} from '../base.dto';
 import { Holiday } from './entities/holiday.entity';
 import { SearchHolidayDto } from './dto/search-holiday.dto';
 import { LimitHolidayDto } from './dto/limit-holiday.dto';
@@ -34,7 +46,13 @@ import { Utils } from '../../utils';
 import { BaseDaysDto } from './dto/base-holiday.dto';
 import { ExcelService } from '../excel/excel.service';
 import { SearchUserDto } from '../user/dto/search-user.dto';
-import { RestDict, SexDict, StatusDict, UserDict, WeekdayDict } from '../../constants/dicts';
+import {
+  RestDict,
+  SexDict,
+  StatusDict,
+  UserDict,
+  WeekdayDict,
+} from '../../constants/dicts';
 import { ApiException } from '../../common/exception/api-exception';
 
 @Controller('holiday')
@@ -45,20 +63,24 @@ export class HolidayController {
   constructor(
     private readonly holidayService: HolidayService,
     private readonly excelService: ExcelService,
-  ) {
-  }
+  ) {}
 
   @Post('add')
   @Auth('system:holiday:add')
   @ApiOperation({ summary: '添加' })
-  async add(@CurUser() curUser, @Body() createHolidayDto: CreateHolidayDto): Promise<CreateHolidayDto> {
+  async add(
+    @CurUser() curUser,
+    @Body() createHolidayDto: CreateHolidayDto,
+  ): Promise<CreateHolidayDto> {
     return this.holidayService.insert(createHolidayDto, curUser);
   }
 
   @Get('findList')
   @Auth('system:holiday:findList')
   @ApiOperation({ summary: '获取列表' })
-  async findList(@Query() searchHolidayDto: SearchHolidayDto): Promise<Holiday[]> {
+  async findList(
+    @Query() searchHolidayDto: SearchHolidayDto,
+  ): Promise<Holiday[]> {
     return await this.holidayService.selectList(searchHolidayDto);
   }
 
@@ -79,7 +101,10 @@ export class HolidayController {
   @Get('getDays')
   @Auth('system:holiday:getDays')
   @ApiOperation({ summary: '获取 n 天内的日期' })
-  async getDays(@CurUser() curUser, @Query() baseDaysDto: BaseDaysDto): Promise<any> {
+  async getDays(
+    @CurUser() curUser,
+    @Query() baseDaysDto: BaseDaysDto,
+  ): Promise<any> {
     const { days } = baseDaysDto;
     const dayList = Utils.dayjsGetDay(parseInt(String(days)));
     return this.holidayService.selectDays(dayList, curUser);
@@ -88,15 +113,36 @@ export class HolidayController {
   @Get('exportExcel')
   @Auth('system:holiday:exportExcel')
   @ApiOperation({ summary: '列表（Excel 导出）' })
-  async exportExcel(@Query() searchDto: SearchHolidayDto, @Res() res): Promise<any> {
+  async exportExcel(
+    @Query() searchDto: SearchHolidayDto,
+    @Res() res,
+  ): Promise<any> {
     const list = await this.holidayService.selectList(searchDto);
 
     const columns = [
       { key: 'name', name: '名称', type: 'String', size: 10 },
       { key: 'date', name: '日期', type: 'String', size: 10 },
-      { key: 'weekday', name: '周几', type: 'Enum', size: 10, default: WeekdayDict },
-      { key: 'restType', name: '类型', type: 'Enum', size: 10, default: RestDict },
-      { key: 'status', name: '状态', type: 'Enum', size: 10, default: StatusDict },
+      {
+        key: 'weekday',
+        name: '周几',
+        type: 'Enum',
+        size: 10,
+        default: WeekdayDict,
+      },
+      {
+        key: 'restType',
+        name: '类型',
+        type: 'Enum',
+        size: 10,
+        default: RestDict,
+      },
+      {
+        key: 'status',
+        name: '状态',
+        type: 'Enum',
+        size: 10,
+        default: StatusDict,
+      },
       { key: 'description', name: '备注', type: 'String', size: 20 },
       { key: 'createTime', name: '创建时间', type: 'String', size: 20 },
       { key: 'updateTime', name: '修改时间', type: 'String', size: 20 },
@@ -109,7 +155,9 @@ export class HolidayController {
     );
     res.setHeader(
       'Content-Disposition',
-      'attachment; filename=' + encodeURIComponent(`节假日_${Utils.dayjsFormat('YYYYMMDD')}`) + '.xlsx',// 中文名需要进行 url 转码
+      'attachment; filename=' +
+        encodeURIComponent(`节假日_${Utils.dayjsFormat('YYYYMMDD')}`) +
+        '.xlsx', // 中文名需要进行 url 转码
     );
     // res.setTimeout(30 * 60 * 1000); // 防止网络原因造成超时。
     res.end(result, 'binary');
@@ -136,15 +184,36 @@ export class HolidayController {
     const columns = [
       { key: 'name', name: '名称', type: 'String', size: 10, index: 1 },
       { key: 'date', name: '日期', type: 'String', size: 10, index: 2 },
-      { key: 'weekday', name: '周几', type: 'Enum', size: 10, enum: WeekdayDict, index: 3 },
-      { key: 'restType', name: '类型', type: 'Enum', size: 10, enum: RestDict, index: 4 },
-      { key: 'status', name: '状态', type: 'Enum', size: 10, enum: StatusDict, index: 5 },
+      {
+        key: 'weekday',
+        name: '周几',
+        type: 'Enum',
+        size: 10,
+        enum: WeekdayDict,
+        index: 3,
+      },
+      {
+        key: 'restType',
+        name: '类型',
+        type: 'Enum',
+        size: 10,
+        enum: RestDict,
+        index: 4,
+      },
+      {
+        key: 'status',
+        name: '状态',
+        type: 'Enum',
+        size: 10,
+        enum: StatusDict,
+        index: 5,
+      },
       { key: 'description', name: '备注', type: 'String', size: 20, index: 6 },
     ];
     const rows = await this.excelService.importExcel(columns, file);
 
     // 自动获取周几
-    rows.forEach(v => {
+    rows.forEach((v) => {
       if (v.date) {
         v.weekday = dayjs(v.date).day();
       }
@@ -187,7 +256,10 @@ export class HolidayController {
   @Post('update')
   @Auth('system:holiday:update')
   @ApiOperation({ summary: '修改' })
-  async update(@CurUser() curUser, @Body() updateHolidayDto: UpdateHolidayDto): Promise<any> {
+  async update(
+    @CurUser() curUser,
+    @Body() updateHolidayDto: UpdateHolidayDto,
+  ): Promise<any> {
     const { id } = updateHolidayDto;
 
     const isExistId = await this.holidayService.isExistId(id);
@@ -201,14 +273,20 @@ export class HolidayController {
   @Post('updateStatus')
   @Auth('system:holiday:updateStatus')
   @ApiOperation({ summary: '修改状态' })
-  async updateStatus(@CurUser() curUser, @Body() baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto): Promise<any> {
+  async updateStatus(
+    @CurUser() curUser,
+    @Body() baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto,
+  ): Promise<any> {
     return this.holidayService.updateStatus(baseModifyStatusByIdsDto, curUser);
   }
 
   @Post('delete')
   @Auth('system:holiday:delete')
   @ApiOperation({ summary: '删除' })
-  async delete(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
+  async delete(
+    @CurUser() curUser,
+    @Body() baseFindByIdDto: BaseFindByIdDto,
+  ): Promise<any> {
     const { id } = baseFindByIdDto;
 
     const isExistId = await this.holidayService.isExistId(id);
@@ -222,7 +300,10 @@ export class HolidayController {
   @Post('deleteBatch')
   @Auth('system:holiday:deleteBatch')
   @ApiOperation({ summary: '删除（批量）' })
-  async deleteBatch(@CurUser() curUser, @Body() baseFindByIdsDto: BaseFindByIdsDto): Promise<any> {
+  async deleteBatch(
+    @CurUser() curUser,
+    @Body() baseFindByIdsDto: BaseFindByIdsDto,
+  ): Promise<any> {
     return await this.holidayService.deleteByIds(baseFindByIdsDto, curUser);
   }
 }

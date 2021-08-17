@@ -1,11 +1,19 @@
-import { IsDefined, IsOptional, IsNotEmpty, IsString, IsInt, IsEmail, IsUUID } from 'class-validator';
+import {
+  IsDefined,
+  IsOptional,
+  IsNotEmpty,
+  IsString,
+  IsInt,
+  IsEmail,
+  IsUUID,
+} from 'class-validator';
 import { Transform, Type } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class BasePageDto {
   @ApiPropertyOptional({ description: '当前页数', example: 1 })
   @IsOptional()
-  @Transform(value => Number.parseInt(value))
+  @Transform((value) => Number.parseInt(value))
   // @Type(() => Number)
   @IsInt({ message: '当前页数必须为数字' })
   readonly page?: number;
@@ -13,7 +21,7 @@ export class BasePageDto {
   @ApiPropertyOptional({ description: '每页条数', example: 10 })
   @IsOptional()
   // @Type(() => Number)
-  @Transform(value => Number.parseInt(value))
+  @Transform((value) => Number.parseInt(value))
   @IsInt({ message: '每页条数必须为数字' })
   readonly limit?: number;
 
@@ -35,7 +43,7 @@ export class BaseModifyStatusByIdsDto {
 
   @ApiPropertyOptional({ description: '状态', example: 1 })
   @IsOptional()
-  @Transform(value => Number.parseInt(value))
+  @Transform((value) => Number.parseInt(value))
   @IsInt({ message: '排序必须为数字！' })
   status?: number;
 }
@@ -64,4 +72,3 @@ export class BaseIdsDto {
   @ApiPropertyOptional({ description: 'ids', example: [] })
   readonly ids: [];
 }
-

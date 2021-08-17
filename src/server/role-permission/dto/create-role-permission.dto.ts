@@ -1,4 +1,11 @@
-import { IsDefined, IsNotEmpty, IsString, IsInt, IsEmail, IsUUID } from 'class-validator';
+import {
+  IsDefined,
+  IsNotEmpty,
+  IsString,
+  IsInt,
+  IsEmail,
+  IsUUID,
+} from 'class-validator';
 import { ApiProperty, ApiPropertyOptional, PickType } from '@nestjs/swagger';
 
 export class CreateRolePermissionDto {

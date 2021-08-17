@@ -11,8 +11,7 @@ export class AuthService {
     private readonly jwtService: JwtService,
     private readonly captchaService: CaptchaService,
     private readonly cryptoUtil: CryptoUtil,
-  ) {
-  }
+  ) {}
 
   /**
    * 验证用户名密码
@@ -41,7 +40,11 @@ export class AuthService {
     const captcha = await this.captchaService.selectCaptcha(captchaId);
 
     // 万能验证码 icmz
-    if ((captchaId.toString() === captcha.captchaId.toString()) && (captchaText.toLowerCase() === captcha.text || captchaText.toLowerCase() === 'icmz')) {
+    if (
+      captchaId.toString() === captcha.captchaId.toString() &&
+      (captchaText.toLowerCase() === captcha.text ||
+        captchaText.toLowerCase() === 'icmz')
+    ) {
       // if (captchaId === captcha.captchaId && (captchaText.toLowerCase() === captcha.text)) {
       return true;
     } else {
@@ -54,7 +57,11 @@ export class AuthService {
    * @param {Object} user - 用户
    */
   async login(user: any) {
-    const payload = { username: user.userName, userType: user.userType, sub: user.id };
+    const payload = {
+      username: user.userName,
+      userType: user.userType,
+      sub: user.id,
+    };
     return {
       token: this.jwtService.sign(payload),
     };

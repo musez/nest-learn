@@ -9,5 +9,4 @@ import { SysPost } from './entities/post.entity';
   controllers: [PostController],
   providers: [PostService],
 })
-export class PostModule {
-}
+export class PostModule {}

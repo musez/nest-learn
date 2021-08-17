@@ -13,10 +13,17 @@ import { PermissionModule } from '../permission/permission.module';
 
 @Global()
 @Module({
-  imports: [UserinfoModule, GroupModule, RoleModule, PermissionModule, UserGroupModule, UserRoleModule, TypeOrmModule.forFeature([User])],
+  imports: [
+    UserinfoModule,
+    GroupModule,
+    RoleModule,
+    PermissionModule,
+    UserGroupModule,
+    UserRoleModule,
+    TypeOrmModule.forFeature([User]),
+  ],
   controllers: [UserController],
   providers: [UserService, CryptoUtil],
   exports: [UserService],
 })
-export class UserModule {
-}
+export class UserModule {}

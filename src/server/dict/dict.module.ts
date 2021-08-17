@@ -10,5 +10,4 @@ import { DictItemModule } from '../dict-item/dict-item.module';
   controllers: [DictController],
   providers: [DictService],
 })
-export class DictModule {
-}
+export class DictModule {}

@@ -1,11 +1,13 @@
 import * as _ from 'lodash';
-import *  as dayjs from 'dayjs';
+import * as dayjs from 'dayjs';
 import * as Excel from 'exceljs';
 import { basename, normalize, join } from 'path';
 import { writeFileSync, existsSync, readFileSync } from 'fs';
 import { Utils } from './index';
 
-process.on('message', async ({ filePath, rows, columns, sheetName, type, style, hasHeader }) => {
+process.on(
+  'message',
+  async ({ filePath, rows, columns, sheetName, type, style, hasHeader }) => {
     try {
       if (type === 'export') {
         await exportExcel(columns, rows, sheetName, style);
@@ -151,12 +153,17 @@ const getRowValue = (workbook, column, mediaIndex, cellIndex, value, row) => {
  * @param {String} sheetName  工作表名称
  * @param {path} style 设置每行高度
  */
-export const exportExcel = async (columns, rows, sheetName, style = { row: { height: 18 } }) => {
+export const exportExcel = async (
+  columns,
+  rows,
+  sheetName,
+  style = { row: { height: 18 } },
+) => {
   try {
     const workbook = new Excel.Workbook();
     const sheet = workbook.addWorksheet(sheetName);
     // 设置表头
-    sheet.columns = columns.map(column => {
+    sheet.columns = columns.map((column) => {
       return { header: column.name, width: column.size, key: column.key };
     });
 
@@ -172,7 +179,11 @@ export const exportExcel = async (columns, rows, sheetName, style = { row: { hei
     // 设置表头单元格样式与对齐方式
     const rowHeader = sheet.getRow(1);
     for (let i = 1; i <= sheet.columns.length; i++) {
-      rowHeader.getCell(i).font = { name: 'Arial Black', size: 12, bold: false };
+      rowHeader.getCell(i).font = {
+        name: 'Arial Black',
+        size: 12,
+        bold: false,
+      };
       rowHeader.getCell(i).alignment = {
         wrapText: false,
         horizontal: 'center',
@@ -235,10 +246,10 @@ const setRowValues = (columns, row, rowIndex, sheet, workbook, style?) => {
       case 'Date':
         _.get(row, column.key)
           ? rowData.push(
-          dayjs(_.get(row, column.key, '') * 1000).format(
-            'YYYY-MM-DD HH:mm:ss',
-          ),
-          )
+              dayjs(_.get(row, column.key, '') * 1000).format(
+                'YYYY-MM-DD HH:mm:ss',
+              ),
+            )
           : rowData.push('');
         break;
       case 'Enum':
@@ -258,7 +269,7 @@ const setRowValues = (columns, row, rowIndex, sheet, workbook, style?) => {
  * @param {*} cellValue 单元格值
  */
 const getEnumValue = (enums, cellValue) => {
-  const pairs = Object.entries(enums).find(item => item[1] === cellValue);
+  const pairs = Object.entries(enums).find((item) => item[1] === cellValue);
   const value = pairs && Number(pairs[0]);
 
   if (typeof value === 'number') {
@@ -292,7 +303,7 @@ const getUrlPath = (filePath: string, separator: string = 'pic') => {
  * excel富文本格式转换成字符串
  * @param {*} values 富文本对象
  */
-const richText2String = values => {
+const richText2String = (values) => {
   let str = '';
   for (const [, value] of Object.entries(values.richText)) {
     str += _.get(value, 'text', '');

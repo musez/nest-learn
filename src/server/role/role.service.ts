@@ -17,7 +17,7 @@ import { Group } from '../group/entities/group.entity';
 import { UserGroup } from '../user-group/entities/user-group.entity';
 import { User } from '../user/entities/user.entity';
 import { UserRole } from '../user-role/entities/user-role.entity';
-import { ApiException } from 'src/common/exception/api-exception';
+import { ApiException } from '../../common/exception/api-exception';
 
 @Injectable()
 export class RoleService {
@@ -26,8 +26,7 @@ export class RoleService {
     private readonly roleRepository: Repository<Role>,
     private readonly permissionService: PermissionService,
     private readonly rolePermissionService: RolePermissionService,
-  ) {
-  }
+  ) {}
 
   /**
    * 添加
@@ -55,14 +54,14 @@ export class RoleService {
     queryConditionList.push('deleteStatus = 0');
     const queryCondition = queryConditionList.join(' AND ');
 
-    return await this.roleRepository.createQueryBuilder()
+    return await this.roleRepository
+      .createQueryBuilder()
       .where(queryCondition, {
         name: `%${name}%`,
         status: status,
       })
-      .orderBy({ 'createTime': 'DESC' })
+      .orderBy({ createTime: 'DESC' })
       .getMany();
-    ;
   }
 
   /**
@@ -85,14 +84,15 @@ export class RoleService {
     queryConditionList.push('deleteStatus = 0');
     const queryCondition = queryConditionList.join(' AND ');
 
-    const res = await this.roleRepository.createQueryBuilder()
+    const res = await this.roleRepository
+      .createQueryBuilder()
       .where(queryCondition, {
         name: `%${name}%`,
         status: status,
       })
       .skip(offset)
       .take(limit)
-      .orderBy({ 'createTime': 'DESC' })
+      .orderBy({ createTime: 'DESC' })
       .getManyAndCount();
 
     return {
@@ -119,14 +119,16 @@ export class RoleService {
       throw new ApiException(`数据 id：${id} 不存在！`, 404);
     }
     if (ret?.rolePermissions?.length > 0) {
-      const ids = ret.rolePermissions.map(v => v.id);
+      const ids = ret.rolePermissions.map((v) => v.id);
 
-      const rolePermissionRet = await this.rolePermissionService.selectByRoleIds({
-        ids: ids.join(','),
-      });
+      const rolePermissionRet = await this.rolePermissionService.selectByRoleIds(
+        {
+          ids: ids.join(','),
+        },
+      );
 
       // @ts-ignore
-      ret.rolePermissions = rolePermissionRet.map(v => {
+      ret.rolePermissions = rolePermissionRet.map((v) => {
         return v.permission;
       });
     }
@@ -150,17 +152,22 @@ export class RoleService {
    */
   async selectByUserId(baseFindByIdDto: BaseFindByIdDto): Promise<any> {
     const { id } = baseFindByIdDto;
-    const userGroupRole = await this.roleRepository.createQueryBuilder('r')
+    const userGroupRole = await this.roleRepository
+      .createQueryBuilder('r')
       .innerJoinAndSelect(GroupRole, 'gr', 'r.id = gr.roleId')
       .innerJoinAndSelect(Group, 'g', 'gr.groupId = g.id')
       .innerJoinAndSelect(UserGroup, 'ug', 'g.id = ug.groupId')
       .innerJoinAndSelect(User, 'u', 'u.id = ug.userId')
-      .where('u.id = :id AND u.deleteStatus = 0 AND g.deleteStatus = 0 AND r.deleteStatus = 0', {
-        id: id,
-      })
+      .where(
+        'u.id = :id AND u.deleteStatus = 0 AND g.deleteStatus = 0 AND r.deleteStatus = 0',
+        {
+          id: id,
+        },
+      )
       .getMany();
 
-    const userRole = await this.roleRepository.createQueryBuilder('r')
+    const userRole = await this.roleRepository
+      .createQueryBuilder('r')
       .innerJoinAndSelect(UserRole, 'ur', 'r.id = ur.roleId')
       .innerJoinAndSelect(User, 'u', 'u.id = ur.userId')
       .where('u.id = :id AND u.deleteStatus = 0 AND r.deleteStatus = 0', {
@@ -190,7 +197,8 @@ export class RoleService {
   async deleteById(baseFindByIdDto: BaseFindByIdDto, curUser): Promise<void> {
     const { id } = baseFindByIdDto;
 
-    await this.roleRepository.createQueryBuilder()
+    await this.roleRepository
+      .createQueryBuilder()
       .update(Role)
       .set({ deleteStatus: 1, deleteBy: curUser!.id, deleteTime: Utils.now() })
       .where('id = :id', { id: id })
@@ -200,10 +208,14 @@ export class RoleService {
   /**
    * 删除（批量）
    */
-  async deleteByIds(baseFindByIdsDto: BaseFindByIdsDto, curUser): Promise<void> {
+  async deleteByIds(
+    baseFindByIdsDto: BaseFindByIdsDto,
+    curUser,
+  ): Promise<void> {
     const { ids } = baseFindByIdsDto;
 
-    await this.roleRepository.createQueryBuilder()
+    await this.roleRepository
+      .createQueryBuilder()
       .update(Role)
       .set({ deleteStatus: 1, deleteBy: curUser!.id, deleteTime: Utils.now() })
       .where('id in (:ids)', { ids: ids })
@@ -213,7 +225,9 @@ export class RoleService {
   /**
    * 获取权限
    */
-  async selectPermissionsByRoleId(baseFindByIdDto: BaseFindByIdDto): Promise<Role> {
+  async selectPermissionsByRoleId(
+    baseFindByIdDto: BaseFindByIdDto,
+  ): Promise<Role> {
     const { id } = baseFindByIdDto;
     const ret = await this.roleRepository.findOne({
       relations: ['rolePermissions'],
@@ -228,7 +242,9 @@ export class RoleService {
   /**
    * 绑定权限
    */
-  async bindPermissions(bindRolePermissionDto: BindRolePermissionDto): Promise<void> {
+  async bindPermissions(
+    bindRolePermissionDto: BindRolePermissionDto,
+  ): Promise<void> {
     const { id, permissions } = bindRolePermissionDto;
 
     const roleRet = await this.roleRepository.findOne({
@@ -239,7 +255,9 @@ export class RoleService {
 
     const rolePermissions = [];
     for (const item of permissions) {
-      const permissionRet = await this.permissionService.selectById({ id: item });
+      const permissionRet = await this.permissionService.selectById({
+        id: item,
+      });
       const rolePermission = new RolePermission();
       rolePermission.role = roleRet;
       rolePermission.permission = permissionRet;

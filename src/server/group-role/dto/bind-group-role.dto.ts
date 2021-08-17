@@ -1,5 +1,18 @@
-import { IsDefined, IsNotEmpty, IsString, IsInt, IsEmail, MinLength, MaxLength } from 'class-validator';
-import { ApiProperty, ApiPropertyOptional, PickType, PartialType } from '@nestjs/swagger';
+import {
+  IsDefined,
+  IsNotEmpty,
+  IsString,
+  IsInt,
+  IsEmail,
+  MinLength,
+  MaxLength,
+} from 'class-validator';
+import {
+  ApiProperty,
+  ApiPropertyOptional,
+  PickType,
+  PartialType,
+} from '@nestjs/swagger';
 import { BaseFindByIdDto } from '../../base.dto';
 
 export class BindGroupRoleDto extends PartialType(BaseFindByIdDto) {

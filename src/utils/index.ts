@@ -1,4 +1,4 @@
-import *  as dayjs from 'dayjs';
+import * as dayjs from 'dayjs';
 import * as _ from 'lodash';
 import { construct } from '@aximario/json-tree';
 
@@ -11,7 +11,8 @@ export class Utils {
    */
   static randomString = (length: number = 8, charSet?: string): string => {
     charSet =
-      charSet || 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+      charSet ||
+      'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     // tslint:disable-next-line:no-shadowed-variable
     let randomString = '';
     for (let i = 0; i < length; i++) {
@@ -131,7 +132,23 @@ export class Utils {
     if (window.MouseEvent) event = new MouseEvent('click');
     else {
       event = document.createEvent('MouseEvents');
-      event.initMouseEvent('click', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+      event.initMouseEvent(
+        'click',
+        true,
+        false,
+        window,
+        0,
+        0,
+        0,
+        0,
+        0,
+        false,
+        false,
+        false,
+        false,
+        0,
+        null,
+      );
     }
     aLink.dispatchEvent(event);
   }

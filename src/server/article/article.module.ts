@@ -9,9 +9,14 @@ import { TopicModule } from '../topic/topic.module';
 import { CommentModule } from '../comment/comment.module';
 
 @Module({
-  imports: [ArticleCatModule, ArticleDataCatModule, TopicModule, CommentModule, TypeOrmModule.forFeature([Article])],
+  imports: [
+    ArticleCatModule,
+    ArticleDataCatModule,
+    TopicModule,
+    CommentModule,
+    TypeOrmModule.forFeature([Article]),
+  ],
   controllers: [ArticleController],
   providers: [ArticleService],
 })
-export class ArticleModule {
-}
+export class ArticleModule {}

@@ -1,5 +1,5 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
-import { ApiException } from 'src/common/exception/api-exception';
+import { ApiException } from '../../common/exception/api-exception';
 import * as svgCaptcha from 'svg-captcha';
 import { CacheService } from '../cache/cache.service';
 
@@ -16,14 +16,13 @@ import { CacheService } from '../cache/cache.service';
  */
 @Injectable()
 export class CaptchaService {
-  constructor(private readonly cacheService: CacheService) {
-  }
+  constructor(private readonly cacheService: CacheService) {}
 
   /**
    * 生成验证码
    */
-  getCaptcha(): { data: any, text: string } {
-    const captcha: { data: any, text: string } = svgCaptcha.create({
+  getCaptcha(): { data: any; text: string } {
+    const captcha: { data: any; text: string } = svgCaptcha.create({
       size: 4,
       ignoreChars: '0o1i',
     });
@@ -36,10 +35,14 @@ export class CaptchaService {
    */
   async insertCaptcha(captchaId, captchaText): Promise<any> {
     const key = `captcha:${captchaId}`;
-    return await this.cacheService.set(key, {
-      captchaId,
-      text: captchaText.toLowerCase(),
-    }, 2 * 60);
+    return await this.cacheService.set(
+      key,
+      {
+        captchaId,
+        text: captchaText.toLowerCase(),
+      },
+      2 * 60,
+    );
   }
 
   /**

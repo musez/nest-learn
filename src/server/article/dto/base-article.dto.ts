@@ -1,4 +1,12 @@
-import { IsDefined, IsOptional, IsNotEmpty, IsString, IsInt, MaxLength, IsUUID } from 'class-validator';
+import {
+  IsDefined,
+  IsOptional,
+  IsNotEmpty,
+  IsString,
+  IsInt,
+  MaxLength,
+  IsUUID,
+} from 'class-validator';
 import { Transform } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { ArticleConstants, BaseConstants } from '../../../constants/constants';
@@ -17,33 +25,50 @@ export class BaseArticleDto {
   @ApiProperty({ description: '标题', example: null })
   @IsDefined({ message: '标题不能为空！' })
   @IsNotEmpty({ message: '标题不能为空！' })
-  @MaxLength(ArticleConstants.TITLE_MAX_LENGTH, { message: '标题不能大于 $constraint1 位！' })
+  @MaxLength(ArticleConstants.TITLE_MAX_LENGTH, {
+    message: '标题不能大于 $constraint1 位！',
+  })
   readonly title: string;
 
   @ApiPropertyOptional({ description: '摘要', example: null })
   @IsOptional()
-  @MaxLength(ArticleConstants.SUMMARY_MAX_LENGTH, { message: '摘要不能大于 $constraint1 位！' })
+  @MaxLength(ArticleConstants.SUMMARY_MAX_LENGTH, {
+    message: '摘要不能大于 $constraint1 位！',
+  })
   readonly summary?: string;
 
   @ApiPropertyOptional({ description: '作者', example: null })
   @IsOptional()
-  @MaxLength(ArticleConstants.AUTHOR_MAX_LENGTH, { message: '作者不能大于 $constraint1 位！' })
+  @MaxLength(ArticleConstants.AUTHOR_MAX_LENGTH, {
+    message: '作者不能大于 $constraint1 位！',
+  })
   readonly author?: string;
 
   @ApiPropertyOptional({ description: '来源', example: null })
   @IsOptional()
-  @MaxLength(ArticleConstants.SOURCE_MAX_LENGTH, { message: '来源不能大于 $constraint1 位！' })
+  @MaxLength(ArticleConstants.SOURCE_MAX_LENGTH, {
+    message: '来源不能大于 $constraint1 位！',
+  })
   readonly source?: string;
 
-  @ApiPropertyOptional({ description: '关键字（多个使用逗号“，”分隔）', example: null })
+  @ApiPropertyOptional({
+    description: '关键字（多个使用逗号“，”分隔）',
+    example: null,
+  })
   @IsOptional()
-  @MaxLength(ArticleConstants.KEYWORDS_MAX_LENGTH, { message: '关键字不能大于 $constraint1 位！' })
+  @MaxLength(ArticleConstants.KEYWORDS_MAX_LENGTH, {
+    message: '关键字不能大于 $constraint1 位！',
+  })
   readonly keywords?: string;
 
-  @ApiProperty({ description: '文章类型（0：文本；1：链接；2：图片；3：组图；4：视频；5：音频）', default: 0 })
+  @ApiProperty({
+    description:
+      '文章类型（0：文本；1：链接；2：图片；3：组图；4：视频；5：音频）',
+    default: 0,
+  })
   @IsDefined({ message: '文章类型不能为空！' })
   @IsNotEmpty({ message: '文章类型不能为空！' })
-  @Transform(value => Number.parseInt(value))
+  @Transform((value) => Number.parseInt(value))
   @IsInt({ message: '文章类型为数字！' })
   readonly type: number;
 
@@ -69,7 +94,7 @@ export class BaseArticleDto {
 
   @ApiPropertyOptional({ description: '权重', default: 0 })
   @IsOptional()
-  @Transform(value => Number.parseInt(value))
+  @Transform((value) => Number.parseInt(value))
   @IsInt({ message: '权重为数字！' })
   readonly weight?: number;
 
@@ -81,49 +106,54 @@ export class BaseArticleDto {
 
   @ApiPropertyOptional({ description: '浏览量', example: 0 })
   @IsOptional()
-  @Transform(value => Number.parseInt(value))
+  @Transform((value) => Number.parseInt(value))
   @IsInt({ message: '浏览量为数字！' })
   readonly browseCount?: number;
 
   @ApiPropertyOptional({ description: '点赞量', example: 0 })
   @IsOptional()
-  @Transform(value => Number.parseInt(value))
+  @Transform((value) => Number.parseInt(value))
   @IsInt({ message: '点赞量为数字！' })
   readonly linkCount?: number;
 
   @ApiPropertyOptional({ description: '收藏量', example: 0 })
   @IsOptional()
-  @Transform(value => Number.parseInt(value))
+  @Transform((value) => Number.parseInt(value))
   @IsInt({ message: '收藏量为数字！' })
   readonly collectCount?: number;
 
   @ApiPropertyOptional({ description: '分享量', example: 0 })
   @IsOptional()
-  @Transform(value => Number.parseInt(value))
+  @Transform((value) => Number.parseInt(value))
   @IsInt({ message: '分享量为数字！' })
   readonly shareCount?: number;
 
   @ApiPropertyOptional({ description: '允许评论', example: 0 })
   @IsOptional()
-  @Transform(value => Number.parseInt(value))
+  @Transform((value) => Number.parseInt(value))
   @IsInt({ message: '评论量为数字！' })
   readonly isComment?: number;
 
   @ApiPropertyOptional({ description: '评论量', example: 0 })
   @IsOptional()
-  @Transform(value => Number.parseInt(value))
+  @Transform((value) => Number.parseInt(value))
   @IsInt({ message: '允许评论为数字！' })
   readonly commentCount?: number;
 
-  @ApiProperty({ description: '状态（0：未发布；1：发布；2：草稿；3：回收站）', example: 0 })
+  @ApiProperty({
+    description: '状态（0：未发布；1：发布；2：草稿；3：回收站）',
+    example: 0,
+  })
   @IsDefined({ message: '状态不能为空！' })
   @IsNotEmpty({ message: '状态不能为空！' })
-  @Transform(value => Number.parseInt(value))
+  @Transform((value) => Number.parseInt(value))
   @IsInt({ message: '状态必须为数字！' })
   readonly status?: number;
 
   @ApiPropertyOptional({ description: '描述', example: null })
   @IsOptional()
-  @MaxLength(BaseConstants.DESCRIPTION_MAX_LENGTH, { message: '描述不能大于 $constraint1 位！' })
+  @MaxLength(BaseConstants.DESCRIPTION_MAX_LENGTH, {
+    message: '描述不能大于 $constraint1 位！',
+  })
   readonly description?: string;
 }

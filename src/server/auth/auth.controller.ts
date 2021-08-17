@@ -1,10 +1,4 @@
-import {
-  Controller,
-  Get,
-  Post,
-  UseGuards,
-  Body,
-} from '@nestjs/common';
+import { Controller, Get, Post, UseGuards, Body } from '@nestjs/common';
 import {
   ApiTags,
   ApiBasicAuth,
@@ -27,8 +21,7 @@ export class AuthController {
   constructor(
     private readonly authService: AuthService,
     private readonly userService: UserService,
-  ) {
-  }
+  ) {}
 
   @UseGuards(LocalAuthGuard)
   @ApiOperation({ summary: '登录' })
@@ -39,7 +32,11 @@ export class AuthController {
       properties: {
         userName: { type: 'string', description: '用户名', example: 'wangyue' },
         userPwd: { type: 'string', description: '密码', example: '888888' },
-        captchaId: { type: 'string', description: '验证码 id', example: '888888' },
+        captchaId: {
+          type: 'string',
+          description: '验证码 id',
+          example: '888888',
+        },
         captchaText: { type: 'string', description: '验证码', example: 'icmz' },
       },
     },
@@ -47,9 +44,12 @@ export class AuthController {
   async login(@CurUser() curUser, @Body() body) {
     const { captchaId, captchaText } = body;
 
-    const validateCaptcha = await this.authService.validateCaptcha(captchaId, captchaText);
+    const validateCaptcha = await this.authService.validateCaptcha(
+      captchaId,
+      captchaText,
+    );
     if (validateCaptcha) {
-      await this.userService.incrementLoginCount(curUser!.id);// 登录次数 +1
+      await this.userService.incrementLoginCount(curUser!.id); // 登录次数 +1
       return this.authService.login(curUser);
     } else {
       throw new ApiException('验证码错误！', 1007);
@@ -58,7 +58,9 @@ export class AuthController {
 
   @Post('register')
   @ApiOperation({ summary: '注册' })
-  async register(@Body() registerUserDto: RegisterUserDto): Promise<CreateUserDto | void> {
+  async register(
+    @Body() registerUserDto: RegisterUserDto,
+  ): Promise<CreateUserDto | void> {
     const { userName, userPwd, userPwdConfirm } = registerUserDto;
 
     if (userPwd !== userPwdConfirm) {

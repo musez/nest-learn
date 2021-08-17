@@ -7,15 +7,14 @@ import { SysPost } from './entities/post.entity';
 import { Utils } from '../../utils';
 import { LimitPostDto } from './dto/limit-post.dto';
 import { BaseFindByIdDto, BaseFindByIdsDto } from '../base.dto';
-import { ApiException } from 'src/common/exception/api-exception';
+import { ApiException } from '../../common/exception/api-exception';
 
 @Injectable()
 export class PostService {
   constructor(
     @InjectRepository(SysPost)
     private readonly postRepository: Repository<SysPost>,
-  ) {
-  }
+  ) {}
 
   async insert(createPostDto: CreatePostDto, curUser) {
     const { name } = createPostDto;
@@ -47,14 +46,15 @@ export class PostService {
     queryConditionList.push('deleteStatus = 0');
     const queryCondition = queryConditionList.join(' AND ');
 
-    return await this.postRepository.createQueryBuilder()
+    return await this.postRepository
+      .createQueryBuilder()
       .where(queryCondition, {
         name: `%${name}%`,
         status: status,
       })
       .orderBy({
-        'sort': 'ASC',
-        'createTime': 'DESC',
+        sort: 'ASC',
+        createTime: 'DESC',
       })
       .getMany();
   }
@@ -78,7 +78,8 @@ export class PostService {
     queryConditionList.push('deleteStatus = 0');
     const queryCondition = queryConditionList.join(' AND ');
 
-    const res = await this.postRepository.createQueryBuilder()
+    const res = await this.postRepository
+      .createQueryBuilder()
       .where(queryCondition, {
         name: `%${name}%`,
         status: status,
@@ -86,8 +87,8 @@ export class PostService {
       .skip(offset)
       .take(limit)
       .orderBy({
-        'sort': 'ASC',
-        'createTime': 'DESC',
+        sort: 'ASC',
+        createTime: 'DESC',
       })
       .getManyAndCount();
 
@@ -146,7 +147,8 @@ export class PostService {
     }
 
     // await this.postRepository.delete(isExist);
-    await this.postRepository.createQueryBuilder()
+    await this.postRepository
+      .createQueryBuilder()
       .update(SysPost)
       .set({ deleteStatus: 1, deleteBy: curUser!.id, deleteTime: Utils.now() })
       .where('id = :id', { id: id })
@@ -156,10 +158,14 @@ export class PostService {
   /**
    * 删除（批量）
    */
-  async deleteByIds(baseFindByIdsDto: BaseFindByIdsDto, curUser): Promise<void> {
+  async deleteByIds(
+    baseFindByIdsDto: BaseFindByIdsDto,
+    curUser,
+  ): Promise<void> {
     const { ids } = baseFindByIdsDto;
 
-    await this.postRepository.createQueryBuilder()
+    await this.postRepository
+      .createQueryBuilder()
       .update(SysPost)
       .set({ deleteStatus: 1, deleteBy: curUser!.id, deleteTime: Utils.now() })
       .where('id in (:ids)', { ids: ids })

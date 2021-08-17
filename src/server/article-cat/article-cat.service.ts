@@ -5,7 +5,11 @@ import { CreateArticleCatDto } from './dto/create-article-cat.dto';
 import { UpdateArticleCatDto } from './dto/update-article-cat.dto';
 import { ArticleCat } from './entities/article-cat.entity';
 import { Utils } from '../../utils';
-import { BaseFindByIdDto, BaseFindByIdsDto, BaseFindByPIdDto } from '../base.dto';
+import {
+  BaseFindByIdDto,
+  BaseFindByIdsDto,
+  BaseFindByPIdDto,
+} from '../base.dto';
 import { SearchArticleCatDto } from './dto/search-article-cat.dto';
 import { LimitArticleCatDto } from './dto/limit-article-cat.dto';
 
@@ -14,13 +18,15 @@ export class ArticleCatService {
   constructor(
     @InjectRepository(ArticleCat)
     private readonly articleCatRepository: Repository<ArticleCat>,
-  ) {
-  }
+  ) {}
 
   /**
    * 添加
    */
-  async insert(createArticleCatDto: CreateArticleCatDto, curUser): Promise<CreateArticleCatDto> {
+  async insert(
+    createArticleCatDto: CreateArticleCatDto,
+    curUser,
+  ): Promise<CreateArticleCatDto> {
     let articleCat = new ArticleCat();
     articleCat = Utils.dto2entity(createArticleCatDto, articleCat);
     articleCat.createBy = curUser!.id;
@@ -57,13 +63,18 @@ export class ArticleCatService {
     queryConditionList.push('deleteStatus = 0');
     const queryCondition = queryConditionList.join(' AND ');
 
-    const res = await this.articleCatRepository.createQueryBuilder('ac')
+    const res = await this.articleCatRepository
+      .createQueryBuilder('ac')
       .select(['ac.*'])
-      .addSelect(subQuery =>
-        subQuery.select('COUNT(*)')
-          .from(ArticleCat, 'subAC')
-          .where('subAC.parentId = ac.id'), 'hasChildren')
-      .orderBy({ 'createTime': 'DESC' })
+      .addSelect(
+        (subQuery) =>
+          subQuery
+            .select('COUNT(*)')
+            .from(ArticleCat, 'subAC')
+            .where('subAC.parentId = ac.id'),
+        'hasChildren',
+      )
+      .orderBy({ createTime: 'DESC' })
       .where(queryCondition, {
         parentIds: parentIds,
         catName: `%${catName}%`,
@@ -98,7 +109,8 @@ export class ArticleCatService {
     queryConditionList.push('deleteStatus = 0');
     const queryCondition = queryConditionList.join(' AND ');
 
-    const res = await this.articleCatRepository.createQueryBuilder()
+    const res = await this.articleCatRepository
+      .createQueryBuilder()
       .where(queryCondition, {
         parentIds: parentIds,
         catName: `%${catName}%`,
@@ -106,7 +118,7 @@ export class ArticleCatService {
       })
       .skip(offset)
       .take(limit)
-      .orderBy({ 'createTime': 'DESC' })
+      .orderBy({ createTime: 'DESC' })
       .getManyAndCount();
 
     return {
@@ -212,7 +224,10 @@ export class ArticleCatService {
   /**
    * 修改
    */
-  async update(updateArticleCatDto: UpdateArticleCatDto, curUser): Promise<void> {
+  async update(
+    updateArticleCatDto: UpdateArticleCatDto,
+    curUser,
+  ): Promise<void> {
     const { id } = updateArticleCatDto;
 
     let articleCat = new ArticleCat();
@@ -227,7 +242,8 @@ export class ArticleCatService {
   async deleteById(baseFindByIdDto: BaseFindByIdDto, curUser): Promise<void> {
     const { id } = baseFindByIdDto;
 
-    await this.articleCatRepository.createQueryBuilder()
+    await this.articleCatRepository
+      .createQueryBuilder()
       .update(ArticleCat)
       .set({ deleteStatus: 1, deleteBy: curUser!.id, deleteTime: Utils.now() })
       .where('id = :id', { id: id })
@@ -237,10 +253,14 @@ export class ArticleCatService {
   /**
    * 删除（批量）
    */
-  async deleteByIds(baseFindByIdsDto: BaseFindByIdsDto, curUser): Promise<void> {
+  async deleteByIds(
+    baseFindByIdsDto: BaseFindByIdsDto,
+    curUser,
+  ): Promise<void> {
     const { ids } = baseFindByIdsDto;
 
-    await this.articleCatRepository.createQueryBuilder()
+    await this.articleCatRepository
+      .createQueryBuilder()
       .update(ArticleCat)
       .set({ deleteStatus: 1, deleteBy: curUser!.id, deleteTime: Utils.now() })
       .where('id in (:ids)', { ids: ids })

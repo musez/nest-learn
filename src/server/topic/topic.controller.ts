@@ -26,7 +26,7 @@ import { SearchTopicDto } from './dto/search-top.dto';
 import { Topic } from './entities/topic.entity';
 import { LimitTopicDto } from './dto/limit-top.dto';
 import { StatusType } from '../../constants/dicts.enum';
-import { ApiException } from 'src/common/exception/api-exception';
+import { ApiException } from '../../common/exception/api-exception';
 
 @ApiTags('评论')
 @Controller('topic')
@@ -36,8 +36,7 @@ export class TopicController {
   constructor(
     private readonly topicService: TopicService,
     private readonly excelService: ExcelService,
-  ) {
-  }
+  ) {}
 
   @Post('add')
   @Auth('system:topic:add')
@@ -70,7 +69,10 @@ export class TopicController {
   @Get('exportExcel')
   @Auth('system:topic:exportExcel')
   @ApiOperation({ summary: '列表（Excel 导出）' })
-  async exportExcel(@Query() searchTopicDto: SearchTopicDto, @Res() res): Promise<any> {
+  async exportExcel(
+    @Query() searchTopicDto: SearchTopicDto,
+    @Res() res,
+  ): Promise<any> {
     const list = await this.topicService.selectList(searchTopicDto);
 
     const columns = [
@@ -78,7 +80,13 @@ export class TopicController {
       { key: 'topicType', name: '主题类型', type: 'String', size: 10 },
       { key: 'content', name: '评论内容', type: 'String', size: 20 },
       { key: 'fromUid', name: '评论用户 id', type: 'String', size: 10 },
-      { key: 'status', name: '状态', type: 'Enum', size: 10, default: StatusType },
+      {
+        key: 'status',
+        name: '状态',
+        type: 'Enum',
+        size: 10,
+        default: StatusType,
+      },
       { key: 'description', name: '评论用户', type: 'String', size: 20 },
       { key: 'createTime', name: '创建时间', type: 'String', size: 20 },
       { key: 'updateTime', name: '修改时间', type: 'String', size: 20 },
@@ -91,7 +99,9 @@ export class TopicController {
     );
     res.setHeader(
       'Content-Disposition',
-      'attachment; filename=' + encodeURIComponent(`文章_${Utils.dayjsFormat('YYYYMMDD')}`) + '.xlsx',// 中文名需要进行 url 转码
+      'attachment; filename=' +
+        encodeURIComponent(`文章_${Utils.dayjsFormat('YYYYMMDD')}`) +
+        '.xlsx', // 中文名需要进行 url 转码
     );
     res.setTimeout(30 * 60 * 1000); // 防止网络原因造成超时。
     res.end(result, 'binary');
@@ -100,7 +110,10 @@ export class TopicController {
   @Post('update')
   @Auth('system:topic:update')
   @ApiOperation({ summary: '修改' })
-  async update(@CurUser() curUser, @Body() updateTopicDto: UpdateTopicDto): Promise<any> {
+  async update(
+    @CurUser() curUser,
+    @Body() updateTopicDto: UpdateTopicDto,
+  ): Promise<any> {
     const { id } = updateTopicDto;
     const isExistId = await this.topicService.isExistId(id);
     if (!isExistId) {
@@ -113,7 +126,10 @@ export class TopicController {
   @Post('delete')
   @Auth('system:topic:delete')
   @ApiOperation({ summary: '删除' })
-  async delete(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
+  async delete(
+    @CurUser() curUser,
+    @Body() baseFindByIdDto: BaseFindByIdDto,
+  ): Promise<any> {
     const { id } = baseFindByIdDto;
     const isExistId = await this.topicService.isExistId(id);
 
@@ -127,7 +143,10 @@ export class TopicController {
   @Post('deleteBatch')
   @Auth('system:topic:deleteBatch')
   @ApiOperation({ summary: '删除（批量）' })
-  async deleteBatch(@CurUser() curUser, @Body() baseFindByIdsDto: BaseFindByIdsDto): Promise<any> {
+  async deleteBatch(
+    @CurUser() curUser,
+    @Body() baseFindByIdsDto: BaseFindByIdsDto,
+  ): Promise<any> {
     return await this.topicService.deleteByIds(baseFindByIdsDto, curUser);
   }
 }

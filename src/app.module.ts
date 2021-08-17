@@ -52,7 +52,14 @@ import WechatConfig from './config/wechat.config';
       envFilePath: ['.env.development'],
       isGlobal: true,
       // 配置为全局可见，否则需要在每个模块中单独导入 ConfigModule
-      load: [AppConfig, JwtConfig, MysqlConfig, RedisConfig, SwaggerConfig, WechatConfig],
+      load: [
+        AppConfig,
+        JwtConfig,
+        MysqlConfig,
+        RedisConfig,
+        SwaggerConfig,
+        WechatConfig,
+      ],
       // validationSchema: Joi.object({
       //   NODE_ENV: Joi.string()
       //     .valid('development', 'production', 'test', 'provision')
@@ -62,13 +69,16 @@ import WechatConfig from './config/wechat.config';
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: async (config: ConfigService) => {
-        return Object.assign({
-          entities: [__dirname + '/**/*.entity{.ts,.js}'],
-          migrations: ['database/migration/**/*.ts'],
-          cli: {
-            migrationsDir: 'database/migration/default',
+        return Object.assign(
+          {
+            entities: [__dirname + '/**/*.entity{.ts,.js}'],
+            migrations: ['database/migration/**/*.ts'],
+            cli: {
+              migrationsDir: 'database/migration/default',
+            },
           },
-        }, config.get('mysql'));
+          config.get('mysql'),
+        );
       },
       inject: [ConfigService],
     }),
@@ -110,10 +120,8 @@ import WechatConfig from './config/wechat.config';
   controllers: [AppController],
   providers: [AppService],
 })
-
 export class AppModule {
-  constructor(private readonly connection: Connection) {
-  }
+  constructor(private readonly connection: Connection) {}
 
   // configure(consumer: MiddlewareConsumer) {
   //   consumer

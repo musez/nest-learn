@@ -5,7 +5,11 @@ import { Utils } from './../../utils/index';
 import { UpdatePermissionDto } from './dto/update-permission.dto';
 import { Permission } from './entities/permission.entity';
 import { CreatePermissionDto } from './dto/create-permission.dto';
-import { BaseFindByIdDto, BaseFindByIdsDto, BaseFindByPIdDto } from '../base.dto';
+import {
+  BaseFindByIdDto,
+  BaseFindByIdsDto,
+  BaseFindByPIdDto,
+} from '../base.dto';
 import { SearchPermissionDto } from './dto/search-permission.dto';
 import { LimitPermissionDto } from './dto/limit-permission.dto';
 import { RolePermission } from '../role-permission/entities/role-permission.entity';
@@ -21,13 +25,15 @@ export class PermissionService {
   constructor(
     @InjectRepository(Permission)
     private readonly permissionRepository: Repository<Permission>,
-  ) {
-  }
+  ) {}
 
   /**
    * 添加
    */
-  async insert(createPermissionDto: CreatePermissionDto, curUser): Promise<Permission> {
+  async insert(
+    createPermissionDto: CreatePermissionDto,
+    curUser,
+  ): Promise<Permission> {
     let permission = new Permission();
     permission = Utils.dto2entity(createPermissionDto, permission);
     permission.createBy = curUser!.id;
@@ -74,12 +80,17 @@ export class PermissionService {
     queryConditionList.push('deleteStatus = 0');
     const queryCondition = queryConditionList.join(' AND ');
 
-    const res = await this.permissionRepository.createQueryBuilder('p')
+    const res = await this.permissionRepository
+      .createQueryBuilder('p')
       .select(['p.*'])
-      .addSelect(subQuery =>
-        subQuery.select('COUNT(*)')
-          .from(Permission, 'subP')
-          .where('subP.parentId = p.id'), 'hasChildren')
+      .addSelect(
+        (subQuery) =>
+          subQuery
+            .select('COUNT(*)')
+            .from(Permission, 'subP')
+            .where('subP.parentId = p.id'),
+        'hasChildren',
+      )
       .where(queryCondition, {
         parentIds: parentIds,
         name: `%${name}%`,
@@ -87,8 +98,8 @@ export class PermissionService {
         status: status,
       })
       .orderBy({
-        'sort': 'ASC',
-        'createTime': 'DESC',
+        sort: 'ASC',
+        createTime: 'DESC',
       })
       .getRawMany();
 
@@ -121,7 +132,8 @@ export class PermissionService {
     queryConditionList.push('deleteStatus = 0');
     const queryCondition = queryConditionList.join(' AND ');
 
-    const res = await this.permissionRepository.createQueryBuilder()
+    const res = await this.permissionRepository
+      .createQueryBuilder()
       .where(queryCondition, {
         parentIds: parentIds,
         name: `%${name}%`,
@@ -130,8 +142,8 @@ export class PermissionService {
       .skip(offset)
       .take(limit)
       .orderBy({
-        'sort': 'ASC',
-        'createTime': 'DESC',
+        sort: 'ASC',
+        createTime: 'DESC',
       })
       .getManyAndCount();
 
@@ -228,29 +240,40 @@ export class PermissionService {
    */
   async selectByUserId(baseFindByIdDto: BaseFindByIdDto): Promise<any> {
     const { id } = baseFindByIdDto;
-    const userGroupPermissions = await this.permissionRepository.createQueryBuilder('p')
+    const userGroupPermissions = await this.permissionRepository
+      .createQueryBuilder('p')
       .innerJoinAndSelect(RolePermission, 'rp', 'p.id = rp.permissionId')
       .innerJoinAndSelect(Role, 'r', 'rp.roleId = r.id')
       .innerJoinAndSelect(GroupRole, 'gr', 'r.id = gr.roleId')
       .innerJoinAndSelect(Group, 'g', 'gr.groupId = g.id')
       .innerJoinAndSelect(UserGroup, 'ug', 'g.id = ug.groupId')
       .innerJoinAndSelect(User, 'u', 'u.id = ug.userId')
-      .where('u.id = :id AND u.deleteStatus = 0 AND g.deleteStatus = 0 AND r.deleteStatus = 0 AND p.deleteStatus = 0', {
-        id: id,
-      })
+      .where(
+        'u.id = :id AND u.deleteStatus = 0 AND g.deleteStatus = 0 AND r.deleteStatus = 0 AND p.deleteStatus = 0',
+        {
+          id: id,
+        },
+      )
       .getMany();
 
-    const userPermissions = await this.permissionRepository.createQueryBuilder('p')
+    const userPermissions = await this.permissionRepository
+      .createQueryBuilder('p')
       .innerJoinAndSelect(RolePermission, 'rp', 'p.id = rp.permissionId')
       .innerJoinAndSelect(Role, 'r', 'rp.roleId = r.id')
       .innerJoinAndSelect(UserRole, 'ur', 'r.id = ur.roleId')
       .innerJoinAndSelect(User, 'u', 'u.id = ur.userId')
-      .where('u.id = :id AND u.deleteStatus = 0 AND r.deleteStatus = 0 AND p.deleteStatus = 0', {
-        id: id,
-      })
+      .where(
+        'u.id = :id AND u.deleteStatus = 0 AND r.deleteStatus = 0 AND p.deleteStatus = 0',
+        {
+          id: id,
+        },
+      )
       .getMany();
 
-    const res = Utils.uniqBy(Utils.concat(userGroupPermissions, userPermissions), 'id');
+    const res = Utils.uniqBy(
+      Utils.concat(userGroupPermissions, userPermissions),
+      'id',
+    );
 
     return res;
   }
@@ -286,7 +309,8 @@ export class PermissionService {
   async deleteById(baseFindByIdDto: BaseFindByIdDto, curUser): Promise<void> {
     const { id } = baseFindByIdDto;
 
-    await this.permissionRepository.createQueryBuilder()
+    await this.permissionRepository
+      .createQueryBuilder()
       .update(Permission)
       .set({ deleteStatus: 1, deleteBy: curUser!.id, deleteTime: Utils.now() })
       .where('id = :id', { id: id })
@@ -296,10 +320,14 @@ export class PermissionService {
   /**
    * 删除（批量）
    */
-  async deleteByIds(baseFindByIdsDto: BaseFindByIdsDto, curUser): Promise<void> {
+  async deleteByIds(
+    baseFindByIdsDto: BaseFindByIdsDto,
+    curUser,
+  ): Promise<void> {
     const { ids } = baseFindByIdsDto;
 
-    await this.permissionRepository.createQueryBuilder()
+    await this.permissionRepository
+      .createQueryBuilder()
       .update(Permission)
       .set({ deleteStatus: 1, deleteBy: curUser!.id, deleteTime: Utils.now() })
       .where('id in (:ids)', { ids: ids })

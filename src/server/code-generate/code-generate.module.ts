@@ -4,6 +4,6 @@ import { CodeGenerateController } from './code-generate.controller';
 
 @Module({
   controllers: [CodeGenerateController],
-  providers: [CodeGenerateService]
+  providers: [CodeGenerateService],
 })
 export class CodeGenerateModule {}

@@ -1,4 +1,14 @@
-import { Controller, Get, Post, Body, Query, Put, Param, Delete, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Query,
+  Put,
+  Param,
+  Delete,
+  UseGuards,
+} from '@nestjs/common';
 import {
   ApiTags,
   ApiQuery,
@@ -22,34 +32,43 @@ import { AuthGuard } from '../../common/guards/auth.guard';
 @ApiBasicAuth('token')
 @UseGuards(JwtAuthGuard, AuthGuard)
 export class DictItemController {
-  constructor(private readonly dictItemService: DictItemService) {
-  }
+  constructor(private readonly dictItemService: DictItemService) {}
 
   @Post('add')
   @Auth('system:dictItem:add')
   @ApiOperation({ summary: '添加' })
-  async create(@CurUser() curUser, @Body() createDictItemDto: CreateDictItemDto) {
+  async create(
+    @CurUser() curUser,
+    @Body() createDictItemDto: CreateDictItemDto,
+  ) {
     return await this.dictItemService.insert(createDictItemDto, curUser);
   }
 
   @Post('addBatch')
   @Auth('system:dictItem:addBatch')
   @ApiOperation({ summary: '添加（批量）' })
-  async createBatch(@CurUser() curUser, @Body() createDictItemDto: CreateDictItemDto[]) {
+  async createBatch(
+    @CurUser() curUser,
+    @Body() createDictItemDto: CreateDictItemDto[],
+  ) {
     return await this.dictItemService.insertBatch(createDictItemDto, curUser);
   }
 
   @Get('findList')
   @Auth('system:dictItem:findList')
   @ApiOperation({ summary: '获取列表' })
-  async findList(@Query() searchDictItemDto: SearchDictItemDto): Promise<DictItem[]> {
+  async findList(
+    @Query() searchDictItemDto: SearchDictItemDto,
+  ): Promise<DictItem[]> {
     return await this.dictItemService.selectList(searchDictItemDto);
   }
 
   @Get('findListPage')
   @Auth('system:dictItem:findListPage')
   @ApiOperation({ summary: '获取列表（分页）' })
-  async findListPage(@Query() limitDictItemDto: LimitDictItemDto): Promise<any> {
+  async findListPage(
+    @Query() limitDictItemDto: LimitDictItemDto,
+  ): Promise<any> {
     return await this.dictItemService.selectListPage(limitDictItemDto);
   }
 }

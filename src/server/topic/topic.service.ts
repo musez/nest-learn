@@ -10,20 +10,21 @@ import { LimitTopicDto } from './dto/limit-top.dto';
 import { SearchTopicDto } from './dto/search-top.dto';
 import { Org } from '../org/entities/org.entity';
 import { User } from '../user/entities/user.entity';
-import { ArticleCat } from '../article-cat/entities/article-cat.entity';
 
 @Injectable()
 export class TopicService {
   constructor(
     @InjectRepository(Topic)
     private readonly topicRepository: Repository<Topic>,
-  ) {
-  }
+  ) {}
 
   /**
    * 添加
    */
-  async insert(createTopicDto: CreateTopicDto, curUser): Promise<CreateTopicDto> {
+  async insert(
+    createTopicDto: CreateTopicDto,
+    curUser,
+  ): Promise<CreateTopicDto> {
     return await this.topicRepository.save(createTopicDto);
   }
 
@@ -49,7 +50,8 @@ export class TopicService {
     queryConditionList.push('topic.deleteStatus = 0');
     const queryCondition = queryConditionList.join(' AND ');
 
-    return await this.topicRepository.createQueryBuilder('topic')
+    return await this.topicRepository
+      .createQueryBuilder('topic')
       .leftJoinAndSelect(User, 'u', 'u.id = topic.fromUid')
       .select('topic.*')
       .addSelect('u.userName', 'fromUname')
@@ -89,7 +91,8 @@ export class TopicService {
     queryConditionList.push('topic.deleteStatus = 0');
     const queryCondition = queryConditionList.join(' AND ');
 
-    const queryBuilder = this.topicRepository.createQueryBuilder('topic')
+    const queryBuilder = this.topicRepository
+      .createQueryBuilder('topic')
       .leftJoinAndSelect(User, 'u', 'u.id = topic.fromUid')
       .select('topic.*')
       .addSelect('u.userName', 'fromUname')
@@ -101,13 +104,14 @@ export class TopicService {
       });
 
     const ret = await queryBuilder
-      .skip(offset)
-      .take(limit)
+      // .skip(offset)
+      // .take(limit)
+      .offset(offset)
+      .limit(limit)
       .orderBy({ 'topic.createTime': 'ASC' })
       .getRawMany();
 
-    const retCount = await queryBuilder
-      .getCount();
+    const retCount = await queryBuilder.getCount();
 
     return {
       list: ret,
@@ -149,14 +153,14 @@ export class TopicService {
     await this.topicRepository.update(id, article);
   }
 
-
   /**
    * 删除
    */
   async deleteById(baseFindByIdDto: BaseFindByIdDto, curUser): Promise<void> {
     const { id } = baseFindByIdDto;
 
-    await this.topicRepository.createQueryBuilder()
+    await this.topicRepository
+      .createQueryBuilder()
       .update(Org)
       .set({ deleteStatus: 1, deleteBy: curUser!.id, deleteTime: Utils.now() })
       .where('id = :id', { id: id })
@@ -166,10 +170,14 @@ export class TopicService {
   /**
    * 删除（批量）
    */
-  async deleteByIds(baseFindByIdsDto: BaseFindByIdsDto, curUser): Promise<void> {
+  async deleteByIds(
+    baseFindByIdsDto: BaseFindByIdsDto,
+    curUser,
+  ): Promise<void> {
     const { ids } = baseFindByIdsDto;
 
-    await this.topicRepository.createQueryBuilder()
+    await this.topicRepository
+      .createQueryBuilder()
       .update(Org)
       .set({ deleteStatus: 1, deleteBy: curUser!.id, deleteTime: Utils.now() })
       .where('id in (:ids)', { ids: ids })

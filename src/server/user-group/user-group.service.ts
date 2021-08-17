@@ -11,8 +11,7 @@ export class UserGroupService {
   constructor(
     @InjectRepository(UserGroup)
     private readonly userGroupRepository: Repository<UserGroup>,
-  ) {
-  }
+  ) {}
 
   /**
    * 添加
@@ -24,7 +23,9 @@ export class UserGroupService {
   /**
    * 添加（批量）
    */
-  async insertBatch(dto: UserGroup[]): Promise<CreateUserGroupDto[] | UserGroup[]> {
+  async insertBatch(
+    dto: UserGroup[],
+  ): Promise<CreateUserGroupDto[] | UserGroup[]> {
     return await this.userGroupRepository.save(dto);
   }
 
@@ -58,7 +59,8 @@ export class UserGroupService {
    * 删除用户组
    */
   async deleteByUserId(id: string): Promise<any> {
-    return await this.userGroupRepository.createQueryBuilder()
+    return await this.userGroupRepository
+      .createQueryBuilder()
       .delete()
       .from(UserGroup)
       .where('userId = :id', { id: id })

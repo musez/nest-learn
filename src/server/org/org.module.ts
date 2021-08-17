@@ -9,5 +9,4 @@ import { Org } from './entities/org.entity';
   controllers: [OrgController],
   providers: [OrgService],
 })
-export class OrgModule {
-}
+export class OrgModule {}

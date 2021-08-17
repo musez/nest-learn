@@ -4,7 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { AppModule } from './app.module';
 import * as express from 'express';
 import { join } from 'path';
-import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';// api文档插件
+import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger'; // api文档插件
 import * as helmet from 'helmet';
 // import * as passport from 'passport';
 import * as session from 'express-session';
@@ -41,12 +41,12 @@ async function bootstrap() {
   app.use(express.json()); // For parsing application/json
   app.use(express.urlencoded({ extended: true })); // For parsing application/x-www-form-urlencoded
 
-  app.use(logger);// 监听所有的请求路由，并打印日志
+  app.use(logger); // 监听所有的请求路由，并打印日志
 
-  app.useGlobalFilters(new AllExceptionsFilter());// 过滤处理所有异常
-  app.useGlobalFilters(new HttpExceptionFilter());// 过滤处理 HTTP 异常
+  app.useGlobalFilters(new AllExceptionsFilter()); // 过滤处理所有异常
+  app.useGlobalFilters(new HttpExceptionFilter()); // 过滤处理 HTTP 异常
 
-  app.useGlobalInterceptors(new TransformInterceptor());// 使用全局拦截器打印出参
+  app.useGlobalInterceptors(new TransformInterceptor()); // 使用全局拦截器打印出参
   app.useGlobalPipes(new ValidationPipe()); // 开启一个全局验证管道
   // app.useGlobalPipes(new ParseIntPipe()); // 开启一个全局转换管道
 
@@ -57,11 +57,21 @@ async function bootstrap() {
     .setDescription(config.get('app.desc')) // 文档介绍
     .setVersion(config.get('app.version')) // 文档版本
     .addServer(`http://localhost:${listenPort}`)
-    .setExternalDoc('swagger.json', `http://localhost:${listenPort}${setupPath}-json`)
-    .setContact('Wang Yue', 'https://juejin.cn/user/1063982984593997', '920317438@qq.com')
+    .setExternalDoc(
+      'swagger.json',
+      `http://localhost:${listenPort}${setupPath}-json`,
+    )
+    .setContact(
+      'Wang Yue',
+      'https://juejin.cn/user/1063982984593997',
+      '920317438@qq.com',
+    )
     // .addBearerAuth({ type: 'apiKey', name: 'Authorization' })
     // .addBasicAuth({ type: 'apiKey', in: 'header', name: 'token' })
-    .addBearerAuth({ type: 'http', scheme: 'bearer', bearerFormat: 'JWT' }, 'token')
+    .addBearerAuth(
+      { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' },
+      'token',
+    )
     .build();
 
   // 为了创建完整的文档（具有定义的 HTTP 路由），我们使用类的 createDocument() 方法 SwaggerModule。此方法带有两个参数，分别是应用程序实例和基本 Swagger 选项。

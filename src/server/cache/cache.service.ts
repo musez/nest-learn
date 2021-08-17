@@ -7,11 +7,13 @@ export class CacheService {
   private client: any;
 
   constructor(private redisService: RedisService) {
-    this.getClient().then(res => {
-      Logger.log('redis 连接成功！');
-    }).catch(error => {
-      Logger.error('redis 连接异常！异常信息：', error);
-    });
+    this.getClient()
+      .then((res) => {
+        Logger.log('redis 连接成功！');
+      })
+      .catch((error) => {
+        Logger.error('redis 连接异常！异常信息：', error);
+      });
   }
 
   private async getClient() {

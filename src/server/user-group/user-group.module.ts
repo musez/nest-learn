@@ -10,5 +10,4 @@ import { UserGroup } from './entities/user-group.entity';
   providers: [UserGroupService],
   exports: [UserGroupService],
 })
-export class UserGroupModule {
-}
+export class UserGroupModule {}

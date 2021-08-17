@@ -1,9 +1,14 @@
-import { PipeTransform, Injectable, ArgumentMetadata, BadRequestException } from '@nestjs/common';
+import {
+  PipeTransform,
+  Injectable,
+  ArgumentMetadata,
+  BadRequestException,
+} from '@nestjs/common';
 import { Logger } from '../../utils/log4js';
 
 @Injectable()
 export class ParseIntPipe implements PipeTransform<string, number> {
-  transform(value: string,  metatype : ArgumentMetadata): number {
+  transform(value: string, metatype: ArgumentMetadata): number {
     // console.log(`ParseIntPipe：value:`, value, 'metatype: ', metatype);
 
     const val = parseInt(value, 10);

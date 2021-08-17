@@ -6,7 +6,11 @@ import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { Userinfo } from '../userinfo/entities/userinfo.entity';
-import { BaseFindByIdDto, BaseFindByIdsDto, BaseModifyStatusByIdsDto } from '../base.dto';
+import {
+  BaseFindByIdDto,
+  BaseFindByIdsDto,
+  BaseModifyStatusByIdsDto,
+} from '../base.dto';
 import { BindUserGroupDto } from './dto/bind-user-group.dto';
 import { UserGroupService } from '../user-group/user-group.service';
 import { UserGroup } from '../user-group/entities/user-group.entity';
@@ -36,14 +40,14 @@ export class UserService {
     private readonly userGroupService: UserGroupService,
     private readonly userRoleService: UserRoleService,
     private readonly cryptoUtil: CryptoUtil,
-  ) {
-  }
+  ) {}
 
   /**
    * 获取详情（userName）
    */
   async selectByName(userName: string): Promise<User | undefined> {
-    const ret = await this.userRepository.createQueryBuilder()
+    const ret = await this.userRepository
+      .createQueryBuilder()
       .select('User')
       .addSelect('User.userPwd')
       .where('User.userName = :userName AND User.deleteStatus = 0', {
@@ -71,7 +75,11 @@ export class UserService {
       throw new ApiException(`数据 id：${id} 不存在！`, 404);
     }
 
-    const incrementRet = await this.userRepository.increment({ id: id }, 'loginCount', 1);
+    const incrementRet = await this.userRepository.increment(
+      { id: id },
+      'loginCount',
+      1,
+    );
 
     if (!incrementRet) {
       throw new ApiException('登录次数异常！', 500);
@@ -83,7 +91,10 @@ export class UserService {
   /**
    * 添加
    */
-  async insert(createUserDto: CreateUserDto, curUser?): Promise<CreateUserDto | void> {
+  async insert(
+    createUserDto: CreateUserDto,
+    curUser?,
+  ): Promise<CreateUserDto | void> {
     const { userPwd } = createUserDto;
 
     let user = new User();
@@ -112,7 +123,7 @@ export class UserService {
       userinfo.address = createUserDto.address;
     }
     // userinfo = Utils.dto2entity(createUserDto, userinfo);
-    userinfo.user = user;// 联接两者
+    userinfo.user = user; // 联接两者
 
     const saveRet = await this.userRepository.save(user);
     const saveUIRet = await this.userinfoService.insert(userinfo);
@@ -127,11 +138,14 @@ export class UserService {
   /**
    * 添加（批量）
    */
-  async insertBatch(createUserDto: CreateUserDto[], curUser): Promise<CreateUserDto[] | void> {
+  async insertBatch(
+    createUserDto: CreateUserDto[],
+    curUser,
+  ): Promise<CreateUserDto[] | void> {
     const userList: CreateUserDto[] = [],
       userinfoList: CreateUserinfoDto[] = [];
 
-    createUserDto.forEach(item => {
+    createUserDto.forEach((item) => {
       const { userPwd } = item;
       let user = new User();
       user = Utils.dto2entityImport(item, user);
@@ -157,7 +171,7 @@ export class UserService {
         userinfo.address = item.address;
       }
       // userinfo = Utils.dto2entity(createUserDto, userinfo);
-      userinfo.user = user;// 联接两者
+      userinfo.user = user; // 联接两者
 
       userList.push(user);
       userinfoList.push(userinfo);
@@ -201,13 +215,18 @@ export class UserService {
     queryConditionList.push('deleteStatus = 0');
     const queryCondition = queryConditionList.join(' AND ');
 
-    const ret = await this.userRepository.createQueryBuilder('user')
+    const ret = await this.userRepository
+      .createQueryBuilder('user')
       .innerJoinAndSelect('user.userinfo', 'userinfo')
       .leftJoinAndSelect(Area, 'p', 'p.id = userinfo.provinceId')
       .leftJoinAndSelect(Area, 'c', 'c.id = userinfo.cityId')
       .leftJoinAndSelect(Area, 'd', 'd.id = userinfo.districtId')
-      .select('user.*, userinfo.provinceId, userinfo.cityId, userinfo.districtId, userinfo.address ')
-      .addSelect(`p.areaName AS provinceName, c.areaName AS cityName, d.areaName AS districtName`)
+      .select(
+        'user.*, userinfo.provinceId, userinfo.cityId, userinfo.districtId, userinfo.address ',
+      )
+      .addSelect(
+        `p.areaName AS provinceName, c.areaName AS cityName, d.areaName AS districtName`,
+      )
       .where(queryCondition, {
         userName: `%${userName}%`,
         name: `%${name}%`,
@@ -221,7 +240,7 @@ export class UserService {
       })
       .getRawMany();
 
-    ret.forEach(v => {
+    ret.forEach((v) => {
       const ui = {
         provinceId: v.provinceId,
         cityId: v.cityId,
@@ -253,7 +272,16 @@ export class UserService {
    */
   async selectListPage(limitUserDto: LimitUserDto): Promise<any> {
     // eslint-disable-next-line prefer-const
-    let { page, limit, userName, name, userType, mobile, email, status } = limitUserDto;
+    let {
+      page,
+      limit,
+      userName,
+      name,
+      userType,
+      mobile,
+      email,
+      status,
+    } = limitUserDto;
     page = page ? page : 1;
     limit = limit ? limit : 10;
     const offset = (page - 1) * limit;
@@ -280,13 +308,18 @@ export class UserService {
     queryConditionList.push('deleteStatus = 0');
     const queryCondition = queryConditionList.join(' AND ');
 
-    const queryBuilder = this.userRepository.createQueryBuilder('user')
+    const queryBuilder = this.userRepository
+      .createQueryBuilder('user')
       .innerJoinAndSelect('user.userinfo', 'userinfo')
       .leftJoinAndSelect(Area, 'p', 'p.id = userinfo.provinceId')
       .leftJoinAndSelect(Area, 'c', 'c.id = userinfo.cityId')
       .leftJoinAndSelect(Area, 'd', 'd.id = userinfo.districtId')
-      .select('user.*, userinfo.provinceId, userinfo.cityId, userinfo.districtId, userinfo.address ')
-      .addSelect(`p.areaName AS provinceName, c.areaName AS cityName, d.areaName AS districtName`)
+      .select(
+        'user.*, userinfo.provinceId, userinfo.cityId, userinfo.districtId, userinfo.address ',
+      )
+      .addSelect(
+        `p.areaName AS provinceName, c.areaName AS cityName, d.areaName AS districtName`,
+      )
       .where(queryCondition, {
         userName: `%${userName}%`,
         name: `%${name}%`,
@@ -297,14 +330,16 @@ export class UserService {
       });
 
     const ret = await queryBuilder
-      .skip(offset)
-      .take(limit)
+      // .skip(offset)
+      // .take(limit)
+      .offset(offset)
+      .limit(limit)
       .orderBy({
         'user.createTime': 'DESC',
       })
       .getRawMany();
 
-    ret.forEach(v => {
+    ret.forEach((v) => {
       const ui = {
         provinceId: v.provinceId,
         cityId: v.cityId,
@@ -324,8 +359,7 @@ export class UserService {
       delete v.districtName;
     });
 
-    const retCount = await queryBuilder
-      .getCount();
+    const retCount = await queryBuilder.getCount();
 
     if (!ret) {
       throw new ApiException('查询异常！', 500);
@@ -356,27 +390,27 @@ export class UserService {
     }
 
     if (ret?.userGroups?.length > 0) {
-      const ids = ret.userGroups.map(v => v.id);
+      const ids = ret.userGroups.map((v) => v.id);
 
       const userGroupRet = await this.userGroupService.selectByUserIds({
         ids: ids.join(','),
       });
 
       // @ts-ignore
-      ret.userGroups = userGroupRet.map(v => {
+      ret.userGroups = userGroupRet.map((v) => {
         return v.group;
       });
     }
 
     if (ret?.userRoles?.length > 0) {
-      const ids = ret.userRoles.map(v => v.id);
+      const ids = ret.userRoles.map((v) => v.id);
 
       const userRoleRet = await this.userRoleService.selectByUserIds({
         ids: ids.join(','),
       });
 
       // @ts-ignore
-      ret.userRoles = userRoleRet.map(v => {
+      ret.userRoles = userRoleRet.map((v) => {
         return v.role;
       });
     }
@@ -411,7 +445,10 @@ export class UserService {
   /**
    * 修改
    */
-  async update(updateUserDto: UpdateUserDto, curUser): Promise<UpdateUserDto | void> {
+  async update(
+    updateUserDto: UpdateUserDto,
+    curUser,
+  ): Promise<UpdateUserDto | void> {
     const { id } = updateUserDto;
 
     let user = new User();
@@ -432,7 +469,7 @@ export class UserService {
     if (!Utils.isBlank(updateUserDto.address)) {
       userinfo.address = updateUserDto.address;
     }
-    userinfo.user = user;// 联接两者
+    userinfo.user = user; // 联接两者
 
     const [updateRet, updateUIRet] = await Promise.all([
       this.userRepository.update(id, user),
@@ -449,10 +486,14 @@ export class UserService {
   /**
    * 修改状态
    */
-  async updateStatus(baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto, curUser): Promise<any> {
+  async updateStatus(
+    baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto,
+    curUser,
+  ): Promise<any> {
     const { ids, status } = baseModifyStatusByIdsDto;
 
-    const ret = this.userRepository.createQueryBuilder()
+    const ret = this.userRepository
+      .createQueryBuilder()
       .update(User)
       .set({ status: status, updateBy: curUser!.id })
       .where('id in (:ids)', { ids: ids })
@@ -471,7 +512,8 @@ export class UserService {
   async deleteById(baseFindByIdDto: BaseFindByIdDto, curUser): Promise<void> {
     const { id } = baseFindByIdDto;
 
-    const ret = await this.userRepository.createQueryBuilder()
+    const ret = await this.userRepository
+      .createQueryBuilder()
       .update(User)
       .set({ deleteStatus: 1, deleteBy: curUser!.id, deleteTime: Utils.now() })
       .where('id = :id', { id: id })
@@ -487,10 +529,14 @@ export class UserService {
   /**
    * 删除（批量）
    */
-  async deleteByIds(baseFindByIdsDto: BaseFindByIdsDto, curUser): Promise<void> {
+  async deleteByIds(
+    baseFindByIdsDto: BaseFindByIdsDto,
+    curUser,
+  ): Promise<void> {
     const { ids } = baseFindByIdsDto;
 
-    const ret = await this.userRepository.createQueryBuilder()
+    const ret = await this.userRepository
+      .createQueryBuilder()
       .update(User)
       .set({ deleteStatus: 1, deleteBy: curUser!.id, deleteTime: Utils.now() })
       .where('ids in (:ids)', { ids: ids })
@@ -608,7 +654,9 @@ export class UserService {
   /**
    * 获取权限
    */
-  async selectPermissionsByUserId(baseFindByIdDto: BaseFindByIdDto): Promise<any> {
+  async selectPermissionsByUserId(
+    baseFindByIdDto: BaseFindByIdDto,
+  ): Promise<any> {
     return await this.permissionService.selectByUserId(baseFindByIdDto);
   }
 

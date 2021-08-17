@@ -22,7 +22,11 @@ import { ArticleService } from './article.service';
 import { CreateArticleDto } from './dto/create-article.dto';
 import { UpdateArticleDto } from './dto/update-article.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { BaseFindByIdDto, BaseFindByIdsDto, BaseModifyStatusByIdsDto } from '../base.dto';
+import {
+  BaseFindByIdDto,
+  BaseFindByIdsDto,
+  BaseModifyStatusByIdsDto,
+} from '../base.dto';
 import { Article } from './entities/article.entity';
 import { LimitArticleDto } from './dto/limit-article.dto';
 import { CurUser } from '../../common/decorators/cur-user.decorator';
@@ -31,9 +35,15 @@ import { Auth } from '../../common/decorators/auth.decorator';
 import { AuthGuard } from '../../common/guards/auth.guard';
 import { Utils } from '../../utils';
 import { ExcelService } from '../excel/excel.service';
-import { ArticleType, IsCommentType, StatusType } from '../../constants/dicts.enum';
+import {
+  ArticleType,
+  IsCommentType,
+  StatusType,
+} from '../../constants/dicts.enum';
 import { ArticleDict, IsCommentDict, StatusDict } from '../../constants/dicts';
 import { ApiException } from '../../common/exception/api-exception';
+import { LimitArticleTopDto } from './dto/limit-article-topic.dto';
+import { CreateArticleTopicDto } from './dto/create-article-topic.dto';
 
 @Controller('article')
 @ApiTags('文章')
@@ -43,8 +53,7 @@ export class ArticleController {
   constructor(
     private readonly articleService: ArticleService,
     private readonly excelService: ExcelService,
-  ) {
-  }
+  ) {}
 
   @Post('add')
   @Auth('cms:article:add')
@@ -56,7 +65,9 @@ export class ArticleController {
   @Get('findList')
   @Auth('cms:article:findList')
   @ApiOperation({ summary: '获取列表' })
-  async findList(@Query() searchArticleDto: SearchArticleDto): Promise<Article[]> {
+  async findList(
+    @Query() searchArticleDto: SearchArticleDto,
+  ): Promise<Article[]> {
     return await this.articleService.selectList(searchArticleDto);
   }
 
@@ -77,7 +88,10 @@ export class ArticleController {
   @Get('exportExcel')
   @Auth('account:article:exportExcel')
   @ApiOperation({ summary: '列表（Excel 导出）' })
-  async exportExcel(@Query() searchArticleDto: SearchArticleDto, @Res() res): Promise<any> {
+  async exportExcel(
+    @Query() searchArticleDto: SearchArticleDto,
+    @Res() res,
+  ): Promise<any> {
     const list = await this.articleService.selectList(searchArticleDto);
 
     const columns = [
@@ -86,7 +100,13 @@ export class ArticleController {
       { key: 'author', name: '作者', type: 'String', size: 10 },
       { key: 'source', name: '来源', type: 'String', size: 10 },
       { key: 'keywords', name: '关键字', type: 'String', size: 10 },
-      { key: 'type', name: '文章类型', type: 'Enum', size: 10, default: ArticleDict },
+      {
+        key: 'type',
+        name: '文章类型',
+        type: 'Enum',
+        size: 10,
+        default: ArticleDict,
+      },
       { key: 'contentUrl', name: '链接', type: 'String', size: 10 },
       { key: 'weight', name: '权重', type: 'String', size: 10 },
       { key: 'publicTime', name: '发布时间', type: 'String', size: 10 },
@@ -96,8 +116,20 @@ export class ArticleController {
       { key: 'collectCount', name: '收藏量', type: 'String', size: 10 },
       { key: 'shareCount', name: '分享量', type: 'String', size: 10 },
       { key: 'commentCount', name: '评论', type: 'String', size: 10 },
-      { key: 'isComment', name: '是否可以评论', type: 'Enum', size: 10, default: IsCommentDict },
-      { key: 'status', name: '状态', type: 'Enum', size: 10, default: StatusDict },
+      {
+        key: 'isComment',
+        name: '是否可以评论',
+        type: 'Enum',
+        size: 10,
+        default: IsCommentDict,
+      },
+      {
+        key: 'status',
+        name: '状态',
+        type: 'Enum',
+        size: 10,
+        default: StatusDict,
+      },
       { key: 'description', name: '备注', type: 'String', size: 20 },
       { key: 'createTime', name: '创建时间', type: 'String', size: 20 },
       { key: 'updateTime', name: '修改时间', type: 'String', size: 20 },
@@ -110,7 +142,9 @@ export class ArticleController {
     );
     res.setHeader(
       'Content-Disposition',
-      'attachment; filename=' + encodeURIComponent(`文章_${Utils.dayjsFormat('YYYYMMDD')}`) + '.xlsx',// 中文名需要进行 url 转码
+      'attachment; filename=' +
+        encodeURIComponent(`文章_${Utils.dayjsFormat('YYYYMMDD')}`) +
+        '.xlsx', // 中文名需要进行 url 转码
     );
     res.setTimeout(30 * 60 * 1000); // 防止网络原因造成超时。
     res.end(result, 'binary');
@@ -119,7 +153,10 @@ export class ArticleController {
   @Post('update')
   @Auth('cms:article:update')
   @ApiOperation({ summary: '修改' })
-  async update(@CurUser() curUser, @Body() updateArticleDto: UpdateArticleDto): Promise<any> {
+  async update(
+    @CurUser() curUser,
+    @Body() updateArticleDto: UpdateArticleDto,
+  ): Promise<any> {
     const { id } = updateArticleDto;
     const isExistId = await this.articleService.isExistId(id);
     if (!isExistId) {
@@ -129,26 +166,69 @@ export class ArticleController {
     return this.articleService.update(updateArticleDto, curUser);
   }
 
+  @Post('publish')
+  @Auth('cms:article:publish')
+  @ApiOperation({ summary: '发布' })
+  async publish(
+    @CurUser() curUser,
+    @Body() baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto,
+  ): Promise<any> {
+    baseModifyStatusByIdsDto.status = 1;
+    return await this.articleService.updateStatus(
+      baseModifyStatusByIdsDto,
+      curUser,
+    );
+  }
+
+  @Post('unPublish')
+  @Auth('cms:article:unPublish')
+  @ApiOperation({ summary: '取消发布' })
+  async unPublish(
+    @CurUser() curUser,
+    @Body() baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto,
+  ): Promise<any> {
+    baseModifyStatusByIdsDto.status = 0;
+    return await this.articleService.updateStatus(
+      baseModifyStatusByIdsDto,
+      curUser,
+    );
+  }
+
   @Post('inRecycle')
   @Auth('cms:article:inRecycle')
   @ApiOperation({ summary: '回收站移入' })
-  async inRecycle(@CurUser() curUser, @Body() baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto): Promise<any> {
+  async inRecycle(
+    @CurUser() curUser,
+    @Body() baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto,
+  ): Promise<any> {
     baseModifyStatusByIdsDto.status = 3;
-    return await this.articleService.updateStatus(baseModifyStatusByIdsDto, curUser);
+    return await this.articleService.updateStatus(
+      baseModifyStatusByIdsDto,
+      curUser,
+    );
   }
 
   @Post('outRecycle')
   @Auth('cms:article:outRecycle')
   @ApiOperation({ summary: '回收站移出' })
-  async outRecycle(@CurUser() curUser, @Body() baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto): Promise<any> {
+  async outRecycle(
+    @CurUser() curUser,
+    @Body() baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto,
+  ): Promise<any> {
     baseModifyStatusByIdsDto.status = 2;
-    return await this.articleService.updateStatus(baseModifyStatusByIdsDto, curUser);
+    return await this.articleService.updateStatus(
+      baseModifyStatusByIdsDto,
+      curUser,
+    );
   }
 
   @Post('deleteRecycle')
   @Auth('cms:article:deleteRecycle')
   @ApiOperation({ summary: '回收站删除' })
-  async delete(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
+  async delete(
+    @CurUser() curUser,
+    @Body() baseFindByIdDto: BaseFindByIdDto,
+  ): Promise<any> {
     const { id } = baseFindByIdDto;
     const isExistId = await this.articleService.isExistId(id);
 
@@ -162,14 +242,41 @@ export class ArticleController {
   @Post('clearRecycle')
   @Auth('cms:article:clearRecycle')
   @ApiOperation({ summary: '回收站清空/删除（批量）' })
-  async clearRecycle(@CurUser() curUser, @Body() baseFindByIdsDto: BaseFindByIdsDto): Promise<any> {
+  async clearRecycle(
+    @CurUser() curUser,
+    @Body() baseFindByIdsDto: BaseFindByIdsDto,
+  ): Promise<any> {
     return await this.articleService.deleteAll(baseFindByIdsDto, curUser);
   }
 
   @Get('findCommentById')
   @Auth('cms:article:findCommentById')
   @ApiOperation({ summary: '获取评论和回复（主键 id）' })
-  async findCommentById(@Query() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
+  async findCommentById(
+    @Query() baseFindByIdDto: BaseFindByIdDto,
+  ): Promise<any> {
     return await this.articleService.selectCommentById(baseFindByIdDto);
+  }
+
+  @Get('findCommentPageById')
+  @Auth('cms:article:findCommentPageById')
+  @ApiOperation({ summary: '获取评论和回复（主键 id）' })
+  async findCommentPageById(
+    @Query() limitArticleTopDto: LimitArticleTopDto,
+  ): Promise<any> {
+    return await this.articleService.selectCommentPageById(limitArticleTopDto);
+  }
+
+  @Post('addTopic')
+  @Auth('cms:article:addTopic')
+  @ApiOperation({ summary: '添加评论' })
+  async addTopic(
+    @CurUser() curUser,
+    @Body() createArticleTopicDto: CreateArticleTopicDto,
+  ): Promise<any> {
+    return await this.articleService.insertTopic(
+      createArticleTopicDto,
+      curUser,
+    );
   }
 }

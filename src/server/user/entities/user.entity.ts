@@ -9,13 +9,14 @@ import {
   ManyToMany,
   OneToMany,
   OneToOne,
-  BeforeUpdate, AfterLoad,
+  BeforeUpdate,
+  AfterLoad,
 } from 'typeorm';
 import { Exclude } from 'class-transformer';
 import { BaseEntity } from '../../base.entity';
 import { Userinfo } from '../../userinfo/entities/userinfo.entity';
 import { UserType, SexType } from '../../../constants/dicts.enum';
-import { UserAddress } from 'src/server/user-address/entities/user-address.entity';
+import { UserAddress } from '../../user-address/entities/user-address.entity';
 import { UserGroup } from '../../user-group/entities/user-group.entity';
 import { UserRole } from '../../user-role/entities/user-role.entity';
 import * as dayjs from 'dayjs';
@@ -55,7 +56,10 @@ export class User extends BaseEntity {
   @Exclude()
   userPwd: string;
 
-  @Column('tinyint', { comment: '用户类型（0：普通用户；1：管理员；2：超级管理员；）', default: UserType.NORMAL })
+  @Column('tinyint', {
+    comment: '用户类型（0：普通用户；1：管理员；2：超级管理员；）',
+    default: UserType.NORMAL,
+  })
   userType: UserType;
 
   @Column('varchar', { comment: '姓名', length: 50, nullable: true })
@@ -67,7 +71,11 @@ export class User extends BaseEntity {
   @Column('varchar', { comment: '邮箱', length: 20, nullable: true })
   email: string;
 
-  @Column('tinyint', { comment: '性别（0：保密；1：男；2：女）', nullable: true, default: SexType.SECRET })
+  @Column('tinyint', {
+    comment: '性别（0：保密；1：男；2：女）',
+    nullable: true,
+    default: SexType.SECRET,
+  })
   sex: SexType;
 
   @Column({ type: 'date', comment: '生日', nullable: true })
@@ -95,9 +103,9 @@ export class User extends BaseEntity {
   })
   userAddress: UserAddress;
 
-  @OneToMany(type => UserGroup, userGroup => userGroup.user)
+  @OneToMany((type) => UserGroup, (userGroup) => userGroup.user)
   userGroups: UserGroup[];
 
-  @OneToMany(type => UserRole, userRole => userRole.user)
+  @OneToMany((type) => UserRole, (userRole) => userRole.user)
   userRoles: UserRole[];
 }

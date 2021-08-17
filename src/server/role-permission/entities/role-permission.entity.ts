@@ -1,4 +1,10 @@
-import { Entity, PrimaryGeneratedColumn, JoinColumn, ManyToOne, Column } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  JoinColumn,
+  ManyToOne,
+  Column,
+} from 'typeorm';
 import { Role } from '../../role/entities/role.entity';
 import { Permission } from '../../permission/entities/permission.entity';
 
@@ -15,11 +21,11 @@ export class RolePermission {
   @PrimaryGeneratedColumn('uuid', { comment: '主键 id' })
   id: string;
 
-  @ManyToOne(type => Role, role => role.rolePermissions)
+  @ManyToOne((type) => Role, (role) => role.rolePermissions)
   @JoinColumn({ name: 'roleId' })
   role: Role;
 
-  @ManyToOne(type => Permission, permission => permission.rolePermissions)
+  @ManyToOne((type) => Permission, (permission) => permission.rolePermissions)
   @JoinColumn({ name: 'permissionId' })
   permission: Permission;
 }

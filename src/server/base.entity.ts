@@ -3,9 +3,10 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
-  DeleteDateColumn, AfterLoad,
+  DeleteDateColumn,
+  AfterLoad,
 } from 'typeorm';
-import { DeleteType, StatusType } from 'src/constants/dicts.enum';
+import { DeleteType, StatusType } from '../constants/dicts.enum';
 import { Utils } from '../utils';
 import * as dayjs from 'dayjs';
 import { Exclude } from 'class-transformer';
@@ -43,7 +44,10 @@ export abstract class BaseEntity {
   @PrimaryGeneratedColumn('uuid', { comment: '主键 id' })
   id: string;
 
-  @Column('tinyint', { comment: '状态（0：禁用；1：启用）', default: StatusType.ENABLE })
+  @Column('tinyint', {
+    comment: '状态（0：禁用；1：启用）',
+    default: StatusType.ENABLE,
+  })
   status: StatusType;
 
   @Column('text', { comment: '描述', nullable: true })
@@ -55,18 +59,31 @@ export abstract class BaseEntity {
   @Column({ comment: '创建人 id', nullable: true })
   createBy: string;
 
-  @UpdateDateColumn({ comment: '最后更新时间', type: 'datetime', nullable: true })
+  @UpdateDateColumn({
+    comment: '最后更新时间',
+    type: 'datetime',
+    nullable: true,
+  })
   updateTime: Date;
 
   @Column({ comment: '修改人 id', nullable: true })
   updateBy: string;
 
-  @Column('tinyint', { comment: '删除状态（0：未删除；1：删除）', default: DeleteType.UN_DEL, select: false })
+  @Column('tinyint', {
+    comment: '删除状态（0：未删除；1：删除）',
+    default: DeleteType.UN_DEL,
+    select: false,
+  })
   @Exclude()
   deleteStatus: DeleteType;
 
   // @DeleteDateColumn({ comment: '删除时间', type: 'datetime', nullable: true })
-  @Column({ comment: '删除时间', type: 'datetime', nullable: true, select: false })
+  @Column({
+    comment: '删除时间',
+    type: 'datetime',
+    nullable: true,
+    select: false,
+  })
   @Exclude()
   deleteTime: Date;
 

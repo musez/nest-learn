@@ -49,8 +49,7 @@ export class GroupController {
   constructor(
     private readonly groupService: GroupService,
     private readonly excelService: ExcelService,
-  ) {
-  }
+  ) {}
 
   @Post('add')
   @Auth('account:group:add')
@@ -83,12 +82,21 @@ export class GroupController {
   @Get('exportExcel')
   @Auth('account:group:exportExcel')
   @ApiOperation({ summary: '列表（Excel 导出）' })
-  async exportExcel(@Query() searchGroupDto: SearchGroupDto, @Res() res): Promise<any> {
+  async exportExcel(
+    @Query() searchGroupDto: SearchGroupDto,
+    @Res() res,
+  ): Promise<any> {
     const list = await this.groupService.selectList(searchGroupDto);
 
     const columns = [
       { key: 'name', name: '名称', type: 'String', size: 10 },
-      { key: 'status', name: '状态', type: 'Enum', size: 10, default: StatusDict },
+      {
+        key: 'status',
+        name: '状态',
+        type: 'Enum',
+        size: 10,
+        default: StatusDict,
+      },
       { key: 'description', name: '备注', type: 'String', size: 20 },
       { key: 'createTime', name: '创建时间', type: 'String', size: 20 },
       { key: 'updateTime', name: '修改时间', type: 'String', size: 20 },
@@ -101,7 +109,9 @@ export class GroupController {
     );
     res.setHeader(
       'Content-Disposition',
-      'attachment; filename=' + encodeURIComponent(`用户组_${Utils.dayjsFormat('YYYYMMDD')}`) + '.xlsx',// 中文名需要进行 url 转码
+      'attachment; filename=' +
+        encodeURIComponent(`用户组_${Utils.dayjsFormat('YYYYMMDD')}`) +
+        '.xlsx', // 中文名需要进行 url 转码
     );
     res.setTimeout(30 * 60 * 1000); // 防止网络原因造成超时。
     res.end(result, 'binary');
@@ -110,7 +120,10 @@ export class GroupController {
   @Post('update')
   @Auth('account:group:update')
   @ApiOperation({ summary: '修改' })
-  async update(@CurUser() curUser, @Body() updateGroupDto: UpdateGroupDto): Promise<any> {
+  async update(
+    @CurUser() curUser,
+    @Body() updateGroupDto: UpdateGroupDto,
+  ): Promise<any> {
     const { id } = updateGroupDto;
     const isExistId = await this.groupService.isExistId(id);
 
@@ -124,7 +137,10 @@ export class GroupController {
   @Post('delete')
   @Auth('account:group:delete')
   @ApiOperation({ summary: '删除' })
-  async delete(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
+  async delete(
+    @CurUser() curUser,
+    @Body() baseFindByIdDto: BaseFindByIdDto,
+  ): Promise<any> {
     const { id } = baseFindByIdDto;
     const isExistId = await this.groupService.isExistId(id);
 
@@ -138,14 +154,20 @@ export class GroupController {
   @Post('deleteBatch')
   @Auth('system:group:deleteBatch')
   @ApiOperation({ summary: '删除（批量）' })
-  async deleteBatch(@CurUser() curUser, @Body() baseFindByIdsDto: BaseFindByIdsDto): Promise<any> {
+  async deleteBatch(
+    @CurUser() curUser,
+    @Body() baseFindByIdsDto: BaseFindByIdsDto,
+  ): Promise<any> {
     return await this.groupService.deleteByIds(baseFindByIdsDto, curUser);
   }
 
   @Get('getRoles')
   @Auth('account:group:getRoles')
   @ApiOperation({ summary: '获取用户组角色' })
-  async findRolesByGroupId(@CurUser() curUser, @Query() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
+  async findRolesByGroupId(
+    @CurUser() curUser,
+    @Query() baseFindByIdDto: BaseFindByIdDto,
+  ): Promise<any> {
     const { id } = baseFindByIdDto;
     const isExistId = await this.groupService.isExistId(id);
 
@@ -159,7 +181,10 @@ export class GroupController {
   @Post('bindRoles')
   @Auth('account:group:bindRoles')
   @ApiOperation({ summary: '绑定用户组角色' })
-  async bindRoles(@CurUser() curUser, @Body() bindGroupRoleDto: BindGroupRoleDto): Promise<any> {
+  async bindRoles(
+    @CurUser() curUser,
+    @Body() bindGroupRoleDto: BindGroupRoleDto,
+  ): Promise<any> {
     const { id } = bindGroupRoleDto;
     const isExistId = await this.groupService.isExistId(id);
 

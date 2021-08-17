@@ -5,9 +5,7 @@ import { UpdateCodeGenerateDto } from './dto/update-code-generate.dto';
 
 @Injectable()
 export class CodeGenerateService {
-  constructor(
-    private readonly connection: Connection,
-  ) {
+  constructor(private readonly connection: Connection) {
     console.log(connection);
   }
 

@@ -18,7 +18,7 @@ const ppt = ['ppt', 'pptx'];
 const rar = ['rar', 'zip'];
 const pdf = ['pdf'];
 
-export const checkDirAndCreate = filePath => {
+export const checkDirAndCreate = (filePath) => {
   const pathArr = filePath.split('/');
   let checkPath = '.';
   let item: string;
@@ -40,15 +40,15 @@ export const checkDirAndCreate = filePath => {
         destination: (req, file, cb) => {
           // 根据上传的文件类型将图片视频音频和其他类型文件分别存到对应英文文件夹
           const mimeType = file.mimetype.split('/')[1];
-          console.log('mimeType',mimeType);
+          console.log('mimeType', mimeType);
           let temp = 'other';
-          image.filter(item => item === mimeType).length > 0
+          image.filter((item) => item === mimeType).length > 0
             ? (temp = 'image')
             : '';
-          video.filter(item => item === mimeType).length > 0
+          video.filter((item) => item === mimeType).length > 0
             ? (temp = 'video')
             : '';
-          audio.filter(item => item === mimeType).length > 0
+          audio.filter((item) => item === mimeType).length > 0
             ? (temp = 'audio')
             : '';
           // excel.filter(item => item === mimeType).length > 0
@@ -66,7 +66,9 @@ export const checkDirAndCreate = filePath => {
           // pdf.filter(item => item === mimeType).length > 0
           //   ? (temp = 'pdf')
           //   : '';
-          const filePath = `public/uploads/${temp}/${dayjs().format('YYYY-MM-DD')}`;
+          const filePath = `public/uploads/${temp}/${dayjs().format(
+            'YYYY-MM-DD',
+          )}`;
           checkDirAndCreate(filePath); // 判断文件夹是否存在，不存在则自动生成
           return cb(null, `./${filePath}`);
         },
@@ -79,15 +81,15 @@ export const checkDirAndCreate = filePath => {
       }),
       fileFilter(req, file, cb) {
         const mimeType = file.mimetype.split('/')[1].toLowerCase();
-        console.log('mimeType',mimeType);
+        console.log('mimeType', mimeType);
         let temp = 'other';
-        image.filter(item => item === mimeType).length > 0
+        image.filter((item) => item === mimeType).length > 0
           ? (temp = 'image')
           : '';
-        video.filter(item => item === mimeType).length > 0
+        video.filter((item) => item === mimeType).length > 0
           ? (temp = 'video')
           : '';
-        audio.filter(item => item === mimeType).length > 0
+        audio.filter((item) => item === mimeType).length > 0
           ? (temp = 'audio')
           : '';
         // excel.filter(item => item === mimeType).length > 0
@@ -115,5 +117,4 @@ export const checkDirAndCreate = filePath => {
   controllers: [FileController],
   providers: [FileService],
 })
-export class FileModule {
-}
+export class FileModule {}

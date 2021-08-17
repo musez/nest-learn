@@ -11,8 +11,7 @@ export class UserRoleService {
   constructor(
     @InjectRepository(UserRole)
     private readonly userRoleRepository: Repository<UserRole>,
-  ) {
-  }
+  ) {}
 
   /**
    * 添加
@@ -53,7 +52,8 @@ export class UserRoleService {
    * 删除角色
    */
   async deleteByUserId(id: string): Promise<any> {
-    return await this.userRoleRepository.createQueryBuilder()
+    return await this.userRoleRepository
+      .createQueryBuilder()
       .delete()
       .from(UserRole)
       .where('userId = :id', { id: id })

@@ -9,5 +9,4 @@ import { UserAddress } from './entities/user-address.entity';
   controllers: [UserAddressController],
   providers: [UserAddressService],
 })
-export class UserAddressModule {
-}
+export class UserAddressModule {}

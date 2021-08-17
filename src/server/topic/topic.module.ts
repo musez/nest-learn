@@ -10,5 +10,4 @@ import { Topic } from './entities/topic.entity';
   providers: [TopicService],
   exports: [TopicService],
 })
-export class TopicModule {
-}
+export class TopicModule {}

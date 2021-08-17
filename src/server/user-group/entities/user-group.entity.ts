@@ -1,4 +1,10 @@
-import { Entity, PrimaryGeneratedColumn, JoinColumn, ManyToOne, Column } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  JoinColumn,
+  ManyToOne,
+  Column,
+} from 'typeorm';
 import { User } from '../../user/entities/user.entity';
 import { Group } from '../../group/entities/group.entity';
 
@@ -15,11 +21,11 @@ export class UserGroup {
   @PrimaryGeneratedColumn('uuid', { comment: '主键 id' })
   id: string;
 
-  @ManyToOne(type => User, user => user.userGroups)
+  @ManyToOne((type) => User, (user) => user.userGroups)
   @JoinColumn({ name: 'userId' })
   user: User;
 
-  @ManyToOne(type => Group, group => group.userGroups)
+  @ManyToOne((type) => Group, (group) => group.userGroups)
   @JoinColumn({ name: 'groupId' })
   group: Group;
 }

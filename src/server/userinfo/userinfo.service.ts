@@ -12,20 +12,23 @@ export class UserinfoService {
   constructor(
     @InjectRepository(Userinfo)
     private readonly userinfoRepository: Repository<Userinfo>,
-  ) {
-  }
+  ) {}
 
   /**
    * 添加
    */
-  async insert(createUserinfoDto: CreateUserinfoDto): Promise<CreateUserinfoDto> {
+  async insert(
+    createUserinfoDto: CreateUserinfoDto,
+  ): Promise<CreateUserinfoDto> {
     return await this.userinfoRepository.save(createUserinfoDto);
   }
 
   /**
    * 添加（批量）
    */
-  async insertBatch(createUserinfoDto: CreateUserinfoDto[]): Promise<CreateUserinfoDto[]> {
+  async insertBatch(
+    createUserinfoDto: CreateUserinfoDto[],
+  ): Promise<CreateUserinfoDto[]> {
     return await this.userinfoRepository.save(createUserinfoDto);
   }
 
@@ -40,8 +43,12 @@ export class UserinfoService {
   /**
    * 修改（userId）
    */
-  async updateByUserId(id: string, updateUserinfoDto: UpdateUserinfoDto): Promise<any> {
-    return await this.userinfoRepository.createQueryBuilder()
+  async updateByUserId(
+    id: string,
+    updateUserinfoDto: UpdateUserinfoDto,
+  ): Promise<any> {
+    return await this.userinfoRepository
+      .createQueryBuilder()
       .update(Userinfo)
       .set({
         provinceId: updateUserinfoDto.provinceId,

@@ -26,8 +26,7 @@ export class ContextTrace {
     public readonly path?: string,
     public readonly lineNumber?: number,
     public readonly columnNumber?: number,
-  ) {
-  }
+  ) {}
 }
 
 Log4js.addLayout('Awesome-nest', (logConfig: any) => {
@@ -57,9 +56,15 @@ Log4js.addLayout('Awesome-nest', (logConfig: any) => {
     // 日志组成部分
     const messageOutput: string = messageList.join(' ');
     const positionOutput: string = position ? ` [${position}]` : '';
-    const typeOutput: string = `[${logConfig.type}] ${logEvent.pid.toString()}   - `;
-    const dateOutput: string = `${dayjs(logEvent.startTime).format('YYYY-MM-DD HH:mm:ss')}`;
-    const moduleOutput: string = moduleName ? `[${moduleName}] ` : '[LoggerService] ';
+    const typeOutput: string = `[${
+      logConfig.type
+    }] ${logEvent.pid.toString()}   - `;
+    const dateOutput: string = `${dayjs(logEvent.startTime).format(
+      'YYYY-MM-DD HH:mm:ss',
+    )}`;
+    const moduleOutput: string = moduleName
+      ? `[${moduleName}] `
+      : '[LoggerService] ';
     let levelOutput: string = `[${logEvent.level}] ${messageOutput}`;
 
     // 根据日志级别，用不同颜色区分
@@ -84,7 +89,9 @@ Log4js.addLayout('Awesome-nest', (logConfig: any) => {
         break;
     }
 
-    return `${Chalk.green(typeOutput)}${dateOutput}  ${Chalk.yellow(moduleOutput)}${levelOutput}${positionOutput}`;
+    return `${Chalk.green(typeOutput)}${dateOutput}  ${Chalk.yellow(
+      moduleOutput,
+    )}${levelOutput}${positionOutput}`;
   };
 });
 

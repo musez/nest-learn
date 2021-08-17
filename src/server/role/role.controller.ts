@@ -34,7 +34,7 @@ import { Utils } from '../../utils';
 import { ExcelService } from '../excel/excel.service';
 import { StatusType } from '../../constants/dicts.enum';
 import { StatusDict } from '../../constants/dicts';
-import { ApiException } from 'src/common/exception/api-exception';
+import { ApiException } from '../../common/exception/api-exception';
 
 @Controller('role')
 @ApiTags('角色')
@@ -44,8 +44,7 @@ export class RoleController {
   constructor(
     private readonly roleService: RoleService,
     private readonly excelService: ExcelService,
-  ) {
-  }
+  ) {}
 
   @Post('add')
   @Auth('account:role:add')
@@ -78,12 +77,21 @@ export class RoleController {
   @Get('exportExcel')
   @Auth('account:role:exportExcel')
   @ApiOperation({ summary: '列表（Excel 导出）' })
-  async exportExcel(@Query() searchRoleDto: SearchRoleDto, @Res() res): Promise<any> {
+  async exportExcel(
+    @Query() searchRoleDto: SearchRoleDto,
+    @Res() res,
+  ): Promise<any> {
     const list = await this.roleService.selectList(searchRoleDto);
 
     const columns = [
       { key: 'name', name: '名称', type: 'String', size: 10 },
-      { key: 'status', name: '状态', type: 'Enum', size: 10, default: StatusDict },
+      {
+        key: 'status',
+        name: '状态',
+        type: 'Enum',
+        size: 10,
+        default: StatusDict,
+      },
       { key: 'description', name: '备注', type: 'String', size: 20 },
       { key: 'createTime', name: '创建时间', type: 'String', size: 20 },
       { key: 'updateTime', name: '修改时间', type: 'String', size: 20 },
@@ -96,7 +104,9 @@ export class RoleController {
     );
     res.setHeader(
       'Content-Disposition',
-      'attachment; filename=' + encodeURIComponent(`角色_${Utils.dayjsFormat('YYYYMMDD')}`) + '.xlsx',// 中文名需要进行 url 转码
+      'attachment; filename=' +
+        encodeURIComponent(`角色_${Utils.dayjsFormat('YYYYMMDD')}`) +
+        '.xlsx', // 中文名需要进行 url 转码
     );
     res.setTimeout(30 * 60 * 1000); // 防止网络原因造成超时。
     res.end(result, 'binary');
@@ -105,7 +115,10 @@ export class RoleController {
   @Post('update')
   @Auth('account:role:update')
   @ApiOperation({ summary: '修改' })
-  async update(@CurUser() curUser, @Body() updateRoleDto: UpdateRoleDto): Promise<any> {
+  async update(
+    @CurUser() curUser,
+    @Body() updateRoleDto: UpdateRoleDto,
+  ): Promise<any> {
     const { id } = updateRoleDto;
     const isExistId = await this.roleService.isExistId(id);
 
@@ -118,7 +131,10 @@ export class RoleController {
   @Post('delete')
   @Auth('account:role:delete')
   @ApiOperation({ summary: '删除' })
-  async delete(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
+  async delete(
+    @CurUser() curUser,
+    @Body() baseFindByIdDto: BaseFindByIdDto,
+  ): Promise<any> {
     const { id } = baseFindByIdDto;
     const isExistId = await this.roleService.isExistId(id);
 
@@ -131,14 +147,20 @@ export class RoleController {
   @Post('deleteBatch')
   @Auth('system:role:deleteBatch')
   @ApiOperation({ summary: '删除（批量）' })
-  async deleteBatch(@CurUser() curUser, @Body() baseFindByIdsDto: BaseFindByIdsDto): Promise<any> {
+  async deleteBatch(
+    @CurUser() curUser,
+    @Body() baseFindByIdsDto: BaseFindByIdsDto,
+  ): Promise<any> {
     return await this.roleService.deleteByIds(baseFindByIdsDto, curUser);
   }
 
   @Get('getPermissions')
   @Auth('account:role:getPermissions')
   @ApiOperation({ summary: '获取角色权限' })
-  async findPermissionsByRoleId(@CurUser() curUser, @Query() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
+  async findPermissionsByRoleId(
+    @CurUser() curUser,
+    @Query() baseFindByIdDto: BaseFindByIdDto,
+  ): Promise<any> {
     const { id } = baseFindByIdDto;
     const isExistId = await this.roleService.isExistId(id);
 
@@ -151,7 +173,10 @@ export class RoleController {
   @Post('bindPermissions')
   @Auth('account:role:bindPermissions')
   @ApiOperation({ summary: '绑定角色权限' })
-  async bindPermissions(@CurUser() curUser, @Body() bindRolePermissionDto: BindRolePermissionDto): Promise<any> {
+  async bindPermissions(
+    @CurUser() curUser,
+    @Body() bindRolePermissionDto: BindRolePermissionDto,
+  ): Promise<any> {
     const { id } = bindRolePermissionDto;
     const isExistId = await this.roleService.isExistId(id);
 

@@ -1,4 +1,10 @@
-import { Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { SexType } from '../../../constants/dicts.enum';
 import { BaseEntity } from '../../base.entity';
 import { User } from '../../user/entities/user.entity';
@@ -24,7 +30,11 @@ export class UserAddress extends BaseEntity {
   @Column('varchar', { comment: '手机号', length: 20, nullable: true })
   mobile: string;
 
-  @Column('tinyint', { comment: '性别（0：保密；1：男；2：女）', nullable: true, default: SexType.SECRET })
+  @Column('tinyint', {
+    comment: '性别（0：保密；1：男；2：女）',
+    nullable: true,
+    default: SexType.SECRET,
+  })
   sex: SexType;
 
   @Column({ comment: '省份', nullable: true })

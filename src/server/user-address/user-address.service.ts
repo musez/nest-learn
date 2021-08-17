@@ -4,12 +4,16 @@ import { Repository } from 'typeorm';
 import { CreateUserAddressDto } from './dto/create-user-address.dto';
 import { UpdateUserAddressDto } from './dto/update-user-address.dto';
 import { Utils } from '../../utils';
-import { BaseFindByIdDto, BaseFindByIdsDto, BaseModifyStatusByIdsDto } from '../base.dto';
+import {
+  BaseFindByIdDto,
+  BaseFindByIdsDto,
+  BaseModifyStatusByIdsDto,
+} from '../base.dto';
 import { UserAddress } from './entities/user-address.entity';
 import { SearchUserAddressDto } from './dto/search-user-address.dto';
 import { LimitUserAddressDto } from './dto/limit-user-address.dto';
 import { UserService } from '../user/user.service';
-import { ApiException } from 'src/common/exception/api-exception';
+import { ApiException } from '../../common/exception/api-exception';
 
 @Injectable()
 export class UserAddressService {
@@ -17,17 +21,19 @@ export class UserAddressService {
     private readonly userService: UserService,
     @InjectRepository(UserAddress)
     private readonly userAddressRepository: Repository<UserAddress>,
-  ) {
-  }
+  ) {}
 
   /**
    * 添加
    */
-  async insert(createDto: CreateUserAddressDto, curUser): Promise<CreateUserAddressDto | UserAddress> {
+  async insert(
+    createDto: CreateUserAddressDto,
+    curUser,
+  ): Promise<CreateUserAddressDto | UserAddress> {
     let userAddress = new UserAddress();
     userAddress = Utils.dto2entity(createDto, userAddress);
 
-    const ret = await this.userService.selectById({ id: createDto.userId });
+    const ret = await this.userService.selectById({ id: curUser.id });
     userAddress.user = ret;
 
     return await this.userAddressRepository.save(userAddress);
@@ -37,7 +43,7 @@ export class UserAddressService {
    * 获取列表
    */
   async selectList(searchDto: SearchUserAddressDto): Promise<any[]> {
-    const { name, mobile } = searchDto;
+    const { name, mobile, status } = searchDto;
 
     const queryConditionList = [];
     if (!Utils.isBlank(name)) {
@@ -46,15 +52,20 @@ export class UserAddressService {
     if (!Utils.isBlank(mobile)) {
       queryConditionList.push('mobile LIKE :mobile');
     }
+    if (!Utils.isBlank(status)) {
+      queryConditionList.push('status LIKE :status');
+    }
     queryConditionList.push('deleteStatus = 0');
     const queryCondition = queryConditionList.join(' AND ');
 
-    return await this.userAddressRepository.createQueryBuilder()
+    return await this.userAddressRepository
+      .createQueryBuilder()
       .where(queryCondition, {
         name: `%${name}%`,
         mobile: `%${mobile}%`,
+        status: status,
       })
-      .orderBy({ 'createTime': 'DESC' })
+      .orderBy({ createTime: 'DESC' })
       .getMany();
   }
 
@@ -63,7 +74,7 @@ export class UserAddressService {
    */
   async selectListPage(limitDto: LimitUserAddressDto): Promise<any> {
     // eslint-disable-next-line prefer-const
-    let { page, limit, name, mobile } = limitDto;
+    let { page, limit, name, mobile, status } = limitDto;
     page = page ? page : 1;
     limit = limit ? limit : 10;
     const offset = (page - 1) * limit;
@@ -75,17 +86,22 @@ export class UserAddressService {
     if (!Utils.isBlank(mobile)) {
       queryConditionList.push('mobile LIKE :mobile');
     }
+    if (!Utils.isBlank(status)) {
+      queryConditionList.push('status LIKE :status');
+    }
     queryConditionList.push('deleteStatus = 0');
     const queryCondition = queryConditionList.join(' AND ');
 
-    const res = await this.userAddressRepository.createQueryBuilder()
+    const res = await this.userAddressRepository
+      .createQueryBuilder()
       .where(queryCondition, {
         name: `%${name}%`,
         mobile: `%${mobile}%`,
+        status: status,
       })
       .skip(offset)
       .take(limit)
-      .orderBy({ 'createTime': 'DESC' })
+      .orderBy({ createTime: 'DESC' })
       .getManyAndCount();
 
     return {
@@ -134,7 +150,8 @@ export class UserAddressService {
   async deleteById(baseFindByIdDto: BaseFindByIdDto, curUser): Promise<void> {
     const { id } = baseFindByIdDto;
 
-    await this.userAddressRepository.createQueryBuilder()
+    await this.userAddressRepository
+      .createQueryBuilder()
       .update(UserAddress)
       .set({ deleteStatus: 1, deleteBy: curUser!.id, deleteTime: Utils.now() })
       .where('id = :id', { id: id })
@@ -144,17 +161,21 @@ export class UserAddressService {
   /**
    * 删除（批量）
    */
-  async deleteByIds(baseFindByIdsDto: BaseFindByIdsDto, curUser): Promise<void> {
+  async deleteByIds(
+    baseFindByIdsDto: BaseFindByIdsDto,
+    curUser,
+  ): Promise<void> {
     const { ids } = baseFindByIdsDto;
 
-    const ret = await this.userAddressRepository.createQueryBuilder()
+    const ret = await this.userAddressRepository
+      .createQueryBuilder()
       .update(UserAddress)
       .set({ deleteStatus: 1, deleteBy: curUser!.id, deleteTime: Utils.now() })
       .where('ids in (:ids)', { ids: ids })
       .execute();
 
     if (!ret) {
-      throw new ApiException('删除异常！',500);
+      throw new ApiException('删除异常！', 500);
     }
 
     return null;

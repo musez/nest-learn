@@ -67,4 +67,3 @@ const log4jsConfig = {
 };
 
 export default log4jsConfig;
-

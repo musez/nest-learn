@@ -29,13 +29,17 @@ export class BaseDictItemDto {
   @ApiProperty({ description: '字典项名称', example: '字典项名称1' })
   @IsDefined({ message: '字典项名称不能为空！' })
   @IsNotEmpty({ message: '字典项名称不能为空！' })
-  @MaxLength(DictItemConstants.ITEM_TEXT_MAX_LENGTH, { message: '字典项名称不能大于 $constraint1 位！' })
+  @MaxLength(DictItemConstants.ITEM_TEXT_MAX_LENGTH, {
+    message: '字典项名称不能大于 $constraint1 位！',
+  })
   readonly itemText: string;
 
   @ApiProperty({ description: '字典项值', example: '字典项值1' })
   @IsDefined({ message: '字典项值不能为空！' })
   @IsNotEmpty({ message: '字典项值不能为空！' })
-  @MaxLength(DictItemConstants.ITEM_VALUE_MAX_LENGTH, { message: '字典项值不能大于 $constraint1 位！' })
+  @MaxLength(DictItemConstants.ITEM_VALUE_MAX_LENGTH, {
+    message: '字典项值不能大于 $constraint1 位！',
+  })
   readonly itemValue: string;
 
   @ApiPropertyOptional({ description: '默认值（0：否；1：是）', example: null })
@@ -43,7 +47,7 @@ export class BaseDictItemDto {
 
   @ApiPropertyOptional({ description: '排序', example: 0 })
   @IsOptional()
-  @Transform(value => Number.parseInt(value))
+  @Transform((value) => Number.parseInt(value))
   @IsInt({ message: '排序必须为数字！' })
   readonly sort?: number;
 }

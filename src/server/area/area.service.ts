@@ -12,8 +12,7 @@ export class AreaService {
   constructor(
     @InjectRepository(Area)
     private readonly areaRepository: Repository<Area>,
-  ) {
-  }
+  ) {}
 
   /**
    * 获取列表（默认返回 []）
@@ -32,13 +31,18 @@ export class AreaService {
     }
     const queryCondition = queryConditionList.join(' AND ');
 
-    const res = await this.areaRepository.createQueryBuilder('a')
+    const res = await this.areaRepository
+      .createQueryBuilder('a')
       .select(['a.*'])
-      .addSelect(subQuery =>
-        subQuery.select('COUNT(*)')
-          .from(Area, 'subA')
-          .where('subA.parentId = a.id'), 'hasChildren')
-      .orderBy({ 'createTime': 'DESC' })
+      .addSelect(
+        (subQuery) =>
+          subQuery
+            .select('COUNT(*)')
+            .from(Area, 'subA')
+            .where('subA.parentId = a.id'),
+        'hasChildren',
+      )
+      .orderBy({ createTime: 'DESC' })
       .where(queryCondition, {
         parentIds: parentIds,
         areaName: `%${areaName}%`,
@@ -68,14 +72,15 @@ export class AreaService {
     }
     const queryCondition = queryConditionList.join(' AND ');
 
-    const res = await this.areaRepository.createQueryBuilder()
+    const res = await this.areaRepository
+      .createQueryBuilder()
       .where(queryCondition, {
         parentIds: parentIds,
         areaName: `%${areaName}%`,
       })
       .skip(offset)
       .take(limit)
-      .orderBy({ 'createTime': 'DESC' })
+      .orderBy({ createTime: 'DESC' })
       .getManyAndCount();
 
     return {

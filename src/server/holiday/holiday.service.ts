@@ -1,27 +1,33 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateHolidayDto } from './dto/create-holiday.dto';
 import { UpdateHolidayDto } from './dto/update-holiday.dto';
-import { BaseFindByIdDto, BaseFindByIdsDto, BaseModifyStatusByIdsDto } from '../base.dto';
+import {
+  BaseFindByIdDto,
+  BaseFindByIdsDto,
+  BaseModifyStatusByIdsDto,
+} from '../base.dto';
 import { Utils } from '../../utils';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Holiday } from './entities/holiday.entity';
 import { SearchHolidayDto } from './dto/search-holiday.dto';
 import { LimitHolidayDto } from './dto/limit-holiday.dto';
-import { ApiException } from 'src/common/exception/api-exception';
+import { ApiException } from '../../common/exception/api-exception';
 
 @Injectable()
 export class HolidayService {
   constructor(
     @InjectRepository(Holiday)
     private readonly holidayRepository: Repository<Holiday>,
-  ) {
-  }
+  ) {}
 
   /**
    * 添加
    */
-  async insert(createHolidayDto: CreateHolidayDto, curUser): Promise<CreateHolidayDto> {
+  async insert(
+    createHolidayDto: CreateHolidayDto,
+    curUser,
+  ): Promise<CreateHolidayDto> {
     const holiday = new Holiday();
     holiday.createBy = curUser!.id;
     await this.holidayRepository.save(createHolidayDto);
@@ -32,10 +38,13 @@ export class HolidayService {
   /**
    * 添加（批量）
    */
-  async insertBatch(createHolidayDto: CreateHolidayDto[], curUser): Promise<CreateHolidayDto[]> {
+  async insertBatch(
+    createHolidayDto: CreateHolidayDto[],
+    curUser,
+  ): Promise<CreateHolidayDto[]> {
     const holidayList: CreateHolidayDto[] = [];
 
-    createHolidayDto.forEach(item => {
+    createHolidayDto.forEach((item) => {
       let holiday = new Holiday();
       holiday = Utils.dto2entityImport(item, holiday);
 
@@ -72,7 +81,8 @@ export class HolidayService {
     queryConditionList.push('deleteStatus = 0');
     const queryCondition = queryConditionList.join(' AND ');
 
-    return await this.holidayRepository.createQueryBuilder()
+    return await this.holidayRepository
+      .createQueryBuilder()
       .where(queryCondition, {
         year: `${year}%`,
         name: `%${name}%`,
@@ -81,8 +91,8 @@ export class HolidayService {
         status: status,
       })
       .orderBy({
-        'date': 'ASC',
-        'createTime': 'DESC',
+        date: 'ASC',
+        createTime: 'DESC',
       })
       .getMany();
   }
@@ -92,7 +102,15 @@ export class HolidayService {
    */
   async selectListPage(limitHolidayDto: LimitHolidayDto): Promise<any> {
     // eslint-disable-next-line prefer-const
-    let { page, limit, year, name, weekday, restType, status } = limitHolidayDto;
+    let {
+      page,
+      limit,
+      year,
+      name,
+      weekday,
+      restType,
+      status,
+    } = limitHolidayDto;
     page = page ? page : 1;
     limit = limit ? limit : 10;
     const offset = (page - 1) * limit;
@@ -116,7 +134,8 @@ export class HolidayService {
     queryConditionList.push('deleteStatus = 0');
     const queryCondition = queryConditionList.join(' AND ');
 
-    const res = await this.holidayRepository.createQueryBuilder()
+    const res = await this.holidayRepository
+      .createQueryBuilder()
       .where(queryCondition, {
         year: `${year}%`,
         name: `%${name}%`,
@@ -127,8 +146,8 @@ export class HolidayService {
       .skip(offset)
       .take(limit)
       .orderBy({
-        'date': 'ASC',
-        'createTime': 'DESC',
+        date: 'ASC',
+        createTime: 'DESC',
       })
       .getManyAndCount();
 
@@ -172,15 +191,16 @@ export class HolidayService {
     queryConditionList.push('deleteStatus = 0');
     const queryCondition = queryConditionList.join(' AND ');
 
-    const dayListStr = dayList.map(v => {
+    const dayListStr = dayList.map((v) => {
       return v.toString();
     });
 
-    const ret = await this.holidayRepository.createQueryBuilder()
+    const ret = await this.holidayRepository
+      .createQueryBuilder()
       .where(queryCondition, {
         date: dayListStr,
       })
-      .orderBy({ 'createTime': 'DESC' })
+      .orderBy({ createTime: 'DESC' })
       .getMany();
     return ret;
   }
@@ -206,10 +226,14 @@ export class HolidayService {
   /**
    * 修改状态
    */
-  async updateStatus(baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto, curUser): Promise<any> {
+  async updateStatus(
+    baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto,
+    curUser,
+  ): Promise<any> {
     const { ids, status } = baseModifyStatusByIdsDto;
 
-    return this.holidayRepository.createQueryBuilder()
+    return this.holidayRepository
+      .createQueryBuilder()
       .update(Holiday)
       .set({ status: status, updateBy: curUser!.id })
       .where('id in (:ids)', { ids: ids })
@@ -222,7 +246,8 @@ export class HolidayService {
   async deleteById(baseFindByIdDto: BaseFindByIdDto, curUser): Promise<void> {
     const { id } = baseFindByIdDto;
 
-    await this.holidayRepository.createQueryBuilder()
+    await this.holidayRepository
+      .createQueryBuilder()
       .update(Holiday)
       .set({ deleteStatus: 1, deleteBy: curUser!.id, deleteTime: Utils.now() })
       .where('id = :id', { id: id })
@@ -232,10 +257,14 @@ export class HolidayService {
   /**
    * 删除（批量）
    */
-  async deleteByIds(baseFindByIdsDto: BaseFindByIdsDto, curUser): Promise<void> {
+  async deleteByIds(
+    baseFindByIdsDto: BaseFindByIdsDto,
+    curUser,
+  ): Promise<void> {
     const { ids } = baseFindByIdsDto;
 
-    await this.holidayRepository.createQueryBuilder()
+    await this.holidayRepository
+      .createQueryBuilder()
       .update(Holiday)
       .set({ deleteStatus: 1, deleteBy: curUser!.id, deleteTime: Utils.now() })
       .where('ids in (:ids)', { ids: ids })

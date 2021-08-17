@@ -3,7 +3,8 @@ import {
   PrimaryGeneratedColumn,
   Column,
   CreateDateColumn,
-  UpdateDateColumn, AfterLoad,
+  UpdateDateColumn,
+  AfterLoad,
 } from 'typeorm';
 import { AreaLevelType } from '../../../constants/dicts.enum';
 import * as dayjs from 'dayjs';
@@ -48,13 +49,20 @@ export class Area {
   @Column('varchar', { comment: '地区名称' })
   areaName: string;
 
-  @Column('tinyint', { comment: '地区级别（1：省份 province；2：城市 city；3：区/县 district；4：街道/办 street）', nullable: true })
+  @Column('tinyint', {
+    comment:
+      '地区级别（1：省份 province；2：城市 city；3：区/县 district；4：街道/办 street）',
+    nullable: true,
+  })
   level: AreaLevelType;
 
   @Column('varchar', { comment: '城市编码', nullable: true })
   cityCode: string;
 
-  @Column('varchar', { comment: '城市中心点（即：经纬度坐标）', nullable: true })
+  @Column('varchar', {
+    comment: '城市中心点（即：经纬度坐标）',
+    nullable: true,
+  })
   center: string;
 
   @CreateDateColumn({ comment: '创建时间', type: 'datetime', nullable: true })
@@ -63,7 +71,11 @@ export class Area {
   @Column({ comment: '创建人 id', nullable: true })
   createBy: string;
 
-  @UpdateDateColumn({ comment: '最后更新时间', type: 'datetime', nullable: true })
+  @UpdateDateColumn({
+    comment: '最后更新时间',
+    type: 'datetime',
+    nullable: true,
+  })
   updateTime: Date;
 
   @Column({ comment: '修改人 id', nullable: true })
