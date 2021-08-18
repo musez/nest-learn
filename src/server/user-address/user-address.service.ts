@@ -14,6 +14,7 @@ import { SearchUserAddressDto } from './dto/search-user-address.dto';
 import { LimitUserAddressDto } from './dto/limit-user-address.dto';
 import { UserService } from '../user/user.service';
 import { ApiException } from '../../common/exception/api-exception';
+import { Area } from '../area/entities/area.entity';
 
 @Injectable()
 export class UserAddressService {
@@ -21,7 +22,8 @@ export class UserAddressService {
     private readonly userService: UserService,
     @InjectRepository(UserAddress)
     private readonly userAddressRepository: Repository<UserAddress>,
-  ) {}
+  ) {
+  }
 
   /**
    * 添加
@@ -47,26 +49,62 @@ export class UserAddressService {
 
     const queryConditionList = [];
     if (!Utils.isBlank(name)) {
-      queryConditionList.push('name LIKE :name');
+      queryConditionList.push('userAddress.name LIKE :name');
     }
     if (!Utils.isBlank(mobile)) {
-      queryConditionList.push('mobile LIKE :mobile');
+      queryConditionList.push('userAddress.mobile LIKE :mobile');
     }
     if (!Utils.isBlank(status)) {
-      queryConditionList.push('status LIKE :status');
+      queryConditionList.push('userAddress.status LIKE :status');
     }
-    queryConditionList.push('deleteStatus = 0');
+    queryConditionList.push('userAddress.deleteStatus = 0');
     const queryCondition = queryConditionList.join(' AND ');
 
-    return await this.userAddressRepository
-      .createQueryBuilder()
+    const ret = await this.userAddressRepository
+      .createQueryBuilder('userAddress')
+      // .leftJoinAndSelect('userAddress.user', 'user')
+      .leftJoinAndSelect(Area, 'p', 'p.id = userAddress.provinceId')
+      .leftJoinAndSelect(Area, 'c', 'c.id = userAddress.cityId')
+      .leftJoinAndSelect(Area, 'd', 'd.id = userAddress.districtId')
+      .select(
+        'userAddress.*, userAddress.provinceId, userAddress.cityId, userAddress.districtId, userAddress.address ',
+      )
+      .addSelect(
+        `p.areaName AS provinceName, c.areaName AS cityName, d.areaName AS districtName`,
+      )
       .where(queryCondition, {
         name: `%${name}%`,
         mobile: `%${mobile}%`,
         status: status,
       })
-      .orderBy({ createTime: 'DESC' })
-      .getMany();
+      .orderBy({ 'userAddress.createTime': 'DESC' })
+      .getRawMany();
+
+    ret.forEach((v) => {
+      const ui = {
+        provinceId: v.provinceId,
+        cityId: v.cityId,
+        districtId: v.districtId,
+        address: v.address,
+        provinceName: v.provinceName,
+        cityName: v.cityName,
+        districtName: v.districtName,
+      };
+      v['userAddress'] = ui;
+
+      delete v.provinceId;
+      delete v.cityId;
+      delete v.address;
+      delete v.provinceName;
+      delete v.cityName;
+      delete v.districtName;
+    });
+
+    if (!ret) {
+      throw new ApiException('查询异常！', 500);
+    }
+
+    return ret;
   }
 
   /**
@@ -81,32 +119,72 @@ export class UserAddressService {
 
     const queryConditionList = [];
     if (!Utils.isBlank(name)) {
-      queryConditionList.push('name LIKE :name');
+      queryConditionList.push('userAddress.name LIKE :name');
     }
     if (!Utils.isBlank(mobile)) {
-      queryConditionList.push('mobile LIKE :mobile');
+      queryConditionList.push('userAddress.mobile LIKE :mobile');
     }
     if (!Utils.isBlank(status)) {
-      queryConditionList.push('status LIKE :status');
+      queryConditionList.push('userAddress.status LIKE :status');
     }
-    queryConditionList.push('deleteStatus = 0');
+    queryConditionList.push('userAddress.deleteStatus = 0');
     const queryCondition = queryConditionList.join(' AND ');
 
-    const res = await this.userAddressRepository
-      .createQueryBuilder()
+    const queryBuilder = this.userAddressRepository
+      .createQueryBuilder('userAddress')
+      // .leftJoinAndSelect('userAddress.user', 'user')
+      .leftJoinAndSelect(Area, 'p', 'p.id = userAddress.provinceId')
+      .leftJoinAndSelect(Area, 'c', 'c.id = userAddress.cityId')
+      .leftJoinAndSelect(Area, 'd', 'd.id = userAddress.districtId')
+      .select(
+        'userAddress.*, userAddress.provinceId, userAddress.cityId, userAddress.districtId, userAddress.address ',
+      )
+      .addSelect(
+        `p.areaName AS provinceName, c.areaName AS cityName, d.areaName AS districtName`,
+      )
       .where(queryCondition, {
         name: `%${name}%`,
         mobile: `%${mobile}%`,
         status: status,
-      })
-      .skip(offset)
-      .take(limit)
-      .orderBy({ createTime: 'DESC' })
-      .getManyAndCount();
+      });
+
+    const ret = await queryBuilder
+      // .skip(offset)
+      // .take(limit)
+      .offset(offset)
+      .limit(limit)
+      .orderBy({ 'userAddress.createTime': 'DESC' })
+      .getRawMany();
+
+    ret.forEach((v) => {
+      const ui = {
+        provinceId: v.provinceId,
+        cityId: v.cityId,
+        districtId: v.districtId,
+        address: v.address,
+        provinceName: v.provinceName,
+        cityName: v.cityName,
+        districtName: v.districtName,
+      };
+      v['userAddress'] = ui;
+
+      delete v.provinceId;
+      delete v.cityId;
+      delete v.address;
+      delete v.provinceName;
+      delete v.cityName;
+      delete v.districtName;
+    });
+
+    const retCount = await queryBuilder.getCount();
+
+    if (!ret) {
+      throw new ApiException('查询异常！', 500);
+    }
 
     return {
-      list: res[0],
-      total: res[1],
+      list: ret,
+      total: retCount,
       page: page,
       limit: limit,
     };

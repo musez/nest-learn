@@ -8,7 +8,7 @@ import {
   Delete,
   Query,
   Res,
-  BadRequestException,
+  BadRequestException, UseGuards,
 } from '@nestjs/common';
 import { ApiBasicAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { UserAddressService } from './user-address.service';
@@ -28,10 +28,13 @@ import { SearchUserAddressDto } from './dto/search-user-address.dto';
 import { LimitUserAddressDto } from './dto/limit-user-address.dto';
 import { StatusDict } from '../../constants/dicts';
 import { ApiException } from '../../common/exception/api-exception';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { AuthGuard } from '../../common/guards/auth.guard';
 
 @ApiTags('用户地址')
 @ApiBasicAuth('token')
-@Controller('user-address')
+@Controller('userAddress')
+@UseGuards(JwtAuthGuard, AuthGuard)
 export class UserAddressController {
   constructor(
     private readonly userAddressService: UserAddressService,
@@ -78,6 +81,16 @@ export class UserAddressController {
     @Res() res,
   ): Promise<any> {
     const list = await this.userAddressService.selectList(searchDto);
+
+    list.forEach((v) => {
+      if (v.userAddress) {
+        v.provinceId = v.userAddress.provinceId;
+        v.cityId = v.userAddress.cityId;
+        v.districtId = v.userAddress.districtId;
+        v.address = v.userAddress.address;
+      }
+    });
+
     const columns = [
       { key: 'name', name: '姓名', type: 'String', size: 10 },
       { key: 'mobile', name: '手机号', type: 'String', size: 15 },
