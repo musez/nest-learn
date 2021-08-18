@@ -25,7 +25,8 @@ export class PermissionService {
   constructor(
     @InjectRepository(Permission)
     private readonly permissionRepository: Repository<Permission>,
-  ) {}
+  ) {
+  }
 
   /**
    * 添加
@@ -39,6 +40,34 @@ export class PermissionService {
     permission.createBy = curUser!.id;
 
     return await this.permissionRepository.save(permission);
+  }
+
+  /**
+   * 获取全部
+   */
+  async selectAll(): Promise<any[]> {
+    const queryConditionList = [];
+    queryConditionList.push('deleteStatus = 0');
+    const queryCondition = queryConditionList.join(' AND ');
+    const res = await this.permissionRepository
+      .createQueryBuilder('p')
+      .select(['p.*'])
+      .addSelect(
+        (subQuery) =>
+          subQuery
+            .select('COUNT(*)')
+            .from(Permission, 'subP')
+            .where('subP.parentId = p.id'),
+        'hasChildren',
+      )
+      .where(queryCondition)
+      .orderBy({
+        sort: 'ASC',
+        createTime: 'DESC',
+      })
+      .getRawMany();
+
+    return res;
   }
 
   /**

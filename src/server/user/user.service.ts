@@ -40,7 +40,8 @@ export class UserService {
     private readonly userGroupService: UserGroupService,
     private readonly userRoleService: UserRoleService,
     private readonly cryptoUtil: CryptoUtil,
-  ) {}
+  ) {
+  }
 
   /**
    * 获取详情（userName）
@@ -665,18 +666,35 @@ export class UserService {
    */
   async selectAuthByUserId(baseFindByIdDto: BaseFindByIdDto): Promise<any> {
     const userRet = await this.selectById(baseFindByIdDto);
-    const [permissionRet, roleRet, groupRet] = await Promise.all([
-      this.permissionService.selectByUserId(baseFindByIdDto),
-      this.roleService.selectByUserId(baseFindByIdDto),
-      this.groupService.selectByUserId(baseFindByIdDto),
-    ]);
 
-    const res = Utils.assign(userRet, {
-      permissions: permissionRet,
-      roles: roleRet,
-      groups: groupRet,
-    });
+    if (userRet?.userType === 2) {
+      const [permissionRet, roleRet, groupRet] = await Promise.all([
+        this.permissionService.selectAll(),
+        this.roleService.selectByUserId(baseFindByIdDto),
+        this.groupService.selectByUserId(baseFindByIdDto),
+      ]);
 
-    return res;
+      const res = Utils.assign(userRet, {
+        permissions: permissionRet,
+        roles: roleRet,
+        groups: groupRet,
+      });
+
+      return res;
+    } else {
+      const [permissionRet, roleRet, groupRet] = await Promise.all([
+        this.permissionService.selectByUserId(baseFindByIdDto),
+        this.roleService.selectByUserId(baseFindByIdDto),
+        this.groupService.selectByUserId(baseFindByIdDto),
+      ]);
+
+      const res = Utils.assign(userRet, {
+        permissions: permissionRet,
+        roles: roleRet,
+        groups: groupRet,
+      });
+
+      return res;
+    }
   }
 }

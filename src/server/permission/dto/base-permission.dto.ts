@@ -39,8 +39,6 @@ export class BasePermissionDto {
   readonly type: number;
 
   @ApiPropertyOptional({ description: '权限 CODE 代码', example: null })
-  @IsOptional()
-  @IsNotEmpty({ message: '权限 CODE 代码不能为空！' })
   readonly code?: string;
 
   @ApiPropertyOptional({ description: '权限路由 SORT', example: 0 })
