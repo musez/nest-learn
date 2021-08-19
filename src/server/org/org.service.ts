@@ -18,7 +18,8 @@ export class OrgService {
   constructor(
     @InjectRepository(Org)
     private readonly orgRepository: Repository<Org>,
-  ) {}
+  ) {
+  }
 
   /**
    * 添加
@@ -28,6 +29,42 @@ export class OrgService {
     role = Utils.dto2entity(createOrgDto, role);
     role.createBy = curUser!.id;
     return await this.orgRepository.save(role);
+  }
+
+  /**
+   * 获取全部
+   */
+  async selectAll(searchOrgDto: SearchOrgDto): Promise<any[]> {
+    const { name, status } = searchOrgDto;
+
+    const queryConditionList = [];
+    if (!Utils.isBlank(name)) {
+      queryConditionList.push('name LIKE :name');
+    }
+    if (!Utils.isBlank(status)) {
+      queryConditionList.push('status = :status');
+    }
+    queryConditionList.push('deleteStatus = 0');
+    const queryCondition = queryConditionList.join(' AND ');
+
+    const res = await this.orgRepository
+      .createQueryBuilder('o')
+      .select(['o.*'])
+      .addSelect(
+        (subQuery) =>
+          subQuery
+            .select('COUNT(*)')
+            .from(Org, 'subO')
+            .where('subO.parentId = o.id'),
+        'hasChildren',
+      )
+      .where(queryCondition, {
+        name: `%${name}%`,
+        status: status,
+      })
+      .orderBy({ createTime: 'DESC' })
+      .getRawMany();
+    return res;
   }
 
   /**

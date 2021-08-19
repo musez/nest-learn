@@ -18,7 +18,8 @@ export class ArticleCatService {
   constructor(
     @InjectRepository(ArticleCat)
     private readonly articleCatRepository: Repository<ArticleCat>,
-  ) {}
+  ) {
+  }
 
   /**
    * 添加
@@ -31,6 +32,42 @@ export class ArticleCatService {
     articleCat = Utils.dto2entity(createArticleCatDto, articleCat);
     articleCat.createBy = curUser!.id;
     return await this.articleCatRepository.save(createArticleCatDto);
+  }
+
+  /**
+   * 获取全部
+   */
+  async selectAll(searchArticleCatDto: SearchArticleCatDto): Promise<any[]> {
+    const { catName, status } = searchArticleCatDto;
+
+    const queryConditionList = [];
+    if (!Utils.isBlank(catName)) {
+      queryConditionList.push('catName LIKE :catName');
+    }
+    if (!Utils.isBlank(status)) {
+      queryConditionList.push('status = :status');
+    }
+    queryConditionList.push('deleteStatus = 0');
+    const queryCondition = queryConditionList.join(' AND ');
+
+    const res = await this.articleCatRepository
+      .createQueryBuilder('ac')
+      .select(['ac.*'])
+      .addSelect(
+        (subQuery) =>
+          subQuery
+            .select('COUNT(*)')
+            .from(ArticleCat, 'subAC')
+            .where('subAC.parentId = ac.id'),
+        'hasChildren',
+      )
+      .orderBy({ createTime: 'DESC' })
+      .where(queryCondition, {
+        catName: `%${catName}%`,
+        status: status,
+      })
+      .getRawMany();
+    return res;
   }
 
   /**

@@ -45,8 +45,23 @@ export class PermissionService {
   /**
    * 获取全部
    */
-  async selectAll(): Promise<any[]> {
+  async selectAll(searchPermissionDto: SearchPermissionDto): Promise<any[]> {
+    const { name, type, status } = searchPermissionDto;
+
     const queryConditionList = [];
+    if (!Utils.isBlank(name)) {
+      queryConditionList.push('name LIKE :name');
+    }
+    if (!Utils.isBlank(type)) {
+      if (Array.isArray(type)) {
+        queryConditionList.push('type IN (:...type)');
+      } else {
+        queryConditionList.push('type = type');
+      }
+    }
+    if (!Utils.isBlank(status)) {
+      queryConditionList.push('status = :status');
+    }
     queryConditionList.push('deleteStatus = 0');
     const queryCondition = queryConditionList.join(' AND ');
     const res = await this.permissionRepository
@@ -60,7 +75,11 @@ export class PermissionService {
             .where('subP.parentId = p.id'),
         'hasChildren',
       )
-      .where(queryCondition)
+      .where(queryCondition, {
+        name: `%${name}%`,
+        type: type,
+        status: status,
+      })
       .orderBy({
         sort: 'ASC',
         createTime: 'DESC',

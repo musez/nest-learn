@@ -103,7 +103,7 @@ export class PermissionController {
     @Query() searchPermissionDto: SearchPermissionDto,
     @Res() res,
   ): Promise<any> {
-    const list = await this.permissionService.selectList(searchPermissionDto);
+    const list = await this.permissionService.selectAll(searchPermissionDto);
 
     const columns = [
       { key: 'name', name: '名称', type: 'String', size: 10 },

@@ -669,7 +669,7 @@ export class UserService {
 
     if (userRet?.userType === 2) {
       const [permissionRet, roleRet, groupRet] = await Promise.all([
-        this.permissionService.selectAll(),
+        this.permissionService.selectAll({}),
         this.roleService.selectByUserId(baseFindByIdDto),
         this.groupService.selectByUserId(baseFindByIdDto),
       ]);

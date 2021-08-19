@@ -2,19 +2,13 @@ import {
   Controller,
   Get,
   Post,
-  Req,
   Query,
   Body,
   UseGuards,
-  UseInterceptors,
-  ClassSerializerInterceptor,
-  BadRequestException,
   Res,
 } from '@nestjs/common';
 import {
   ApiTags,
-  ApiQuery,
-  ApiBody,
   ApiBasicAuth,
   ApiOperation,
 } from '@nestjs/swagger';
@@ -35,15 +29,11 @@ import { Auth } from '../../common/decorators/auth.decorator';
 import { AuthGuard } from '../../common/guards/auth.guard';
 import { Utils } from '../../utils';
 import { ExcelService } from '../excel/excel.service';
-import {
-  ArticleType,
-  IsCommentType,
-  StatusType,
-} from '../../constants/dicts.enum';
 import { ArticleDict, IsCommentDict, StatusDict } from '../../constants/dicts';
 import { ApiException } from '../../common/exception/api-exception';
 import { LimitArticleTopDto } from './dto/limit-article-topic.dto';
 import { CreateArticleTopicDto } from './dto/create-article-topic.dto';
+import * as trimHtml from 'trim-html';
 
 @Controller('article')
 @ApiTags('文章')
@@ -53,7 +43,8 @@ export class ArticleController {
   constructor(
     private readonly articleService: ArticleService,
     private readonly excelService: ExcelService,
-  ) {}
+  ) {
+  }
 
   @Post('add')
   @Auth('cms:article:add')
@@ -94,6 +85,13 @@ export class ArticleController {
   ): Promise<any> {
     const list = await this.articleService.selectList(searchArticleDto);
 
+    list.forEach(v => {
+      if (v?.content) {
+        const content = trimHtml(v.content, { preserveTags: true });
+        v.centent = content.html;
+      }
+    });
+
     const columns = [
       { key: 'title', name: '标题', type: 'String', size: 10 },
       { key: 'summary', name: '摘要', type: 'String', size: 10 },
@@ -109,6 +107,7 @@ export class ArticleController {
       },
       { key: 'contentUrl', name: '链接', type: 'String', size: 10 },
       { key: 'weight', name: '权重', type: 'String', size: 10 },
+      { key: 'content', name: '内容', type: 'String', size: 20 },
       { key: 'publicTime', name: '发布时间', type: 'String', size: 10 },
       { key: 'publicBy', name: '发布人', type: 'String', size: 10 },
       { key: 'browseCount', name: '浏览量', type: 'String', size: 10 },
@@ -143,8 +142,8 @@ export class ArticleController {
     res.setHeader(
       'Content-Disposition',
       'attachment; filename=' +
-        encodeURIComponent(`文章_${Utils.dayjsFormat('YYYYMMDD')}`) +
-        '.xlsx', // 中文名需要进行 url 转码
+      encodeURIComponent(`文章_${Utils.dayjsFormat('YYYYMMDD')}`) +
+      '.xlsx', // 中文名需要进行 url 转码
     );
     res.setTimeout(30 * 60 * 1000); // 防止网络原因造成超时。
     res.end(result, 'binary');

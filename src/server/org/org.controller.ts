@@ -2,14 +2,9 @@ import {
   Controller,
   Get,
   Post,
-  Req,
-  Request,
   Query,
   Body,
   UseGuards,
-  UseInterceptors,
-  ClassSerializerInterceptor,
-  BadRequestException,
   Res,
 } from '@nestjs/common';
 import { ApiTags, ApiBasicAuth, ApiOperation } from '@nestjs/swagger';
@@ -30,7 +25,6 @@ import { AuthGuard } from '../../common/guards/auth.guard';
 import { Auth } from '../../common/decorators/auth.decorator';
 import { Utils } from '../../utils';
 import { ExcelService } from '../excel/excel.service';
-import { StatusType } from '../../constants/dicts.enum';
 import { OrgDict, StatusDict } from '../../constants/dicts';
 import { ApiException } from '../../common/exception/api-exception';
 
@@ -86,7 +80,7 @@ export class OrgController {
     @Query() searchOrgDto: SearchOrgDto,
     @Res() res,
   ): Promise<any> {
-    const list = await this.orgService.selectList(searchOrgDto);
+    const list = await this.orgService.selectAll(searchOrgDto);
 
     const columns = [
       { key: 'name', name: '名称', type: 'String', size: 10 },

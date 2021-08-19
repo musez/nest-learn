@@ -2,19 +2,14 @@ import {
   Controller,
   Get,
   Post,
-  Req,
   Query,
   Body,
   UseGuards,
-  UseInterceptors,
-  ClassSerializerInterceptor,
-  BadRequestException,
   Res,
 } from '@nestjs/common';
 import {
   ApiTags,
   ApiQuery,
-  ApiBody,
   ApiBasicAuth,
   ApiOperation,
 } from '@nestjs/swagger';
@@ -35,7 +30,6 @@ import { AuthGuard } from '../../common/guards/auth.guard';
 import { Auth } from '../../common/decorators/auth.decorator';
 import { Utils } from '../../utils';
 import { ExcelService } from '../excel/excel.service';
-import { StatusType } from '../../constants/dicts.enum';
 import { StatusDict } from '../../constants/dicts';
 import { ApiException } from '../../common/exception/api-exception';
 
@@ -101,7 +95,7 @@ export class ArticleCatController {
     @Query() searchArticleCatDto: SearchArticleCatDto,
     @Res() res,
   ): Promise<any> {
-    const list = await this.articleCatService.selectList(searchArticleCatDto);
+    const list = await this.articleCatService.selectAll(searchArticleCatDto);
 
     const columns = [
       { key: 'catName', name: '栏目名称', type: 'String', size: 10 },
