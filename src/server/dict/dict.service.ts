@@ -1,11 +1,11 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Utils } from './../../utils/index';
 import { CreateDictDto } from './dto/create-dict.dto';
 import { UpdateDictDto } from './dto/update-dict.dto';
 import { Dict } from './entities/dict.entity';
-import { BaseFindByIdDto, BaseFindByIdsDto, BasePageDto } from '../base.dto';
+import { BaseFindByIdDto, BaseFindByIdsDto } from '../base.dto';
 import { DictItemService } from '../dict-item/dict-item.service';
 import { SearchDictDto } from './dto/search-dict.dto';
 import { LimitDictDto } from './dto/limit-dict.dto';

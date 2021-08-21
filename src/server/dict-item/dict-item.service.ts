@@ -7,7 +7,7 @@ import { DictItem } from './entities/dict-item.entity';
 import { Utils } from '../../utils';
 import { SearchDictItemDto } from './dto/search-dict-item.dto';
 import { LimitDictItemDto } from './dto/limit-dict-item.dto';
-import { BaseFindByIdDto, BaseFindByIdsDto } from '../base.dto';
+import { BaseFindByIdDto } from '../base.dto';
 
 @Injectable()
 export class DictItemService {

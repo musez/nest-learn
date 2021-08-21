@@ -5,12 +5,9 @@ import {
   Body,
   Query,
   UseGuards,
-  BadRequestException,
 } from '@nestjs/common';
 import {
   ApiTags,
-  ApiQuery,
-  ApiBody,
   ApiBasicAuth,
   ApiOperation,
 } from '@nestjs/swagger';
@@ -19,7 +16,7 @@ import { CreateDictDto } from './dto/create-dict.dto';
 import { UpdateDictDto } from './dto/update-dict.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { Dict } from './entities/dict.entity';
-import { BaseFindByIdDto, BaseFindByIdsDto, BasePageDto } from '../base.dto';
+import { BaseFindByIdDto, BaseFindByIdsDto } from '../base.dto';
 import { CurUser } from '../../common/decorators/cur-user.decorator';
 import { SearchDictDto } from './dto/search-dict.dto';
 import { LimitDictDto } from './dto/limit-dict.dto';
@@ -27,6 +24,10 @@ import { DictItemService } from '../dict-item/dict-item.service';
 import { Auth } from '../../common/decorators/auth.decorator';
 import { AuthGuard } from '../../common/guards/auth.guard';
 import { ApiException } from '../../common/exception/api-exception';
+import { CreateDictItemDto } from '../dict-item/dto/create-dict-item.dto';
+import { SearchDictItemDto } from '../dict-item/dto/search-dict-item.dto';
+import { DictItem } from '../dict-item/entities/dict-item.entity';
+import { LimitDictItemDto } from '../dict-item/dto/limit-dict-item.dto';
 
 @ApiTags('字典')
 @Controller('dict')
@@ -45,6 +46,13 @@ export class DictController {
     return await this.dictService.insert(createDictDto, curUser);
   }
 
+  @Post('addItem')
+  @Auth('system:dict:addItem')
+  @ApiOperation({ summary: '添加字典项（批量）' })
+  async createItems(@CurUser() curUser, @Body() createDictItemDto: CreateDictItemDto[]) {
+    return await this.dictItemService.insertBatch(createDictItemDto, curUser);
+  }
+
   @Get('findList')
   @Auth('system:dict:findList')
   @ApiOperation({ summary: '获取列表' })
@@ -52,11 +60,29 @@ export class DictController {
     return await this.dictService.selectList(searchDictDto);
   }
 
+  @Get('findItemList')
+  @Auth('system:dict:findItemList')
+  @ApiOperation({ summary: '获取字典项列表' })
+  async findItemList(
+    @Query() searchDictItemDto: SearchDictItemDto,
+  ): Promise<DictItem[]> {
+    return await this.dictItemService.selectList(searchDictItemDto);
+  }
+
   @Get('findListPage')
   @Auth('system:dict:findListPage')
   @ApiOperation({ summary: '获取列表（分页）' })
   async findListPage(@Query() limitDictDto: LimitDictDto): Promise<any> {
     return await this.dictService.selectListPage(limitDictDto);
+  }
+
+  @Get('findItemListPage')
+  @Auth('system:dict:findItemListPage')
+  @ApiOperation({ summary: '获取字典项列表（分页）' })
+  async findItemListPage(
+    @Query() limitDictItemDto: LimitDictItemDto,
+  ): Promise<any> {
+    return await this.dictItemService.selectListPage(limitDictItemDto);
   }
 
   @Get('findById')
@@ -110,10 +136,10 @@ export class DictController {
     return await this.dictService.deleteByIds(baseFindByIdsDto, curUser);
   }
 
-  @Get('findDictItemById')
-  @Auth('system:dict:findDictItemById')
+  @Get('findItemById')
+  @Auth('system:dict:findItemById')
   @ApiOperation({ summary: '获取字典详情（主键 id）' })
-  async findDictItemById(
+  async findItemById(
     @Query() baseFindByIdDto: BaseFindByIdDto,
   ): Promise<any> {
     return await this.dictItemService.selectByDictId(baseFindByIdDto);

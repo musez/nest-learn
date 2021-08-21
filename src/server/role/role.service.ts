@@ -42,7 +42,7 @@ export class RoleService {
    * 获取列表
    */
   async selectList(searchRoleDto: SearchRoleDto): Promise<any[]> {
-    const { name } = searchRoleDto;
+    const { name, status} = searchRoleDto;
 
     const queryConditionList = [];
     if (!Utils.isBlank(name)) {
