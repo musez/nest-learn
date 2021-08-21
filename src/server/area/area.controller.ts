@@ -4,13 +4,12 @@ import { AreaService } from './area.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { Area } from './entities/area.entity';
 import { LimitAreaDto } from './dto/limit-area.dto';
-import { BaseFindByIdDto, BaseFindByPIdDto } from '../base.dto';
+import { BaseFindByPIdDto } from '../base.dto';
 import { SearchAreaDto } from './dto/search-area.dto';
 import { Auth } from '../../common/decorators/auth.decorator';
 import { AuthGuard } from '../../common/guards/auth.guard';
 import { Utils } from '../../utils';
 import { ExcelService } from '../excel/excel.service';
-import { AreaLevelType } from '../../constants/dicts.enum';
 import { AreaLevelDict } from '../../constants/dicts';
 
 @Controller('area')

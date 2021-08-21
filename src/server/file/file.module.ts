@@ -1,4 +1,4 @@
-import { BadRequestException, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { MulterModule } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
@@ -40,7 +40,6 @@ export const checkDirAndCreate = (filePath) => {
         destination: (req, file, cb) => {
           // 根据上传的文件类型将图片视频音频和其他类型文件分别存到对应英文文件夹
           const mimeType = file.mimetype.split('/')[1];
-          console.log('mimeType', mimeType);
           let temp = 'other';
           image.filter((item) => item === mimeType).length > 0
             ? (temp = 'image')
@@ -81,7 +80,6 @@ export const checkDirAndCreate = (filePath) => {
       }),
       fileFilter(req, file, cb) {
         const mimeType = file.mimetype.split('/')[1].toLowerCase();
-        console.log('mimeType', mimeType);
         let temp = 'other';
         image.filter((item) => item === mimeType).length > 0
           ? (temp = 'image')
@@ -117,4 +115,5 @@ export const checkDirAndCreate = (filePath) => {
   controllers: [FileController],
   providers: [FileService],
 })
-export class FileModule {}
+export class FileModule {
+}

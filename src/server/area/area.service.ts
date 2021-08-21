@@ -12,7 +12,8 @@ export class AreaService {
   constructor(
     @InjectRepository(Area)
     private readonly areaRepository: Repository<Area>,
-  ) {}
+  ) {
+  }
 
   /**
    * 获取列表（默认返回 []）
@@ -42,7 +43,10 @@ export class AreaService {
             .where('subA.parentId = a.id'),
         'hasChildren',
       )
-      .orderBy({ createTime: 'DESC' })
+      .orderBy({
+        status: 'DESC',
+        createTime: 'DESC',
+      })
       .where(queryCondition, {
         parentIds: parentIds,
         areaName: `%${areaName}%`,
@@ -80,7 +84,10 @@ export class AreaService {
       })
       .skip(offset)
       .take(limit)
-      .orderBy({ createTime: 'DESC' })
+      .orderBy({
+        status: 'DESC',
+        createTime: 'DESC',
+      })
       .getManyAndCount();
 
     return {

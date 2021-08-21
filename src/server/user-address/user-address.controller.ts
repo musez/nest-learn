@@ -3,12 +3,9 @@ import {
   Get,
   Post,
   Body,
-  Put,
-  Param,
-  Delete,
   Query,
   Res,
-  BadRequestException, UseGuards,
+  UseGuards,
 } from '@nestjs/common';
 import { ApiBasicAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { UserAddressService } from './user-address.service';
@@ -140,6 +137,16 @@ export class UserAddressController {
     }
 
     return this.userAddressService.update(updateDto, curUser);
+  }
+
+  @Post('updateStatus')
+  @Auth('mall:userAddress:updateStatus')
+  @ApiOperation({ summary: '修改状态' })
+  async updateStatus(
+    @CurUser() curUser,
+    @Body() baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto,
+  ): Promise<any> {
+    return this.userAddressService.updateStatus(baseModifyStatusByIdsDto, curUser);
   }
 
   @Post('delete')

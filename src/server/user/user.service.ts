@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Utils } from './../../utils/index';
@@ -237,6 +237,7 @@ export class UserService {
         status: status,
       })
       .orderBy({
+        'user.status': 'DESC',
         'user.createTime': 'DESC',
       })
       .getRawMany();
@@ -336,6 +337,7 @@ export class UserService {
       .offset(offset)
       .limit(limit)
       .orderBy({
+        'user.status': 'DESC',
         'user.createTime': 'DESC',
       })
       .getRawMany();

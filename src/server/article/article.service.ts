@@ -31,7 +31,8 @@ export class ArticleService {
     private readonly articleDataCatService: ArticleDataCatService,
     private readonly topicService: TopicService,
     private readonly commentService: CommentService,
-  ) {}
+  ) {
+  }
 
   /**
    * 添加
@@ -65,7 +66,7 @@ export class ArticleService {
     }
     if (!Utils.isBlank(status)) {
       // @ts-ignore
-      status = status.split(',');
+      status = Utils.split(status);
       queryConditionList.push('status IN (:...status)');
     }
     if (!Utils.isBlank(catId)) {
@@ -83,7 +84,10 @@ export class ArticleService {
         status: status,
         catId: catId,
       })
-      .orderBy({ createTime: 'DESC' })
+      .orderBy({
+        status: 'DESC',
+        createTime: 'DESC',
+      })
       .getMany();
 
     for (let item of ret) {
@@ -126,7 +130,7 @@ export class ArticleService {
     }
     if (!Utils.isBlank(status)) {
       // @ts-ignore
-      status = status.split(',');
+      status = Utils.split(status);
       queryConditionList.push('status IN (:...status)');
     }
     if (!Utils.isBlank(catId)) {
@@ -147,7 +151,10 @@ export class ArticleService {
       })
       .skip(offset)
       .take(limit)
-      .orderBy({ 'article.createTime': 'DESC' })
+      .orderBy({
+        'article.status': 'DESC',
+        'article.createTime': 'DESC',
+      })
       .getManyAndCount();
 
     for (let item of ret[0]) {
@@ -284,7 +291,7 @@ export class ArticleService {
    * 绑定栏目
    */
   async bindArticleCats(id: string, cats: string): Promise<void> {
-    const articleCats = cats.split(',');
+    const articleCats = Utils.split(cats);
 
     const articleRet = await this.articleRepository.findOne({
       where: {

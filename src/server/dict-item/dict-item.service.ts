@@ -71,6 +71,7 @@ export class DictItemService {
         dictId: dictId,
       })
       .orderBy({
+        status: 'DESC',
         sort: 'ASC',
         createTime: 'DESC',
       })
@@ -102,6 +103,7 @@ export class DictItemService {
       .skip(offset)
       .take(limit)
       .orderBy({
+        status: 'DESC',
         sort: 'ASC',
         createTime: 'DESC',
       })
@@ -134,6 +136,7 @@ export class DictItemService {
         id: id,
       })
       .orderBy({
+        status: 'DESC',
         sort: 'ASC',
         createTime: 'DESC',
       })

@@ -5,13 +5,11 @@ import {
   Query,
   Body,
   UseGuards,
-  BadRequestException,
   Res,
 } from '@nestjs/common';
 import {
   ApiTags,
   ApiQuery,
-  ApiBody,
   ApiBasicAuth,
   ApiOperation,
 } from '@nestjs/swagger';
@@ -24,7 +22,7 @@ import {
   BaseFindByIdDto,
   BaseFindByIdsDto,
   BaseFindByPIdDto,
-  BasePageDto,
+  BaseModifyStatusByIdsDto,
 } from '../base.dto';
 import { LimitPermissionDto } from './dto/limit-permission.dto';
 import { CurUser } from '../../common/decorators/cur-user.decorator';
@@ -33,11 +31,6 @@ import { AuthGuard } from '../../common/guards/auth.guard';
 import { Auth } from '../../common/decorators/auth.decorator';
 import { Utils } from '../../utils';
 import { ExcelService } from '../excel/excel.service';
-import {
-  PermissionHiddenType,
-  PermissionType,
-  StatusType,
-} from '../../constants/dicts.enum';
 import {
   PermissionDict,
   PermissionHiddenDict,
@@ -167,6 +160,16 @@ export class PermissionController {
       throw new ApiException(`数据 id：${id} 不存在！`, 404);
     }
     return this.permissionService.update(updatePermissionDto, curUser);
+  }
+
+  @Post('updateStatus')
+  @Auth('account:permission:updateStatus')
+  @ApiOperation({ summary: '修改状态' })
+  async updateStatus(
+    @CurUser() curUser,
+    @Body() baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto,
+  ): Promise<any> {
+    return this.permissionService.updateStatus(baseModifyStatusByIdsDto, curUser);
   }
 
   @Post('delete')

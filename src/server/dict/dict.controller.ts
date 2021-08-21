@@ -16,7 +16,7 @@ import { CreateDictDto } from './dto/create-dict.dto';
 import { UpdateDictDto } from './dto/update-dict.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { Dict } from './entities/dict.entity';
-import { BaseFindByIdDto, BaseFindByIdsDto } from '../base.dto';
+import { BaseFindByIdDto, BaseFindByIdsDto, BaseModifyStatusByIdsDto } from '../base.dto';
 import { CurUser } from '../../common/decorators/cur-user.decorator';
 import { SearchDictDto } from './dto/search-dict.dto';
 import { LimitDictDto } from './dto/limit-dict.dto';
@@ -107,6 +107,16 @@ export class DictController {
     }
 
     return this.dictService.update(updateDictDto, curUser);
+  }
+
+  @Post('updateStatus')
+  @Auth('system:dict:updateStatus')
+  @ApiOperation({ summary: '修改状态' })
+  async updateStatus(
+    @CurUser() curUser,
+    @Body() baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto,
+  ): Promise<any> {
+    return this.dictService.updateStatus(baseModifyStatusByIdsDto, curUser);
   }
 
   @Post('delete')

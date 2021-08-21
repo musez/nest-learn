@@ -3,13 +3,9 @@ import {
   Get,
   Post,
   Body,
-  Put,
-  Param,
-  Delete,
   UseGuards,
   Query,
   Res,
-  BadRequestException,
 } from '@nestjs/common';
 import { TopicService } from './topic.service';
 import { CreateTopicDto } from './dto/create-topic.dto';
@@ -19,7 +15,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { AuthGuard } from '../../common/guards/auth.guard';
 import { Auth } from '../../common/decorators/auth.decorator';
 import { CurUser } from '../../common/decorators/cur-user.decorator';
-import { BaseFindByIdDto, BaseFindByIdsDto } from '../base.dto';
+import { BaseFindByIdDto, BaseFindByIdsDto, BaseModifyStatusByIdsDto } from '../base.dto';
 import { Utils } from '../../utils';
 import { ExcelService } from '../excel/excel.service';
 import { SearchTopicDto } from './dto/search-top.dto';
@@ -121,6 +117,16 @@ export class TopicController {
     }
 
     return this.topicService.update(updateTopicDto, curUser);
+  }
+
+  @Post('updateStatus')
+  @Auth('system:topic:updateStatus')
+  @ApiOperation({ summary: '修改状态' })
+  async updateStatus(
+    @CurUser() curUser,
+    @Body() baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto,
+  ): Promise<any> {
+    return this.topicService.updateStatus(baseModifyStatusByIdsDto, curUser);
   }
 
   @Post('delete')

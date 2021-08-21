@@ -1,11 +1,11 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Utils } from './../../utils/index';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
 import { Role } from './entities/role.entity';
-import { BaseFindByIdDto, BaseFindByIdsDto } from '../base.dto';
+import { BaseFindByIdDto, BaseFindByIdsDto, BaseModifyStatusByIdsDto } from '../base.dto';
 import { RolePermission } from '../role-permission/entities/role-permission.entity';
 import { BindRolePermissionDto } from './dto/bind-role-permission.dto';
 import { RolePermissionService } from '../role-permission/role-permission.service';
@@ -26,7 +26,8 @@ export class RoleService {
     private readonly roleRepository: Repository<Role>,
     private readonly permissionService: PermissionService,
     private readonly rolePermissionService: RolePermissionService,
-  ) {}
+  ) {
+  }
 
   /**
    * 添加
@@ -42,7 +43,7 @@ export class RoleService {
    * 获取列表
    */
   async selectList(searchRoleDto: SearchRoleDto): Promise<any[]> {
-    const { name, status} = searchRoleDto;
+    const { name, status } = searchRoleDto;
 
     const queryConditionList = [];
     if (!Utils.isBlank(name)) {
@@ -60,7 +61,10 @@ export class RoleService {
         name: `%${name}%`,
         status: status,
       })
-      .orderBy({ createTime: 'DESC' })
+      .orderBy({
+        status: 'DESC',
+        createTime: 'DESC',
+      })
       .getMany();
   }
 
@@ -92,7 +96,10 @@ export class RoleService {
       })
       .skip(offset)
       .take(limit)
-      .orderBy({ createTime: 'DESC' })
+      .orderBy({
+        status: 'DESC',
+        createTime: 'DESC',
+      })
       .getManyAndCount();
 
     return {
@@ -189,6 +196,29 @@ export class RoleService {
     role.updateBy = curUser!.id;
 
     await this.roleRepository.update(id, role);
+  }
+
+  /**
+   * 修改状态
+   */
+  async updateStatus(
+    baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto,
+    curUser,
+  ): Promise<any> {
+    const { ids, status } = baseModifyStatusByIdsDto;
+
+    const ret = this.roleRepository
+      .createQueryBuilder()
+      .update(Role)
+      .set({ status: status, updateBy: curUser!.id })
+      .where('id in (:ids)', { ids: ids })
+      .execute();
+
+    if (!ret) {
+      throw new ApiException('更新异常！', 500);
+    }
+
+    return ret;
   }
 
   /**

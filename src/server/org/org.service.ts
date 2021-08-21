@@ -1,4 +1,4 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateOrgDto } from './dto/create-org.dto';
@@ -10,8 +10,9 @@ import { LimitOrgDto } from './dto/limit-org.dto';
 import {
   BaseFindByIdDto,
   BaseFindByIdsDto,
-  BaseFindByPIdDto,
+  BaseFindByPIdDto, BaseModifyStatusByIdsDto,
 } from '../base.dto';
+import { ApiException } from '../../common/exception/api-exception';
 
 @Injectable()
 export class OrgService {
@@ -62,7 +63,10 @@ export class OrgService {
         name: `%${name}%`,
         status: status,
       })
-      .orderBy({ createTime: 'DESC' })
+      .orderBy({
+        status: 'DESC',
+        createTime: 'DESC',
+      })
       .getRawMany();
     return res;
   }
@@ -114,7 +118,10 @@ export class OrgService {
         name: `%${name}%`,
         status: status,
       })
-      .orderBy({ createTime: 'DESC' })
+      .orderBy({
+        status: 'DESC',
+        createTime: 'DESC',
+      })
       .getRawMany();
     return res;
   }
@@ -154,7 +161,10 @@ export class OrgService {
       })
       .skip(offset)
       .take(limit)
-      .orderBy('org.createTime', 'DESC')
+      .orderBy({
+        'org.status': 'DESC',
+        'org.createTime': 'DESC',
+      })
       .getManyAndCount();
 
     return {
@@ -268,6 +278,29 @@ export class OrgService {
     org.updateBy = curUser!.id;
 
     await this.orgRepository.update(id, org);
+  }
+
+  /**
+   * 修改状态
+   */
+  async updateStatus(
+    baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto,
+    curUser,
+  ): Promise<any> {
+    const { ids, status } = baseModifyStatusByIdsDto;
+
+    const ret = this.orgRepository
+      .createQueryBuilder()
+      .update(Org)
+      .set({ status: status, updateBy: curUser!.id })
+      .where('id in (:ids)', { ids: ids })
+      .execute();
+
+    if (!ret) {
+      throw new ApiException('更新异常！', 500);
+    }
+
+    return ret;
   }
 
   /**

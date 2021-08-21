@@ -5,18 +5,20 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Topic } from './entities/topic.entity';
 import { Utils } from '../../utils';
-import { BaseFindByIdDto, BaseFindByIdsDto } from '../base.dto';
+import { BaseFindByIdDto, BaseFindByIdsDto, BaseModifyStatusByIdsDto } from '../base.dto';
 import { LimitTopicDto } from './dto/limit-top.dto';
 import { SearchTopicDto } from './dto/search-top.dto';
 import { Org } from '../org/entities/org.entity';
 import { User } from '../user/entities/user.entity';
+import { ApiException } from '../../common/exception/api-exception';
 
 @Injectable()
 export class TopicService {
   constructor(
     @InjectRepository(Topic)
     private readonly topicRepository: Repository<Topic>,
-  ) {}
+  ) {
+  }
 
   /**
    * 添加
@@ -61,7 +63,10 @@ export class TopicService {
         topicType: topicType,
         status: status,
       })
-      .orderBy({ 'topic.createTime': 'ASC' })
+      .orderBy({
+        'topic.status': 'DESC',
+        'topic.createTime': 'ASC',
+      })
       .getRawMany();
   }
 
@@ -108,7 +113,10 @@ export class TopicService {
       // .take(limit)
       .offset(offset)
       .limit(limit)
-      .orderBy({ 'topic.createTime': 'ASC' })
+      .orderBy({
+        'topic.status': 'DESC',
+        'topic.createTime': 'ASC',
+      })
       .getRawMany();
 
     const retCount = await queryBuilder.getCount();
@@ -151,6 +159,29 @@ export class TopicService {
     article = Utils.dto2entity(updateTopicDto, article);
 
     await this.topicRepository.update(id, article);
+  }
+
+  /**
+   * 修改状态
+   */
+  async updateStatus(
+    baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto,
+    curUser,
+  ): Promise<any> {
+    const { ids, status } = baseModifyStatusByIdsDto;
+
+    const ret = this.topicRepository
+      .createQueryBuilder()
+      .update(Topic)
+      .set({ status: status, updateBy: curUser!.id })
+      .where('id in (:ids)', { ids: ids })
+      .execute();
+
+    if (!ret) {
+      throw new ApiException('更新异常！', 500);
+    }
+
+    return ret;
   }
 
   /**

@@ -2,24 +2,13 @@ import {
   Controller,
   Get,
   Post,
-  Req,
-  Request,
   Query,
   Body,
   UseGuards,
-  UseInterceptors,
-  ClassSerializerInterceptor,
-  BadRequestException,
   Res,
 } from '@nestjs/common';
 import {
   ApiTags,
-  ApiQuery,
-  ApiBody,
-  ApiParam,
-  ApiHeader,
-  ApiHeaders,
-  ApiResponse,
   ApiBasicAuth,
   ApiOperation,
 } from '@nestjs/swagger';
@@ -28,7 +17,7 @@ import { CreateGroupDto } from './dto/create-group.dto';
 import { UpdateGroupDto } from './dto/update-group.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { Group } from './entities/group.entity';
-import { BaseFindByIdDto, BaseFindByIdsDto, BasePageDto } from '../base.dto';
+import { BaseFindByIdDto, BaseFindByIdsDto, BaseModifyStatusByIdsDto } from '../base.dto';
 import { LimitGroupDto } from './dto/limit-group.dto';
 import { SearchGroupDto } from './dto/search-group.dto';
 import { BindGroupRoleDto } from '../group-role/dto/bind-group-role.dto';
@@ -37,7 +26,6 @@ import { AuthGuard } from '../../common/guards/auth.guard';
 import { Auth } from '../../common/decorators/auth.decorator';
 import { Utils } from '../../utils';
 import { ExcelService } from '../excel/excel.service';
-import { StatusType } from '../../constants/dicts.enum';
 import { StatusDict } from '../../constants/dicts';
 import { ApiException } from '../../common/exception/api-exception';
 
@@ -132,6 +120,16 @@ export class GroupController {
     }
 
     return this.groupService.update(updateGroupDto, curUser);
+  }
+
+  @Post('updateStatus')
+  @Auth('account:group:updateStatus')
+  @ApiOperation({ summary: '修改状态' })
+  async updateStatus(
+    @CurUser() curUser,
+    @Body() baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto,
+  ): Promise<any> {
+    return this.groupService.updateStatus(baseModifyStatusByIdsDto, curUser);
   }
 
   @Post('delete')

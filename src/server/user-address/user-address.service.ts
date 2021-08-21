@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateUserAddressDto } from './dto/create-user-address.dto';
@@ -77,7 +77,10 @@ export class UserAddressService {
         mobile: `%${mobile}%`,
         status: status,
       })
-      .orderBy({ 'userAddress.createTime': 'DESC' })
+      .orderBy({
+        'userAddress.status': 'DESC',
+        'userAddress.createTime': 'DESC',
+      })
       .getRawMany();
 
     ret.forEach((v) => {
@@ -153,7 +156,10 @@ export class UserAddressService {
       // .take(limit)
       .offset(offset)
       .limit(limit)
-      .orderBy({ 'userAddress.createTime': 'DESC' })
+      .orderBy({
+        'userAddress.status': 'DESC',
+        'userAddress.createTime': 'DESC',
+      })
       .getRawMany();
 
     ret.forEach((v) => {
@@ -220,6 +226,29 @@ export class UserAddressService {
     userAddress = Utils.dto2entity(updateDto, userAddress);
 
     await this.userAddressRepository.update(id, userAddress);
+  }
+
+  /**
+   * 修改状态
+   */
+  async updateStatus(
+    baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto,
+    curUser,
+  ): Promise<any> {
+    const { ids, status } = baseModifyStatusByIdsDto;
+
+    const ret = this.userAddressRepository
+      .createQueryBuilder()
+      .update(UserAddress)
+      .set({ status: status, updateBy: curUser!.id })
+      .where('id in (:ids)', { ids: ids })
+      .execute();
+
+    if (!ret) {
+      throw new ApiException('更新异常！', 500);
+    }
+
+    return ret;
   }
 
   /**

@@ -4,11 +4,7 @@ import {
   Post,
   Query,
   Body,
-  Put,
-  Param,
-  Delete,
   UseGuards,
-  BadRequestException,
   Res,
 } from '@nestjs/common';
 import { ApiTags, ApiBasicAuth, ApiOperation } from '@nestjs/swagger';
@@ -19,7 +15,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurUser } from '../../common/decorators/cur-user.decorator';
 import { LimitPostDto } from './dto/limit-post.dto';
 import { SearchPostDto } from './dto/search-post.dto';
-import { BaseFindByIdDto, BaseFindByIdsDto } from '../base.dto';
+import { BaseFindByIdDto, BaseFindByIdsDto, BaseModifyStatusByIdsDto } from '../base.dto';
 import { SysPost } from './entities/post.entity';
 import { AuthGuard } from '../../common/guards/auth.guard';
 import { Auth } from '../../common/decorators/auth.decorator';
@@ -118,6 +114,16 @@ export class PostController {
       throw new ApiException(`数据 id：${id} 不存在！`, 404);
     }
     return this.postService.update(updatePostDto, curUser);
+  }
+
+  @Post('updateStatus')
+  @Auth('account:post:updateStatus')
+  @ApiOperation({ summary: '修改状态' })
+  async updateStatus(
+    @CurUser() curUser,
+    @Body() baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto,
+  ): Promise<any> {
+    return this.postService.updateStatus(baseModifyStatusByIdsDto, curUser);
   }
 
   @Post('delete')

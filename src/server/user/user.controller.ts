@@ -6,9 +6,6 @@ import {
   Body,
   UseGuards,
   UseInterceptors,
-  UsePipes,
-  ClassSerializerInterceptor,
-  BadRequestException,
   Res,
   UploadedFile,
 } from '@nestjs/common';
@@ -21,8 +18,6 @@ import {
 } from '@nestjs/swagger';
 import {
   FileInterceptor,
-  FilesInterceptor,
-  FileFieldsInterceptor,
 } from '@nestjs/platform-express';
 import { UserService } from './user.service';
 import { User } from './entities/user.entity';
@@ -43,7 +38,6 @@ import { Auth } from '../../common/decorators/auth.decorator';
 import { AuthGuard } from '../../common/guards/auth.guard';
 import { ExcelService } from '../excel/excel.service';
 import { Utils } from './../../utils/index';
-import { SexType, StatusType, UserType } from '../../constants/dicts.enum';
 import { SexDict, StatusDict, UserDict } from '../../constants/dicts';
 import { ApiException } from '../../common/exception/api-exception';
 

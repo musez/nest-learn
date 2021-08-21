@@ -1,4 +1,4 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateFileDto } from './dto/create-file.dto';
@@ -6,7 +6,6 @@ import { File } from './entities/file.entity';
 import { BaseFindByIdDto, BaseFindByIdsDto, BasePageDto } from '../base.dto';
 import { Utils } from '../../utils';
 import { LimitFileDto } from './dto/limit-file.dto';
-import { SearchFileDto } from './dto/search-file.dto';
 
 @Injectable()
 export class FileService {
@@ -62,6 +61,7 @@ export class FileService {
       .skip(offset)
       .take(limit)
       .orderBy({
+        status: 'DESC',
         createTime: 'DESC',
       })
       .getManyAndCount();

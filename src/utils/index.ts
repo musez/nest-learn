@@ -22,6 +22,14 @@ export class Utils {
     return randomString;
   };
 
+  static split(str, sp = ',') {
+    return str.split(sp);
+  }
+
+  static join(arr, sp = ',') {
+    return arr.join(sp);
+  }
+
   static now() {
     return dayjs(Date.now()).format('YYYY-MM-DD HH:mm:ss');
   }

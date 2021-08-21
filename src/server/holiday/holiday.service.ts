@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { CreateHolidayDto } from './dto/create-holiday.dto';
 import { UpdateHolidayDto } from './dto/update-holiday.dto';
 import {
@@ -19,7 +19,8 @@ export class HolidayService {
   constructor(
     @InjectRepository(Holiday)
     private readonly holidayRepository: Repository<Holiday>,
-  ) {}
+  ) {
+  }
 
   /**
    * 添加
@@ -91,6 +92,7 @@ export class HolidayService {
         status: status,
       })
       .orderBy({
+        status: 'DESC',
         date: 'ASC',
         createTime: 'DESC',
       })
@@ -146,6 +148,7 @@ export class HolidayService {
       .skip(offset)
       .take(limit)
       .orderBy({
+        status: 'DESC',
         date: 'ASC',
         createTime: 'DESC',
       })
@@ -200,7 +203,10 @@ export class HolidayService {
       .where(queryCondition, {
         date: dayListStr,
       })
-      .orderBy({ createTime: 'DESC' })
+      .orderBy({
+        status: 'DESC',
+        createTime: 'DESC',
+      })
       .getMany();
     return ret;
   }

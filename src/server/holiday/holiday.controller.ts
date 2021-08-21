@@ -3,11 +3,7 @@ import {
   Get,
   Post,
   Body,
-  Put,
-  Param,
-  Delete,
   Query,
-  BadRequestException,
   UseGuards,
   UseInterceptors,
   UploadedFile,
@@ -15,8 +11,6 @@ import {
 } from '@nestjs/common';
 import {
   FileInterceptor,
-  FilesInterceptor,
-  FileFieldsInterceptor,
 } from '@nestjs/platform-express';
 import * as dayjs from 'dayjs';
 import { HolidayService } from './holiday.service';
@@ -27,7 +21,6 @@ import {
   ApiBody,
   ApiConsumes,
   ApiOperation,
-  ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
 import { CurUser } from '../../common/decorators/cur-user.decorator';
@@ -45,12 +38,9 @@ import { AuthGuard } from '../../common/guards/auth.guard';
 import { Utils } from '../../utils';
 import { BaseDaysDto } from './dto/base-holiday.dto';
 import { ExcelService } from '../excel/excel.service';
-import { SearchUserDto } from '../user/dto/search-user.dto';
 import {
   RestDict,
-  SexDict,
   StatusDict,
-  UserDict,
   WeekdayDict,
 } from '../../constants/dicts';
 import { ApiException } from '../../common/exception/api-exception';
@@ -63,7 +53,8 @@ export class HolidayController {
   constructor(
     private readonly holidayService: HolidayService,
     private readonly excelService: ExcelService,
-  ) {}
+  ) {
+  }
 
   @Post('add')
   @Auth('system:holiday:add')
@@ -156,8 +147,8 @@ export class HolidayController {
     res.setHeader(
       'Content-Disposition',
       'attachment; filename=' +
-        encodeURIComponent(`节假日_${Utils.dayjsFormat('YYYYMMDD')}`) +
-        '.xlsx', // 中文名需要进行 url 转码
+      encodeURIComponent(`节假日_${Utils.dayjsFormat('YYYYMMDD')}`) +
+      '.xlsx', // 中文名需要进行 url 转码
     );
     // res.setTimeout(30 * 60 * 1000); // 防止网络原因造成超时。
     res.end(result, 'binary');

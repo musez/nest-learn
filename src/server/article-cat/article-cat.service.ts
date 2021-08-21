@@ -1,4 +1,4 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateArticleCatDto } from './dto/create-article-cat.dto';
@@ -9,9 +9,11 @@ import {
   BaseFindByIdDto,
   BaseFindByIdsDto,
   BaseFindByPIdDto,
+  BaseModifyStatusByIdsDto,
 } from '../base.dto';
 import { SearchArticleCatDto } from './dto/search-article-cat.dto';
 import { LimitArticleCatDto } from './dto/limit-article-cat.dto';
+import { ApiException } from '../../common/exception/api-exception';
 
 @Injectable()
 export class ArticleCatService {
@@ -61,7 +63,10 @@ export class ArticleCatService {
             .where('subAC.parentId = ac.id'),
         'hasChildren',
       )
-      .orderBy({ createTime: 'DESC' })
+      .orderBy({
+        status: 'DESC',
+        createTime: 'DESC',
+      })
       .where(queryCondition, {
         catName: `%${catName}%`,
         status: status,
@@ -111,7 +116,10 @@ export class ArticleCatService {
             .where('subAC.parentId = ac.id'),
         'hasChildren',
       )
-      .orderBy({ createTime: 'DESC' })
+      .orderBy({
+        status: 'DESC',
+        createTime: 'DESC',
+      })
       .where(queryCondition, {
         parentIds: parentIds,
         catName: `%${catName}%`,
@@ -155,7 +163,10 @@ export class ArticleCatService {
       })
       .skip(offset)
       .take(limit)
-      .orderBy({ createTime: 'DESC' })
+      .orderBy({
+        status: 'DESC',
+        createTime: 'DESC',
+      })
       .getManyAndCount();
 
     return {
@@ -271,6 +282,29 @@ export class ArticleCatService {
     articleCat = Utils.dto2entity(updateArticleCatDto, articleCat);
 
     await this.articleCatRepository.update(id, articleCat);
+  }
+
+  /**
+   * 修改状态
+   */
+  async updateStatus(
+    baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto,
+    curUser,
+  ): Promise<any> {
+    const { ids, status } = baseModifyStatusByIdsDto;
+
+    const ret = this.articleCatRepository
+      .createQueryBuilder()
+      .update(ArticleCat)
+      .set({ status: status, updateBy: curUser!.id })
+      .where('id in (:ids)', { ids: ids })
+      .execute();
+
+    if (!ret) {
+      throw new ApiException('更新异常！', 500);
+    }
+
+    return ret;
   }
 
   /**

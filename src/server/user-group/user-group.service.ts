@@ -4,7 +4,8 @@ import { Repository, In } from 'typeorm';
 import { CreateUserGroupDto } from './dto/create-user-group.dto';
 import { UpdateUserGroupDto } from './dto/update-user-group.dto';
 import { UserGroup } from './entities/user-group.entity';
-import { BaseFindByIdDto, BaseFindByIdsDto } from '../base.dto';
+import { BaseFindByIdsDto } from '../base.dto';
+import { Utils } from '../../utils';
 
 @Injectable()
 export class UserGroupService {
@@ -30,27 +31,15 @@ export class UserGroupService {
   }
 
   /**
-   * 获取用户组
-   */
-  // async selectByUserId(baseFindByIdDto: BaseFindByIdDto): Promise<UserGroup[]> {
-  //   const { id } = baseFindByIdDto;
-  //   return await this.userGroupRepository.find({
-  //     relations: ['group'],
-  //     where: {
-  //       userId: id,
-  //     },
-  //   });
-  // }
-
-  /**
    * 获取用户组（批量）
    */
-  async selectByUserIds(dto: BaseFindByIdsDto): Promise<UserGroup[]> {
-    const { ids } = dto;
+  async selectByUserIds(baseFindByIdsDto: BaseFindByIdsDto): Promise<UserGroup[]> {
+    const { ids } = baseFindByIdsDto;
+    const idsArr = Utils.split(ids);
     return await this.userGroupRepository.find({
       relations: ['group'],
       where: {
-        id: In(ids.split(',')),
+        id: In(idsArr),
       },
     });
   }

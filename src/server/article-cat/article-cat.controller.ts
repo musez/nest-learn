@@ -22,6 +22,7 @@ import {
   BaseFindByIdDto,
   BaseFindByIdsDto,
   BaseFindByPIdDto,
+  BaseModifyStatusByIdsDto,
 } from '../base.dto';
 import { ArticleCat } from './entities/article-cat.entity';
 import { LimitArticleCatDto } from './dto/limit-article-cat.dto';
@@ -134,6 +135,16 @@ export class ArticleCatController {
     @Body() updateArticleCatDto: UpdateArticleCatDto,
   ): Promise<any> {
     return this.articleCatService.update(updateArticleCatDto, curUser);
+  }
+
+  @Post('updateStatus')
+  @Auth('cms:articleCat:updateStatus')
+  @ApiOperation({ summary: '修改状态' })
+  async updateStatus(
+    @CurUser() curUser,
+    @Body() baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto,
+  ): Promise<any> {
+    return this.articleCatService.updateStatus(baseModifyStatusByIdsDto, curUser);
   }
 
   @Post('delete')

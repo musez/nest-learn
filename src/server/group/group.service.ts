@@ -5,7 +5,7 @@ import { Utils } from './../../utils/index';
 import { CreateGroupDto } from './dto/create-group.dto';
 import { UpdateGroupDto } from './dto/update-group.dto';
 import { Group } from './entities/group.entity';
-import { BaseFindByIdDto, BaseFindByIdsDto } from '../base.dto';
+import { BaseFindByIdDto, BaseFindByIdsDto, BaseModifyStatusByIdsDto } from '../base.dto';
 import { GroupRoleService } from '../group-role/group-role.service';
 import { GroupRole } from '../group-role/entities/group-role.entity';
 import { BindGroupRoleDto } from '../group-role/dto/bind-group-role.dto';
@@ -22,7 +22,8 @@ export class GroupService {
     private readonly groupRepository: Repository<Group>,
     private readonly roleService: RoleService,
     private readonly groupRoleService: GroupRoleService,
-  ) {}
+  ) {
+  }
 
   /**
    * 添加
@@ -59,7 +60,10 @@ export class GroupService {
         name: `%${name}%`,
         status: status,
       })
-      .orderBy({ createTime: 'DESC' })
+      .orderBy({
+        status: 'DESC',
+        createTime: 'DESC',
+      })
       .getMany();
   }
 
@@ -91,7 +95,10 @@ export class GroupService {
       })
       .skip(offset)
       .take(limit)
-      .orderBy({ createTime: 'DESC' })
+      .orderBy({
+        status: 'DESC',
+        createTime: 'DESC',
+      })
       .getManyAndCount();
 
     return {
@@ -170,6 +177,29 @@ export class GroupService {
     group = Utils.dto2entity(updateGroupDto, group);
     group.updateBy = curUser!.id;
     await this.groupRepository.update(id, group);
+  }
+
+  /**
+   * 修改状态
+   */
+  async updateStatus(
+    baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto,
+    curUser,
+  ): Promise<any> {
+    const { ids, status } = baseModifyStatusByIdsDto;
+
+    const ret = this.groupRepository
+      .createQueryBuilder()
+      .update(Group)
+      .set({ status: status, updateBy: curUser!.id })
+      .where('id in (:ids)', { ids: ids })
+      .execute();
+
+    if (!ret) {
+      throw new ApiException('更新异常！', 500);
+    }
+
+    return ret;
   }
 
   /**

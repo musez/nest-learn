@@ -1,18 +1,9 @@
 import {
   Controller,
-  Get,
   Post,
   Req,
-  Query,
-  Body,
-  UseGuards,
-  UseInterceptors,
-  ClassSerializerInterceptor,
-  BadRequestException,
-  Res,
 } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { CreateUserDto } from '../user/dto/create-user.dto';
 
 const fs = require('fs');
 const path = require('path');
@@ -39,10 +30,8 @@ export class SystemController {
    * 3、通过状态中的 stat.isFile() 判断是否是一个文件，是文件直接输出文件名，不是文件就继续递归。
    */
   async readFile(myUrl): Promise<any> {
-    // fs.readdirSync(myUrl,  (err, files) => {
     fs.readdir(myUrl, (err, files) => {
       if (err) throw err;
-      // console.log(files);
       files.forEach((file, index) => {
         if (
           file !== '.git' &&

@@ -5,18 +5,20 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Comment } from './entities/comment.entity';
 import { Utils } from '../../utils';
-import { BaseFindByIdDto, BaseFindByIdsDto } from '../base.dto';
+import { BaseFindByIdDto, BaseFindByIdsDto, BaseModifyStatusByIdsDto } from '../base.dto';
 import { LimitCommentDto } from './dto/limit-comment.dto';
 import { SearchCommentDto } from './dto/search-comment.dto';
 import { Org } from '../org/entities/org.entity';
 import { User } from '../user/entities/user.entity';
+import { ApiException } from '../../common/exception/api-exception';
 
 @Injectable()
 export class CommentService {
   constructor(
     @InjectRepository(Comment)
     private readonly commentRepository: Repository<Comment>,
-  ) {}
+  ) {
+  }
 
   /**
    * 添加
@@ -67,7 +69,10 @@ export class CommentService {
         replyType: replyType,
         status: status,
       })
-      .orderBy({ 'comment.createTime': 'ASC' })
+      .orderBy({
+        'comment.status': 'DESC',
+        'comment.createTime': 'ASC',
+      })
       .getRawMany();
   }
 
@@ -127,7 +132,10 @@ export class CommentService {
       // .take(limit)
       .offset(offset)
       .limit(limit)
-      .orderBy({ 'comment.createTime': 'ASC' })
+      .orderBy({
+        'comment.status': 'DESC',
+        'comment.createTime': 'ASC',
+      })
       .getRawMany();
 
     const retCount = await queryBuilder.getCount();
@@ -170,6 +178,29 @@ export class CommentService {
     article = Utils.dto2entity(updateCommentDto, article);
 
     await this.commentRepository.update(id, article);
+  }
+
+  /**
+   * 修改状态
+   */
+  async updateStatus(
+    baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto,
+    curUser,
+  ): Promise<any> {
+    const { ids, status } = baseModifyStatusByIdsDto;
+
+    const ret = this.commentRepository
+      .createQueryBuilder()
+      .update(Comment)
+      .set({ status: status, updateBy: curUser!.id })
+      .where('id in (:ids)', { ids: ids })
+      .execute();
+
+    if (!ret) {
+      throw new ApiException('更新异常！', 500);
+    }
+
+    return ret;
   }
 
   /**

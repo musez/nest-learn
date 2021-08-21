@@ -20,6 +20,7 @@ import {
   BaseFindByIdDto,
   BaseFindByIdsDto,
   BaseFindByPIdDto,
+  BaseModifyStatusByIdsDto,
 } from '../base.dto';
 import { AuthGuard } from '../../common/guards/auth.guard';
 import { Auth } from '../../common/decorators/auth.decorator';
@@ -134,6 +135,16 @@ export class OrgController {
       throw new ApiException(`数据 id：${id} 不存在！`, 404);
     }
     return this.orgService.update(updateOrgDto, curUser);
+  }
+
+  @Post('updateStatus')
+  @Auth('account:org:updateStatus')
+  @ApiOperation({ summary: '修改状态' })
+  async updateStatus(
+    @CurUser() curUser,
+    @Body() baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto,
+  ): Promise<any> {
+    return this.orgService.updateStatus(baseModifyStatusByIdsDto, curUser);
   }
 
   @Post('delete')

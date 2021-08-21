@@ -2,12 +2,10 @@ import {
   IsDefined,
   IsOptional,
   IsNotEmpty,
-  IsString,
   IsInt,
-  IsEmail,
   IsUUID,
 } from 'class-validator';
-import { Transform, Type } from 'class-transformer';
+import { Transform } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class BasePageDto {
@@ -66,9 +64,4 @@ export class BaseFindByIdsDto {
 export class BaseFindByPIdDto {
   @ApiPropertyOptional({ description: 'parentId', example: null })
   readonly parentId: string;
-}
-
-export class BaseIdsDto {
-  @ApiPropertyOptional({ description: 'ids', example: [] })
-  readonly ids: [];
 }

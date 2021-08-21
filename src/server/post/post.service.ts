@@ -1,4 +1,4 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreatePostDto } from './dto/create-post.dto';
@@ -6,7 +6,7 @@ import { UpdatePostDto } from './dto/update-post.dto';
 import { SysPost } from './entities/post.entity';
 import { Utils } from '../../utils';
 import { LimitPostDto } from './dto/limit-post.dto';
-import { BaseFindByIdDto, BaseFindByIdsDto } from '../base.dto';
+import { BaseFindByIdDto, BaseFindByIdsDto, BaseModifyStatusByIdsDto } from '../base.dto';
 import { ApiException } from '../../common/exception/api-exception';
 
 @Injectable()
@@ -53,6 +53,7 @@ export class PostService {
         status: status,
       })
       .orderBy({
+        status: 'DESC',
         sort: 'ASC',
         createTime: 'DESC',
       })
@@ -87,6 +88,7 @@ export class PostService {
       .skip(offset)
       .take(limit)
       .orderBy({
+        status: 'DESC',
         sort: 'ASC',
         createTime: 'DESC',
       })
@@ -134,6 +136,29 @@ export class PostService {
     post.updateBy = curUser!.id;
 
     await this.postRepository.update(id, post);
+  }
+
+  /**
+   * 修改状态
+   */
+  async updateStatus(
+    baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto,
+    curUser,
+  ): Promise<any> {
+    const { ids, status } = baseModifyStatusByIdsDto;
+
+    const ret = this.postRepository
+      .createQueryBuilder()
+      .update(SysPost)
+      .set({ status: status, updateBy: curUser!.id })
+      .where('id in (:ids)', { ids: ids })
+      .execute();
+
+    if (!ret) {
+      throw new ApiException('更新异常！', 500);
+    }
+
+    return ret;
   }
 
   /**

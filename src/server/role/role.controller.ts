@@ -2,19 +2,13 @@ import {
   Controller,
   Get,
   Post,
-  Req,
   Query,
   Body,
   UseGuards,
-  UseInterceptors,
-  ClassSerializerInterceptor,
-  BadRequestException,
   Res,
 } from '@nestjs/common';
 import {
   ApiTags,
-  ApiQuery,
-  ApiBody,
   ApiBasicAuth,
   ApiOperation,
 } from '@nestjs/swagger';
@@ -24,7 +18,7 @@ import { UpdateRoleDto } from './dto/update-role.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { Role } from './entities/role.entity';
 import { LimitRoleDto } from './dto/limit-role.dto';
-import { BaseFindByIdDto, BaseFindByIdsDto } from '../base.dto';
+import { BaseFindByIdDto, BaseFindByIdsDto, BaseModifyStatusByIdsDto } from '../base.dto';
 import { BindRolePermissionDto } from './dto/bind-role-permission.dto';
 import { CurUser } from '../../common/decorators/cur-user.decorator';
 import { SearchRoleDto } from './dto/search-role.dto';
@@ -32,7 +26,6 @@ import { AuthGuard } from '../../common/guards/auth.guard';
 import { Auth } from '../../common/decorators/auth.decorator';
 import { Utils } from '../../utils';
 import { ExcelService } from '../excel/excel.service';
-import { StatusType } from '../../constants/dicts.enum';
 import { StatusDict } from '../../constants/dicts';
 import { ApiException } from '../../common/exception/api-exception';
 
@@ -126,6 +119,16 @@ export class RoleController {
       throw new ApiException(`数据 id：${id} 不存在！`, 404);
     }
     return this.roleService.update(updateRoleDto, curUser);
+  }
+
+  @Post('updateStatus')
+  @Auth('account:role:updateStatus')
+  @ApiOperation({ summary: '修改状态' })
+  async updateStatus(
+    @CurUser() curUser,
+    @Body() baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto,
+  ): Promise<any> {
+    return this.roleService.updateStatus(baseModifyStatusByIdsDto, curUser);
   }
 
   @Post('delete')

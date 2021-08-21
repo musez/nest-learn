@@ -5,11 +5,12 @@ import { Utils } from './../../utils/index';
 import { CreateDictDto } from './dto/create-dict.dto';
 import { UpdateDictDto } from './dto/update-dict.dto';
 import { Dict } from './entities/dict.entity';
-import { BaseFindByIdDto, BaseFindByIdsDto } from '../base.dto';
+import { BaseFindByIdDto, BaseFindByIdsDto, BaseModifyStatusByIdsDto } from '../base.dto';
 import { DictItemService } from '../dict-item/dict-item.service';
 import { SearchDictDto } from './dto/search-dict.dto';
 import { LimitDictDto } from './dto/limit-dict.dto';
 import { DictItem } from '../dict-item/entities/dict-item.entity';
+import { ApiException } from '../../common/exception/api-exception';
 
 @Injectable()
 export class DictService {
@@ -17,7 +18,8 @@ export class DictService {
     @InjectRepository(Dict)
     private readonly dictRepository: Repository<Dict>,
     private readonly dictItemService: DictItemService,
-  ) {}
+  ) {
+  }
 
   /**
    * 添加
@@ -63,7 +65,10 @@ export class DictService {
         dictName: `%${dictName}%`,
         status: status,
       })
-      .orderBy({ 'dict.createTime': 'DESC' })
+      .orderBy({
+        'dict.status': 'DESC',
+        'dict.createTime': 'DESC',
+      })
       .getMany();
   }
 
@@ -96,7 +101,10 @@ export class DictService {
       })
       .skip(offset)
       .take(limit)
-      .orderBy({ 'dict.createTime': 'DESC' })
+      .orderBy({
+        'dict.status': 'DESC',
+        'dict.createTime': 'DESC',
+      })
       .getManyAndCount();
 
     return {
@@ -147,6 +155,29 @@ export class DictService {
     dict.dictItems = dictItems;
     dict.updateBy = curUser!.id;
     return await this.dictRepository.save(dict);
+  }
+
+  /**
+   * 修改状态
+   */
+  async updateStatus(
+    baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto,
+    curUser,
+  ): Promise<any> {
+    const { ids, status } = baseModifyStatusByIdsDto;
+
+    const ret = this.dictRepository
+      .createQueryBuilder()
+      .update(Dict)
+      .set({ status: status, updateBy: curUser!.id })
+      .where('id in (:ids)', { ids: ids })
+      .execute();
+
+    if (!ret) {
+      throw new ApiException('更新异常！', 500);
+    }
+
+    return ret;
   }
 
   /**

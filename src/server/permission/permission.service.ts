@@ -1,6 +1,6 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, TreeRepository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { Utils } from './../../utils/index';
 import { UpdatePermissionDto } from './dto/update-permission.dto';
 import { Permission } from './entities/permission.entity';
@@ -9,6 +9,7 @@ import {
   BaseFindByIdDto,
   BaseFindByIdsDto,
   BaseFindByPIdDto,
+  BaseModifyStatusByIdsDto,
 } from '../base.dto';
 import { SearchPermissionDto } from './dto/search-permission.dto';
 import { LimitPermissionDto } from './dto/limit-permission.dto';
@@ -19,6 +20,7 @@ import { Group } from '../group/entities/group.entity';
 import { UserGroup } from '../user-group/entities/user-group.entity';
 import { User } from '../user/entities/user.entity';
 import { UserRole } from '../user-role/entities/user-role.entity';
+import { ApiException } from '../../common/exception/api-exception';
 
 @Injectable()
 export class PermissionService {
@@ -81,6 +83,7 @@ export class PermissionService {
         status: status,
       })
       .orderBy({
+        status: 'DESC',
         sort: 'ASC',
         createTime: 'DESC',
       })
@@ -146,6 +149,7 @@ export class PermissionService {
         status: status,
       })
       .orderBy({
+        status: 'DESC',
         sort: 'ASC',
         createTime: 'DESC',
       })
@@ -190,6 +194,7 @@ export class PermissionService {
       .skip(offset)
       .take(limit)
       .orderBy({
+        status: 'DESC',
         sort: 'ASC',
         createTime: 'DESC',
       })
@@ -349,6 +354,29 @@ export class PermissionService {
     permission.updateBy = curUser!.id;
 
     return await this.permissionRepository.update(id, permission);
+  }
+
+  /**
+   * 修改状态
+   */
+  async updateStatus(
+    baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto,
+    curUser,
+  ): Promise<any> {
+    const { ids, status } = baseModifyStatusByIdsDto;
+
+    const ret = this.permissionRepository
+      .createQueryBuilder()
+      .update(Permission)
+      .set({ status: status, updateBy: curUser!.id })
+      .where('id in (:ids)', { ids: ids })
+      .execute();
+
+    if (!ret) {
+      throw new ApiException('更新异常！', 500);
+    }
+
+    return ret;
   }
 
   /**
