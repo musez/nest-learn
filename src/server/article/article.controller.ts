@@ -251,10 +251,7 @@ export class ArticleController {
   @Post('clearRecycle')
   @Auth('cms:article:clearRecycle')
   @ApiOperation({ summary: '回收站清空' })
-  async clearRecycle(
-    @CurUser() curUser,
-    @Body() baseFindByIdsDto: BaseFindByIdsDto,
-  ): Promise<any> {
+  async clearRecycle(@CurUser() curUser): Promise<any> {
     return await this.articleService.deleteAll(curUser);
   }
 
