@@ -250,12 +250,12 @@ export class ArticleService {
     curUser,
   ): Promise<void> {
     const { ids, status } = baseModifyStatusByIdsDto;
-
+    const idsArr = Utils.split(ids);
     await this.articleRepository
       .createQueryBuilder()
       .update(Article)
       .set({ status: status, updateBy: curUser!.id })
-      .where('id in (:ids)', { ids: ids })
+      .where('id in (:ids)', { ids: idsArr })
       .execute();
   }
 
@@ -274,16 +274,28 @@ export class ArticleService {
   }
 
   /**
-   * 回收站清空
+   * 回收站删除（批量）
    */
-  async deleteAll(baseFindByIdsDto: BaseFindByIdsDto, curUser): Promise<void> {
+  async deleteByIds(baseFindByIdsDto: BaseFindByIdsDto, curUser): Promise<void> {
     const { ids } = baseFindByIdsDto;
-
+    const idsArr = Utils.split(ids);
     await this.articleRepository
       .createQueryBuilder()
       .update(Article)
       .set({ deleteStatus: 1, deleteBy: curUser!.id, deleteTime: Utils.now() })
-      .where('id in (:ids)', { ids: ids })
+      .where('id in (:ids)', { ids: idsArr })
+      .execute();
+  }
+
+  /**
+   * 回收站清空
+   */
+  async deleteAll(curUser): Promise<void> {
+    await this.articleRepository
+      .createQueryBuilder()
+      .update(Article)
+      .set({ deleteStatus: 1, deleteBy: curUser!.id, deleteTime: Utils.now() })
+      .where('status = 3')
       .execute();
   }
 

@@ -188,12 +188,12 @@ export class CommentService {
     curUser,
   ): Promise<any> {
     const { ids, status } = baseModifyStatusByIdsDto;
-
+    const idsArr = Utils.split(ids);
     const ret = this.commentRepository
       .createQueryBuilder()
       .update(Comment)
       .set({ status: status, updateBy: curUser!.id })
-      .where('id in (:ids)', { ids: ids })
+      .where('id in (:ids)', { ids: idsArr })
       .execute();
 
     if (!ret) {
@@ -225,12 +225,12 @@ export class CommentService {
     curUser,
   ): Promise<void> {
     const { ids } = baseFindByIdsDto;
-
+    const idsArr = Utils.split(ids);
     await this.commentRepository
       .createQueryBuilder()
       .update(Org)
       .set({ deleteStatus: 1, deleteBy: curUser!.id, deleteTime: Utils.now() })
-      .where('id in (:ids)', { ids: ids })
+      .where('id in (:ids)', { ids: idsArr })
       .execute();
   }
 }

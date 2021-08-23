@@ -494,12 +494,12 @@ export class UserService {
     curUser,
   ): Promise<any> {
     const { ids, status } = baseModifyStatusByIdsDto;
-
+    const idsArr = Utils.split(ids);
     const ret = this.userRepository
       .createQueryBuilder()
       .update(User)
       .set({ status: status, updateBy: curUser!.id })
-      .where('id in (:ids)', { ids: ids })
+      .where('id in (:ids)', { ids: idsArr })
       .execute();
 
     if (!ret) {
@@ -537,12 +537,12 @@ export class UserService {
     curUser,
   ): Promise<void> {
     const { ids } = baseFindByIdsDto;
-
+    const idsArr = Utils.split(ids);
     const ret = await this.userRepository
       .createQueryBuilder()
       .update(User)
       .set({ deleteStatus: 1, deleteBy: curUser!.id, deleteTime: Utils.now() })
-      .where('ids in (:ids)', { ids: ids })
+      .where('ids in (:ids)', { ids: idsArr })
       .execute();
 
     if (!ret) {

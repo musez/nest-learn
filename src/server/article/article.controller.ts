@@ -238,14 +238,24 @@ export class ArticleController {
     return await this.articleService.deleteById(baseFindByIdDto, curUser);
   }
 
+  @Post('deleteRecycleBatch')
+  @Auth('cms:article:deleteRecycleBatch')
+  @ApiOperation({ summary: '回收站删除（批量）' })
+  async deleteRecycleBatch(
+    @CurUser() curUser,
+    @Body() baseFindByIdsDto: BaseFindByIdsDto,
+  ): Promise<any> {
+    return await this.articleService.deleteByIds(baseFindByIdsDto, curUser);
+  }
+
   @Post('clearRecycle')
   @Auth('cms:article:clearRecycle')
-  @ApiOperation({ summary: '回收站清空/删除（批量）' })
+  @ApiOperation({ summary: '回收站清空' })
   async clearRecycle(
     @CurUser() curUser,
     @Body() baseFindByIdsDto: BaseFindByIdsDto,
   ): Promise<any> {
-    return await this.articleService.deleteAll(baseFindByIdsDto, curUser);
+    return await this.articleService.deleteAll(curUser);
   }
 
   @Get('findCommentById')

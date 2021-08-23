@@ -288,12 +288,12 @@ export class OrgService {
     curUser,
   ): Promise<any> {
     const { ids, status } = baseModifyStatusByIdsDto;
-
+    const idsArr = Utils.split(ids);
     const ret = this.orgRepository
       .createQueryBuilder()
       .update(Org)
       .set({ status: status, updateBy: curUser!.id })
-      .where('id in (:ids)', { ids: ids })
+      .where('id in (:ids)', { ids: idsArr })
       .execute();
 
     if (!ret) {
@@ -325,12 +325,12 @@ export class OrgService {
     curUser,
   ): Promise<void> {
     const { ids } = baseFindByIdsDto;
-
+    const idsArr = Utils.split(ids);
     await this.orgRepository
       .createQueryBuilder()
       .update(Org)
       .set({ deleteStatus: 1, deleteBy: curUser!.id, deleteTime: Utils.now() })
-      .where('id in (:ids)', { ids: ids })
+      .where('id in (:ids)', { ids: idsArr })
       .execute();
   }
 }

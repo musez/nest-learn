@@ -169,12 +169,12 @@ export class TopicService {
     curUser,
   ): Promise<any> {
     const { ids, status } = baseModifyStatusByIdsDto;
-
+    const idsArr = Utils.split(ids);
     const ret = this.topicRepository
       .createQueryBuilder()
       .update(Topic)
       .set({ status: status, updateBy: curUser!.id })
-      .where('id in (:ids)', { ids: ids })
+      .where('id in (:ids)', { ids: idsArr })
       .execute();
 
     if (!ret) {
@@ -206,12 +206,12 @@ export class TopicService {
     curUser,
   ): Promise<void> {
     const { ids } = baseFindByIdsDto;
-
+    const idsArr = Utils.split(ids);
     await this.topicRepository
       .createQueryBuilder()
       .update(Org)
       .set({ deleteStatus: 1, deleteBy: curUser!.id, deleteTime: Utils.now() })
-      .where('id in (:ids)', { ids: ids })
+      .where('id in (:ids)', { ids: idsArr })
       .execute();
   }
 }

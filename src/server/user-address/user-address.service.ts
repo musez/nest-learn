@@ -236,12 +236,12 @@ export class UserAddressService {
     curUser,
   ): Promise<any> {
     const { ids, status } = baseModifyStatusByIdsDto;
-
+    const idsArr = Utils.split(ids);
     const ret = this.userAddressRepository
       .createQueryBuilder()
       .update(UserAddress)
       .set({ status: status, updateBy: curUser!.id })
-      .where('id in (:ids)', { ids: ids })
+      .where('id in (:ids)', { ids: idsArr })
       .execute();
 
     if (!ret) {
@@ -273,12 +273,12 @@ export class UserAddressService {
     curUser,
   ): Promise<void> {
     const { ids } = baseFindByIdsDto;
-
+    const idsArr = Utils.split(ids);
     const ret = await this.userAddressRepository
       .createQueryBuilder()
       .update(UserAddress)
       .set({ deleteStatus: 1, deleteBy: curUser!.id, deleteTime: Utils.now() })
-      .where('ids in (:ids)', { ids: ids })
+      .where('ids in (:ids)', { ids: idsArr })
       .execute();
 
     if (!ret) {
