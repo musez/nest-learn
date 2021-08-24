@@ -19,6 +19,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import {
   BaseFindByIdDto,
   BaseFindByIdsDto,
+  BaseModifyStatusByIdDto,
   BaseModifyStatusByIdsDto,
 } from '../base.dto';
 import { Article } from './entities/article.entity';
@@ -34,6 +35,8 @@ import { ApiException } from '../../common/exception/api-exception';
 import { LimitArticleTopDto } from './dto/limit-article-topic.dto';
 import { CreateArticleTopicDto } from './dto/create-article-topic.dto';
 import * as trimHtml from 'trim-html';
+import { CacheService } from '../cache/cache.service';
+import { ArticleCache } from '../../constants/article.cache';
 
 @Controller('article')
 @ApiTags('文章')
@@ -43,6 +46,7 @@ export class ArticleController {
   constructor(
     private readonly articleService: ArticleService,
     private readonly excelService: ExcelService,
+    private readonly cacheService: CacheService,
   ) {
   }
 
@@ -284,5 +288,18 @@ export class ArticleController {
       createArticleTopicDto,
       curUser,
     );
+  }
+
+  @Post('link')
+  @ApiOperation({ summary: '点赞/取消点赞' })
+  async link(@CurUser() curUser, @Body() baseModifyStatusByIdDto: BaseModifyStatusByIdDto): Promise<any> {
+    const { id, status } = baseModifyStatusByIdDto;
+    const client = await this.cacheService.getClient();
+    if (status === 1) {
+      client.set(`${ArticleCache.ARTICLE_LINK}${id}`, curUser.id);
+    } else {
+      client.del(`${ArticleCache.ARTICLE_LINK}${id}`, curUser.id);
+    }
+    return null;
   }
 }
