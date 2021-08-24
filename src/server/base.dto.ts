@@ -35,6 +35,19 @@ export class BaseSearchDto {
   readonly keyword?: string;
 }
 
+export class BaseModifyStatusByIdDto {
+  @ApiProperty({ description: '主键 id', example: null })
+  @IsDefined({ message: '主键 id 不能为空！' })
+  @IsNotEmpty({ message: '主键 id 不能为空！' })
+  readonly id: string;
+
+  @ApiPropertyOptional({ description: '状态', example: 1 })
+  @IsOptional()
+  @Transform((value) => Number.parseInt(value))
+  @IsInt({ message: '状态必须为数字！' })
+  status?: number;
+}
+
 export class BaseModifyStatusByIdsDto {
   @ApiProperty({ description: '主键 ids', example: null })
   @IsDefined({ message: '主键 ids 不能为空！' })
@@ -44,7 +57,7 @@ export class BaseModifyStatusByIdsDto {
   @ApiPropertyOptional({ description: '状态', example: 1 })
   @IsOptional()
   @Transform((value) => Number.parseInt(value))
-  @IsInt({ message: '排序必须为数字！' })
+  @IsInt({ message: '状态必须为数字！' })
   status?: number;
 }
 

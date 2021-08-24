@@ -16,8 +16,9 @@ export class CacheService {
       });
   }
 
-  private async getClient() {
+  public async getClient() {
     this.client = await this.redisService.getClient();
+    return this.client
   }
 
   /**

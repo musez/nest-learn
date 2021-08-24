@@ -4,7 +4,7 @@ import { CaptchaController } from './captcha.controller';
 import { CacheModule } from '../cache/cache.module';
 
 @Module({
-  imports: [CacheModule],
+  // imports: [CacheModule],
   controllers: [CaptchaController],
   providers: [CaptchaService],
   exports: [CaptchaService],
