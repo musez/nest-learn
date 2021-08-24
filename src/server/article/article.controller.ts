@@ -19,7 +19,6 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import {
   BaseFindByIdDto,
   BaseFindByIdsDto,
-  BaseModifyStatusByIdDto,
   BaseModifyStatusByIdsDto,
 } from '../base.dto';
 import { Article } from './entities/article.entity';
@@ -35,8 +34,6 @@ import { ApiException } from '../../common/exception/api-exception';
 import { LimitArticleTopDto } from './dto/limit-article-topic.dto';
 import { CreateArticleTopicDto } from './dto/create-article-topic.dto';
 import * as trimHtml from 'trim-html';
-import { CacheService } from '../cache/cache.service';
-import { ArticleCache } from '../../constants/article.cache';
 
 @Controller('article')
 @ApiTags('文章')
@@ -46,7 +43,6 @@ export class ArticleController {
   constructor(
     private readonly articleService: ArticleService,
     private readonly excelService: ExcelService,
-    private readonly cacheService: CacheService,
   ) {
   }
 
@@ -290,16 +286,63 @@ export class ArticleController {
     );
   }
 
+  @Get('findBrowseRank')
+  @ApiOperation({ summary: '获取浏览排行' })
+  async findBrowseRank(): Promise<any> {
+    return await this.articleService.selectBrowseRank();
+  }
+
+  @Post('browse')
+  @ApiOperation({ summary: '浏览/取消浏览' })
+  async browse(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
+    return await this.articleService.browse(baseFindByIdDto, curUser);
+  }
+
+  @Get('findLinkRank')
+  @ApiOperation({ summary: '获取点赞排行' })
+  async findLinkRank(): Promise<any> {
+    return await this.articleService.selectLinkRank();
+  }
+
   @Post('link')
   @ApiOperation({ summary: '点赞/取消点赞' })
-  async link(@CurUser() curUser, @Body() baseModifyStatusByIdDto: BaseModifyStatusByIdDto): Promise<any> {
-    const { id, status } = baseModifyStatusByIdDto;
-    const client = await this.cacheService.getClient();
-    if (status === 1) {
-      client.set(`${ArticleCache.ARTICLE_LINK}${id}`, curUser.id);
-    } else {
-      client.del(`${ArticleCache.ARTICLE_LINK}${id}`, curUser.id);
-    }
-    return null;
+  async link(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
+    return await this.articleService.link(baseFindByIdDto, curUser);
+  }
+
+  @Get('findCollectRank')
+  @ApiOperation({ summary: '获取收藏排行' })
+  async findCollectRank(): Promise<any> {
+    return await this.articleService.selectCollectRank();
+  }
+
+  @Post('collect')
+  @ApiOperation({ summary: '收藏/取消收藏' })
+  async collect(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
+    return await this.articleService.collect(baseFindByIdDto, curUser);
+  }
+
+  @Get('findShareRank')
+  @ApiOperation({ summary: '获取分享排行' })
+  async findShareRank(): Promise<any> {
+    return await this.articleService.selectShareRank();
+  }
+
+  @Post('comment')
+  @ApiOperation({ summary: '分享/取消分享' })
+  async share(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
+    return await this.articleService.share(baseFindByIdDto, curUser);
+  }
+
+  @Get('findCommentRank')
+  @ApiOperation({ summary: '获取评论排行' })
+  async findCommentRank(): Promise<any> {
+    return await this.articleService.selectCommentRank();
+  }
+
+  @Post('comment')
+  @ApiOperation({ summary: '评论/取消评论' })
+  async comment(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
+    return await this.articleService.comment(baseFindByIdDto, curUser);
   }
 }

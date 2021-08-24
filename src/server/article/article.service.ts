@@ -21,6 +21,8 @@ import { TopicService } from '../topic/topic.service';
 import { CommentService } from '../comment/comment.service';
 import { LimitArticleTopDto } from './dto/limit-article-topic.dto';
 import { CreateArticleTopicDto } from './dto/create-article-topic.dto';
+import { ArticleCache } from '../../constants/article.cache';
+import { CacheService } from '../cache/cache.service';
 
 @Injectable()
 export class ArticleService {
@@ -31,6 +33,7 @@ export class ArticleService {
     private readonly articleDataCatService: ArticleDataCatService,
     private readonly topicService: TopicService,
     private readonly commentService: CommentService,
+    private readonly cacheService: CacheService,
   ) {
   }
 
@@ -228,7 +231,7 @@ export class ArticleService {
   /**
    * 修改
    */
-  async update(updateArticleDto: UpdateArticleDto, curUser): Promise<void> {
+  async update(updateArticleDto: UpdateArticleDto, curUser): Promise<any> {
     const { id, cats } = updateArticleDto;
 
     let article = new Article();
@@ -239,7 +242,11 @@ export class ArticleService {
       throw new ApiException('操作异常！', 500);
     }
 
-    return await this.bindArticleCats(id, cats);
+    if (cats) {
+      return await this.bindArticleCats(id, cats);
+    } else {
+      return ret;
+    }
   }
 
   /**
@@ -475,5 +482,260 @@ export class ArticleService {
       // @ts-ignore
       return await this.commentService.insert(params, curUser);
     }
+  }
+
+  /**
+   * 获取浏览排行
+   */
+  async selectBrowseRank(): Promise<any> {
+    const client = await this.cacheService.getClient();
+
+    return await client.zrevrangebyscore(`${ArticleCache.ARTICLE_BROWSE_COUNT}`, '+inf', '-inf', 'withscores');
+  }
+
+  /**
+   * 浏览
+   */
+  async browse(baseFindByIdDto: BaseFindByIdDto, curUser): Promise<any> {
+    const { id } = baseFindByIdDto;
+    const client = await this.cacheService.getClient();
+
+    const isBrowseBefore = await client.sismember(`${ArticleCache.ARTICLE_BROWSE}${id}`, curUser.id);
+
+    if (isBrowseBefore === 1) {
+      // 取消浏览
+      // client.srem(`${ArticleCache.ARTICLE_BROWSE}${id}`, curUser.id);
+      // client.zincrby(`${ArticleCache.ARTICLE_BROWSE_COUNT}`, -1, id);
+      // const decrementRet = await this.articleRepository.decrement(
+      //   { id: id },
+      //   'browseCount',
+      //   1,
+      // );
+    } else {
+      // 浏览
+      client.sadd(`${ArticleCache.ARTICLE_BROWSE}${id}`, curUser.id);
+      client.zincrby(`${ArticleCache.ARTICLE_BROWSE_COUNT}`, 1, id);
+      const incrementRet = await this.articleRepository.increment(
+        { id: id },
+        'browseCount',
+        1,
+      );
+    }
+
+    const [userIds, browseIds, isBrowse] = await Promise.all([
+      client.smembers(`${ArticleCache.ARTICLE_BROWSE}${id}`),
+      client.scard(`${ArticleCache.ARTICLE_BROWSE}${id}`),
+      client.sismember(`${ArticleCache.ARTICLE_BROWSE}${id}`, curUser.id),
+    ]);
+
+    return {
+      userIds: userIds,
+      browseIds: browseIds,
+      isBrowse: isBrowse,
+    };
+  }
+
+  /**
+   * 获取点赞排行
+   */
+  async selectLinkRank(): Promise<any> {
+    const client = await this.cacheService.getClient();
+
+    return await client.zrevrangebyscore(`${ArticleCache.ARTICLE_LINK_COUNT}`, '+inf', '-inf', 'withscores');
+  }
+
+  /**
+   * 点赞/取消点赞
+   */
+  async link(baseFindByIdDto: BaseFindByIdDto, curUser): Promise<any> {
+    const { id } = baseFindByIdDto;
+    const client = await this.cacheService.getClient();
+
+    const isLinkBefore = await client.sismember(`${ArticleCache.ARTICLE_LINK}${id}`, curUser.id);
+
+    if (isLinkBefore === 1) {
+      // 取消点赞
+      client.srem(`${ArticleCache.ARTICLE_LINK}${id}`, curUser.id);
+      client.zincrby(`${ArticleCache.ARTICLE_LINK_COUNT}`, -1, id);
+      const decrementRet = await this.articleRepository.decrement(
+        { id: id },
+        'linkCount',
+        1,
+      );
+    } else {
+      // 点赞
+      client.sadd(`${ArticleCache.ARTICLE_LINK}${id}`, curUser.id);
+      client.zincrby(`${ArticleCache.ARTICLE_LINK_COUNT}`, 1, id);
+      const incrementRet = await this.articleRepository.increment(
+        { id: id },
+        'linkCount',
+        1,
+      );
+    }
+
+    const [userIds, linkIds, isLink] = await Promise.all([
+      client.smembers(`${ArticleCache.ARTICLE_LINK}${id}`),
+      client.scard(`${ArticleCache.ARTICLE_LINK}${id}`),
+      client.sismember(`${ArticleCache.ARTICLE_LINK}${id}`, curUser.id),
+    ]);
+
+    return {
+      userIds: userIds,
+      linkIds: linkIds,
+      isLink: isLink,
+    };
+  }
+
+  /**
+   * 获取收藏排行
+   */
+  async selectCollectRank(): Promise<any> {
+    const client = await this.cacheService.getClient();
+
+    return await client.zrevrangebyscore(`${ArticleCache.ARTICLE_COLLECT_COUNT}`, '+inf', '-inf', 'withscores');
+  }
+
+  /**
+   * 收藏/取消收藏
+   */
+  async collect(baseFindByIdDto: BaseFindByIdDto, curUser): Promise<any> {
+    const { id } = baseFindByIdDto;
+    const client = await this.cacheService.getClient();
+
+    const isCollectBefore = await client.sismember(`${ArticleCache.ARTICLE_COLLECT}${id}`, curUser.id);
+
+    if (isCollectBefore === 1) {
+      // 取消收藏
+      client.srem(`${ArticleCache.ARTICLE_COLLECT}${id}`, curUser.id);
+      client.zincrby(`${ArticleCache.ARTICLE_COLLECT_COUNT}`, -1, id);
+      const decrementRet = await this.articleRepository.decrement(
+        { id: id },
+        'collectCount',
+        1,
+      );
+    } else {
+      // 收藏
+      client.sadd(`${ArticleCache.ARTICLE_COLLECT}${id}`, curUser.id);
+      client.zincrby(`${ArticleCache.ARTICLE_COLLECT_COUNT}`, 1, id);
+      const incrementRet = await this.articleRepository.increment(
+        { id: id },
+        'collectCount',
+        1,
+      );
+    }
+
+    const [userIds, collectIds, isCollect] = await Promise.all([
+      client.smembers(`${ArticleCache.ARTICLE_COLLECT}${id}`),
+      client.scard(`${ArticleCache.ARTICLE_COLLECT}${id}`),
+      client.sismember(`${ArticleCache.ARTICLE_COLLECT}${id}`, curUser.id),
+    ]);
+
+    return {
+      userIds: userIds,
+      collectIds: collectIds,
+      isCollect: isCollect,
+    };
+  }
+
+  /**
+   * 获取评论排行
+   */
+  async selectShareRank(): Promise<any> {
+    const client = await this.cacheService.getClient();
+
+    return await client.zrevrangebyscore(`${ArticleCache.ARTICLE_SHARE_COUNT}`, '+inf', '-inf', 'withscores');
+  }
+
+  /**
+   * 分享/取消分享
+   */
+  async share(baseFindByIdDto: BaseFindByIdDto, curUser): Promise<any> {
+    const { id } = baseFindByIdDto;
+    const client = await this.cacheService.getClient();
+
+    const isLinkBefore = await client.sismember(`${ArticleCache.ARTICLE_SHARE}${id}`, curUser.id);
+
+    if (isLinkBefore === 1) {
+      // 取消分享
+      // client.srem(`${ArticleCache.ARTICLE_SHARE}${id}`, curUser.id);
+      // client.zincrby(`${ArticleCache.ARTICLE_SHARE_COUNT}`, -1, id);
+      // const decrementRet = await this.articleRepository.decrement(
+      //   { id: id },
+      //   'shareCount',
+      //   1,
+      // );
+    } else {
+      // 分享
+      client.sadd(`${ArticleCache.ARTICLE_SHARE}${id}`, curUser.id);
+      client.zincrby(`${ArticleCache.ARTICLE_SHARE_COUNT}`, 1, id);
+      const incrementRet = await this.articleRepository.increment(
+        { id: id },
+        'shareCount',
+        1,
+      );
+    }
+
+    const [userIds, shareIds, isShare] = await Promise.all([
+      client.smembers(`${ArticleCache.ARTICLE_SHARE}${id}`),
+      client.scard(`${ArticleCache.ARTICLE_SHARE}${id}`),
+      client.sismember(`${ArticleCache.ARTICLE_SHARE}${id}`, curUser.id),
+    ]);
+
+    return {
+      userIds: userIds,
+      shareIds: shareIds,
+      isShare: isShare,
+    };
+  }
+
+  /**
+   * 获取评论排行
+   */
+  async selectCommentRank(): Promise<any> {
+    const client = await this.cacheService.getClient();
+
+    return await client.zrevrangebyscore(`${ArticleCache.ARTICLE_COMMENT_COUNT}`, '+inf', '-inf', 'withscores');
+  }
+
+  /**
+   * 评论/取消评论
+   */
+  async comment(baseFindByIdDto: BaseFindByIdDto, curUser): Promise<any> {
+    const { id } = baseFindByIdDto;
+    const client = await this.cacheService.getClient();
+
+    const isLinkBefore = await client.sismember(`${ArticleCache.ARTICLE_COMMENT}${id}`, curUser.id);
+
+    if (isLinkBefore === 1) {
+      // 取消评论
+      // client.srem(`${ArticleCache.ARTICLE_COMMENT}${id}`, curUser.id);
+      // client.zincrby(`${ArticleCache.ARTICLE_COMMENT_COUNT}`, -1, id);
+      // const decrementRet = await this.articleRepository.decrement(
+      //   { id: id },
+      //   'commentCount',
+      //   1,
+      // );
+    } else {
+      // 评论
+      client.sadd(`${ArticleCache.ARTICLE_COMMENT}${id}`, curUser.id);
+      client.zincrby(`${ArticleCache.ARTICLE_COMMENT_COUNT}`, 1, id);
+      const incrementRet = await this.articleRepository.increment(
+        { id: id },
+        'commentCount',
+        1,
+      );
+    }
+
+    const [userIds, commentIds, isComment] = await Promise.all([
+      client.smembers(`${ArticleCache.ARTICLE_COMMENT}${id}`),
+      client.scard(`${ArticleCache.ARTICLE_COMMENT}${id}`),
+      client.sismember(`${ArticleCache.ARTICLE_COMMENT}${id}`, curUser.id),
+    ]);
+
+    return {
+      userIds: userIds,
+      commentIds: commentIds,
+      isComment: isComment,
+    };
   }
 }
