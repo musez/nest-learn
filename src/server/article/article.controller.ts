@@ -293,7 +293,7 @@ export class ArticleController {
   }
 
   @Post('browse')
-  @ApiOperation({ summary: '浏览/取消浏览' })
+  @ApiOperation({ summary: '浏览' })
   async browse(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
     return await this.articleService.browse(baseFindByIdDto, curUser);
   }
@@ -328,8 +328,8 @@ export class ArticleController {
     return await this.articleService.selectShareRank();
   }
 
-  @Post('comment')
-  @ApiOperation({ summary: '分享/取消分享' })
+  @Post('share')
+  @ApiOperation({ summary: '分享' })
   async share(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
     return await this.articleService.share(baseFindByIdDto, curUser);
   }
@@ -341,7 +341,7 @@ export class ArticleController {
   }
 
   @Post('comment')
-  @ApiOperation({ summary: '评论/取消评论' })
+  @ApiOperation({ summary: '评论' })
   async comment(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
     return await this.articleService.comment(baseFindByIdDto, curUser);
   }

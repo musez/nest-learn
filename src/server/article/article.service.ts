@@ -503,14 +503,13 @@ export class ArticleService {
     const isBrowseBefore = await client.sismember(`${ArticleCache.ARTICLE_BROWSE}${id}`, curUser.id);
 
     if (isBrowseBefore === 1) {
-      // 取消浏览
-      // client.srem(`${ArticleCache.ARTICLE_BROWSE}${id}`, curUser.id);
-      // client.zincrby(`${ArticleCache.ARTICLE_BROWSE_COUNT}`, -1, id);
-      // const decrementRet = await this.articleRepository.decrement(
-      //   { id: id },
-      //   'browseCount',
-      //   1,
-      // );
+      // 多次浏览
+      client.zincrby(`${ArticleCache.ARTICLE_BROWSE_COUNT}`, 1, id);
+      const incrementRet = await this.articleRepository.increment(
+        { id: id },
+        'browseCount',
+        1,
+      );
     } else {
       // 浏览
       client.sadd(`${ArticleCache.ARTICLE_BROWSE}${id}`, curUser.id);
@@ -656,14 +655,13 @@ export class ArticleService {
     const isLinkBefore = await client.sismember(`${ArticleCache.ARTICLE_SHARE}${id}`, curUser.id);
 
     if (isLinkBefore === 1) {
-      // 取消分享
-      // client.srem(`${ArticleCache.ARTICLE_SHARE}${id}`, curUser.id);
-      // client.zincrby(`${ArticleCache.ARTICLE_SHARE_COUNT}`, -1, id);
-      // const decrementRet = await this.articleRepository.decrement(
-      //   { id: id },
-      //   'shareCount',
-      //   1,
-      // );
+      // 取消多次分享
+      client.zincrby(`${ArticleCache.ARTICLE_SHARE_COUNT}`, 1, id);
+      const incrementRet = await this.articleRepository.increment(
+        { id: id },
+        'shareCount',
+        1,
+      );
     } else {
       // 分享
       client.sadd(`${ArticleCache.ARTICLE_SHARE}${id}`, curUser.id);
@@ -707,14 +705,13 @@ export class ArticleService {
     const isLinkBefore = await client.sismember(`${ArticleCache.ARTICLE_COMMENT}${id}`, curUser.id);
 
     if (isLinkBefore === 1) {
-      // 取消评论
-      // client.srem(`${ArticleCache.ARTICLE_COMMENT}${id}`, curUser.id);
-      // client.zincrby(`${ArticleCache.ARTICLE_COMMENT_COUNT}`, -1, id);
-      // const decrementRet = await this.articleRepository.decrement(
-      //   { id: id },
-      //   'commentCount',
-      //   1,
-      // );
+      // 多次评论
+      client.zincrby(`${ArticleCache.ARTICLE_COMMENT_COUNT}`, 1, id);
+      const incrementRet = await this.articleRepository.increment(
+        { id: id },
+        'commentCount',
+        1,
+      );
     } else {
       // 评论
       client.sadd(`${ArticleCache.ARTICLE_COMMENT}${id}`, curUser.id);
