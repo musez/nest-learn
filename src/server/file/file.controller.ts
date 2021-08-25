@@ -84,6 +84,7 @@ export class FileController {
     const { description, extId, fileDisName } = body;
     const fileEntity = new File();
 
+    fileEntity.type = 0;
     fileEntity.fileDisName = fileDisName;
     fileEntity.extId = extId;
     fileEntity.description = description;
@@ -161,6 +162,7 @@ export class FileController {
     files.files.forEach((file, index) => {
       const fileEntity = new File();
 
+      fileEntity.type = 0;
       if (fileDisName[index]) {
         fileEntity.fileDisName = fileDisName[index];
       }
@@ -180,42 +182,6 @@ export class FileController {
     });
 
     return this.fileService.batchInsert(filesEntity, curUser);
-  }
-
-  @Post('qiniu/upload')
-  // @UseGuards(JwtAuthGuard, AuthGuard)
-  // @Auth('system:file:qiniuUpload')
-  @ApiOperation({ summary: '文件上传（单）' })
-  @ApiConsumes('multipart/form-data')
-  @ApiBody({
-    schema: {
-      type: 'object',
-      properties: {
-        file: {
-          type: 'string',
-          format: 'binary',
-          description: '文件',
-        },
-        fileDisName: {
-          type: 'string',
-          description: '文件显示名称',
-        },
-        extId: {
-          type: 'string',
-          description: '关联 id',
-        },
-        description: {
-          type: 'string',
-          description: '描述',
-        },
-      },
-    },
-  })
-  @UseInterceptors(FileInterceptor('file'))
-  async qiniuUpload(@CurUser() curUser, @UploadedFile() file, @Body() body) {
-    console.log('file',file);
-    console.log('body',body);
-    return await this.fileService.qiniuUpload(file, curUser);
   }
 
   @Get('findListPage')

@@ -1,7 +1,12 @@
-import { IsNotEmpty, IsString, IsInt } from 'class-validator';
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiPropertyOptional } from '@nestjs/swagger';
 
 export class CreateFileDto {
+  @ApiPropertyOptional({ description: '文件类型（0：本地；1：七牛）', default: 0 })
+  readonly type: number;
+
+  @ApiPropertyOptional({ description: '云文件 key' })
+  readonly key: string;
+
   @ApiPropertyOptional({ description: '文件原始名称' })
   readonly originalName: string;
 

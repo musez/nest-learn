@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateFileDto } from './dto/create-file.dto';
@@ -6,16 +6,12 @@ import { File } from './entities/file.entity';
 import { BaseFindByIdDto, BaseFindByIdsDto } from '../base.dto';
 import { Utils } from '../../utils';
 import { LimitFileDto } from './dto/limit-file.dto';
-import * as url from 'url';
-import * as qiniu from 'qiniu';
-import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class FileService {
   constructor(
     @InjectRepository(File)
     private readonly fileRepository: Repository<File>,
-    private readonly configService: ConfigService,
   ) {
   }
 
@@ -31,50 +27,6 @@ export class FileService {
    */
   async batchInsert(files, curUser): Promise<CreateFileDto[]> {
     return await this.fileRepository.save(files);
-  }
-
-  /**
-   * 七牛上传
-   */
-  async qiniuUpload(file, curUser): Promise<any> {
-    const accessKey = this.configService.get('qiniu.accessKey');
-    const secretKey = this.configService.get('qiniu.secretKey');
-    const bucket = this.configService.get('qiniu.bucket');
-    const domain = this.configService.get('qiniu.domain');
-
-    // get token
-    const mac = new qiniu.auth.digest.Mac(accessKey, secretKey);
-    const putPolicy = new qiniu.rs.PutPolicy({
-      scope: bucket,
-    });
-    const uploadToken = putPolicy.uploadToken(mac);
-
-    // upload
-    const formUploader = new qiniu.form_up.FormUploader(
-      new qiniu.conf.Config({
-        zone: qiniu.zone.Zone_z2,
-      }),
-    );
-
-    return new Promise((_res, _rej) => {
-      formUploader.put(uploadToken, `${Date.now()}-${encodeURI(file.originalname)}`, file.destination, new qiniu.form_up.PutExtra(), function(respErr, respBody, respInfo) {
-          if (respErr) {
-            console.error(respErr);
-            throw new InternalServerErrorException(respErr.message);
-          }
-
-          if (respInfo.statusCode == 200) {
-            console.log(respBody);
-            _res({
-              url: new url.URL(respBody.key, domain).href,
-            });
-          } else {
-            console.error(respInfo.statusCode, respBody);
-            throw new InternalServerErrorException(respInfo);
-          }
-        },
-      );
-    });
   }
 
   /**

@@ -1,16 +1,18 @@
-import { ApiProperty, ApiPropertyOptional, PartialType } from '@nestjs/swagger';
+import { ApiPropertyOptional, PartialType } from '@nestjs/swagger';
 import {
-  IsNotEmpty,
-  IsString,
   IsInt,
-  IsUUID,
-  MaxLength,
   IsOptional,
 } from 'class-validator';
 import { BasePageDto } from '../../base.dto';
 import { Transform } from 'class-transformer';
 
 export class LimitFileDto extends PartialType(BasePageDto) {
+  @ApiPropertyOptional({ description: '文件类型（0：本地；1：七牛）', example: 0 })
+  @IsOptional()
+  @Transform((value) => Number.parseInt(value))
+  @IsInt({ message: '文件类型必须为数字！' })
+  readonly type?: number;
+
   @ApiPropertyOptional({ description: '文件原始名称' })
   readonly originalName?: string;
 

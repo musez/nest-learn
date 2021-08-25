@@ -15,6 +15,8 @@ export class File extends BaseEntity {
   constructor() {
     super();
 
+    this.type = undefined;
+    this.key = undefined;
     this.originalName = undefined;
     this.encoding = undefined;
     this.mimeType = undefined;
@@ -26,6 +28,12 @@ export class File extends BaseEntity {
     this.fileUrl = undefined;
     this.extId = undefined;
   }
+
+  @Column('varchar', { comment: '文件类型', nullable: true })
+  type: number;
+
+  @Column('varchar', { comment: '云文件 key', nullable: true })
+  key: string;
 
   @Column('varchar', { comment: '文件原始名称', nullable: true })
   originalName: string;
