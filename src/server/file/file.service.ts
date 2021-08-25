@@ -16,7 +16,8 @@ export class FileService {
     @InjectRepository(File)
     private readonly fileRepository: Repository<File>,
     private readonly configService: ConfigService,
-  ) {}
+  ) {
+  }
 
   /**
    * 添加
@@ -56,13 +57,14 @@ export class FileService {
     );
 
     return new Promise((_res, _rej) => {
-      formUploader.put(uploadToken, `${Date.now()}-${file.originalname}`, file.buffer, new qiniu.form_up.PutExtra(), function(respErr, respBody, respInfo) {
+      formUploader.put(uploadToken, `${Date.now()}-${encodeURI(file.originalname)}`, file.destination, new qiniu.form_up.PutExtra(), function(respErr, respBody, respInfo) {
           if (respErr) {
             console.error(respErr);
             throw new InternalServerErrorException(respErr.message);
           }
 
           if (respInfo.statusCode == 200) {
+            console.log(respBody);
             _res({
               url: new url.URL(respBody.key, domain).href,
             });

@@ -183,8 +183,8 @@ export class FileController {
   }
 
   @Post('qiniu/upload')
-  @UseGuards(JwtAuthGuard, AuthGuard)
-  @Auth('system:file:qiniuUpload')
+  // @UseGuards(JwtAuthGuard, AuthGuard)
+  // @Auth('system:file:qiniuUpload')
   @ApiOperation({ summary: '文件上传（单）' })
   @ApiConsumes('multipart/form-data')
   @ApiBody({
@@ -213,6 +213,8 @@ export class FileController {
   })
   @UseInterceptors(FileInterceptor('file'))
   async qiniuUpload(@CurUser() curUser, @UploadedFile() file, @Body() body) {
+    console.log('file',file);
+    console.log('body',body);
     return await this.fileService.qiniuUpload(file, curUser);
   }
 

@@ -45,6 +45,7 @@ import RedisConfig from './config/redis.config';
 import JwtConfig from './config/jwt.config';
 import SwaggerConfig from './config/swagger.config';
 import WechatConfig from './config/wechat.config';
+import QiNiuConfig from './config/qiniu.config';
 
 @Module({
   imports: [
@@ -59,6 +60,7 @@ import WechatConfig from './config/wechat.config';
         RedisConfig,
         SwaggerConfig,
         WechatConfig,
+        QiNiuConfig,
       ],
       // validationSchema: Joi.object({
       //   NODE_ENV: Joi.string()
