@@ -1,13 +1,9 @@
 import {
-  IsNotEmpty,
-  IsString,
-  IsInt,
-  IsEmail,
   MaxLength,
 } from 'class-validator';
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiPropertyOptional } from '@nestjs/swagger';
 import { UpdateUserDto } from '../../user/dto/update-user.dto';
-import { UserConstants } from '../../../constants/constants';
+import { UserConstants } from '../../../constants/swagger.const';
 
 export class BaseUserinfoDto {
   @ApiPropertyOptional({ description: '省份' })

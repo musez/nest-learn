@@ -2,7 +2,6 @@ import {
   IsDefined,
   IsOptional,
   IsNotEmpty,
-  IsString,
   IsInt,
   MaxLength,
   IsUUID,
@@ -12,7 +11,7 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
   ArticleCatConstants,
   BaseConstants,
-} from '../../../constants/constants';
+} from '../../../constants/swagger.const';
 
 export class BaseArticleCatDto {
   @ApiProperty({ description: '主键 id', example: null })

@@ -1,6 +1,5 @@
 import {
   IsDefined,
-  ValidateIf,
   IsNotEmpty,
   IsString,
   IsInt,
@@ -8,13 +7,12 @@ import {
   MinLength,
   MaxLength,
   IsMobilePhone,
-  IsEnum,
   IsOptional,
   IsUUID,
 } from 'class-validator';
 import { Transform } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { BaseConstants, UserConstants } from '../../../constants/constants';
+import { BaseConstants, UserConstants } from '../../../constants/swagger.const';
 
 export class BaseUserDto {
   @ApiProperty({ description: '主键 id', example: null })

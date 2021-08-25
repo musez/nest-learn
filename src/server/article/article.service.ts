@@ -20,8 +20,8 @@ import { ApiException } from '../../common/exception/api-exception';
 import { TopicService } from '../topic/topic.service';
 import { CommentService } from '../comment/comment.service';
 import { LimitArticleTopDto } from './dto/limit-article-topic.dto';
-import { CreateArticleTopicDto } from './dto/create-article-topic.dto';
-import { ArticleCache } from '../../constants/article.cache';
+import { CreateArticleCommentDto } from './dto/create-article-comment.dto';
+import { ArticlePrefix } from '../../constants/article.prefix';
 import { CacheService } from '../cache/cache.service';
 
 @Injectable()
@@ -458,11 +458,11 @@ export class ArticleService {
   /**
    * 评论
    */
-  async insertTopic(
-    createArticleTopicDto: CreateArticleTopicDto,
+  async insertComment(
+    createArticleCommentDto: CreateArticleCommentDto,
     curUser?,
   ): Promise<any> {
-    const { id, type, replyType, replyId, ...form } = createArticleTopicDto;
+    const { id, type, replyType, replyId, ...form } = createArticleCommentDto;
 
     if (type === 0) {
       const params = Object.assign(form, {
@@ -490,7 +490,7 @@ export class ArticleService {
   async selectBrowseRank(): Promise<any> {
     const client = await this.cacheService.getClient();
 
-    return await client.zrevrangebyscore(`${ArticleCache.ARTICLE_BROWSE_COUNT}`, '+inf', '-inf', 'withscores');
+    return await client.zrevrangebyscore(`${ArticlePrefix.ARTICLE_BROWSE_COUNT}`, '+inf', '-inf', 'withscores');
   }
 
   /**
@@ -500,11 +500,11 @@ export class ArticleService {
     const { id } = baseFindByIdDto;
     const client = await this.cacheService.getClient();
 
-    const isBrowseBefore = await client.sismember(`${ArticleCache.ARTICLE_BROWSE}${id}`, curUser.id);
+    const isBrowseBefore = await client.sismember(`${ArticlePrefix.ARTICLE_BROWSE}${id}`, curUser.id);
 
     if (isBrowseBefore === 1) {
       // 多次浏览
-      client.zincrby(`${ArticleCache.ARTICLE_BROWSE_COUNT}`, 1, id);
+      client.zincrby(`${ArticlePrefix.ARTICLE_BROWSE_COUNT}`, 1, id);
       const incrementRet = await this.articleRepository.increment(
         { id: id },
         'browseCount',
@@ -512,8 +512,8 @@ export class ArticleService {
       );
     } else {
       // 浏览
-      client.sadd(`${ArticleCache.ARTICLE_BROWSE}${id}`, curUser.id);
-      client.zincrby(`${ArticleCache.ARTICLE_BROWSE_COUNT}`, 1, id);
+      client.sadd(`${ArticlePrefix.ARTICLE_BROWSE}${id}`, curUser.id);
+      client.zincrby(`${ArticlePrefix.ARTICLE_BROWSE_COUNT}`, 1, id);
       const incrementRet = await this.articleRepository.increment(
         { id: id },
         'browseCount',
@@ -522,9 +522,9 @@ export class ArticleService {
     }
 
     const [userIds, browseIds, isBrowse] = await Promise.all([
-      client.smembers(`${ArticleCache.ARTICLE_BROWSE}${id}`),
-      client.scard(`${ArticleCache.ARTICLE_BROWSE}${id}`),
-      client.sismember(`${ArticleCache.ARTICLE_BROWSE}${id}`, curUser.id),
+      client.smembers(`${ArticlePrefix.ARTICLE_BROWSE}${id}`),
+      client.scard(`${ArticlePrefix.ARTICLE_BROWSE}${id}`),
+      client.sismember(`${ArticlePrefix.ARTICLE_BROWSE}${id}`, curUser.id),
     ]);
 
     return {
@@ -540,7 +540,7 @@ export class ArticleService {
   async selectLinkRank(): Promise<any> {
     const client = await this.cacheService.getClient();
 
-    return await client.zrevrangebyscore(`${ArticleCache.ARTICLE_LINK_COUNT}`, '+inf', '-inf', 'withscores');
+    return await client.zrevrangebyscore(`${ArticlePrefix.ARTICLE_LINK_COUNT}`, '+inf', '-inf', 'withscores');
   }
 
   /**
@@ -550,12 +550,12 @@ export class ArticleService {
     const { id } = baseFindByIdDto;
     const client = await this.cacheService.getClient();
 
-    const isLinkBefore = await client.sismember(`${ArticleCache.ARTICLE_LINK}${id}`, curUser.id);
+    const isLinkBefore = await client.sismember(`${ArticlePrefix.ARTICLE_LINK}${id}`, curUser.id);
 
     if (isLinkBefore === 1) {
       // 取消点赞
-      client.srem(`${ArticleCache.ARTICLE_LINK}${id}`, curUser.id);
-      client.zincrby(`${ArticleCache.ARTICLE_LINK_COUNT}`, -1, id);
+      client.srem(`${ArticlePrefix.ARTICLE_LINK}${id}`, curUser.id);
+      client.zincrby(`${ArticlePrefix.ARTICLE_LINK_COUNT}`, -1, id);
       const decrementRet = await this.articleRepository.decrement(
         { id: id },
         'linkCount',
@@ -563,8 +563,8 @@ export class ArticleService {
       );
     } else {
       // 点赞
-      client.sadd(`${ArticleCache.ARTICLE_LINK}${id}`, curUser.id);
-      client.zincrby(`${ArticleCache.ARTICLE_LINK_COUNT}`, 1, id);
+      client.sadd(`${ArticlePrefix.ARTICLE_LINK}${id}`, curUser.id);
+      client.zincrby(`${ArticlePrefix.ARTICLE_LINK_COUNT}`, 1, id);
       const incrementRet = await this.articleRepository.increment(
         { id: id },
         'linkCount',
@@ -573,9 +573,9 @@ export class ArticleService {
     }
 
     const [userIds, linkIds, isLink] = await Promise.all([
-      client.smembers(`${ArticleCache.ARTICLE_LINK}${id}`),
-      client.scard(`${ArticleCache.ARTICLE_LINK}${id}`),
-      client.sismember(`${ArticleCache.ARTICLE_LINK}${id}`, curUser.id),
+      client.smembers(`${ArticlePrefix.ARTICLE_LINK}${id}`),
+      client.scard(`${ArticlePrefix.ARTICLE_LINK}${id}`),
+      client.sismember(`${ArticlePrefix.ARTICLE_LINK}${id}`, curUser.id),
     ]);
 
     return {
@@ -591,7 +591,7 @@ export class ArticleService {
   async selectCollectRank(): Promise<any> {
     const client = await this.cacheService.getClient();
 
-    return await client.zrevrangebyscore(`${ArticleCache.ARTICLE_COLLECT_COUNT}`, '+inf', '-inf', 'withscores');
+    return await client.zrevrangebyscore(`${ArticlePrefix.ARTICLE_COLLECT_COUNT}`, '+inf', '-inf', 'withscores');
   }
 
   /**
@@ -601,12 +601,12 @@ export class ArticleService {
     const { id } = baseFindByIdDto;
     const client = await this.cacheService.getClient();
 
-    const isCollectBefore = await client.sismember(`${ArticleCache.ARTICLE_COLLECT}${id}`, curUser.id);
+    const isCollectBefore = await client.sismember(`${ArticlePrefix.ARTICLE_COLLECT}${id}`, curUser.id);
 
     if (isCollectBefore === 1) {
       // 取消收藏
-      client.srem(`${ArticleCache.ARTICLE_COLLECT}${id}`, curUser.id);
-      client.zincrby(`${ArticleCache.ARTICLE_COLLECT_COUNT}`, -1, id);
+      client.srem(`${ArticlePrefix.ARTICLE_COLLECT}${id}`, curUser.id);
+      client.zincrby(`${ArticlePrefix.ARTICLE_COLLECT_COUNT}`, -1, id);
       const decrementRet = await this.articleRepository.decrement(
         { id: id },
         'collectCount',
@@ -614,8 +614,8 @@ export class ArticleService {
       );
     } else {
       // 收藏
-      client.sadd(`${ArticleCache.ARTICLE_COLLECT}${id}`, curUser.id);
-      client.zincrby(`${ArticleCache.ARTICLE_COLLECT_COUNT}`, 1, id);
+      client.sadd(`${ArticlePrefix.ARTICLE_COLLECT}${id}`, curUser.id);
+      client.zincrby(`${ArticlePrefix.ARTICLE_COLLECT_COUNT}`, 1, id);
       const incrementRet = await this.articleRepository.increment(
         { id: id },
         'collectCount',
@@ -624,9 +624,9 @@ export class ArticleService {
     }
 
     const [userIds, collectIds, isCollect] = await Promise.all([
-      client.smembers(`${ArticleCache.ARTICLE_COLLECT}${id}`),
-      client.scard(`${ArticleCache.ARTICLE_COLLECT}${id}`),
-      client.sismember(`${ArticleCache.ARTICLE_COLLECT}${id}`, curUser.id),
+      client.smembers(`${ArticlePrefix.ARTICLE_COLLECT}${id}`),
+      client.scard(`${ArticlePrefix.ARTICLE_COLLECT}${id}`),
+      client.sismember(`${ArticlePrefix.ARTICLE_COLLECT}${id}`, curUser.id),
     ]);
 
     return {
@@ -642,7 +642,7 @@ export class ArticleService {
   async selectShareRank(): Promise<any> {
     const client = await this.cacheService.getClient();
 
-    return await client.zrevrangebyscore(`${ArticleCache.ARTICLE_SHARE_COUNT}`, '+inf', '-inf', 'withscores');
+    return await client.zrevrangebyscore(`${ArticlePrefix.ARTICLE_SHARE_COUNT}`, '+inf', '-inf', 'withscores');
   }
 
   /**
@@ -652,11 +652,11 @@ export class ArticleService {
     const { id } = baseFindByIdDto;
     const client = await this.cacheService.getClient();
 
-    const isLinkBefore = await client.sismember(`${ArticleCache.ARTICLE_SHARE}${id}`, curUser.id);
+    const isLinkBefore = await client.sismember(`${ArticlePrefix.ARTICLE_SHARE}${id}`, curUser.id);
 
     if (isLinkBefore === 1) {
       // 取消多次分享
-      client.zincrby(`${ArticleCache.ARTICLE_SHARE_COUNT}`, 1, id);
+      client.zincrby(`${ArticlePrefix.ARTICLE_SHARE_COUNT}`, 1, id);
       const incrementRet = await this.articleRepository.increment(
         { id: id },
         'shareCount',
@@ -664,8 +664,8 @@ export class ArticleService {
       );
     } else {
       // 分享
-      client.sadd(`${ArticleCache.ARTICLE_SHARE}${id}`, curUser.id);
-      client.zincrby(`${ArticleCache.ARTICLE_SHARE_COUNT}`, 1, id);
+      client.sadd(`${ArticlePrefix.ARTICLE_SHARE}${id}`, curUser.id);
+      client.zincrby(`${ArticlePrefix.ARTICLE_SHARE_COUNT}`, 1, id);
       const incrementRet = await this.articleRepository.increment(
         { id: id },
         'shareCount',
@@ -674,9 +674,9 @@ export class ArticleService {
     }
 
     const [userIds, shareIds, isShare] = await Promise.all([
-      client.smembers(`${ArticleCache.ARTICLE_SHARE}${id}`),
-      client.scard(`${ArticleCache.ARTICLE_SHARE}${id}`),
-      client.sismember(`${ArticleCache.ARTICLE_SHARE}${id}`, curUser.id),
+      client.smembers(`${ArticlePrefix.ARTICLE_SHARE}${id}`),
+      client.scard(`${ArticlePrefix.ARTICLE_SHARE}${id}`),
+      client.sismember(`${ArticlePrefix.ARTICLE_SHARE}${id}`, curUser.id),
     ]);
 
     return {
@@ -692,7 +692,7 @@ export class ArticleService {
   async selectCommentRank(): Promise<any> {
     const client = await this.cacheService.getClient();
 
-    return await client.zrevrangebyscore(`${ArticleCache.ARTICLE_COMMENT_COUNT}`, '+inf', '-inf', 'withscores');
+    return await client.zrevrangebyscore(`${ArticlePrefix.ARTICLE_COMMENT_COUNT}`, '+inf', '-inf', 'withscores');
   }
 
   /**
@@ -702,11 +702,11 @@ export class ArticleService {
     const { id } = baseFindByIdDto;
     const client = await this.cacheService.getClient();
 
-    const isLinkBefore = await client.sismember(`${ArticleCache.ARTICLE_COMMENT}${id}`, curUser.id);
+    const isLinkBefore = await client.sismember(`${ArticlePrefix.ARTICLE_COMMENT}${id}`, curUser.id);
 
     if (isLinkBefore === 1) {
       // 多次评论
-      client.zincrby(`${ArticleCache.ARTICLE_COMMENT_COUNT}`, 1, id);
+      client.zincrby(`${ArticlePrefix.ARTICLE_COMMENT_COUNT}`, 1, id);
       const incrementRet = await this.articleRepository.increment(
         { id: id },
         'commentCount',
@@ -714,8 +714,8 @@ export class ArticleService {
       );
     } else {
       // 评论
-      client.sadd(`${ArticleCache.ARTICLE_COMMENT}${id}`, curUser.id);
-      client.zincrby(`${ArticleCache.ARTICLE_COMMENT_COUNT}`, 1, id);
+      client.sadd(`${ArticlePrefix.ARTICLE_COMMENT}${id}`, curUser.id);
+      client.zincrby(`${ArticlePrefix.ARTICLE_COMMENT_COUNT}`, 1, id);
       const incrementRet = await this.articleRepository.increment(
         { id: id },
         'commentCount',
@@ -724,9 +724,9 @@ export class ArticleService {
     }
 
     const [userIds, commentIds, isComment] = await Promise.all([
-      client.smembers(`${ArticleCache.ARTICLE_COMMENT}${id}`),
-      client.scard(`${ArticleCache.ARTICLE_COMMENT}${id}`),
-      client.sismember(`${ArticleCache.ARTICLE_COMMENT}${id}`, curUser.id),
+      client.smembers(`${ArticlePrefix.ARTICLE_COMMENT}${id}`),
+      client.scard(`${ArticlePrefix.ARTICLE_COMMENT}${id}`),
+      client.sismember(`${ArticlePrefix.ARTICLE_COMMENT}${id}`, curUser.id),
     ]);
 
     return {

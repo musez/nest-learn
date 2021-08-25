@@ -1,27 +1,14 @@
 import {
   IsNotEmpty,
-  IsString,
-  IsInt,
   MaxLength,
-  IsUUID,
 } from 'class-validator';
 import {
   Entity,
-  PrimaryGeneratedColumn,
   Column,
-  CreateDateColumn,
-  UpdateDateColumn,
-  BeforeInsert,
-  JoinTable,
-  ManyToMany,
   OneToMany,
-  BeforeUpdate,
-  Tree,
-  TreeChildren,
-  TreeParent,
 } from 'typeorm';
 import { BaseEntity } from '../../base.entity';
-import { BaseConstants } from '../../../constants/constants';
+import { BaseConstants } from '../../../constants/swagger.const';
 import {
   PermissionType,
   PermissionHiddenType,

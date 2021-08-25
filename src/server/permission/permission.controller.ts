@@ -35,7 +35,7 @@ import {
   PermissionDict,
   PermissionHiddenDict,
   StatusDict,
-} from '../../constants/dicts';
+} from '../../constants/dicts.const';
 import { ApiException } from '../../common/exception/api-exception';
 
 @Controller('permission')

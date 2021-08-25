@@ -26,7 +26,7 @@ import { AuthGuard } from '../../common/guards/auth.guard';
 import { Auth } from '../../common/decorators/auth.decorator';
 import { Utils } from '../../utils';
 import { ExcelService } from '../excel/excel.service';
-import { OrgDict, StatusDict } from '../../constants/dicts';
+import { OrgDict, StatusDict } from '../../constants/dicts.const';
 import { ApiException } from '../../common/exception/api-exception';
 
 @Controller('org')

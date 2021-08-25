@@ -38,7 +38,7 @@ import { Auth } from '../../common/decorators/auth.decorator';
 import { AuthGuard } from '../../common/guards/auth.guard';
 import { ExcelService } from '../excel/excel.service';
 import { Utils } from './../../utils/index';
-import { SexDict, StatusDict, UserDict } from '../../constants/dicts';
+import { SexDict, StatusDict, UserDict } from '../../constants/dicts.const';
 import { ApiException } from '../../common/exception/api-exception';
 
 @ApiTags('用户')

@@ -23,7 +23,7 @@ import { Utils } from '../../utils';
 import { UserAddress } from './entities/user-address.entity';
 import { SearchUserAddressDto } from './dto/search-user-address.dto';
 import { LimitUserAddressDto } from './dto/limit-user-address.dto';
-import { StatusDict } from '../../constants/dicts';
+import { StatusDict } from '../../constants/dicts.const';
 import { ApiException } from '../../common/exception/api-exception';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { AuthGuard } from '../../common/guards/auth.guard';

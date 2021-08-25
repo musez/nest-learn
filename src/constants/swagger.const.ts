@@ -1,5 +1,3 @@
-import { BaseArticleDto } from '../server/article/dto/base-article.dto';
-
 export const APIPrefix: string = '/api/v1';
 
 export class BaseConstants {

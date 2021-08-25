@@ -29,10 +29,10 @@ import { Auth } from '../../common/decorators/auth.decorator';
 import { AuthGuard } from '../../common/guards/auth.guard';
 import { Utils } from '../../utils';
 import { ExcelService } from '../excel/excel.service';
-import { ArticleDict, IsCommentDict, StatusDict } from '../../constants/dicts';
+import { ArticleDict, IsCommentDict, StatusDict } from '../../constants/dicts.const';
 import { ApiException } from '../../common/exception/api-exception';
 import { LimitArticleTopDto } from './dto/limit-article-topic.dto';
-import { CreateArticleTopicDto } from './dto/create-article-topic.dto';
+import { CreateArticleCommentDto } from './dto/create-article-comment.dto';
 import * as trimHtml from 'trim-html';
 
 @Controller('article')
@@ -74,6 +74,20 @@ export class ArticleController {
   @ApiOperation({ summary: '获取详情（主键 id）' })
   async findById(@Query() baseFindByIdDto: BaseFindByIdDto): Promise<Article> {
     return await this.articleService.selectById(baseFindByIdDto);
+  }
+
+  @Get('findInfoById')
+  @Auth('cms:article:findInfoById')
+  @ApiOperation({ summary: '获取详情（主键 id）' })
+  async findInfoById(@CurUser() curUser, @Query() baseFindByIdDto: BaseFindByIdDto): Promise<Article> {
+    const incrementRet = await this.articleService.browse(baseFindByIdDto, curUser);
+    const ret = await this.articleService.selectById(baseFindByIdDto);
+
+    if (ret && incrementRet) {
+      return ret;
+    } else {
+      throw new ApiException('查询异常！', 500);
+    }
   }
 
   @Get('exportExcel')
@@ -273,15 +287,15 @@ export class ArticleController {
     return await this.articleService.selectCommentPageById(limitArticleTopDto);
   }
 
-  @Post('addTopic')
-  @Auth('cms:article:addTopic')
+  @Post('addComment')
+  @Auth('cms:article:addComment')
   @ApiOperation({ summary: '添加评论' })
-  async addTopic(
+  async addComment(
     @CurUser() curUser,
-    @Body() createArticleTopicDto: CreateArticleTopicDto,
+    @Body() createArticleCommentDto: CreateArticleCommentDto,
   ): Promise<any> {
-    return await this.articleService.insertTopic(
-      createArticleTopicDto,
+    return await this.articleService.insertComment(
+      createArticleCommentDto,
       curUser,
     );
   }

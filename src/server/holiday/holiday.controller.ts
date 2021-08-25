@@ -42,7 +42,7 @@ import {
   RestDict,
   StatusDict,
   WeekdayDict,
-} from '../../constants/dicts';
+} from '../../constants/dicts.const';
 import { ApiException } from '../../common/exception/api-exception';
 
 @Controller('holiday')

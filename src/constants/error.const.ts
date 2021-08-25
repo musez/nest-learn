@@ -1,4 +1,4 @@
-import { UserConstants } from './constants';
+import { UserConstants } from './swagger.const';
 
 class CodeAndMsg {
   CODE: number;

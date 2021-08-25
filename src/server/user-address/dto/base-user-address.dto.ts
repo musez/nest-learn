@@ -7,16 +7,14 @@ import {
   MaxLength,
   IsUUID,
   IsMobilePhone,
-  IsEmail,
   MinLength,
 } from 'class-validator';
 import { Transform } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
-  ArticleConstants,
   BaseConstants,
   UserConstants,
-} from '../../../constants/constants';
+} from '../../../constants/swagger.const';
 
 export class BaseUserAddressDto {
   @ApiProperty({ description: '主键 id', example: null })

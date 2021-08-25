@@ -2,16 +2,13 @@ import {
   IsDefined,
   IsOptional,
   IsNotEmpty,
-  IsString,
   IsInt,
-  IsEmail,
-  MinLength,
   MaxLength,
   IsUUID,
 } from 'class-validator';
 import { Transform } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { BaseConstants, OrgConstants } from '../../../constants/constants';
+import { BaseConstants, OrgConstants } from '../../../constants/swagger.const';
 
 export class BaseOrgDto {
   @ApiProperty({ description: '主键 id', example: null })

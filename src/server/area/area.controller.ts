@@ -10,7 +10,7 @@ import { Auth } from '../../common/decorators/auth.decorator';
 import { AuthGuard } from '../../common/guards/auth.guard';
 import { Utils } from '../../utils';
 import { ExcelService } from '../excel/excel.service';
-import { AreaLevelDict } from '../../constants/dicts';
+import { AreaLevelDict } from '../../constants/dicts.const';
 
 @Controller('area')
 @ApiTags('地区')

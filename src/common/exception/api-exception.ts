@@ -1,5 +1,4 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
-import { ErrorCode } from '../../constants/error';
 import { ApiErrorCode } from '../../constants/api-error-code.enum';
 
 /**

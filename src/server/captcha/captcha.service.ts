@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ApiException } from '../../common/exception/api-exception';
 import * as svgCaptcha from 'svg-captcha';
 import { CacheService } from '../cache/cache.service';
-import { CaptchaCache } from '../../constants/captcha.cache';
+import { CaptchaPrefix } from '../../constants/captcha.prefix';
 
 /**
  * 使用方式一、控制器中发送验证码
@@ -36,7 +36,7 @@ export class CaptchaService {
    * 缓存到 redis
    */
   async insertCaptcha(captchaId, captchaText): Promise<any> {
-    const key = `${CaptchaCache.CAPTCHA}${captchaId}`;
+    const key = `${CaptchaPrefix.CAPTCHA}${captchaId}`;
     return await this.cacheService.set(
       key,
       {
@@ -51,7 +51,7 @@ export class CaptchaService {
    * 从 redis 获取
    */
   async selectCaptcha(captchaId): Promise<any> {
-    const key = `${CaptchaCache.CAPTCHA}${captchaId}`;
+    const key = `${CaptchaPrefix.CAPTCHA}${captchaId}`;
     const captcha = await this.cacheService.get(key);
     if (!captcha) {
       throw new ApiException('验证码错误！', 1007);
