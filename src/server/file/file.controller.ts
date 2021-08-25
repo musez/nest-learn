@@ -8,8 +8,7 @@ import {
   UploadedFile,
   UploadedFiles,
   UseGuards,
-  BadRequestException,
-  Res,
+  Res, InternalServerErrorException,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -21,7 +20,6 @@ import {
 } from '@nestjs/swagger';
 import {
   FileInterceptor,
-  FilesInterceptor,
   FileFieldsInterceptor,
 } from '@nestjs/platform-express';
 
@@ -42,7 +40,10 @@ import { ApiException } from '../../common/exception/api-exception';
 @ApiTags('文件')
 @ApiBasicAuth('token')
 export class FileController {
-  constructor(private readonly fileService: FileService) {}
+  constructor(
+    private readonly fileService: FileService,
+  ) {
+  }
 
   @Post('upload')
   @UseGuards(JwtAuthGuard, AuthGuard)
@@ -179,6 +180,40 @@ export class FileController {
     });
 
     return this.fileService.batchInsert(filesEntity, curUser);
+  }
+
+  @Post('qiniu/upload')
+  @UseGuards(JwtAuthGuard, AuthGuard)
+  @Auth('system:file:qiniuUpload')
+  @ApiOperation({ summary: '文件上传（单）' })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+          description: '文件',
+        },
+        fileDisName: {
+          type: 'string',
+          description: '文件显示名称',
+        },
+        extId: {
+          type: 'string',
+          description: '关联 id',
+        },
+        description: {
+          type: 'string',
+          description: '描述',
+        },
+      },
+    },
+  })
+  @UseInterceptors(FileInterceptor('file'))
+  async qiniuUpload(@CurUser() curUser, @UploadedFile() file, @Body() body) {
+    return await this.fileService.qiniuUpload(file, curUser);
   }
 
   @Get('findListPage')
