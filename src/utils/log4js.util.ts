@@ -4,9 +4,10 @@ import * as Util from 'util';
 import dayjs = require('dayjs');
 import * as StackTrace from 'stacktrace-js';
 import Chalk from 'chalk';
-import log4jsConfig from './../config/log4js';
+import log4jsConfig from '../config/log4js.config';
+import { QueryRunner } from 'typeorm';
 
-// 日志级别
+// 定义日志级别
 export enum LoggerLevel {
   ALL = 'ALL',
   MARK = 'MARK',
@@ -26,7 +27,8 @@ export class ContextTrace {
     public readonly path?: string,
     public readonly lineNumber?: number,
     public readonly columnNumber?: number,
-  ) {}
+  ) {
+  }
 }
 
 Log4js.addLayout('Awesome-nest', (logConfig: any) => {
@@ -100,8 +102,10 @@ Log4js.configure(log4jsConfig);
 
 // 实例化
 const logger = Log4js.getLogger();
+const mysqlLogger = Log4js.getLogger('mysql');	// 添加了typeorm 日志实例
 logger.level = LoggerLevel.TRACE;
 
+// 定义 log 类方法
 export class Logger {
   static trace(...args) {
     logger.trace(Logger.getStackTrace(), ...args);
@@ -141,6 +145,7 @@ export class Logger {
   }
 
   // 日志追踪，可以追溯到哪个文件、第几行第几列
+  // StackTrace 可参考 https://www.npmjs.com/package/stacktrace-js
   static getStackTrace(deep: number = 2): string {
     const stackList: StackTrace.StackFrame[] = StackTrace.getSync();
     const stackInfo: StackTrace.StackFrame = stackList[deep];
@@ -150,5 +155,40 @@ export class Logger {
     const fileName: string = stackInfo.fileName;
     const basename: string = Path.basename(fileName);
     return `${basename}(line: ${lineNumber}, column: ${columnNumber}): \n`;
+  }
+}
+
+// 自定义 typeorm 日志器, 可参考 https://blog.csdn.net/huzzzz/article/details/103191803/
+export class DbLogger implements Logger {
+  logQuery(query: string, parameters?: any[], queryRunner?: QueryRunner) {
+    mysqlLogger.info(query);
+  }
+
+  logQueryError(error: string, query: string, parameters?: any[], queryRunner?: QueryRunner) {
+    mysqlLogger.error(query, error);
+  }
+
+  logQuerySlow(time: number, query: string, parameters?: any[], queryRunner?: QueryRunner) {
+    mysqlLogger.info(query, time);
+  }
+
+  logSchemaBuild(message: string, queryRunner?: QueryRunner) {
+    mysqlLogger.info(message);
+  }
+
+  logMigration(message: string, queryRunner?: QueryRunner) {
+    mysqlLogger.info(message);
+  }
+
+  log(level: 'log' | 'info' | 'warn', message: any, queryRunner?: QueryRunner) {
+    switch (level) {
+      case 'info': {
+        mysqlLogger.info(message);
+        break;
+      }
+      case 'warn': {
+        mysqlLogger.warn(message);
+      }
+    }
   }
 }

@@ -8,7 +8,7 @@ import {
 import { validate } from 'class-validator';
 // plainToClass 会把一个普通的js对象转换成指定类的实例
 import { plainToClass } from 'class-transformer';
-import { Logger } from '../../utils/log4js';
+import { Logger } from '../../utils/log4js.util';
 import { ApiException } from '../exception/api-exception';
 
 @Injectable()

@@ -4,7 +4,7 @@ import {
   ArgumentMetadata,
   BadRequestException,
 } from '@nestjs/common';
-import { Logger } from '../../utils/log4js';
+import { Logger } from '../../utils/log4js.util';
 
 @Injectable()
 export class ParseIntPipe implements PipeTransform<string, number> {

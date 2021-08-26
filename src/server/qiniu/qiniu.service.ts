@@ -13,6 +13,35 @@ export class QiniuService {
   }
 
   /**
+   * 获取配置文件
+   */
+  public async getConfig() {
+    try {
+      return this.configService.get('qiniu');
+    } catch (e) {
+      throw new ApiException('获取配置失败！', 500);
+    }
+  }
+
+  /**
+   * 产生七牛的 token
+   */
+  public async createToken() {
+    const qiniuConfig = this.configService.get('qiniu');
+    try {
+      const mac = new qiniu.auth.digest.Mac(qiniuConfig.accessKey, qiniuConfig.secretKey);
+      const putPolicy = new qiniu.rs.PutPolicy({
+        scope: qiniuConfig.bucket,
+        expires: Number(qiniuConfig.expires),
+      });
+      const uploadToken = await putPolicy.uploadToken(mac);
+      return { success: true, upToken: uploadToken };
+    } catch (e) {
+      return { success: false, upToken: '' };
+    }
+  }
+
+  /**
    * 七牛上传
    */
   async upload(file, curUser): Promise<any> {
@@ -82,7 +111,7 @@ export class QiniuService {
   /**
    * 七牛获取
    */
-  async info(baseQiniuDto: BaseQiniuDto): Promise<any> {
+  async selectByKey(baseQiniuDto: BaseQiniuDto): Promise<any> {
     const { key } = baseQiniuDto;
     const qiniuConfig = this.configService.get('qiniu');
 

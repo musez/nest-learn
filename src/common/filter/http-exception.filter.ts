@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 import { Request, Response } from 'express';
 import dayjs = require('dayjs');
-import { Logger } from '../../utils/log4js';
+import { Logger } from '../../utils/log4js.util';
 import { ApiException } from '../exception/api-exception';
 
 // 捕获请求异常类型

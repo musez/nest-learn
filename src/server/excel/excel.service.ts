@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { exportExcel, importExcel } from '../../utils/excel';
+import { exportExcel, importExcel } from '../../utils/excel.util';
 
 @Injectable()
 export class ExcelService {

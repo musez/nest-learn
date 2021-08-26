@@ -1,6 +1,6 @@
 import { Injectable, NestMiddleware } from '@nestjs/common';
 import { Request, Response } from 'express';
-import { Logger } from '../../utils/log4js';
+import { Logger } from '../../utils/log4js.util';
 
 @Injectable()
 export class LoggerMiddleware implements NestMiddleware {
@@ -14,7 +14,7 @@ export class LoggerMiddleware implements NestMiddleware {
     Method: ${req.method}
     IP: ${req.ip}
     Status code: ${code}
-    Parmas: ${JSON.stringify(req.params)}
+    Params: ${JSON.stringify(req.params)}
     Query: ${JSON.stringify(req.query)}
     Body: ${JSON.stringify(
       req.body,

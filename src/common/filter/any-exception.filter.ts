@@ -9,7 +9,7 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import dayjs = require('dayjs');
-import { Logger } from '../../utils/log4js';
+import { Logger } from '../../utils/log4js.util';
 import { ApiException } from '../exception/api-exception';
 
 @Catch()
@@ -24,14 +24,14 @@ export class AllExceptionsFilter implements ExceptionFilter {
         ? exception.getStatus()
         : HttpStatus.INTERNAL_SERVER_ERROR;
 
-    // const logFormat = ` <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-    // Request original url: ${request.originalUrl}
-    // Method: ${request.method}
-    // IP: ${request.ip}
-    // Status code: ${status}
-    // Response: ${exception} \n  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-    // `;
-    // Logger.error(logFormat);
+    const logFormat = ` <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+    Request original url: ${request.originalUrl}
+    Method: ${request.method}
+    IP: ${request.ip}
+    Status code: ${status}
+    Response: ${exception} \n  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+    `;
+    Logger.error(logFormat);
 
     // 此刻的时间
     const nowDate = dayjs(Date.now()).format('YYYY-MM-DD HH:mm:ss');

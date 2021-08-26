@@ -8,7 +8,7 @@ import {
   UploadedFile,
   UploadedFiles,
   UseGuards,
-  Res, InternalServerErrorException,
+  Res,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -23,7 +23,7 @@ import {
   FileFieldsInterceptor,
 } from '@nestjs/platform-express';
 
-const fs = require('fs');
+import fs from 'fs';
 import { Utils } from './../../utils/index';
 import { FileService } from './file.service';
 import { CreateFileDto } from './dto/create-file.dto';

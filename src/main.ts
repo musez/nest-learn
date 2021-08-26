@@ -14,7 +14,7 @@ import { ParseIntPipe } from './common/pipe/parse-int.pipe';
 import { HttpExceptionFilter } from './common/filter/http-exception.filter';
 import { AllExceptionsFilter } from './common/filter/any-exception.filter';
 import { logger } from './common/middleware/logger.middleware';
-import { Logger } from './utils/log4js';
+import { Logger } from './utils/log4js.util';
 
 async function bootstrap() {
   // const app = await NestFactory.create(AppModule);

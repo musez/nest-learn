@@ -1,4 +1,5 @@
 import { registerAs } from '@nestjs/config';
+import { DbLogger } from '../utils/log4js.util';
 
 export default registerAs('mysql', () => ({
   type: 'mysql',
@@ -13,4 +14,5 @@ export default registerAs('mysql', () => ({
   dropSchema: false,
   synchronize: false, // 是否自动将实体类同步到数据库
   logging: true,
+  "logger": new DbLogger(),	// 配置项添加自定义的log类
 }));
