@@ -14,5 +14,5 @@ export default registerAs('mysql', () => ({
   dropSchema: false,
   synchronize: false, // 是否自动将实体类同步到数据库
   logging: true,
-  "logger": new DbLogger(),	// 配置项添加自定义的log类
+  logger: new DbLogger(),	// 配置项添加自定义的 log 类
 }));

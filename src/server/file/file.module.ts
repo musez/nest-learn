@@ -114,6 +114,7 @@ export const checkDirAndCreate = (filePath) => {
   ],
   controllers: [FileController],
   providers: [FileService],
+  exports: [FileService],
 })
 export class FileModule {
 }

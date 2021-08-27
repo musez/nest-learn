@@ -18,15 +18,64 @@ export class FileService {
   /**
    * 添加
    */
-  async insert(file, curUser): Promise<CreateFileDto> {
-    return await this.fileRepository.save(file);
+  async insert(file, body, curUser): Promise<CreateFileDto> {
+    // 获取 body 中的文本参数
+    const { description, extId, fileDisName } = body;
+    const fileEntity = new File();
+    console.log(file);
+    fileEntity.fileDisName = fileDisName;
+    fileEntity.extId = extId;
+    fileEntity.description = description;
+    fileEntity.originalName = file.originalname;
+    fileEntity.encoding = file.encoding;
+    fileEntity.mimeType = file.mimetype;
+    fileEntity.destination = file.destination;
+    fileEntity.fileName = file.filename;
+    fileEntity.path = file.path;
+    fileEntity.size = file.size;
+    if (!file.fileUrl) {
+      console.log(11111);
+      fileEntity.type = 0;
+      fileEntity.fileUrl = `${file.destination}/${file.filename}`;
+    }
+    fileEntity.createBy = curUser!.id;
+
+    return await this.fileRepository.save(fileEntity);
   }
 
   /**
    * 添加（批量）
    */
-  async batchInsert(files, curUser): Promise<CreateFileDto[]> {
-    return await this.fileRepository.save(files);
+  async insertBatch(files, body, curUser): Promise<CreateFileDto[]> {
+    // 获取 body 中的文本参数
+    const { description, extId, fileDisName } = body;
+    const filesEntity = [];
+
+    files.forEach((file, index) => {
+      const fileEntity = new File();
+
+      if (fileDisName[index]) {
+        fileEntity.fileDisName = fileDisName[index];
+      }
+      fileEntity.extId = extId;
+      fileEntity.description = description;
+      fileEntity.originalName = file.originalname;
+      fileEntity.encoding = file.encoding;
+      fileEntity.mimeType = file.mimetype;
+      fileEntity.destination = file.destination;
+      fileEntity.fileName = file.filename;
+      fileEntity.path = file.path;
+      fileEntity.size = file.size;
+      if (!file.fileUrl) {
+        fileEntity.type = 0;
+        fileEntity.fileUrl = `${file.destination}/${file.filename}`;
+      }
+      fileEntity.createBy = curUser!.id;
+
+      filesEntity.push(fileEntity);
+    });
+
+    return await this.fileRepository.save(filesEntity);
   }
 
   /**

@@ -1,20 +1,44 @@
-import { Controller, Get, Post, Body, UseInterceptors, UploadedFile, Query, Res } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  UseInterceptors,
+  UploadedFile,
+  Query,
+  Res,
+  UploadedFiles,
+  UseGuards,
+} from '@nestjs/common';
 import { QiniuService } from './qiniu.service';
 import { CurUser } from '../../common/decorators/cur-user.decorator';
-import { ApiBody, ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { ApiBasicAuth, ApiBody, ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { FileFieldsInterceptor, FileInterceptor } from '@nestjs/platform-express';
 import { BaseQiniuDto } from './dto/base-qiniu.dto';
-import fs from 'fs';
 import { Utils } from '../../utils';
 import { ApiException } from '../../common/exception/api-exception';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { AuthGuard } from '../../common/guards/auth.guard';
+import { Auth } from '../../common/decorators/auth.decorator';
 
-@ApiTags('七牛文件')
+@ApiTags('七牛云')
 @Controller('qiniu')
+@ApiBasicAuth('token')
 export class QiniuController {
   constructor(private readonly qiniuService: QiniuService) {
   }
 
+  @Get('getToken')
+  @UseGuards(JwtAuthGuard, AuthGuard)
+  @Auth('system:qiniu:getToken')
+  @ApiOperation({ summary: '获取 token' })
+  async getToken() {
+    return await this.qiniuService.createToken();
+  }
+
   @Post('upload')
+  @UseGuards(JwtAuthGuard, AuthGuard)
+  @Auth('system:qiniu:upload')
   @ApiOperation({ summary: '文件上传（单）' })
   @ApiConsumes('multipart/form-data')
   @ApiBody({
@@ -41,26 +65,86 @@ export class QiniuController {
       },
     },
   })
-  @UseInterceptors(FileInterceptor('file'))
+  @UseInterceptors(FileInterceptor('file', {
+    limits: {
+      fieldSize: 8 * 1024 * 1024,
+    },
+  }))
   async upload(@CurUser() curUser, @UploadedFile() file, @Body() body) {
     if (Utils.isNil(file)) {
       throw new ApiException(`文件不能为空！`, 404);
     }
 
-    return await this.qiniuService.upload(file, curUser);
+    return await this.qiniuService.upload(file, body, curUser);
+  }
+
+  @Post('uploads')
+  @UseGuards(JwtAuthGuard, AuthGuard)
+  @Auth('system:qiniu:uploads')
+  @ApiOperation({ summary: '文件上传（多）' })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        files: {
+          type: 'string',
+          format: 'binary',
+          description: '文件',
+        },
+        fileDisName: {
+          type: 'string',
+          description: '文件显示名称',
+        },
+        extId: {
+          type: 'string',
+          description: '关联 id',
+        },
+        description: {
+          type: 'string',
+          description: '描述',
+        },
+      },
+    },
+  })
+  @UseInterceptors(FileFieldsInterceptor([
+    {
+      name: 'files',
+      maxCount: 10,
+    },
+    {
+      name: 'fileDisName',
+      maxCount: 10,
+    },
+    {
+      name: 'extId',
+      maxCount: 1,
+    },
+    {
+      name: 'description',
+      maxCount: 1,
+    },
+  ]))
+  async uploads(@CurUser() curUser, @UploadedFiles() files, @Body() body) {
+    if (Utils.isNil(files.files)) {
+      throw new ApiException(`文件不能为空！`, 404);
+    }
+
+    return await this.qiniuService.uploads(files.files, body, curUser);
+  }
+
+  @Get('findById')
+  @UseGuards(JwtAuthGuard, AuthGuard)
+  @Auth('system:qiniu:findById')
+  @ApiOperation({ summary: '文件信息' })
+  async findById(@Query() baseQiniuDto: BaseQiniuDto) {
+    // 根据 id 获取 key
+    return await this.qiniuService.selectByKey(baseQiniuDto);
   }
 
   @Get('download')
   @ApiOperation({ summary: '下载' })
   async download(@Query() baseQiniuDto: BaseQiniuDto, @Res() res) {
-    return  await this.qiniuService.download(baseQiniuDto);
-  }
-
-  @Get('findById')
-  @ApiOperation({ summary: '文件信息' })
-  async findById(@Query() baseQiniuDto: BaseQiniuDto) {
-    // 根据 id 获取 key
-    const ret = await this.qiniuService.selectByKey(baseQiniuDto);
-    return ret;
+    return await this.qiniuService.download(baseQiniuDto);
   }
 }

@@ -80,25 +80,7 @@ export class FileController {
       throw new ApiException(`文件不能为空！`, 404);
     }
 
-    // 获取 body 中的文本参数
-    const { description, extId, fileDisName } = body;
-    const fileEntity = new File();
-
-    fileEntity.type = 0;
-    fileEntity.fileDisName = fileDisName;
-    fileEntity.extId = extId;
-    fileEntity.description = description;
-    fileEntity.originalName = file.originalname;
-    fileEntity.encoding = file.encoding;
-    fileEntity.mimeType = file.mimetype;
-    fileEntity.destination = file.destination;
-    fileEntity.fileName = file.filename;
-    fileEntity.path = file.path;
-    fileEntity.size = file.size;
-    fileEntity.fileUrl = `${file.destination}/${file.filename}`;
-    fileEntity.createBy = curUser!.id;
-
-    return this.fileService.insert(fileEntity, curUser);
+    return this.fileService.insert(file, body, curUser);
   }
 
   @Post('uploads')
@@ -155,33 +137,7 @@ export class FileController {
       throw new ApiException(`文件不能为空！`, 404);
     }
 
-    // 获取 body 中的文本参数
-    const { description, extId, fileDisName } = body;
-    const filesEntity = [];
-
-    files.files.forEach((file, index) => {
-      const fileEntity = new File();
-
-      fileEntity.type = 0;
-      if (fileDisName[index]) {
-        fileEntity.fileDisName = fileDisName[index];
-      }
-      fileEntity.extId = extId;
-      fileEntity.description = description;
-      fileEntity.originalName = file.originalname;
-      fileEntity.encoding = file.encoding;
-      fileEntity.mimeType = file.mimetype;
-      fileEntity.destination = file.destination;
-      fileEntity.fileName = file.filename;
-      fileEntity.path = file.path;
-      fileEntity.size = file.size;
-      fileEntity.fileUrl = `${file.destination}/${file.filename}`;
-      fileEntity.createBy = curUser!.id;
-
-      filesEntity.push(fileEntity);
-    });
-
-    return this.fileService.batchInsert(filesEntity, curUser);
+    return this.fileService.insertBatch(files.files, body, curUser);
   }
 
   @Get('findListPage')

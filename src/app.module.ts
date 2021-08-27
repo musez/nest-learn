@@ -40,6 +40,7 @@ import { WechatModule } from './server/wechat/wechat.module';
 import { UserAddressModule } from './server/user-address/user-address.module';
 import { TaskModule } from './server/task/task.module';
 import { QiniuModule } from './server/qiniu/qiniu.module';
+import { StatisticsModule } from './server/statistics/statistics.module';
 import AppConfig from './config/app.config';
 import MysqlConfig from './config/mysql.config';
 import RedisConfig from './config/redis.config';
@@ -118,8 +119,9 @@ import QiNiuConfig from './config/qiniu.config';
     TopicModule,
     CommentModule,
     HolidayModule,
-    WechatModule,
-    TaskModule,
+    // WechatModule,
+    // TaskModule,
+    StatisticsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
