@@ -3,7 +3,6 @@ import {
   PrimaryGeneratedColumn,
   JoinColumn,
   ManyToOne,
-  Column,
 } from 'typeorm';
 import { Role } from '../../role/entities/role.entity';
 import { User } from '../../user/entities/user.entity';

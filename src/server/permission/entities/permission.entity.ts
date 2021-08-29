@@ -14,6 +14,8 @@ import {
   PermissionHiddenType,
 } from '../../../constants/dicts.enum';
 import { RolePermission } from '../../role-permission/entities/role-permission.entity';
+import { UserPermission } from '../../user-permission/entities/user-permission.entity';
+import { GroupPermission } from '../../group-permission/entities/group-permission.entity';
 
 @Entity('sys_permission')
 export class Permission extends BaseEntity {

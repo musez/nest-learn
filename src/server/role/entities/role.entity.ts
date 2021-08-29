@@ -1,14 +1,7 @@
 import {
   Entity,
-  PrimaryGeneratedColumn,
   Column,
-  CreateDateColumn,
-  UpdateDateColumn,
-  BeforeInsert,
-  JoinTable,
-  ManyToMany,
   OneToMany,
-  BeforeUpdate,
 } from 'typeorm';
 import { BaseEntity } from '../../base.entity';
 import { RolePermission } from '../../role-permission/entities/role-permission.entity';
@@ -29,7 +22,7 @@ export class Role extends BaseEntity {
   @Column('varchar', { comment: '名称', length: 50 })
   name: string;
 
-  @OneToMany((type) => GroupRole, (groupRoles) => groupRoles.role)
+  @OneToMany((type) => GroupRole, (groupRole) => groupRole.role)
   groupRoles: GroupRole[];
 
   @OneToMany((type) => UserRole, (userRole) => userRole.role)

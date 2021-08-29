@@ -1,21 +1,12 @@
 import {
   Entity,
-  PrimaryGeneratedColumn,
   Column,
-  CreateDateColumn,
-  UpdateDateColumn,
-  BeforeInsert,
-  JoinTable,
-  ManyToMany,
   OneToMany,
-  BeforeUpdate,
-  Tree,
-  TreeChildren,
-  TreeParent,
 } from 'typeorm';
 import { BaseEntity } from '../../base.entity';
 import { GroupRole } from '../../group-role/entities/group-role.entity';
 import { UserGroup } from '../../user-group/entities/user-group.entity';
+import { GroupPermission } from '../../group-permission/entities/group-permission.entity';
 
 @Entity('sys_group')
 export class Group extends BaseEntity {

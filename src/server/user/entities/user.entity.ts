@@ -1,15 +1,8 @@
 import {
   Entity,
-  PrimaryGeneratedColumn,
   Column,
-  CreateDateColumn,
-  UpdateDateColumn,
-  BeforeInsert,
-  JoinTable,
-  ManyToMany,
   OneToMany,
   OneToOne,
-  BeforeUpdate,
   AfterLoad,
 } from 'typeorm';
 import { Exclude } from 'class-transformer';
