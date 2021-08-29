@@ -28,6 +28,8 @@ import { Utils } from '../../utils';
 import { ExcelService } from '../excel/excel.service';
 import { StatusDict } from '../../constants/dicts.const';
 import { ApiException } from '../../common/exception/api-exception';
+import { BindGroupPermissionDto } from '../group-permission/dto/bind-group-premission.dto';
+import { GroupPermissionService } from '../group-permission/group-permission.service';
 
 @Controller('group')
 @ApiTags('用户组')
@@ -37,6 +39,7 @@ export class GroupController {
   constructor(
     private readonly groupService: GroupService,
     private readonly excelService: ExcelService,
+    private readonly groupPermissionService: GroupPermissionService,
   ) {}
 
   @Post('add')
@@ -191,5 +194,38 @@ export class GroupController {
     }
 
     return await this.groupService.bindRoles(bindGroupRoleDto);
+  }
+
+  @Post('bindPermissions')
+  @Auth('account:group:bindPermissions')
+  @ApiOperation({ summary: '绑定权限' })
+  async bindPermissions(
+    @CurUser() curUser,
+    @Body() bindGroupPermissionDto: BindGroupPermissionDto,
+  ): Promise<any> {
+    const { id } = bindGroupPermissionDto;
+
+    const isExistId = await this.groupService.isExistId(id);
+    if (!isExistId) {
+      throw new ApiException(`数据 id：${id} 不存在！`, 404);
+    }
+    return await this.groupService.bindPermissions(bindGroupPermissionDto);
+  }
+
+  @Get('getPermissions')
+  @Auth('account:group:getPermissions')
+  @ApiOperation({ summary: '获取权限' })
+  async findPermissionsByGroupId(
+    @CurUser() curUser,
+    @Query() baseFindByIdDto: BaseFindByIdDto,
+  ): Promise<any> {
+    const { id } = baseFindByIdDto;
+
+    const isExistId = await this.groupService.isExistId(id);
+    if (!isExistId) {
+      throw new ApiException(`数据 id：${id} 不存在！`, 404);
+    }
+
+    return await this.groupService.selectPermissionsByGroupId(baseFindByIdDto);
   }
 }

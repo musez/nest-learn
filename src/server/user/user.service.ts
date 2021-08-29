@@ -11,7 +11,7 @@ import {
   BaseFindByIdsDto,
   BaseModifyStatusByIdsDto,
 } from '../base.dto';
-import { BindUserGroupDto } from './dto/bind-user-group.dto';
+import { BindUserGroupDto } from '../user-group/dto/bind-user-group.dto';
 import { UserGroupService } from '../user-group/user-group.service';
 import { UserGroup } from '../user-group/entities/user-group.entity';
 import { BindUserRoleDto } from '../user-role/dto/bind-user-role.dto';
@@ -27,6 +27,9 @@ import { RoleService } from '../role/role.service';
 import { PermissionService } from '../permission/permission.service';
 import { ApiException } from '../../common/exception/api-exception';
 import { Area } from '../area/entities/area.entity';
+import { BindUserPermissionDto } from '../user-permission/dto/bind-user-permission.dto';
+import { UserPermission } from '../user-permission/entities/user-permission.entity';
+import { UserPermissionService } from '../user-permission/user-permission.service';
 
 @Injectable()
 export class UserService {
@@ -39,6 +42,7 @@ export class UserService {
     private readonly permissionService: PermissionService,
     private readonly userGroupService: UserGroupService,
     private readonly userRoleService: UserRoleService,
+    private readonly userPermissionService: UserPermissionService,
     private readonly cryptoUtil: CryptoUtil,
   ) {
   }
@@ -665,16 +669,71 @@ export class UserService {
   }
 
   /**
+   * 绑定权限
+   */
+  async bindPermissions(bindUserPermissionDto: BindUserPermissionDto): Promise<void> {
+    let { id, permissions } = bindUserPermissionDto;
+
+    if (permissions && Utils.isArray(permissions)) {
+      permissions = Utils.split(',');
+    }
+
+    const userRet = await this.userRepository.findOne({
+      where: {
+        id: id,
+      },
+    });
+
+    const userPermissions = [];
+    for (const item of permissions) {
+      const permissionRet = await this.permissionService.selectById({ id: item });
+      const userPermission = new UserPermission();
+      userPermission.user = userRet;
+      userPermission.permission = permissionRet;
+
+      userPermissions.push(userPermission);
+    }
+
+    const deleteRet = await this.userPermissionService.deleteByUserId(id);
+    if (!deleteRet) {
+      throw new ApiException('操作异常！', 500);
+    }
+
+    const ret = await this.userPermissionService.insertBatch(userPermissions);
+
+    if (ret) {
+      return null;
+    } else {
+      throw new ApiException('操作异常！', 500);
+    }
+  }
+
+  /**
    * 获取权限
    */
-  async selectPermissionsByUserId(
+  async selectPermissionsByUserId(baseFindByIdDto: BaseFindByIdDto): Promise<User> {
+    const { id } = baseFindByIdDto;
+    const ret = await this.userRepository.findOne({
+      relations: ['userPermissions'],
+      where: {
+        id: id,
+      },
+    });
+
+    return ret;
+  }
+
+  /**
+   * 获取权限（权限合集）
+   */
+  async selectAuthPermissionsByUserId(
     baseFindByIdDto: BaseFindByIdDto,
   ): Promise<any> {
     return await this.permissionService.selectByUserId(baseFindByIdDto);
   }
 
   /**
-   * 获取用户、用户组、角色、权限
+   * 获取权限（用户、用户组、角色、权限合集）
    */
   async selectAuthByUserId(baseFindByIdDto: BaseFindByIdDto): Promise<any> {
     const userRet = await this.selectById(baseFindByIdDto);

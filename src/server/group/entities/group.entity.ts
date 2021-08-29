@@ -26,4 +26,7 @@ export class Group extends BaseEntity {
 
   @OneToMany((type) => GroupRole, (groupRole) => groupRole.group)
   groupRoles: GroupRole[];
+
+  @OneToMany((type) => GroupPermission, (groupPermission) => groupPermission.group)
+  groupPermissions: GroupPermission[];
 }

@@ -14,6 +14,10 @@ import { RoleService } from '../role/role.service';
 import { User } from '../user/entities/user.entity';
 import { UserGroup } from '../user-group/entities/user-group.entity';
 import { ApiException } from '../../common/exception/api-exception';
+import { BindGroupPermissionDto } from '../group-permission/dto/bind-group-premission.dto';
+import { GroupPermissionService } from '../group-permission/group-permission.service';
+import { GroupPermission } from '../group-permission/entities/group-permission.entity';
+import { PermissionService } from '../permission/permission.service';
 
 @Injectable()
 export class GroupService {
@@ -21,7 +25,9 @@ export class GroupService {
     @InjectRepository(Group)
     private readonly groupRepository: Repository<Group>,
     private readonly roleService: RoleService,
+    private readonly permissionService: PermissionService,
     private readonly groupRoleService: GroupRoleService,
+    private readonly groupPermissionService: GroupPermissionService,
   ) {
   }
 
@@ -285,5 +291,60 @@ export class GroupService {
     } else {
       throw new ApiException('操作异常！', 500);
     }
+  }
+
+  /**
+   * 绑定权限
+   */
+  async bindPermissions(bindGroupPermissionDto: BindGroupPermissionDto): Promise<void> {
+    let { id, permissions } = bindGroupPermissionDto;
+
+    if (permissions && Utils.isArray(permissions)) {
+      permissions = Utils.split(',');
+    }
+
+    const groupRet = await this.groupRepository.findOne({
+      where: {
+        id: id,
+      },
+    });
+
+    const groupPermissions = [];
+    for (const item of permissions) {
+      const permissionRet = await this.permissionService.selectById({ id: item });
+      const groupPermission = new GroupPermission();
+      groupPermission.group = groupRet;
+      groupPermission.permission = permissionRet;
+
+      groupPermissions.push(groupPermission);
+    }
+
+    const deleteRet = await this.groupPermissionService.deleteByGroupId(id);
+    if (!deleteRet) {
+      throw new ApiException('操作异常！', 500);
+    }
+
+    const ret = await this.groupPermissionService.insertBatch(groupPermissions);
+
+    if (ret) {
+      return null;
+    } else {
+      throw new ApiException('操作异常！', 500);
+    }
+  }
+
+  /**
+   * 获取权限
+   */
+  async selectPermissionsByGroupId(baseFindByIdDto: BaseFindByIdDto): Promise<Group> {
+    const { id } = baseFindByIdDto;
+    const ret = await this.groupRepository.findOne({
+      relations: ['groupPermissions'],
+      where: {
+        id: id,
+      },
+    });
+
+    return ret;
   }
 }

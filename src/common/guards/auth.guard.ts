@@ -35,7 +35,7 @@ export class AuthGuard implements CanActivate {
     // 空， 标识不需要权限
     if (!currentPerm) return true;
     // 根据用户 id 查询所拥有的权限
-    const permList = await this.userService.selectPermissionsByUserId(user.id);
+    const permList = await this.userService.selectAuthPermissionsByUserId(user.id);
     const perms: string[] = [];
     for (let i = 0, len = permList.length; i < len; i++) {
       permList[i]['code'].indexOf(',') > -1

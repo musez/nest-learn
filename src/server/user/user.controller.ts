@@ -30,7 +30,7 @@ import {
   BaseFindByIdsDto,
   BaseModifyStatusByIdsDto,
 } from '../base.dto';
-import { BindUserGroupDto } from './dto/bind-user-group.dto';
+import { BindUserGroupDto } from '../user-group/dto/bind-user-group.dto';
 import { BindUserRoleDto } from '../user-role/dto/bind-user-role.dto';
 import { CurUser } from '../../common/decorators/cur-user.decorator';
 import { SearchUserDto } from './dto/search-user.dto';
@@ -40,6 +40,7 @@ import { ExcelService } from '../excel/excel.service';
 import { Utils } from './../../utils/index';
 import { SexDict, StatusDict, UserDict } from '../../constants/dicts.const';
 import { ApiException } from '../../common/exception/api-exception';
+import { BindUserPermissionDto } from '../user-permission/dto/bind-user-permission.dto';
 
 @ApiTags('用户')
 @Controller('user')
@@ -349,5 +350,38 @@ export class UserController {
     }
 
     return await this.userService.selectRolesByUserId(baseFindByIdDto);
+  }
+
+  @Post('bindPermissions')
+  @Auth('account:user:bindPermissions')
+  @ApiOperation({ summary: '绑定权限' })
+  async bindPermissions(
+    @CurUser() curUser,
+    @Body() bindUserPermissionDto: BindUserPermissionDto,
+  ): Promise<any> {
+    const { id } = bindUserPermissionDto;
+
+    const isExistId = await this.userService.isExistId(id);
+    if (!isExistId) {
+      throw new ApiException(`数据 id：${id} 不存在！`, 404);
+    }
+    return await this.userService.bindPermissions(bindUserPermissionDto);
+  }
+
+  @Get('getPermissions')
+  @Auth('account:user:getPermissions')
+  @ApiOperation({ summary: '获取权限' })
+  async findPermissionsByUserId(
+    @CurUser() curUser,
+    @Query() baseFindByIdDto: BaseFindByIdDto,
+  ): Promise<any> {
+    const { id } = baseFindByIdDto;
+
+    const isExistId = await this.userService.isExistId(id);
+    if (!isExistId) {
+      throw new ApiException(`数据 id：${id} 不存在！`, 404);
+    }
+
+    return await this.userService.selectPermissionsByUserId(baseFindByIdDto);
   }
 }

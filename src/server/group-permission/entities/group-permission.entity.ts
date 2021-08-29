@@ -1,7 +1,8 @@
-import { JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Group } from '../../group/entities/group.entity';
 import { Permission } from '../../permission/entities/permission.entity';
 
+@Entity('sys_group_permission')
 export class GroupPermission {
   @PrimaryGeneratedColumn('uuid', { comment: '主键 id' })
   id: string;
