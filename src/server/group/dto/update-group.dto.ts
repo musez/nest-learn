@@ -1,12 +1,9 @@
 import {
   IsDefined,
   IsNotEmpty,
-  IsString,
-  IsInt,
-  IsEmail,
   IsUUID,
 } from 'class-validator';
-import { ApiProperty, ApiPropertyOptional, PartialType } from '@nestjs/swagger';
+import { ApiProperty, PartialType } from '@nestjs/swagger';
 import { CreateGroupDto } from './create-group.dto';
 
 export class UpdateGroupDto extends PartialType(CreateGroupDto) {

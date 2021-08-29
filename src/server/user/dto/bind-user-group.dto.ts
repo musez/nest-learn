@@ -19,5 +19,5 @@ export class BindUserGroupDto extends PartialType(BaseFindByIdDto) {
   @ApiProperty({ description: '用户组', example: [] })
   @IsDefined({ message: '用户组不能为空！' })
   @IsNotEmpty({ message: '用户组不能为空！' })
-  readonly groups: string[];
+  readonly groups: string[] | string;
 }

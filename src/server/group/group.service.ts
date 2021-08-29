@@ -252,7 +252,11 @@ export class GroupService {
    * 绑定角色
    */
   async bindRoles(bindGroupRoleDto: BindGroupRoleDto): Promise<void> {
-    const { id, roles } = bindGroupRoleDto;
+    let { id, roles } = bindGroupRoleDto;
+
+    if (roles && Utils.isArray(roles)) {
+      roles = Utils.split(',');
+    }
 
     const groupRet = await this.groupRepository.findOne({
       where: {

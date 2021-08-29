@@ -254,6 +254,7 @@ export class UserService {
       };
       v['userinfo'] = ui;
 
+      delete v.userPwd;
       delete v.provinceId;
       delete v.cityId;
       delete v.address;
@@ -354,6 +355,7 @@ export class UserService {
       };
       v['userinfo'] = ui;
 
+      delete v.userPwd;
       delete v.provinceId;
       delete v.cityId;
       delete v.address;
@@ -556,7 +558,11 @@ export class UserService {
    * 绑定用户组
    */
   async bindGroups(bindUserGroupDto: BindUserGroupDto): Promise<void> {
-    const { id, groups } = bindUserGroupDto;
+    let { id, groups } = bindUserGroupDto;
+
+    if (groups && Utils.isArray(groups)) {
+      groups = Utils.split(',');
+    }
 
     const userRet = await this.userRepository.findOne({
       where: {
@@ -607,7 +613,11 @@ export class UserService {
    * 绑定角色
    */
   async bindRoles(bindUserRoleDto: BindUserRoleDto): Promise<void> {
-    const { id, roles } = bindUserRoleDto;
+    let { id, roles } = bindUserRoleDto;
+
+    if (roles && Utils.isArray(roles)) {
+      roles = Utils.split(',');
+    }
 
     const userRet = await this.userRepository.findOne({
       where: {

@@ -275,7 +275,11 @@ export class RoleService {
   async bindPermissions(
     bindRolePermissionDto: BindRolePermissionDto,
   ): Promise<void> {
-    const { id, permissions } = bindRolePermissionDto;
+    let { id, permissions } = bindRolePermissionDto;
+
+    if (permissions && Utils.isArray(permissions)) {
+      permissions = Utils.split(',');
+    }
 
     const roleRet = await this.roleRepository.findOne({
       where: {

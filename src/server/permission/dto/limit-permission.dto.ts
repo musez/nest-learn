@@ -1,10 +1,6 @@
-import { ApiProperty, ApiPropertyOptional, PartialType } from '@nestjs/swagger';
+import { ApiPropertyOptional, PartialType } from '@nestjs/swagger';
 import {
-  IsNotEmpty,
-  IsString,
   IsInt,
-  IsUUID,
-  MaxLength,
   IsOptional,
 } from 'class-validator';
 import { Transform } from 'class-transformer';

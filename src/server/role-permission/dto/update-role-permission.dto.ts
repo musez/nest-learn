@@ -1,12 +1,9 @@
 import {
   IsDefined,
   IsNotEmpty,
-  IsString,
-  IsInt,
-  IsEmail,
   IsUUID,
 } from 'class-validator';
-import { ApiProperty, ApiPropertyOptional, PartialType } from '@nestjs/swagger';
+import { ApiProperty, PartialType } from '@nestjs/swagger';
 import { CreateRolePermissionDto } from './create-role-permission.dto';
 
 export class UpdateRolePermissionDto extends PartialType(
