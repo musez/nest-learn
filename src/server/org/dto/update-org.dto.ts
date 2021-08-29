@@ -1,12 +1,9 @@
 import {
   IsDefined,
   IsNotEmpty,
-  IsString,
-  IsInt,
-  IsEmail,
   IsUUID,
 } from 'class-validator';
-import { ApiProperty, ApiPropertyOptional, PartialType } from '@nestjs/swagger';
+import { ApiProperty, PartialType } from '@nestjs/swagger';
 import { CreateOrgDto } from './create-org.dto';
 
 export class UpdateOrgDto extends PartialType(CreateOrgDto) {

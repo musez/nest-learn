@@ -1,5 +1,4 @@
-import { ApiProperty, ApiPropertyOptional, PickType } from '@nestjs/swagger';
-import { IsNotEmpty, IsString, IsInt, IsUUID } from 'class-validator';
+import { PickType } from '@nestjs/swagger';
 import { LimitOrgDto } from './limit-org.dto';
 
 export class SearchOrgDto extends PickType(LimitOrgDto, [

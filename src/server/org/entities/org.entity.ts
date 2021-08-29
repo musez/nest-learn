@@ -1,17 +1,7 @@
 import {
   Entity,
-  PrimaryGeneratedColumn,
   Column,
-  CreateDateColumn,
-  UpdateDateColumn,
-  BeforeInsert,
-  JoinTable,
-  ManyToMany,
-  OneToMany,
-  OneToOne,
-  BeforeUpdate,
 } from 'typeorm';
-import { Exclude } from 'class-transformer';
 import { BaseEntity } from '../../base.entity';
 import { OrgType } from '../../../constants/dicts.enum';
 
