@@ -253,23 +253,6 @@ export class RoleService {
   }
 
   /**
-   * 获取权限
-   */
-  async selectPermissionsByRoleId(
-    baseFindByIdDto: BaseFindByIdDto,
-  ): Promise<Role> {
-    const { id } = baseFindByIdDto;
-    const ret = await this.roleRepository.findOne({
-      relations: ['rolePermissions'],
-      where: {
-        id: id,
-      },
-    });
-
-    return ret;
-  }
-
-  /**
    * 绑定权限
    */
   async bindPermissions(
@@ -311,5 +294,22 @@ export class RoleService {
     } else {
       throw new ApiException('操作异常！', 500);
     }
+  }
+
+  /**
+   * 获取权限
+   */
+  async selectPermissionsByRoleId(
+    baseFindByIdDto: BaseFindByIdDto,
+  ): Promise<Role> {
+    const { id } = baseFindByIdDto;
+    const ret = await this.roleRepository.findOne({
+      relations: ['rolePermissions'],
+      where: {
+        id: id,
+      },
+    });
+
+    return ret;
   }
 }

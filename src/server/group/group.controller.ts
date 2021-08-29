@@ -162,23 +162,6 @@ export class GroupController {
     return await this.groupService.deleteByIds(baseFindByIdsDto, curUser);
   }
 
-  @Get('getRoles')
-  @Auth('account:group:getRoles')
-  @ApiOperation({ summary: '获取用户组角色' })
-  async findRolesByGroupId(
-    @CurUser() curUser,
-    @Query() baseFindByIdDto: BaseFindByIdDto,
-  ): Promise<any> {
-    const { id } = baseFindByIdDto;
-    const isExistId = await this.groupService.isExistId(id);
-
-    if (!isExistId) {
-      throw new ApiException(`数据 id：${id} 不存在！`, 404);
-    }
-
-    return await this.groupService.selectRolesByGroupId(baseFindByIdDto);
-  }
-
   @Post('bindRoles')
   @Auth('account:group:bindRoles')
   @ApiOperation({ summary: '绑定用户组角色' })
@@ -194,6 +177,23 @@ export class GroupController {
     }
 
     return await this.groupService.bindRoles(bindGroupRoleDto);
+  }
+
+  @Get('getRoles')
+  @Auth('account:group:getRoles')
+  @ApiOperation({ summary: '获取用户组角色' })
+  async findRolesByGroupId(
+    @CurUser() curUser,
+    @Query() baseFindByIdDto: BaseFindByIdDto,
+  ): Promise<any> {
+    const { id } = baseFindByIdDto;
+    const isExistId = await this.groupService.isExistId(id);
+
+    if (!isExistId) {
+      throw new ApiException(`数据 id：${id} 不存在！`, 404);
+    }
+
+    return await this.groupService.selectRolesByGroupId(baseFindByIdDto);
   }
 
   @Post('bindPermissions')

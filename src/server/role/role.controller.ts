@@ -157,22 +157,6 @@ export class RoleController {
     return await this.roleService.deleteByIds(baseFindByIdsDto, curUser);
   }
 
-  @Get('getPermissions')
-  @Auth('account:role:getPermissions')
-  @ApiOperation({ summary: '获取角色权限' })
-  async findPermissionsByRoleId(
-    @CurUser() curUser,
-    @Query() baseFindByIdDto: BaseFindByIdDto,
-  ): Promise<any> {
-    const { id } = baseFindByIdDto;
-    const isExistId = await this.roleService.isExistId(id);
-
-    if (!isExistId) {
-      throw new ApiException(`数据 id：${id} 不存在！`, 404);
-    }
-    return await this.roleService.selectPermissionsByRoleId(baseFindByIdDto);
-  }
-
   @Post('bindPermissions')
   @Auth('account:role:bindPermissions')
   @ApiOperation({ summary: '绑定角色权限' })
@@ -187,5 +171,21 @@ export class RoleController {
       throw new ApiException(`数据 id：${id} 不存在！`, 404);
     }
     return await this.roleService.bindPermissions(bindRolePermissionDto);
+  }
+
+  @Get('getPermissions')
+  @Auth('account:role:getPermissions')
+  @ApiOperation({ summary: '获取角色权限' })
+  async findPermissionsByRoleId(
+    @CurUser() curUser,
+    @Query() baseFindByIdDto: BaseFindByIdDto,
+  ): Promise<any> {
+    const { id } = baseFindByIdDto;
+    const isExistId = await this.roleService.isExistId(id);
+
+    if (!isExistId) {
+      throw new ApiException(`数据 id：${id} 不存在！`, 404);
+    }
+    return await this.roleService.selectPermissionsByRoleId(baseFindByIdDto);
   }
 }

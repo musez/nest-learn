@@ -240,21 +240,6 @@ export class GroupService {
   }
 
   /**
-   * 获取角色
-   */
-  async selectRolesByGroupId(baseFindByIdDto: BaseFindByIdDto): Promise<Group> {
-    const { id } = baseFindByIdDto;
-    const ret = await this.groupRepository.findOne({
-      relations: ['groupRoles'],
-      where: {
-        id: id,
-      },
-    });
-
-    return ret;
-  }
-
-  /**
    * 绑定角色
    */
   async bindRoles(bindGroupRoleDto: BindGroupRoleDto): Promise<void> {
@@ -291,6 +276,21 @@ export class GroupService {
     } else {
       throw new ApiException('操作异常！', 500);
     }
+  }
+
+  /**
+   * 获取角色
+   */
+  async selectRolesByGroupId(baseFindByIdDto: BaseFindByIdDto): Promise<Group> {
+    const { id } = baseFindByIdDto;
+    const ret = await this.groupRepository.findOne({
+      relations: ['groupRoles'],
+      where: {
+        id: id,
+      },
+    });
+
+    return ret;
   }
 
   /**

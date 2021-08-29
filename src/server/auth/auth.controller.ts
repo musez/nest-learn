@@ -77,7 +77,7 @@ export class AuthController {
   @Get('getPermissionsByToken')
   @UseGuards(JwtAuthGuard)
   @ApiBasicAuth('token')
-  @ApiOperation({ summary: '根据 token 获取权限' })
+  @ApiOperation({ summary: '根据 token 获取权限（权限合集）' })
   async getPermissionsByToken(@CurUser() curUser): Promise<any> {
     const { id } = curUser;
     const isExistId = await this.userService.isExistId(id);
@@ -91,7 +91,7 @@ export class AuthController {
   @Get('getAuthByToken')
   @UseGuards(JwtAuthGuard)
   @ApiBasicAuth('token')
-  @ApiOperation({ summary: '根据 token 获取用户、用户组、角色、权限' })
+  @ApiOperation({ summary: '根据 token 获取权限（用户、用户组、角色、权限合集）' })
   async getAuthByToken(@CurUser() curUser): Promise<any> {
     const { id } = curUser;
 
