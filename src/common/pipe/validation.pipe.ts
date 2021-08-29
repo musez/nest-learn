@@ -2,7 +2,6 @@ import {
   ArgumentMetadata,
   Injectable,
   PipeTransform,
-  BadRequestException,
 } from '@nestjs/common';
 // 可以识别校验装饰器数据
 import { validate } from 'class-validator';

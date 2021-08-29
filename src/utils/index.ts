@@ -103,6 +103,10 @@ export class Utils {
     return _.assign(...args);
   }
 
+  static isArray(...args) {
+    return _.isArray(...args);
+  }
+
   static concat(...args) {
     return _.concat(...args);
   }

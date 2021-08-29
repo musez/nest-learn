@@ -1,5 +1,4 @@
-import { ApiProperty, ApiPropertyOptional, PickType } from '@nestjs/swagger';
-import { IsNotEmpty, IsString, IsInt, IsUUID } from 'class-validator';
+import { PickType } from '@nestjs/swagger';
 import { LimitPostDto } from './limit-post.dto';
 
 export class SearchPostDto extends PickType(LimitPostDto, ['name', 'status']) {}

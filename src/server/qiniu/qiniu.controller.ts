@@ -20,6 +20,7 @@ import { ApiException } from '../../common/exception/api-exception';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { AuthGuard } from '../../common/guards/auth.guard';
 import { Auth } from '../../common/decorators/auth.decorator';
+import { BaseFindByIdDto } from '../base.dto';
 
 @ApiTags('七牛云')
 @Controller('qiniu')
@@ -137,9 +138,8 @@ export class QiniuController {
   @UseGuards(JwtAuthGuard, AuthGuard)
   @Auth('system:qiniu:findById')
   @ApiOperation({ summary: '文件信息' })
-  async findById(@Query() baseQiniuDto: BaseQiniuDto) {
-    // 根据 id 获取 key
-    return await this.qiniuService.selectByKey(baseQiniuDto);
+  async findById(@Query() baseFindByIdDto: BaseFindByIdDto) {
+    return await this.qiniuService.selectById(baseFindByIdDto);
   }
 
   @Get('download')

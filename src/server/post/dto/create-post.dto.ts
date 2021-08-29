@@ -1,4 +1,4 @@
-import { ApiProperty, ApiPropertyOptional, PickType } from '@nestjs/swagger';
+import { PickType } from '@nestjs/swagger';
 import { BasePostDto } from './base-post.dto';
 
 export class CreatePostDto extends PickType(BasePostDto, [

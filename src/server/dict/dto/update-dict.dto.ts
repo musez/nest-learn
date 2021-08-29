@@ -1,5 +1,4 @@
-import { ApiProperty, PickType, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsNotEmpty, IsString, IsInt, IsUUID } from 'class-validator';
+import { PickType, ApiPropertyOptional } from '@nestjs/swagger';
 import { BaseDictDto } from './base-dict.dto';
 import { CreateDictItemDto } from '../../dict-item/dto/create-dict-item.dto';
 

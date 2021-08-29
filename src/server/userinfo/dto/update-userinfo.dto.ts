@@ -2,8 +2,6 @@ import { ApiProperty, PartialType } from '@nestjs/swagger';
 import {
   IsDefined,
   IsNotEmpty,
-  IsString,
-  IsInt,
   IsUUID,
 } from 'class-validator';
 import { CreateUserinfoDto } from './create-userinfo.dto';

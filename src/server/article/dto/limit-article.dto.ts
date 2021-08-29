@@ -1,14 +1,5 @@
-import { ApiProperty, ApiPropertyOptional, PartialType } from '@nestjs/swagger';
-import {
-  IsNotEmpty,
-  IsString,
-  IsInt,
-  IsUUID,
-  MaxLength,
-  IsOptional,
-} from 'class-validator';
+import { ApiPropertyOptional, PartialType } from '@nestjs/swagger';
 import { BasePageDto } from '../../base.dto';
-import { Transform } from 'class-transformer';
 
 export class LimitArticleDto extends PartialType(BasePageDto) {
   @ApiPropertyOptional({ description: '标题' })

@@ -1,17 +1,9 @@
 import {
   Entity,
-  PrimaryGeneratedColumn,
   Column,
-  CreateDateColumn,
-  UpdateDateColumn,
-  BeforeInsert,
-  JoinTable,
-  ManyToMany,
   OneToMany,
-  BeforeUpdate,
 } from 'typeorm';
 import { BaseEntity } from '../../base.entity';
-import { Article } from '../../article/entities/article.entity';
 import { ArticleDataCat } from '../../article-data-cat/entities/article-data-cat.entity';
 
 @Entity('cms_article_cat')

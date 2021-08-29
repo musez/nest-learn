@@ -1,11 +1,5 @@
 import {
   Controller,
-  Get,
-  Post,
-  Body,
-  Put,
-  Param,
-  Delete,
 } from '@nestjs/common';
 import { ArticleDataCatService } from './article-data-cat.service';
 import { CreateArticleDataCatDto } from './dto/create-article-data-cat.dto';

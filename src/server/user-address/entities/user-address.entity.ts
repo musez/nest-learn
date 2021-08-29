@@ -3,7 +3,6 @@ import {
   Entity,
   JoinColumn,
   OneToOne,
-  PrimaryGeneratedColumn,
 } from 'typeorm';
 import { SexType } from '../../../constants/dicts.enum';
 import { BaseEntity } from '../../base.entity';

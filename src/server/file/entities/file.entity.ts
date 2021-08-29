@@ -1,12 +1,6 @@
 import {
   Entity,
-  PrimaryGeneratedColumn,
   Column,
-  BeforeInsert,
-  JoinTable,
-  ManyToMany,
-  OneToMany,
-  BeforeUpdate,
 } from 'typeorm';
 import { BaseEntity } from '../../base.entity';
 

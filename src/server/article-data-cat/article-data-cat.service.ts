@@ -4,7 +4,7 @@ import { UpdateArticleDataCatDto } from './dto/update-article-data-cat.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
 import { ArticleDataCat } from './entities/article-data-cat.entity';
-import { BaseFindByIdDto, BaseFindByIdsDto } from '../base.dto';
+import { BaseFindByIdsDto } from '../base.dto';
 
 @Injectable()
 export class ArticleDataCatService {

@@ -11,8 +11,8 @@ export default registerAs('mysql', () => ({
   timezone: 'UTC',
   charset: 'utf8mb4',
   multipleStatements: false,
-  dropSchema: false,
-  synchronize: false, // 是否自动将实体类同步到数据库
+  dropSchema: true,
+  synchronize: true, // 是否自动将实体类同步到数据库
   logging: true,
   logger: new DbLogger(),	// 配置项添加自定义的 log 类
 }));

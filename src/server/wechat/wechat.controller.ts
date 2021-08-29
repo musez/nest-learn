@@ -1,18 +1,12 @@
 import {
   Controller,
   Get,
-  Post,
-  Body,
-  Put,
-  Param,
-  Delete,
   Res,
   Req,
   Query,
 } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { WechatService } from './wechat.service';
-import { CurUser } from '../../common/decorators/cur-user.decorator';
 import { ConfigService } from '@nestjs/config';
 import * as request from 'request';
 

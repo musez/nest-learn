@@ -7,7 +7,6 @@ import {
 import { Reflector } from '@nestjs/core';
 import { UserService } from '../../server/user/user.service';
 import { ApiException } from '../exception/api-exception';
-import { ForbiddenException } from '../exception/forbidden.exception';
 
 @Injectable()
 export class AuthGuard implements CanActivate {

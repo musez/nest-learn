@@ -3,11 +3,9 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
-  DeleteDateColumn,
   AfterLoad,
 } from 'typeorm';
 import { DeleteType, StatusType } from '../constants/dicts.enum';
-import { Utils } from '../utils';
 import * as dayjs from 'dayjs';
 import { Exclude } from 'class-transformer';
 

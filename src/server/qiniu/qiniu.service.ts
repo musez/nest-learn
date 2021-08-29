@@ -5,6 +5,7 @@ import { ConfigService } from '@nestjs/config';
 import * as qiniu from 'qiniu';
 import { BaseQiniuDto } from './dto/base-qiniu.dto';
 import { FileService } from '../file/file.service';
+import { BaseFindByIdDto } from '../base.dto';
 
 @Injectable()
 export class QiniuService {
@@ -170,12 +171,19 @@ export class QiniuService {
   }
 
   /**
+   * 详情
+   */
+  async selectById(baseFindByIdDto: BaseFindByIdDto): Promise<any> {
+    const { key } = await this.fileService.selectById(baseFindByIdDto);
+
+    return this.selectByKey(key);
+  }
+
+  /**
    * 七牛获取
    */
-  async selectByKey(baseQiniuDto: BaseQiniuDto): Promise<any> {
+  async selectByKey(key: string): Promise<any> {
     const qiniuConfig = await this.getConfig();
-
-    const { key } = baseQiniuDto;
 
     const mac = new qiniu.auth.digest.Mac(qiniuConfig.accessKey, qiniuConfig.secretKey);
     const config = new qiniu.conf.Config({
@@ -211,7 +219,6 @@ export class QiniuService {
     const qiniuConfig = await this.getConfig();
 
     const { key } = baseQiniuDto;
-
     const mac = new qiniu.auth.digest.Mac(qiniuConfig.accessKey, qiniuConfig.secretKey);
     const config = new qiniu.conf.Config();
     const bucketManager = new qiniu.rs.BucketManager(mac, config);

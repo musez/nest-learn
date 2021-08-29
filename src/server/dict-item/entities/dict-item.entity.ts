@@ -1,4 +1,4 @@
-import { Entity, Column, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, Column, ManyToOne } from 'typeorm';
 import { BaseEntity } from '../../base.entity';
 import { Dict } from '../../dict/entities/dict.entity';
 import { DefaultType } from '../../../constants/dicts.enum';

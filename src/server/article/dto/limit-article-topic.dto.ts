@@ -1,10 +1,7 @@
-import { ApiProperty, ApiPropertyOptional, PartialType } from '@nestjs/swagger';
+import { ApiProperty, PartialType } from '@nestjs/swagger';
 import {
   IsNotEmpty,
-  IsString,
-  IsInt,
   IsUUID,
-  MaxLength,
   IsDefined,
 } from 'class-validator';
 import { BasePageDto } from '../../base.dto';

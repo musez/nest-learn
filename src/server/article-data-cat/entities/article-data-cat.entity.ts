@@ -3,7 +3,6 @@ import {
   PrimaryGeneratedColumn,
   JoinColumn,
   ManyToOne,
-  Column,
 } from 'typeorm';
 import { Article } from '../../article/entities/article.entity';
 import { ArticleCat } from '../../article-cat/entities/article-cat.entity';

@@ -1,11 +1,9 @@
-import { Module, MiddlewareConsumer, RequestMethod } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { ScheduleModule } from '@nestjs/schedule';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Connection } from 'typeorm';
 import { RedisModule } from 'nestjs-redis';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import * as Joi from '@hapi/joi';
-import * as path from 'path';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './server/auth/auth.module';
@@ -41,6 +39,8 @@ import { UserAddressModule } from './server/user-address/user-address.module';
 import { TaskModule } from './server/task/task.module';
 import { QiniuModule } from './server/qiniu/qiniu.module';
 import { StatisticsModule } from './server/statistics/statistics.module';
+import { UserPermissionModule } from './server/user-permission/user-permission.module';
+import { GroupPermissionModule } from './server/group-permission/group-permission.module';
 import AppConfig from './config/app.config';
 import MysqlConfig from './config/mysql.config';
 import RedisConfig from './config/redis.config';
@@ -122,6 +122,8 @@ import QiNiuConfig from './config/qiniu.config';
     // WechatModule,
     // TaskModule,
     StatisticsModule,
+    UserPermissionModule,
+    GroupPermissionModule,
   ],
   controllers: [AppController],
   providers: [AppService],

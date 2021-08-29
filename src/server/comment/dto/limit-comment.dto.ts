@@ -1,6 +1,6 @@
-import { ApiProperty, ApiPropertyOptional, PartialType } from '@nestjs/swagger';
+import { ApiPropertyOptional, PartialType } from '@nestjs/swagger';
 import { BasePageDto } from '../../base.dto';
-import { IsDefined, IsInt, IsNotEmpty, IsOptional } from 'class-validator';
+import { IsInt, IsOptional } from 'class-validator';
 import { Transform } from 'class-transformer';
 
 export class LimitCommentDto extends PartialType(BasePageDto) {

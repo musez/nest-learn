@@ -10,7 +10,6 @@ import {
 } from '@nestjs/common';
 import dayjs = require('dayjs');
 import { Logger } from '../../utils/log4js.util';
-import { ApiException } from '../exception/api-exception';
 
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
