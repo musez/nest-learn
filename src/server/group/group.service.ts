@@ -121,7 +121,7 @@ export class GroupService {
   async selectById(baseFindByIdDto: BaseFindByIdDto): Promise<Group> {
     const { id } = baseFindByIdDto;
     const ret = await this.groupRepository.findOne({
-      relations: ['groupRoles'],
+      relations: ['groupRoles', 'groupPermissions'],
       where: {
         id: id,
       },
@@ -129,17 +129,31 @@ export class GroupService {
     if (!ret) {
       throw new ApiException(`数据 id：${id} 不存在！`, 404);
     }
+
     if (ret?.groupRoles?.length > 0) {
       const ids = ret.groupRoles.map((v) => v.id);
 
       const groupRoleRet = await this.groupRoleService.selectByGroupIds({
         ids: ids.join(','),
       });
-
-      // @ts-ignore
-      ret.groupRoles = groupRoleRet.map((v) => {
+      const groupRoles = groupRoleRet.filter(v => v.role).map((v) => {
         return v.role;
       });
+      // @ts-ignore
+      ret.groupRoles = groupRoles;
+    }
+
+    if (ret?.groupPermissions?.length > 0) {
+      const ids = ret.groupPermissions.map((v) => v.id);
+
+      const groupPermissionsRet = await this.groupPermissionService.selectByGroupIds({
+        ids: ids.join(','),
+      });
+      const groupPermissions = groupPermissionsRet.filter(v => v.permission).map((v) => {
+        return v.permission;
+      });
+      // @ts-ignore
+      ret.groupPermissions = groupPermissions;
     }
     return ret;
   }

@@ -389,7 +389,7 @@ export class UserService {
     const { id } = baseFindByIdDto;
 
     const ret = await this.userRepository.findOne({
-      relations: ['userinfo', 'userGroups', 'userRoles'],
+      relations: ['userinfo', 'userGroups', 'userRoles', 'userPermissions'],
       where: {
         id: id,
       },
@@ -404,11 +404,11 @@ export class UserService {
       const userGroupRet = await this.userGroupService.selectByUserIds({
         ids: ids.join(','),
       });
-
-      // @ts-ignore
-      ret.userGroups = userGroupRet.map((v) => {
+      const userGroups = userGroupRet.filter(v => v.group).map((v) => {
         return v.group;
       });
+      // @ts-ignore
+      ret.userGroups = Utils.uniqBy(userGroups, 'id');
     }
 
     if (ret?.userRoles?.length > 0) {
@@ -417,11 +417,24 @@ export class UserService {
       const userRoleRet = await this.userRoleService.selectByUserIds({
         ids: ids.join(','),
       });
-
-      // @ts-ignore
-      ret.userRoles = userRoleRet.map((v) => {
+      const userRoles = userRoleRet.filter(v => v.role).map((v) => {
         return v.role;
       });
+      // @ts-ignore
+      ret.userRoles = userRoles;
+    }
+
+    if (ret?.userPermissions?.length > 0) {
+      const ids = ret.userPermissions.map((v) => v.id);
+
+      const userPermissionRet = await this.userPermissionService.selectByUserIds({
+        ids: ids.join(','),
+      });
+      const userPermissions = userPermissionRet.filter(v => v.permission).map((v) => {
+        return v.permission;
+      });
+      // @ts-ignore
+      ret.userPermissions = userPermissions;
     }
 
     return ret;

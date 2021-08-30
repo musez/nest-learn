@@ -21,6 +21,7 @@ import { UserGroup } from '../user-group/entities/user-group.entity';
 import { User } from '../user/entities/user.entity';
 import { UserRole } from '../user-role/entities/user-role.entity';
 import { ApiException } from '../../common/exception/api-exception';
+import { UserPermission } from '../user-permission/entities/user-permission.entity';
 
 @Injectable()
 export class PermissionService {
@@ -293,7 +294,7 @@ export class PermissionService {
    */
   async selectByUserId(baseFindByIdDto: BaseFindByIdDto): Promise<any> {
     const { id } = baseFindByIdDto;
-    const userGroupPermissions = await this.permissionRepository
+    const userGroupPermission = await this.permissionRepository
       .createQueryBuilder('p')
       .innerJoinAndSelect(RolePermission, 'rp', 'p.id = rp.permissionId')
       .innerJoinAndSelect(Role, 'r', 'rp.roleId = r.id')
@@ -302,21 +303,33 @@ export class PermissionService {
       .innerJoinAndSelect(UserGroup, 'ug', 'g.id = ug.groupId')
       .innerJoinAndSelect(User, 'u', 'u.id = ug.userId')
       .where(
-        'u.id = :id AND u.deleteStatus = 0 AND g.deleteStatus = 0 AND r.deleteStatus = 0 AND p.deleteStatus = 0',
+        'u.id = :id AND u.deleteStatus = 0 AND g.deleteStatus = 0 AND r.deleteStatus = 0 AND p.deleteStatus = 0 AND u.status = 1 AND g.status = 1  AND r.status = 1 AND p.status = 1',
         {
           id: id,
         },
       )
       .getMany();
 
-    const userPermissions = await this.permissionRepository
+    const userRolePermission = await this.permissionRepository
       .createQueryBuilder('p')
       .innerJoinAndSelect(RolePermission, 'rp', 'p.id = rp.permissionId')
       .innerJoinAndSelect(Role, 'r', 'rp.roleId = r.id')
       .innerJoinAndSelect(UserRole, 'ur', 'r.id = ur.roleId')
       .innerJoinAndSelect(User, 'u', 'u.id = ur.userId')
       .where(
-        'u.id = :id AND u.deleteStatus = 0 AND r.deleteStatus = 0 AND p.deleteStatus = 0',
+        'u.id = :id AND u.deleteStatus = 0 AND r.deleteStatus = 0 AND p.deleteStatus = 0 AND u.status = 1 AND r.status = 1 AND p.status = 1',
+        {
+          id: id,
+        },
+      )
+      .getMany();
+
+    const userPermission = await this.permissionRepository
+      .createQueryBuilder('p')
+      .innerJoinAndSelect(UserPermission, 'up', 'u.id = ur.permissionId')
+      .innerJoinAndSelect(User, 'u', 'u.id = ur.userId')
+      .where(
+        'u.id = :id AND u.deleteStatus = 0 AND p.deleteStatus = 0 AND u.status = 1 AND p.status = 1',
         {
           id: id,
         },
@@ -324,7 +337,7 @@ export class PermissionService {
       .getMany();
 
     const res = Utils.uniqBy(
-      Utils.concat(userGroupPermissions, userPermissions),
+      Utils.concat(userGroupPermission, userRolePermission, userPermission),
       'id',
     );
 

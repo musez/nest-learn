@@ -26,8 +26,8 @@ const log4jsConfig = {
       alwaysIncludePattern: true,
       layout: {
         type: 'pattern',
-        pattern: '{"date":"%d","level":"%p","category":"%c","host":"%h","pid":"%z","data":\'%m\'}',
-        // pattern: "[%d{yyyy-MM-dd hh:mm:ss SSS}] [%p] -h: %h -pid: %z  msg: \'%m\' "
+        // pattern: '{"date":"%d","level":"%p","category":"%c","host":"%h","pid":"%z","data":\'%m\'}',
+        pattern: "[%d{yyyy-MM-dd hh:mm:ss SSS}] [%p] -h: %h -pid: %z  msg: \'%m\' "
       },// 自定义的输出格式, 可参考 https://blog.csdn.net/hello_word2/article/details/79295344
       pattern: 'yyyyMMdd',
       daysToKeep: 60,

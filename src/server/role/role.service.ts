@@ -133,12 +133,13 @@ export class RoleService {
           ids: ids.join(','),
         },
       );
-
-      // @ts-ignore
-      ret.rolePermissions = rolePermissionRet.map((v) => {
+      const rolePermissions = rolePermissionRet.filter(v => v.permission).map((v) => {
         return v.permission;
       });
+      // @ts-ignore
+      ret.rolePermissions = Utils.uniqBy(rolePermissions, 'id');
     }
+
     return ret;
   }
 

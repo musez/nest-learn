@@ -21,7 +21,7 @@ export class UserPermissionService {
   }
 
   /**
-   * 获取角色
+   * 获取权限
    */
   async selectByUserId(baseFindByIdDto: BaseFindByIdDto): Promise<UserPermission[]> {
     const { id } = baseFindByIdDto;
@@ -36,7 +36,7 @@ export class UserPermissionService {
   }
 
   /**
-   * 获取用户组（批量）
+   * 获取权限（批量）
    */
   async selectByUserIds(baseFindByIdsDto: BaseFindByIdsDto): Promise<UserPermission[]> {
     const { ids } = baseFindByIdsDto;
@@ -50,7 +50,7 @@ export class UserPermissionService {
   }
 
   /**
-   * 删除角色
+   * 删除权限
    */
   async deleteByUserId(id: string): Promise<any> {
     return await this.userPermissionRepository
