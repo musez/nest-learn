@@ -34,7 +34,8 @@ export class CommentService {
    * 获取列表
    */
   async selectList(searchCommentDto: SearchCommentDto): Promise<any[]> {
-    const { commentId, content, replyType, status } = searchCommentDto;
+    // eslint-disable-next-line prefer-const
+    let { commentId, content, replyType, status } = searchCommentDto;
 
     const queryConditionList = [];
     if (!Utils.isBlank(commentId)) {
@@ -47,7 +48,10 @@ export class CommentService {
       queryConditionList.push('comment.replyType = :replyType');
     }
     if (!Utils.isBlank(status)) {
-      queryConditionList.push('comment.status = :status');
+      if (!Utils.isArray(status)) {
+        status = Utils.split(status.toString());
+      }
+      queryConditionList.push('comment.status IN (:...status)');
     }
     queryConditionList.push('comment.deleteStatus = 0');
     const queryCondition = queryConditionList.join(' AND ');
@@ -81,14 +85,7 @@ export class CommentService {
    */
   async selectListPage(limitCommentDto: LimitCommentDto): Promise<any> {
     // eslint-disable-next-line prefer-const
-    let {
-      page,
-      limit,
-      commentId,
-      content,
-      replyType,
-      status,
-    } = limitCommentDto;
+    let { page, limit, commentId, content, replyType, status } = limitCommentDto;
     page = page ? page : 1;
     limit = limit ? limit : 10;
     const offset = (page - 1) * limit;
@@ -104,7 +101,10 @@ export class CommentService {
       queryConditionList.push('comment.replyType = :replyType');
     }
     if (!Utils.isBlank(status)) {
-      queryConditionList.push('comment.status = :status');
+      if (!Utils.isArray(status)) {
+        status = Utils.split(status.toString());
+      }
+      queryConditionList.push('comment.status IN (:...status)');
     }
     queryConditionList.push('comment.deleteStatus = 0');
     const queryCondition = queryConditionList.join(' AND ');

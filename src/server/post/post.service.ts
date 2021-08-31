@@ -34,14 +34,18 @@ export class PostService {
    * 获取列表
    */
   async selectList(query): Promise<any[]> {
-    const { name, status } = query;
+    // eslint-disable-next-line prefer-const
+    let { name, status } = query;
 
     const queryConditionList = [];
     if (!Utils.isBlank(name)) {
       queryConditionList.push('name LIKE :name');
     }
     if (!Utils.isBlank(status)) {
-      queryConditionList.push('status = :status');
+      if (!Utils.isArray(status)) {
+        status = Utils.split(status.toString());
+      }
+      queryConditionList.push('status IN (:...status)');
     }
     queryConditionList.push('deleteStatus = 0');
     const queryCondition = queryConditionList.join(' AND ');
@@ -64,6 +68,7 @@ export class PostService {
    * 获取列表（分页）
    */
   async selectListPage(limitPostDto: LimitPostDto): Promise<any> {
+    // eslint-disable-next-line prefer-const
     let { page, limit, name, status } = limitPostDto;
     page = page ? page : 1;
     limit = limit ? limit : 10;
@@ -74,7 +79,10 @@ export class PostService {
       queryConditionList.push('name LIKE :name');
     }
     if (!Utils.isBlank(status)) {
-      queryConditionList.push('status = :status');
+      if (!Utils.isArray(status)) {
+        status = Utils.split(status.toString());
+      }
+      queryConditionList.push('status IN (:...status)');
     }
     queryConditionList.push('deleteStatus = 0');
     const queryCondition = queryConditionList.join(' AND ');

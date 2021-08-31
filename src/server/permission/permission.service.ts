@@ -49,7 +49,8 @@ export class PermissionService {
    * 获取全部
    */
   async selectAll(searchPermissionDto: SearchPermissionDto): Promise<any[]> {
-    const { name, type, status } = searchPermissionDto;
+    // eslint-disable-next-line prefer-const
+    let { name, type, status } = searchPermissionDto;
 
     const queryConditionList = [];
     if (!Utils.isBlank(name)) {
@@ -63,7 +64,10 @@ export class PermissionService {
       }
     }
     if (!Utils.isBlank(status)) {
-      queryConditionList.push('status = :status');
+      if (!Utils.isArray(status)) {
+        status = Utils.split(status.toString());
+      }
+      queryConditionList.push('status IN (:...status)');
     }
     queryConditionList.push('deleteStatus = 0');
     const queryCondition = queryConditionList.join(' AND ');
@@ -105,6 +109,7 @@ export class PermissionService {
     const queryConditionList = [];
     let parentIds = null;
     if (!Utils.isBlank(parentId)) {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       if (parseInt(kinship) === 0) {
         parentIds = parentId;
@@ -127,7 +132,10 @@ export class PermissionService {
       }
     }
     if (!Utils.isBlank(status)) {
-      queryConditionList.push('status = :status');
+      if (!Utils.isArray(status)) {
+        status = Utils.split(status.toString());
+      }
+      queryConditionList.push('status IN (:...status)');
     }
     queryConditionList.push('deleteStatus = 0');
     const queryCondition = queryConditionList.join(' AND ');
@@ -180,7 +188,10 @@ export class PermissionService {
       queryConditionList.push('name LIKE :name');
     }
     if (!Utils.isBlank(status)) {
-      queryConditionList.push('status = :status');
+      if (!Utils.isArray(status)) {
+        status = Utils.split(status.toString());
+      }
+      queryConditionList.push('status IN (:...status)');
     }
     queryConditionList.push('deleteStatus = 0');
     const queryCondition = queryConditionList.join(' AND ');
@@ -326,8 +337,8 @@ export class PermissionService {
 
     const userPermission = await this.permissionRepository
       .createQueryBuilder('p')
-      .innerJoinAndSelect(UserPermission, 'up', 'u.id = ur.permissionId')
-      .innerJoinAndSelect(User, 'u', 'u.id = ur.userId')
+      .innerJoinAndSelect(UserPermission, 'up', 'p.id = up.permissionId')
+      .innerJoinAndSelect(User, 'u', 'u.id = up.userId')
       .where(
         'u.id = :id AND u.deleteStatus = 0 AND p.deleteStatus = 0 AND u.status = 1 AND p.status = 1',
         {

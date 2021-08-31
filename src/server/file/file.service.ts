@@ -96,7 +96,10 @@ export class FileService {
       queryConditionList.push('fileDisName LIKE :fileDisName');
     }
     if (!Utils.isBlank(status)) {
-      queryConditionList.push('status = :status');
+      if (!Utils.isArray(status)) {
+        status = Utils.split(status.toString());
+      }
+      queryConditionList.push('status IN (:...status)');
     }
     queryConditionList.push('deleteStatus = 0');
     const queryCondition = queryConditionList.join(' AND ');

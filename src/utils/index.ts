@@ -22,11 +22,11 @@ export class Utils {
     return randomString;
   };
 
-  static split(str, sp = ',') {
+  static split(str: string, sp = ',') {
     return str.split(sp);
   }
 
-  static join(arr, sp = ',') {
+  static join(arr: [], sp = ',') {
     return arr.join(sp);
   }
 
@@ -34,11 +34,11 @@ export class Utils {
     return dayjs(Date.now()).format('YYYY-MM-DD HH:mm:ss');
   }
 
-  static dayjsFormat(format) {
+  static dayjsFormat(format: string) {
     return dayjs(Date.now()).format(format);
   }
 
-  static dayjsGetDay(day) {
+  static dayjsGetDay(day: number) {
     const days = [];
     for (let i = 1; i <= day; i++) {
       days.push(dayjs().add(i, 'day').format('YYYY-MM-DD'));

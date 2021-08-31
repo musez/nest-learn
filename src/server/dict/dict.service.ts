@@ -46,14 +46,18 @@ export class DictService {
    * 获取列表
    */
   async selectList(searchDictDto: SearchDictDto): Promise<Dict[]> {
-    const { dictName, status } = searchDictDto;
+    // eslint-disable-next-line prefer-const
+    let { dictName, status } = searchDictDto;
 
     const queryConditionList = [];
     if (!Utils.isBlank(dictName)) {
       queryConditionList.push('dict.dictName LIKE :dictName');
     }
     if (!Utils.isBlank(status)) {
-      queryConditionList.push('dict.status = :status');
+      if (!Utils.isArray(status)) {
+        status = Utils.split(status.toString());
+      }
+      queryConditionList.push('dict.status IN (:...status)');
     }
     queryConditionList.push('dict.deleteStatus = 0');
     const queryCondition = queryConditionList.join(' AND ');
@@ -87,7 +91,11 @@ export class DictService {
       queryConditionList.push('dict.dictName LIKE :dictName');
     }
     if (!Utils.isBlank(status)) {
-      queryConditionList.push('dict.status = :status');
+      if (!Utils.isArray(status)) {
+        // @ts-ignore
+        status = Utils.split(status.toString());
+      }
+      queryConditionList.push('dict.status IN (:...status)');
     }
     queryConditionList.push('dict.deleteStatus = 0');
     const queryCondition = queryConditionList.join(' AND ');

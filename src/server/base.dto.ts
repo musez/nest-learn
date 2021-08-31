@@ -23,8 +23,8 @@ export class BasePageDto {
   @IsInt({ message: '每页条数必须为数字' })
   readonly limit?: number;
 
-  @ApiPropertyOptional({ description: '排序的方式: ASC, DESC' })
-  readonly order: string;
+  // @ApiPropertyOptional({ description: '排序的方式: ASC, DESC' })
+  // readonly order: string;
 }
 
 export class BaseSearchDto {

@@ -61,7 +61,8 @@ export class HolidayService {
    * 获取列表
    */
   async selectList(searchHolidayDto: SearchHolidayDto): Promise<any[]> {
-    const { year, name, weekday, restType, status } = searchHolidayDto;
+    // eslint-disable-next-line prefer-const
+    let { year, name, weekday, restType, status } = searchHolidayDto;
 
     const queryConditionList = [];
     if (!Utils.isBlank(year)) {
@@ -77,7 +78,10 @@ export class HolidayService {
       queryConditionList.push('restType = :restType');
     }
     if (!Utils.isBlank(status)) {
-      queryConditionList.push('status = :status');
+      if (!Utils.isArray(status)) {
+        status = Utils.split(status.toString());
+      }
+      queryConditionList.push('status IN (:...status)');
     }
     queryConditionList.push('deleteStatus = 0');
     const queryCondition = queryConditionList.join(' AND ');
@@ -104,15 +108,7 @@ export class HolidayService {
    */
   async selectListPage(limitHolidayDto: LimitHolidayDto): Promise<any> {
     // eslint-disable-next-line prefer-const
-    let {
-      page,
-      limit,
-      year,
-      name,
-      weekday,
-      restType,
-      status,
-    } = limitHolidayDto;
+    let { page, limit, year, name, weekday, restType, status } = limitHolidayDto;
     page = page ? page : 1;
     limit = limit ? limit : 10;
     const offset = (page - 1) * limit;
@@ -131,7 +127,10 @@ export class HolidayService {
       queryConditionList.push('restType = :restType');
     }
     if (!Utils.isBlank(status)) {
-      queryConditionList.push('status = :status');
+      if (!Utils.isArray(status)) {
+        status = Utils.split(status.toString());
+      }
+      queryConditionList.push('status IN (:...status)');
     }
     queryConditionList.push('deleteStatus = 0');
     const queryCondition = queryConditionList.join(' AND ');

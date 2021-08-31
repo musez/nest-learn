@@ -34,7 +34,8 @@ export class TopicService {
    * 获取列表
    */
   async selectList(searchTopicDto: SearchTopicDto): Promise<any[]> {
-    const { topicId, content, topicType, status } = searchTopicDto;
+    // eslint-disable-next-line prefer-const
+    let { topicId, content, topicType, status } = searchTopicDto;
 
     const queryConditionList = [];
     if (!Utils.isBlank(topicId)) {
@@ -47,7 +48,10 @@ export class TopicService {
       queryConditionList.push('topic.topicType = :topicType');
     }
     if (!Utils.isBlank(status)) {
-      queryConditionList.push('topic.status = :status');
+      if (!Utils.isArray(status)) {
+        status = Utils.split(status.toString());
+      }
+      queryConditionList.push('topic.status IN (:...status)');
     }
     queryConditionList.push('topic.deleteStatus = 0');
     const queryCondition = queryConditionList.join(' AND ');
@@ -91,7 +95,10 @@ export class TopicService {
       queryConditionList.push('topic.topicType = :topicType');
     }
     if (!Utils.isBlank(status)) {
-      queryConditionList.push('topic.status = :status');
+      if (!Utils.isArray(status)) {
+        status = Utils.split(status.toString());
+      }
+      queryConditionList.push('topic.status IN (:...status)');
     }
     queryConditionList.push('topic.deleteStatus = 0');
     const queryCondition = queryConditionList.join(' AND ');

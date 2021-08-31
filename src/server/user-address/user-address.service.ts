@@ -45,7 +45,8 @@ export class UserAddressService {
    * 获取列表
    */
   async selectList(searchDto: SearchUserAddressDto): Promise<any[]> {
-    const { name, mobile, status } = searchDto;
+    // eslint-disable-next-line prefer-const
+    let { name, mobile, status } = searchDto;
 
     const queryConditionList = [];
     if (!Utils.isBlank(name)) {
@@ -55,7 +56,10 @@ export class UserAddressService {
       queryConditionList.push('userAddress.mobile LIKE :mobile');
     }
     if (!Utils.isBlank(status)) {
-      queryConditionList.push('userAddress.status LIKE :status');
+      if (!Utils.isArray(status)) {
+        status = Utils.split(status.toString());
+      }
+      queryConditionList.push('userAddress.status IN (:...status)');
     }
     queryConditionList.push('userAddress.deleteStatus = 0');
     const queryCondition = queryConditionList.join(' AND ');
@@ -128,7 +132,10 @@ export class UserAddressService {
       queryConditionList.push('userAddress.mobile LIKE :mobile');
     }
     if (!Utils.isBlank(status)) {
-      queryConditionList.push('userAddress.status LIKE :status');
+      if (!Utils.isArray(status)) {
+        status = Utils.split(status.toString());
+      }
+      queryConditionList.push('userAddress.status IN (:...status)');
     }
     queryConditionList.push('userAddress.deleteStatus = 0');
     const queryCondition = queryConditionList.join(' AND ');

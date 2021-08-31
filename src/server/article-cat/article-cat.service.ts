@@ -40,14 +40,18 @@ export class ArticleCatService {
    * 获取全部
    */
   async selectAll(searchArticleCatDto: SearchArticleCatDto): Promise<any[]> {
-    const { catName, status } = searchArticleCatDto;
+    // eslint-disable-next-line prefer-const
+    let { catName, status } = searchArticleCatDto;
 
     const queryConditionList = [];
     if (!Utils.isBlank(catName)) {
       queryConditionList.push('catName LIKE :catName');
     }
     if (!Utils.isBlank(status)) {
-      queryConditionList.push('status = :status');
+      if (!Utils.isArray(status)) {
+        status = Utils.split(status.toString());
+      }
+      queryConditionList.push('status IN (:..status)');
     }
     queryConditionList.push('deleteStatus = 0');
     const queryCondition = queryConditionList.join(' AND ');
@@ -79,7 +83,8 @@ export class ArticleCatService {
    * 获取列表
    */
   async selectList(searchArticleCatDto: SearchArticleCatDto): Promise<any[]> {
-    const { parentId, kinship, catName, status } = searchArticleCatDto;
+    // eslint-disable-next-line prefer-const
+    let { parentId, kinship, catName, status } = searchArticleCatDto;
 
     const queryConditionList = [];
     let parentIds = null;
@@ -100,7 +105,10 @@ export class ArticleCatService {
       queryConditionList.push('catName LIKE :catName');
     }
     if (!Utils.isBlank(status)) {
-      queryConditionList.push('status = :status');
+      if (!Utils.isArray(status)) {
+        status = Utils.split(status.toString());
+      }
+      queryConditionList.push('status IN (:...status)');
     }
     queryConditionList.push('deleteStatus = 0');
     const queryCondition = queryConditionList.join(' AND ');
@@ -149,7 +157,10 @@ export class ArticleCatService {
       queryConditionList.push('catName LIKE :catName');
     }
     if (!Utils.isBlank(status)) {
-      queryConditionList.push('status = :status');
+      if (!Utils.isArray(status)) {
+        status = Utils.split(status.toString());
+      }
+      queryConditionList.push('status IN (:...status)');
     }
     queryConditionList.push('deleteStatus = 0');
     const queryCondition = queryConditionList.join(' AND ');

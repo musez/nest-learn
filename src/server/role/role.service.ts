@@ -43,14 +43,18 @@ export class RoleService {
    * 获取列表
    */
   async selectList(searchRoleDto: SearchRoleDto): Promise<any[]> {
-    const { name, status } = searchRoleDto;
+    // eslint-disable-next-line prefer-const
+    let { name, status } = searchRoleDto;
 
     const queryConditionList = [];
     if (!Utils.isBlank(name)) {
       queryConditionList.push('name LIKE :name');
     }
     if (!Utils.isBlank(status)) {
-      queryConditionList.push('status = :status');
+      if (!Utils.isArray(status)) {
+        status = Utils.split(status.toString());
+      }
+      queryConditionList.push('status IN (:...status)');
     }
     queryConditionList.push('deleteStatus = 0');
     const queryCondition = queryConditionList.join(' AND ');
@@ -83,7 +87,10 @@ export class RoleService {
       queryConditionList.push('name LIKE :name');
     }
     if (!Utils.isBlank(status)) {
-      queryConditionList.push('status = :status');
+      if (!Utils.isArray(status)) {
+        status = Utils.split(status.toString());
+      }
+      queryConditionList.push('status IN (:...status)');
     }
     queryConditionList.push('deleteStatus = 0');
     const queryCondition = queryConditionList.join(' AND ');
@@ -261,7 +268,7 @@ export class RoleService {
   ): Promise<void> {
     let { id, permissions } = bindRolePermissionDto;
 
-    if (permissions && Utils.isArray(permissions)) {
+    if (permissions && !Utils.isArray(permissions)) {
       permissions = Utils.split(',');
     }
 

@@ -48,14 +48,18 @@ export class GroupService {
    * 获取列表
    */
   async selectList(query): Promise<any[]> {
-    const { name, status } = query;
+    // eslint-disable-next-line prefer-const
+    let { name, status } = query;
 
     const queryConditionList = [];
     if (!Utils.isBlank(name)) {
       queryConditionList.push('name LIKE :name');
     }
     if (!Utils.isBlank(status)) {
-      queryConditionList.push('status = :status');
+      if (!Utils.isArray(status)) {
+        status = Utils.split(status.toString());
+      }
+      queryConditionList.push('status IN (:...status)');
     }
     queryConditionList.push('deleteStatus = 0');
     const queryCondition = queryConditionList.join(' AND ');
@@ -88,7 +92,10 @@ export class GroupService {
       queryConditionList.push('name LIKE :name');
     }
     if (!Utils.isBlank(status)) {
-      queryConditionList.push('status = :status');
+      if (!Utils.isArray(status)) {
+        status = Utils.split(status.toString());
+      }
+      queryConditionList.push('status IN (:...status)');
     }
     queryConditionList.push('deleteStatus = 0');
     const queryCondition = queryConditionList.join(' AND ');
@@ -259,7 +266,7 @@ export class GroupService {
   async bindRoles(bindGroupRoleDto: BindGroupRoleDto): Promise<void> {
     let { id, roles } = bindGroupRoleDto;
 
-    if (roles && Utils.isArray(roles)) {
+    if (roles && !Utils.isArray(roles)) {
       roles = Utils.split(',');
     }
 
@@ -313,7 +320,7 @@ export class GroupService {
   async bindPermissions(bindGroupPermissionDto: BindGroupPermissionDto): Promise<void> {
     let { id, permissions } = bindGroupPermissionDto;
 
-    if (permissions && Utils.isArray(permissions)) {
+    if (permissions && !Utils.isArray(permissions)) {
       permissions = Utils.split(',');
     }
 

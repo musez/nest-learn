@@ -68,8 +68,9 @@ export class ArticleService {
       queryConditionList.push('type = :type');
     }
     if (!Utils.isBlank(status)) {
-      // @ts-ignore
-      status = Utils.split(status);
+      if (!Utils.isArray(status)) {
+        status = Utils.split(status.toString());
+      }
       queryConditionList.push('status IN (:...status)');
     }
     if (!Utils.isBlank(catId)) {
@@ -132,8 +133,9 @@ export class ArticleService {
       queryConditionList.push('article.type = :type');
     }
     if (!Utils.isBlank(status)) {
-      // @ts-ignore
-      status = Utils.split(status);
+      if (!Utils.isArray(status)) {
+        status = Utils.split(status.toString());
+      }
       queryConditionList.push('status IN (:...status)');
     }
     if (!Utils.isBlank(catId)) {

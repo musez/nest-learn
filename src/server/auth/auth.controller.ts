@@ -29,7 +29,7 @@ export class AuthController {
     schema: {
       type: 'object',
       properties: {
-        userName: { type: 'string', description: '用户名', example: 'wangyue' },
+        userName: { type: 'string', description: '用户名', example: 'admin' },
         userPwd: { type: 'string', description: '密码', example: '888888' },
         captchaId: {
           type: 'string',

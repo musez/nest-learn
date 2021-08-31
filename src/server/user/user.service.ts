@@ -196,7 +196,8 @@ export class UserService {
    * 获取列表
    */
   async selectList(searchUserDto: SearchUserDto): Promise<any[]> {
-    const { userName, name, userType, mobile, email, status } = searchUserDto;
+    // eslint-disable-next-line prefer-const
+    let { userName, name, userType, mobile, email, status } = searchUserDto;
 
     const queryConditionList = [];
     if (!Utils.isBlank(userName)) {
@@ -215,7 +216,10 @@ export class UserService {
       queryConditionList.push('user.email LIKE :email');
     }
     if (!Utils.isBlank(status)) {
-      queryConditionList.push('user.status = :status');
+      if (!Utils.isArray(status)) {
+        status = Utils.split(status.toString());
+      }
+      queryConditionList.push('user.status IN (:...status)');
     }
     queryConditionList.push('deleteStatus = 0');
     const queryCondition = queryConditionList.join(' AND ');
@@ -279,20 +283,11 @@ export class UserService {
    */
   async selectListPage(limitUserDto: LimitUserDto): Promise<any> {
     // eslint-disable-next-line prefer-const
-    let {
-      page,
-      limit,
-      userName,
-      name,
-      userType,
-      mobile,
-      email,
-      status,
-    } = limitUserDto;
+    let { page, limit, userName, name, userType, mobile, email, status } = limitUserDto;
     page = page ? page : 1;
     limit = limit ? limit : 10;
     const offset = (page - 1) * limit;
-    console.log('selectListPage', page, limit, offset);
+
     const queryConditionList = [];
     if (!Utils.isBlank(userName)) {
       queryConditionList.push('user.userName LIKE :userName');
@@ -310,7 +305,10 @@ export class UserService {
       queryConditionList.push('user.email LIKE :email');
     }
     if (!Utils.isBlank(status)) {
-      queryConditionList.push('user.status = :status');
+      if (!Utils.isArray(status)) {
+        status = Utils.split(status.toString());
+      }
+      queryConditionList.push('user.status IN (:...status)');
     }
     queryConditionList.push('deleteStatus = 0');
     const queryCondition = queryConditionList.join(' AND ');
@@ -577,7 +575,7 @@ export class UserService {
   async bindGroups(bindUserGroupDto: BindUserGroupDto): Promise<void> {
     let { id, groups } = bindUserGroupDto;
 
-    if (groups && Utils.isArray(groups)) {
+    if (groups && !Utils.isArray(groups)) {
       groups = Utils.split(',');
     }
 
@@ -632,7 +630,7 @@ export class UserService {
   async bindRoles(bindUserRoleDto: BindUserRoleDto): Promise<void> {
     let { id, roles } = bindUserRoleDto;
 
-    if (roles && Utils.isArray(roles)) {
+    if (roles && !Utils.isArray(roles)) {
       roles = Utils.split(',');
     }
 
@@ -687,7 +685,7 @@ export class UserService {
   async bindPermissions(bindUserPermissionDto: BindUserPermissionDto): Promise<void> {
     let { id, permissions } = bindUserPermissionDto;
 
-    if (permissions && Utils.isArray(permissions)) {
+    if (permissions && !Utils.isArray(permissions)) {
       permissions = Utils.split(',');
     }
 
