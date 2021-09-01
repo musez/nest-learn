@@ -4,35 +4,30 @@ import { UpdateArticleDataCatDto } from './dto/update-article-data-cat.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
 import { ArticleDataCat } from './entities/article-data-cat.entity';
-import { BaseFindByIdsDto } from '../base.dto';
 
 @Injectable()
 export class ArticleDataCatService {
   constructor(
     @InjectRepository(ArticleDataCat)
     private readonly articleDataCatRepository: Repository<ArticleDataCat>,
-  ) {}
+  ) {
+  }
 
   /**
    * 添加（批量）
    */
-  async insertBatch(
-    dto: ArticleDataCat[],
-  ): Promise<CreateArticleDataCatDto[] | ArticleDataCat[]> {
-    return await this.articleDataCatRepository.save(dto);
+  async insertBatch(articleDataCat: ArticleDataCat[]): Promise<CreateArticleDataCatDto[] | ArticleDataCat[]> {
+    return await this.articleDataCatRepository.save(articleDataCat);
   }
 
   /**
    * 获取分类（批量）
    */
-  async selectByArticleDataCatIds(
-    dto: BaseFindByIdsDto,
-  ): Promise<ArticleDataCat[]> {
-    const { ids } = dto;
+  async selectByArticleDataCatIds(ids: string[]): Promise<ArticleDataCat[]> {
     return await this.articleDataCatRepository.find({
       relations: ['cat'],
       where: {
-        id: In(ids.split(',')),
+        id: In(ids),
       },
     });
   }

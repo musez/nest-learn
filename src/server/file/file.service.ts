@@ -18,11 +18,11 @@ export class FileService {
   /**
    * 添加
    */
-  async insert(file, body, curUser): Promise<CreateFileDto> {
+  async insert(file, body, curUser?): Promise<CreateFileDto> {
     // 获取 body 中的文本参数
     const { description, extId, fileDisName } = body;
     const fileEntity = new File();
-    console.log(file);
+
     fileEntity.fileDisName = fileDisName;
     fileEntity.extId = extId;
     fileEntity.description = description;
@@ -34,11 +34,12 @@ export class FileService {
     fileEntity.path = file.path;
     fileEntity.size = file.size;
     if (!file.fileUrl) {
-      console.log(11111);
       fileEntity.type = 0;
       fileEntity.fileUrl = `${file.destination}/${file.filename}`;
     }
-    fileEntity.createBy = curUser!.id;
+    if (curUser) {
+      fileEntity.createBy = curUser!.id;
+    }
 
     return await this.fileRepository.save(fileEntity);
   }
@@ -46,7 +47,7 @@ export class FileService {
   /**
    * 添加（批量）
    */
-  async insertBatch(files, body, curUser): Promise<CreateFileDto[]> {
+  async insertBatch(files, body, curUser?): Promise<CreateFileDto[]> {
     // 获取 body 中的文本参数
     const { description, extId, fileDisName } = body;
     const filesEntity = [];
@@ -70,7 +71,9 @@ export class FileService {
         fileEntity.type = 0;
         fileEntity.fileUrl = `${file.destination}/${file.filename}`;
       }
-      fileEntity.createBy = curUser!.id;
+      if (curUser) {
+        fileEntity.createBy = curUser!.id;
+      }
 
       filesEntity.push(fileEntity);
     });
@@ -160,13 +163,13 @@ export class FileService {
   /**
    * 删除
    */
-  async deleteById(baseFindByIdDto: BaseFindByIdDto, curUser): Promise<void> {
+  async deleteById(baseFindByIdDto: BaseFindByIdDto, curUser?): Promise<void> {
     const { id } = baseFindByIdDto;
 
     await this.fileRepository
       .createQueryBuilder()
       .update(File)
-      .set({ deleteStatus: 1, deleteBy: curUser!.id, deleteTime: Utils.now() })
+      .set({ deleteStatus: 1, deleteBy: curUser ? curUser!.id : null, deleteTime: Utils.now() })
       .where('id = :id', { id: id })
       .execute();
   }
@@ -174,17 +177,17 @@ export class FileService {
   /**
    * 删除（批量）
    */
-  async deleteByIds(
-    baseFindByIdsDto: BaseFindByIdsDto,
-    curUser,
-  ): Promise<void> {
-    const { ids } = baseFindByIdsDto;
-    const idsArr = Utils.split(ids);
+  async deleteByIds(baseFindByIdsDto: BaseFindByIdsDto, curUser?): Promise<void> {
+    let { ids } = baseFindByIdsDto;
+
+    if (!Utils.isArray(ids)) {
+      ids = Utils.split(ids.toString());
+    }
     await this.fileRepository
       .createQueryBuilder()
       .update(File)
-      .set({ deleteStatus: 1, deleteBy: curUser!.id, deleteTime: Utils.now() })
-      .where('id in (:ids)', { ids: idsArr })
+      .set({ deleteStatus: 1, deleteBy: curUser ? curUser!.id : null, deleteTime: Utils.now() })
+      .where('id IN (:ids)', { ids: ids })
       .execute();
   }
 }

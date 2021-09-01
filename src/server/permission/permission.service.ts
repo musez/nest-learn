@@ -34,13 +34,12 @@ export class PermissionService {
   /**
    * 添加
    */
-  async insert(
-    createPermissionDto: CreatePermissionDto,
-    curUser,
-  ): Promise<Permission> {
+  async insert(createPermissionDto: CreatePermissionDto, curUser?): Promise<Permission> {
     let permission = new Permission();
     permission = Utils.dto2entity(createPermissionDto, permission);
-    permission.createBy = curUser!.id;
+    if (curUser) {
+      permission.createBy = curUser!.id;
+    }
 
     return await this.permissionRepository.save(permission);
   }
@@ -370,30 +369,31 @@ export class PermissionService {
   /**
    * 修改
    */
-  async update(updatePermissionDto: UpdatePermissionDto, curUser) {
+  async update(updatePermissionDto: UpdatePermissionDto, curUser?) {
     const { id, parentId, ...result } = updatePermissionDto;
 
     let permission = new Permission();
     permission = Utils.dto2entity(updatePermissionDto, permission);
-    permission.updateBy = curUser!.id;
-
+    if (curUser) {
+      permission.updateBy = curUser!.id;
+    }
     return await this.permissionRepository.update(id, permission);
   }
 
   /**
    * 修改状态
    */
-  async updateStatus(
-    baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto,
-    curUser,
-  ): Promise<any> {
-    const { ids, status } = baseModifyStatusByIdsDto;
-    const idsArr = Utils.split(ids);
+  async updateStatus(baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto, curUser?): Promise<any> {
+    // eslint-disable-next-line prefer-const
+    let { ids, status } = baseModifyStatusByIdsDto;
+    if (!Utils.isArray(ids)) {
+      ids = Utils.split(ids.toString());
+    }
     const ret = this.permissionRepository
       .createQueryBuilder()
       .update(Permission)
-      .set({ status: status, updateBy: curUser!.id })
-      .where('id in (:ids)', { ids: idsArr })
+      .set({ status: status, updateBy: curUser ? curUser!.id : null })
+      .where('id IN (:ids)', { ids: ids })
       .execute();
 
     if (!ret) {
@@ -406,13 +406,13 @@ export class PermissionService {
   /**
    * 删除
    */
-  async deleteById(baseFindByIdDto: BaseFindByIdDto, curUser): Promise<void> {
+  async deleteById(baseFindByIdDto: BaseFindByIdDto, curUser?): Promise<void> {
     const { id } = baseFindByIdDto;
 
     await this.permissionRepository
       .createQueryBuilder()
       .update(Permission)
-      .set({ deleteStatus: 1, deleteBy: curUser!.id, deleteTime: Utils.now() })
+      .set({ deleteStatus: 1, deleteBy: curUser ? curUser!.id : null, deleteTime: Utils.now() })
       .where('id = :id', { id: id })
       .execute();
   }
@@ -420,17 +420,17 @@ export class PermissionService {
   /**
    * 删除（批量）
    */
-  async deleteByIds(
-    baseFindByIdsDto: BaseFindByIdsDto,
-    curUser,
-  ): Promise<void> {
-    const { ids } = baseFindByIdsDto;
-    const idsArr = Utils.split(ids);
+  async deleteByIds(baseFindByIdsDto: BaseFindByIdsDto, curUser?): Promise<void> {
+    let { ids } = baseFindByIdsDto;
+
+    if (!Utils.isArray(ids)) {
+      ids = Utils.split(ids.toString());
+    }
     await this.permissionRepository
       .createQueryBuilder()
       .update(Permission)
-      .set({ deleteStatus: 1, deleteBy: curUser!.id, deleteTime: Utils.now() })
-      .where('id in (:ids)', { ids: idsArr })
+      .set({ deleteStatus: 1, deleteBy: curUser ? curUser!.id : null, deleteTime: Utils.now() })
+      .where('id IN (:ids)', { ids: ids })
       .execute();
   }
 }

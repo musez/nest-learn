@@ -16,21 +16,18 @@ export class GroupRoleService {
   /**
    * 添加
    */
-  async insertBatch(dto: GroupRole[]): Promise<GroupRole[]> {
-    return await this.groupRoleRepository.save(dto);
+  async insertBatch(groupRole: GroupRole[]): Promise<GroupRole[]> {
+    return await this.groupRoleRepository.save(groupRole);
   }
 
   /**
    * 获取用户组（批量）
    */
-  async selectByGroupIds(dto: BaseFindByIdsDto): Promise<GroupRole[]> {
-    const { ids } = dto;
-
-    const idsArr = Utils.split(ids);
+  async selectByGroupIds(ids: string[]): Promise<GroupRole[]> {
     return await this.groupRoleRepository.find({
       relations: ['role'],
       where: {
-        id: In(idsArr),
+        id: In(ids),
       },
     });
   }

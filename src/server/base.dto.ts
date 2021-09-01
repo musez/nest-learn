@@ -50,7 +50,7 @@ export class BaseModifyStatusByIdsDto {
   @ApiProperty({ description: '主键 ids', example: null })
   @IsDefined({ message: '主键 ids 不能为空！' })
   @IsNotEmpty({ message: '主键 ids 不能为空！' })
-  readonly ids: string;
+  readonly ids: string | string[];
 
   @ApiPropertyOptional({ description: '状态', example: 1 })
   @IsOptional()
@@ -71,7 +71,7 @@ export class BaseFindByIdsDto {
   @ApiProperty({ description: '主键 ids', example: null })
   @IsDefined({ message: '主键 ids 不能为空！' })
   @IsNotEmpty({ message: '主键 ids 不能为空' })
-  readonly ids: string;
+  readonly ids: string | string[];
 }
 
 export class BaseFindByPIdDto {

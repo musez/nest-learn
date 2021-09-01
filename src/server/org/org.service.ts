@@ -25,10 +25,12 @@ export class OrgService {
   /**
    * 添加
    */
-  async insert(createOrgDto: CreateOrgDto, curUser): Promise<CreateOrgDto> {
+  async insert(createOrgDto: CreateOrgDto, curUser?): Promise<CreateOrgDto> {
     let role = new Org();
     role = Utils.dto2entity(createOrgDto, role);
-    role.createBy = curUser!.id;
+    if (curUser) {
+      role.createBy = curUser!.id;
+    }
     return await this.orgRepository.save(role);
   }
 
@@ -280,12 +282,14 @@ export class OrgService {
   /**
    * 修改
    */
-  async update(updateOrgDto: UpdateOrgDto, curUser): Promise<void> {
+  async update(updateOrgDto: UpdateOrgDto, curUser?): Promise<void> {
     const { id } = updateOrgDto;
 
     let org = new Org();
     org = Utils.dto2entity(updateOrgDto, org);
-    org.updateBy = curUser!.id;
+    if (curUser) {
+      org.updateBy = curUser!.id;
+    }
 
     await this.orgRepository.update(id, org);
   }
@@ -293,17 +297,17 @@ export class OrgService {
   /**
    * 修改状态
    */
-  async updateStatus(
-    baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto,
-    curUser,
-  ): Promise<any> {
-    const { ids, status } = baseModifyStatusByIdsDto;
-    const idsArr = Utils.split(ids);
+  async updateStatus(baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto, curUser?): Promise<any> {
+    // eslint-disable-next-line prefer-const
+    let { ids, status } = baseModifyStatusByIdsDto;
+    if (!Utils.isArray(ids)) {
+      ids = Utils.split(ids.toString());
+    }
     const ret = this.orgRepository
       .createQueryBuilder()
       .update(Org)
-      .set({ status: status, updateBy: curUser!.id })
-      .where('id in (:ids)', { ids: idsArr })
+      .set({ status: status, updateBy: curUser ? curUser!.id : null })
+      .where('id IN (:ids)', { ids: ids })
       .execute();
 
     if (!ret) {
@@ -316,13 +320,13 @@ export class OrgService {
   /**
    * 删除
    */
-  async deleteById(baseFindByIdDto: BaseFindByIdDto, curUser): Promise<void> {
+  async deleteById(baseFindByIdDto: BaseFindByIdDto, curUser?): Promise<void> {
     const { id } = baseFindByIdDto;
 
     await this.orgRepository
       .createQueryBuilder()
       .update(Org)
-      .set({ deleteStatus: 1, deleteBy: curUser!.id, deleteTime: Utils.now() })
+      .set({ deleteStatus: 1, deleteBy: curUser ? curUser!.id : null, deleteTime: Utils.now() })
       .where('id = :id', { id: id })
       .execute();
   }
@@ -330,17 +334,17 @@ export class OrgService {
   /**
    * 删除（批量）
    */
-  async deleteByIds(
-    baseFindByIdsDto: BaseFindByIdsDto,
-    curUser,
-  ): Promise<void> {
-    const { ids } = baseFindByIdsDto;
-    const idsArr = Utils.split(ids);
+  async deleteByIds(baseFindByIdsDto: BaseFindByIdsDto, curUser?,): Promise<void> {
+    let { ids } = baseFindByIdsDto;
+
+    if (!Utils.isArray(ids)) {
+      ids = Utils.split(ids.toString());
+    }
     await this.orgRepository
       .createQueryBuilder()
       .update(Org)
-      .set({ deleteStatus: 1, deleteBy: curUser!.id, deleteTime: Utils.now() })
-      .where('id in (:ids)', { ids: idsArr })
+      .set({ deleteStatus: 1, deleteBy: curUser ? curUser!.id : null, deleteTime: Utils.now() })
+      .where('id IN (:ids)', { ids: ids })
       .execute();
   }
 }

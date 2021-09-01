@@ -14,9 +14,10 @@ export class PostService {
   constructor(
     @InjectRepository(SysPost)
     private readonly postRepository: Repository<SysPost>,
-  ) {}
+  ) {
+  }
 
-  async insert(createPostDto: CreatePostDto, curUser) {
+  async insert(createPostDto: CreatePostDto, curUser?) {
     const { name } = createPostDto;
 
     const isExist = await this.postRepository.findOne({ name: name });
@@ -26,7 +27,9 @@ export class PostService {
 
     let post = new SysPost();
     post = Utils.dto2entity(createPostDto, post);
-    post.createBy = curUser!.id;
+    if (curUser) {
+      post.createBy = curUser!.id;
+    }
     return await this.postRepository.save(post);
   }
 
@@ -132,7 +135,7 @@ export class PostService {
   /**
    * 修改
    */
-  async update(updatePostDto: UpdatePostDto, curUser): Promise<void> {
+  async update(updatePostDto: UpdatePostDto, curUser?): Promise<void> {
     const { id } = updatePostDto;
     const isExist = await this.postRepository.findOne(id);
     if (Utils.isNil(isExist)) {
@@ -141,7 +144,9 @@ export class PostService {
 
     let post = new SysPost();
     post = Utils.dto2entity(updatePostDto, post);
-    post.updateBy = curUser!.id;
+    if (curUser) {
+      post.updateBy = curUser!.id;
+    }
 
     await this.postRepository.update(id, post);
   }
@@ -149,17 +154,17 @@ export class PostService {
   /**
    * 修改状态
    */
-  async updateStatus(
-    baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto,
-    curUser,
-  ): Promise<any> {
-    const { ids, status } = baseModifyStatusByIdsDto;
-    const idsArr = Utils.split(ids);
+  async updateStatus(baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto, curUser?): Promise<any> {
+    // eslint-disable-next-line prefer-const
+    let { ids, status } = baseModifyStatusByIdsDto;
+    if (!Utils.isArray(ids)) {
+      ids = Utils.split(ids.toString());
+    }
     const ret = this.postRepository
       .createQueryBuilder()
       .update(SysPost)
-      .set({ status: status, updateBy: curUser!.id })
-      .where('id in (:ids)', { ids: idsArr })
+      .set({ status: status, updateBy: curUser ? curUser!.id : null })
+      .where('id IN (:ids)', { ids: ids })
       .execute();
 
     if (!ret) {
@@ -172,7 +177,7 @@ export class PostService {
   /**
    * 删除
    */
-  async deleteById(baseFindByIdDto: BaseFindByIdDto, curUser): Promise<void> {
+  async deleteById(baseFindByIdDto: BaseFindByIdDto, curUser?): Promise<void> {
     const { id } = baseFindByIdDto;
     const isExist = await this.postRepository.findOne(id);
     if (Utils.isNil(isExist)) {
@@ -183,7 +188,7 @@ export class PostService {
     await this.postRepository
       .createQueryBuilder()
       .update(SysPost)
-      .set({ deleteStatus: 1, deleteBy: curUser!.id, deleteTime: Utils.now() })
+      .set({ deleteStatus: 1, deleteBy: curUser ? curUser!.id : null, deleteTime: Utils.now() })
       .where('id = :id', { id: id })
       .execute();
   }
@@ -191,17 +196,17 @@ export class PostService {
   /**
    * 删除（批量）
    */
-  async deleteByIds(
-    baseFindByIdsDto: BaseFindByIdsDto,
-    curUser,
-  ): Promise<void> {
-    const { ids } = baseFindByIdsDto;
-    const idsArr = Utils.split(ids);
+  async deleteByIds(baseFindByIdsDto: BaseFindByIdsDto, curUser?): Promise<void> {
+    let { ids } = baseFindByIdsDto;
+
+    if (!Utils.isArray(ids)) {
+      ids = Utils.split(ids.toString());
+    }
     await this.postRepository
       .createQueryBuilder()
       .update(SysPost)
-      .set({ deleteStatus: 1, deleteBy: curUser!.id, deleteTime: Utils.now() })
-      .where('id in (:ids)', { ids: idsArr })
+      .set({ deleteStatus: 1, deleteBy: curUser ? curUser!.id : null, deleteTime: Utils.now() })
+      .where('id IN (:ids)', { ids: ids })
       .execute();
   }
 }

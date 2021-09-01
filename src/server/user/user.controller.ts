@@ -53,6 +53,7 @@ export class UserController {
   ) {}
 
   @Post('add')
+  @Auth('account:user:add')
   @ApiOperation({ summary: '添加' })
   async add(
     @CurUser() curUser,

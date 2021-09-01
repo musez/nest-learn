@@ -16,8 +16,8 @@ export class UserPermissionService {
   /**
    * 添加
    */
-  async insertBatch(dto: UserPermission[]): Promise<UserPermission[]> {
-    return await this.userPermissionRepository.save(dto);
+  async insertBatch(userPermission: UserPermission[]): Promise<UserPermission[]> {
+    return await this.userPermissionRepository.save(userPermission);
   }
 
   /**
@@ -38,13 +38,11 @@ export class UserPermissionService {
   /**
    * 获取权限（批量）
    */
-  async selectByUserIds(baseFindByIdsDto: BaseFindByIdsDto): Promise<UserPermission[]> {
-    const { ids } = baseFindByIdsDto;
-    const idsArr = Utils.split(ids);
+  async selectByUserIds(ids: string[]): Promise<UserPermission[]> {
     return await this.userPermissionRepository.find({
       relations: ['permission'],
       where: {
-        id: In(idsArr),
+        id: In(ids),
       },
     });
   }

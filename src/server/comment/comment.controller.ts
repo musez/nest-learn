@@ -2,7 +2,7 @@ import {
   Controller,
   Get,
   Post,
-  Body,
+  Body, UseGuards,
 } from '@nestjs/common';
 import { CommentService } from './comment.service';
 import { CreateCommentDto } from './dto/create-comment.dto';
@@ -19,10 +19,13 @@ import { Query } from '@nestjs/common';
 import { Res } from '@nestjs/common';
 import { LimitCommentDto } from './dto/limit-comment.dto';
 import { SearchCommentDto } from './dto/search-comment.dto';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { AuthGuard } from '../../common/guards/auth.guard';
 
 @Controller('comment')
 @ApiTags('评论回复')
 @ApiBasicAuth('token')
+@UseGuards(JwtAuthGuard, AuthGuard)
 export class CommentController {
   constructor(
     private readonly commentService: CommentService,
@@ -101,7 +104,7 @@ export class CommentController {
     res.setHeader(
       'Content-Disposition',
       'attachment; filename=' +
-        encodeURIComponent(`文章_${Utils.dayjsFormat('YYYYMMDD')}`) +
+        encodeURIComponent(`文章评论回复_${Utils.dayjsFormat('YYYYMMDD')}`) +
         '.xlsx', // 中文名需要进行 url 转码
     );
     res.setTimeout(30 * 60 * 1000); // 防止网络原因造成超时。

@@ -40,7 +40,7 @@ export class ArticleService {
   /**
    * 添加
    */
-  async insert(createArticleDto: CreateArticleDto, curUser): Promise<any> {
+  async insert(createArticleDto: CreateArticleDto, curUser?): Promise<any> {
     const { cats } = createArticleDto;
 
     let article = new Article();
@@ -166,11 +166,7 @@ export class ArticleService {
       const { articleDataCats } = item;
       if (articleDataCats?.length > 0) {
         const ids = articleDataCats.map((v) => v.id);
-        const retRel = await this.articleDataCatService.selectByArticleDataCatIds(
-          {
-            ids: ids.join(','),
-          },
-        );
+        const retRel = await this.articleDataCatService.selectByArticleDataCatIds(ids);
 
         item = Object.assign(item, {
           articleDataCats: retRel.map((v) => v.cat),
@@ -203,11 +199,7 @@ export class ArticleService {
     if (ret?.articleDataCats?.length > 0) {
       const ids = ret.articleDataCats.map((v) => v.id);
 
-      const articleDataCatRet = await this.articleDataCatService.selectByArticleDataCatIds(
-        {
-          ids: ids.join(','),
-        },
-      );
+      const articleDataCatRet = await this.articleDataCatService.selectByArticleDataCatIds(ids);
 
       // @ts-ignore
       ret.articleDataCats = articleDataCatRet.map((v) => {
@@ -233,7 +225,7 @@ export class ArticleService {
   /**
    * 修改
    */
-  async update(updateArticleDto: UpdateArticleDto, curUser): Promise<any> {
+  async update(updateArticleDto: UpdateArticleDto, curUser?): Promise<any> {
     const { id, cats } = updateArticleDto;
 
     let article = new Article();
@@ -254,30 +246,30 @@ export class ArticleService {
   /**
    * 回收站状态修改
    */
-  async updateStatus(
-    baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto,
-    curUser,
-  ): Promise<void> {
-    const { ids, status } = baseModifyStatusByIdsDto;
-    const idsArr = Utils.split(ids);
+  async updateStatus(baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto, curUser?): Promise<void> {
+    // eslint-disable-next-line prefer-const
+    let { ids, status } = baseModifyStatusByIdsDto;
+    if (!Utils.isArray(ids)) {
+      ids = Utils.split(ids.toString());
+    }
     await this.articleRepository
       .createQueryBuilder()
       .update(Article)
-      .set({ status: status, updateBy: curUser!.id })
-      .where('id in (:ids)', { ids: idsArr })
+      .set({ status: status, updateBy: curUser ? curUser!.id : null })
+      .where('id IN (:ids)', { ids: ids })
       .execute();
   }
 
   /**
    * 回收站删除
    */
-  async deleteById(baseFindByIdDto: BaseFindByIdDto, curUser): Promise<void> {
+  async deleteById(baseFindByIdDto: BaseFindByIdDto, curUser?): Promise<void> {
     const { id } = baseFindByIdDto;
 
     await this.articleRepository
       .createQueryBuilder()
       .update(Article)
-      .set({ deleteStatus: 1, deleteBy: curUser!.id, deleteTime: Utils.now() })
+      .set({ deleteStatus: 1, deleteBy: curUser ? curUser!.id : null, deleteTime: Utils.now() })
       .where('id = :id', { id: id })
       .execute();
   }
@@ -285,25 +277,28 @@ export class ArticleService {
   /**
    * 回收站删除（批量）
    */
-  async deleteByIds(baseFindByIdsDto: BaseFindByIdsDto, curUser): Promise<void> {
-    const { ids } = baseFindByIdsDto;
-    const idsArr = Utils.split(ids);
+  async deleteByIds(baseFindByIdsDto: BaseFindByIdsDto, curUser?): Promise<void> {
+    let { ids } = baseFindByIdsDto;
+
+    if (!Utils.isArray(ids)) {
+      ids = Utils.split(ids.toString());
+    }
     await this.articleRepository
       .createQueryBuilder()
       .update(Article)
-      .set({ deleteStatus: 1, deleteBy: curUser!.id, deleteTime: Utils.now() })
-      .where('id in (:ids)', { ids: idsArr })
+      .set({ deleteStatus: 1, deleteBy: curUser ? curUser!.id : null, deleteTime: Utils.now() })
+      .where('id IN (:ids)', { ids: ids })
       .execute();
   }
 
   /**
    * 回收站清空
    */
-  async deleteAll(curUser): Promise<void> {
+  async deleteAll(curUser?): Promise<void> {
     await this.articleRepository
       .createQueryBuilder()
       .update(Article)
-      .set({ deleteStatus: 1, deleteBy: curUser!.id, deleteTime: Utils.now() })
+      .set({ deleteStatus: 1, deleteBy: curUser ? curUser!.id : null, deleteTime: Utils.now() })
       .where('status = 3')
       .execute();
   }
@@ -460,10 +455,7 @@ export class ArticleService {
   /**
    * 评论
    */
-  async insertComment(
-    createArticleCommentDto: CreateArticleCommentDto,
-    curUser?,
-  ): Promise<any> {
+  async insertComment(createArticleCommentDto: CreateArticleCommentDto, curUser?): Promise<any> {
     const { id, type, replyType, replyId, ...form } = createArticleCommentDto;
 
     if (type === 0) {

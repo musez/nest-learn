@@ -34,13 +34,12 @@ export class GroupService {
   /**
    * 添加
    */
-  async insert(
-    createGroupDto: CreateGroupDto,
-    curUser,
-  ): Promise<CreateGroupDto> {
+  async insert(createGroupDto: CreateGroupDto, curUser?): Promise<CreateGroupDto> {
     let group = new Group();
     group = Utils.dto2entity(createGroupDto, group);
-    group.createBy = curUser!.id;
+    if (curUser) {
+      group.createBy = curUser!.id;
+    }
     return await this.groupRepository.save(group);
   }
 
@@ -140,9 +139,7 @@ export class GroupService {
     if (ret?.groupRoles?.length > 0) {
       const ids = ret.groupRoles.map((v) => v.id);
 
-      const groupRoleRet = await this.groupRoleService.selectByGroupIds({
-        ids: ids.join(','),
-      });
+      const groupRoleRet = await this.groupRoleService.selectByGroupIds(ids);
       const groupRoles = groupRoleRet.filter(v => v.role).map((v) => {
         return v.role;
       });
@@ -153,9 +150,7 @@ export class GroupService {
     if (ret?.groupPermissions?.length > 0) {
       const ids = ret.groupPermissions.map((v) => v.id);
 
-      const groupPermissionsRet = await this.groupPermissionService.selectByGroupIds({
-        ids: ids.join(','),
-      });
+      const groupPermissionsRet = await this.groupPermissionService.selectByGroupIds(ids);
       const groupPermissions = groupPermissionsRet.filter(v => v.permission).map((v) => {
         return v.permission;
       });
@@ -197,29 +192,31 @@ export class GroupService {
   /**
    * 修改
    */
-  async update(updateGroupDto: UpdateGroupDto, curUser): Promise<void> {
+  async update(updateGroupDto: UpdateGroupDto, curUser?): Promise<void> {
     const { id } = updateGroupDto;
 
     let group = new Group();
     group = Utils.dto2entity(updateGroupDto, group);
-    group.updateBy = curUser!.id;
+    if (curUser) {
+      group.updateBy = curUser!.id;
+    }
     await this.groupRepository.update(id, group);
   }
 
   /**
    * 修改状态
    */
-  async updateStatus(
-    baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto,
-    curUser,
-  ): Promise<any> {
-    const { ids, status } = baseModifyStatusByIdsDto;
-    const idsArr = Utils.split(ids);
+  async updateStatus(baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto, curUser?): Promise<any> {
+    // eslint-disable-next-line prefer-const
+    let { ids, status } = baseModifyStatusByIdsDto;
+    if (!Utils.isArray(ids)) {
+      ids = Utils.split(ids.toString());
+    }
     const ret = this.groupRepository
       .createQueryBuilder()
       .update(Group)
-      .set({ status: status, updateBy: curUser!.id })
-      .where('id in (:ids)', { ids: idsArr })
+      .set({ status: status, updateBy: curUser ? curUser!.id : null })
+      .where('id IN (:ids)', { ids: ids })
       .execute();
 
     if (!ret) {
@@ -232,13 +229,13 @@ export class GroupService {
   /**
    * 删除
    */
-  async deleteById(baseFindByIdDto: BaseFindByIdDto, curUser): Promise<void> {
+  async deleteById(baseFindByIdDto: BaseFindByIdDto, curUser?): Promise<void> {
     const { id } = baseFindByIdDto;
 
     await this.groupRepository
       .createQueryBuilder()
       .update(Group)
-      .set({ deleteStatus: 1, deleteBy: curUser!.id, deleteTime: Utils.now() })
+      .set({ deleteStatus: 1, deleteBy: curUser ? curUser!.id : null, deleteTime: Utils.now() })
       .where('id = :id', { id: id })
       .execute();
   }
@@ -246,17 +243,17 @@ export class GroupService {
   /**
    * 删除（批量）
    */
-  async deleteByIds(
-    baseFindByIdsDto: BaseFindByIdsDto,
-    curUser,
-  ): Promise<void> {
-    const { ids } = baseFindByIdsDto;
-    const idsArr = Utils.split(ids);
+  async deleteByIds(baseFindByIdsDto: BaseFindByIdsDto, curUser?): Promise<void> {
+    let { ids } = baseFindByIdsDto;
+
+    if (!Utils.isArray(ids)) {
+      ids = Utils.split(ids.toString());
+    }
     await this.groupRepository
       .createQueryBuilder()
       .update(Group)
-      .set({ deleteStatus: 1, deleteBy: curUser!.id, deleteTime: Utils.now() })
-      .where('id in (:ids)', { ids: idsArr })
+      .set({ deleteStatus: 1, deleteBy: curUser ? curUser!.id : null, deleteTime: Utils.now() })
+      .where('id IN (:ids)', { ids: ids })
       .execute();
   }
 
@@ -264,6 +261,7 @@ export class GroupService {
    * 绑定角色
    */
   async bindRoles(bindGroupRoleDto: BindGroupRoleDto): Promise<void> {
+    // eslint-disable-next-line prefer-const
     let { id, roles } = bindGroupRoleDto;
 
     if (roles && !Utils.isArray(roles)) {

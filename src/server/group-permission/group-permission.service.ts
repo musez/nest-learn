@@ -16,8 +16,8 @@ export class GroupPermissionService {
   /**
    * 添加
    */
-  async insertBatch(dto: GroupPermission[]): Promise<GroupPermission[]> {
-    return await this.groupPermissionRepository.save(dto);
+  async insertBatch(groupPermission: GroupPermission[]): Promise<GroupPermission[]> {
+    return await this.groupPermissionRepository.save(groupPermission);
   }
 
   /**
@@ -38,13 +38,11 @@ export class GroupPermissionService {
   /**
    * 获取权限（批量）
    */
-  async selectByGroupIds(baseFindByIdsDto: BaseFindByIdsDto): Promise<GroupPermission[]> {
-    const { ids } = baseFindByIdsDto;
-    const idsArr = Utils.split(ids);
+  async selectByGroupIds(ids: string[]): Promise<GroupPermission[]> {
     return await this.groupPermissionRepository.find({
       relations: ['permission'],
       where: {
-        id: In(idsArr),
+        id: In(ids),
       },
     });
   }

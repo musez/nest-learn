@@ -16,8 +16,8 @@ export class UserRoleService {
   /**
    * 添加
    */
-  async insertBatch(dto: UserRole[]): Promise<UserRole[]> {
-    return await this.userRoleRepository.save(dto);
+  async insertBatch(userRole: UserRole[]): Promise<UserRole[]> {
+    return await this.userRoleRepository.save(userRole);
   }
 
   /**
@@ -38,13 +38,11 @@ export class UserRoleService {
   /**
    * 获取用户组（批量）
    */
-  async selectByUserIds(baseFindByIdsDto: BaseFindByIdsDto): Promise<UserRole[]> {
-    const { ids } = baseFindByIdsDto;
-    const idsArr = Utils.split(ids);
+  async selectByUserIds(ids: string[]): Promise<UserRole[]> {
     return await this.userRoleRepository.find({
       relations: ['role'],
       where: {
-        id: In(idsArr),
+        id: In(ids),
       },
     });
   }

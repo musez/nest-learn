@@ -23,13 +23,11 @@ export class RolePermissionService {
   /**
    * 获取权限（批量）
    */
-  async selectByRoleIds(baseFindByIdsDto: BaseFindByIdsDto): Promise<RolePermission[]> {
-    const { ids } = baseFindByIdsDto;
-    const idsArr = Utils.split(ids);
+  async selectByRoleIds(ids: string[]): Promise<RolePermission[]> {
     return await this.rolePermissionRepository.find({
       relations: ['permission'],
       where: {
-        id: In(idsArr),
+        id: In(ids),
       },
     });
   }

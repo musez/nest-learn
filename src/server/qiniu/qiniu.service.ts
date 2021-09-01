@@ -46,7 +46,7 @@ export class QiniuService {
   /**
    * 七牛上传（单）
    */
-  async upload(file, body, curUser): Promise<any> {
+  async upload(file, body, curUser?): Promise<any> {
     const qiniuConfig = await this.getConfig();
 
     // get token
@@ -105,9 +105,9 @@ export class QiniuService {
   /**
    * 七牛上传（多）
    */
-  async uploads(files, body, curUser): Promise<any> {
+  async uploads(files, body, curUser?): Promise<any> {
     const qiniuConfig = await this.getConfig();
-    console.log(qiniuConfig);
+
     // get token
     const mac = new qiniu.auth.digest.Mac(qiniuConfig.accessKey, qiniuConfig.secretKey);
     const putPolicy = new qiniu.rs.PutPolicy({

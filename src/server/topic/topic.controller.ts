@@ -32,7 +32,8 @@ export class TopicController {
   constructor(
     private readonly topicService: TopicService,
     private readonly excelService: ExcelService,
-  ) {}
+  ) {
+  }
 
   @Post('add')
   @Auth('system:topic:add')
@@ -65,10 +66,7 @@ export class TopicController {
   @Get('exportExcel')
   @Auth('system:topic:exportExcel')
   @ApiOperation({ summary: '列表（Excel 导出）' })
-  async exportExcel(
-    @Query() searchTopicDto: SearchTopicDto,
-    @Res() res,
-  ): Promise<any> {
+  async exportExcel(@Query() searchTopicDto: SearchTopicDto, @Res() res): Promise<any> {
     const list = await this.topicService.selectList(searchTopicDto);
 
     const columns = [
@@ -96,8 +94,8 @@ export class TopicController {
     res.setHeader(
       'Content-Disposition',
       'attachment; filename=' +
-        encodeURIComponent(`文章_${Utils.dayjsFormat('YYYYMMDD')}`) +
-        '.xlsx', // 中文名需要进行 url 转码
+      encodeURIComponent(`文章评论_${Utils.dayjsFormat('YYYYMMDD')}`) +
+      '.xlsx', // 中文名需要进行 url 转码
     );
     res.setTimeout(30 * 60 * 1000); // 防止网络原因造成超时。
     res.end(result, 'binary');
@@ -106,10 +104,7 @@ export class TopicController {
   @Post('update')
   @Auth('system:topic:update')
   @ApiOperation({ summary: '修改' })
-  async update(
-    @CurUser() curUser,
-    @Body() updateTopicDto: UpdateTopicDto,
-  ): Promise<any> {
+  async update(@CurUser() curUser, @Body() updateTopicDto: UpdateTopicDto): Promise<any> {
     const { id } = updateTopicDto;
     const isExistId = await this.topicService.isExistId(id);
     if (!isExistId) {
@@ -122,10 +117,7 @@ export class TopicController {
   @Post('updateStatus')
   @Auth('system:topic:updateStatus')
   @ApiOperation({ summary: '修改状态' })
-  async updateStatus(
-    @CurUser() curUser,
-    @Body() baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto,
-  ): Promise<any> {
+  async updateStatus(@CurUser() curUser, @Body() baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto): Promise<any> {
     return this.topicService.updateStatus(baseModifyStatusByIdsDto, curUser);
   }
 

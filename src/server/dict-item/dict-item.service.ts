@@ -14,34 +14,33 @@ export class DictItemService {
   constructor(
     @InjectRepository(DictItem)
     private readonly dictItemRepository: Repository<DictItem>,
-  ) {}
+  ) {
+  }
 
   /**
    * 添加
    */
-  async insert(
-    createDictItemDto: CreateDictItemDto,
-    curUser,
-  ): Promise<CreateDictItemDto> {
+  async insert(createDictItemDto: CreateDictItemDto, curUser?): Promise<CreateDictItemDto> {
     let dictItem = new DictItem();
     dictItem = Utils.dto2entity(createDictItemDto, dictItem);
-    dictItem.createBy = curUser!.id;
+    if (curUser) {
+      dictItem.createBy = curUser!.id;
+    }
     return await this.dictItemRepository.save(dictItem);
   }
 
   /**
    * 添加（批量）
    */
-  async insertBatch(
-    createDictItemDto: CreateDictItemDto[],
-    curUser,
-  ): Promise<CreateDictItemDto[] | DictItem[]> {
+  async insertBatch(createDictItemDto: CreateDictItemDto[], curUser?): Promise<CreateDictItemDto[] | DictItem[]> {
     const dictItems = [];
 
     createDictItemDto.forEach((item) => {
       let dictItem = new DictItem();
       dictItem = Utils.dto2entity(item, dictItem);
-      dictItem.createBy = curUser!.id;
+      if (curUser) {
+        dictItem.createBy = curUser!.id;
+      }
       dictItems.push(dictItem);
     });
 
@@ -146,11 +145,11 @@ export class DictItemService {
   /**
    * 删除（字典 id）
    */
-  async deleteByDictId(id: string, curUser): Promise<void> {
+  async deleteByDictId(id: string, curUser?): Promise<void> {
     await this.dictItemRepository
       .createQueryBuilder()
       .update(DictItem)
-      .set({ deleteStatus: 1, deleteBy: curUser!.id, deleteTime: Utils.now() })
+      .set({ deleteStatus: 1, deleteBy: curUser ? curUser!.id : null, deleteTime: Utils.now() })
       .where('dictId = :id', { id: id })
       .execute();
   }

@@ -12,34 +12,31 @@ export class UserGroupService {
   constructor(
     @InjectRepository(UserGroup)
     private readonly userGroupRepository: Repository<UserGroup>,
-  ) {}
+  ) {
+  }
 
   /**
    * 添加
    */
-  async insert(dto: UserGroup): Promise<CreateUserGroupDto | UserGroup> {
-    return await this.userGroupRepository.save(dto);
+  async insert(userGroup: UserGroup): Promise<CreateUserGroupDto | UserGroup> {
+    return await this.userGroupRepository.save(userGroup);
   }
 
   /**
    * 添加（批量）
    */
-  async insertBatch(
-    dto: UserGroup[],
-  ): Promise<CreateUserGroupDto[] | UserGroup[]> {
-    return await this.userGroupRepository.save(dto);
+  async insertBatch(userGroup: UserGroup[],): Promise<CreateUserGroupDto[] | UserGroup[]> {
+    return await this.userGroupRepository.save(userGroup);
   }
 
   /**
    * 获取用户组（批量）
    */
-  async selectByUserIds(baseFindByIdsDto: BaseFindByIdsDto): Promise<UserGroup[]> {
-    const { ids } = baseFindByIdsDto;
-    const idsArr = Utils.split(ids);
+  async selectByUserIds(ids: string[]): Promise<UserGroup[]> {
     return await this.userGroupRepository.find({
       relations: ['group'],
       where: {
-        id: In(idsArr),
+        id: In(ids),
       },
     });
   }

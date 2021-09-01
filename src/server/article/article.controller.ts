@@ -80,8 +80,8 @@ export class ArticleController {
   @Auth('cms:article:findInfoById')
   @ApiOperation({ summary: '获取详情（主键 id）' })
   async findInfoById(@CurUser() curUser, @Query() baseFindByIdDto: BaseFindByIdDto): Promise<Article> {
-    const incrementRet = await this.articleService.browse(baseFindByIdDto, curUser);
     const ret = await this.articleService.selectById(baseFindByIdDto);
+    const incrementRet = await this.articleService.browse(baseFindByIdDto, curUser);
 
     if (ret && incrementRet) {
       return ret;

@@ -26,13 +26,12 @@ export class ArticleCatService {
   /**
    * 添加
    */
-  async insert(
-    createArticleCatDto: CreateArticleCatDto,
-    curUser,
-  ): Promise<CreateArticleCatDto> {
+  async insert(createArticleCatDto: CreateArticleCatDto, curUser?): Promise<CreateArticleCatDto> {
     let articleCat = new ArticleCat();
     articleCat = Utils.dto2entity(createArticleCatDto, articleCat);
-    articleCat.createBy = curUser!.id;
+    if (curUser) {
+      articleCat.createBy = curUser!.id;
+    }
     return await this.articleCatRepository.save(createArticleCatDto);
   }
 
@@ -283,10 +282,7 @@ export class ArticleCatService {
   /**
    * 修改
    */
-  async update(
-    updateArticleCatDto: UpdateArticleCatDto,
-    curUser,
-  ): Promise<void> {
+  async update(updateArticleCatDto: UpdateArticleCatDto, curUser?): Promise<void> {
     const { id } = updateArticleCatDto;
 
     let articleCat = new ArticleCat();
@@ -298,17 +294,17 @@ export class ArticleCatService {
   /**
    * 修改状态
    */
-  async updateStatus(
-    baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto,
-    curUser,
-  ): Promise<any> {
-    const { ids, status } = baseModifyStatusByIdsDto;
-    const idsArr = Utils.split(ids);
+  async updateStatus(baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto, curUser?): Promise<any> {
+    // eslint-disable-next-line prefer-const
+    let { ids, status } = baseModifyStatusByIdsDto;
+    if (!Utils.isArray(ids)) {
+      ids = Utils.split(ids.toString());
+    }
     const ret = this.articleCatRepository
       .createQueryBuilder()
       .update(ArticleCat)
-      .set({ status: status, updateBy: curUser!.id })
-      .where('id in (:ids)', { ids: idsArr })
+      .set({ status: status, updateBy: curUser ? curUser!.id : null })
+      .where('id IN (:ids)', { ids: ids })
       .execute();
 
     if (!ret) {
@@ -321,13 +317,13 @@ export class ArticleCatService {
   /**
    * 删除
    */
-  async deleteById(baseFindByIdDto: BaseFindByIdDto, curUser): Promise<void> {
+  async deleteById(baseFindByIdDto: BaseFindByIdDto, curUser?): Promise<void> {
     const { id } = baseFindByIdDto;
 
     await this.articleCatRepository
       .createQueryBuilder()
       .update(ArticleCat)
-      .set({ deleteStatus: 1, deleteBy: curUser!.id, deleteTime: Utils.now() })
+      .set({ deleteStatus: 1, deleteBy: curUser ? curUser!.id : null, deleteTime: Utils.now() })
       .where('id = :id', { id: id })
       .execute();
   }
@@ -335,17 +331,17 @@ export class ArticleCatService {
   /**
    * 删除（批量）
    */
-  async deleteByIds(
-    baseFindByIdsDto: BaseFindByIdsDto,
-    curUser,
-  ): Promise<void> {
-    const { ids } = baseFindByIdsDto;
-    const idsArr = Utils.split(ids);
+  async deleteByIds(baseFindByIdsDto: BaseFindByIdsDto, curUser?): Promise<void> {
+    let { ids } = baseFindByIdsDto;
+
+    if (!Utils.isArray(ids)) {
+      ids = Utils.split(ids.toString());
+    }
     await this.articleCatRepository
       .createQueryBuilder()
       .update(ArticleCat)
-      .set({ deleteStatus: 1, deleteBy: curUser!.id, deleteTime: Utils.now() })
-      .where('id in (:ids)', { ids: idsArr })
+      .set({ deleteStatus: 1, deleteBy: curUser ? curUser!.id : null, deleteTime: Utils.now() })
+      .where('id IN (:ids)', { ids: ids })
       .execute();
   }
 }

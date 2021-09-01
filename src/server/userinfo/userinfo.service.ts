@@ -12,23 +12,20 @@ export class UserinfoService {
   constructor(
     @InjectRepository(Userinfo)
     private readonly userinfoRepository: Repository<Userinfo>,
-  ) {}
+  ) {
+  }
 
   /**
    * 添加
    */
-  async insert(
-    createUserinfoDto: CreateUserinfoDto,
-  ): Promise<CreateUserinfoDto> {
+  async insert(createUserinfoDto: CreateUserinfoDto): Promise<CreateUserinfoDto> {
     return await this.userinfoRepository.save(createUserinfoDto);
   }
 
   /**
    * 添加（批量）
    */
-  async insertBatch(
-    createUserinfoDto: CreateUserinfoDto[],
-  ): Promise<CreateUserinfoDto[]> {
+  async insertBatch(createUserinfoDto: CreateUserinfoDto[]): Promise<CreateUserinfoDto[]> {
     return await this.userinfoRepository.save(createUserinfoDto);
   }
 
@@ -43,10 +40,7 @@ export class UserinfoService {
   /**
    * 修改（userId）
    */
-  async updateByUserId(
-    id: string,
-    updateUserinfoDto: UpdateUserinfoDto,
-  ): Promise<any> {
+  async updateByUserId(id: string, updateUserinfoDto: UpdateUserinfoDto): Promise<any> {
     return await this.userinfoRepository
       .createQueryBuilder()
       .update(Userinfo)
@@ -61,34 +55,4 @@ export class UserinfoService {
       })
       .execute();
   }
-
-  /**
-   * 删除
-   */
-  // async deleteByUserId(id: string,curUser): Promise<any> {
-  //   let res = await this.userinfoRepository.createQueryBuilder()
-  //     .delete()
-  //     .from(Userinfo)
-  //     .where('userId = :userId', {
-  //       userId: id,
-  //     })
-  //     .execute();
-  //
-  //   return res;
-  // }
-
-  /**
-   * 删除（ids）
-   */
-  // async deleteByUserIds(baseFindByIdsDto: BaseFindByIdsDto): Promise<any> {
-  //   let res = await this.userinfoRepository.createQueryBuilder()
-  //     .delete()
-  //     .from(Userinfo)
-  //     .where('userId in (:userIds)', {
-  //       userIds: baseFindByIdsDto,
-  //     })
-  //     .execute();
-  //
-  //   return res;
-  // }
 }
