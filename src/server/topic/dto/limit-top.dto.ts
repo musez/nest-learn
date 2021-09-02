@@ -18,4 +18,10 @@ export class LimitTopicDto extends PartialType(BasePageDto) {
   // @Transform((value) => Number.parseInt(value))
   // @IsInt({ message: '查询类型必须为数字！' })
   readonly status?: number | string | (number | string)[];
+
+  @ApiPropertyOptional({ description: '回复类型（0：未回复；1：已回复）', example: 0 })
+  @IsOptional()
+  @Transform((value) => Number.parseInt(value))
+  @IsInt({ message: '回复类型必须为数字！' })
+  readonly isReply?: number;
 }

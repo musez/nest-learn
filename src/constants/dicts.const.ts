@@ -53,6 +53,12 @@ export const ReplyTypeDict = {
   '1': '回复',
 };
 
+// 评论是否回复类型
+export const IsReplyDict = {
+  '0': '未回复',
+  '1': '已回复'
+}
+
 // 字典类型
 export const DictDict = {
   '0': '字符串',

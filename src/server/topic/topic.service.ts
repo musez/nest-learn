@@ -11,6 +11,7 @@ import { SearchTopicDto } from './dto/search-top.dto';
 import { Org } from '../org/entities/org.entity';
 import { User } from '../user/entities/user.entity';
 import { ApiException } from '../../common/exception/api-exception';
+import { Comment } from '../comment/entities/comment.entity';
 
 @Injectable()
 export class TopicService {
@@ -32,7 +33,7 @@ export class TopicService {
    */
   async selectList(searchTopicDto: SearchTopicDto): Promise<any[]> {
     // eslint-disable-next-line prefer-const
-    let { topicId, content, topicType, status } = searchTopicDto;
+    let { topicId, content, topicType, status, isReply } = searchTopicDto;
 
     const queryConditionList = [];
     if (!Utils.isBlank(topicId)) {
@@ -50,14 +51,26 @@ export class TopicService {
       }
       queryConditionList.push('topic.status IN (:...status)');
     }
+    if (!Utils.isBlank(isReply)) {
+      if (isReply === 0) {
+        queryConditionList.push('commentId IS NOT NULL');
+      } else if (isReply === 1) {
+        queryConditionList.push('commentId IS NULL');
+      }
+    }
     queryConditionList.push('topic.deleteStatus = 0');
     const queryCondition = queryConditionList.join(' AND ');
 
-    return await this.topicRepository
+    const ret = await this.topicRepository
       .createQueryBuilder('topic')
       .leftJoinAndSelect(User, 'u', 'u.id = topic.fromUid')
+      .leftJoinAndSelect(Comment, 'c', 'c.replyId = topic.id')
       .select('topic.*')
-      .addSelect('u.userName', 'fromUname')
+      .addSelect(`
+      u.userName AS fromUname,
+      c.id AS commentId,
+      c.replyType AS replyType
+      `)
       .where(queryCondition, {
         topicId: topicId,
         content: `%${content}%`,
@@ -69,6 +82,16 @@ export class TopicService {
         'topic.createTime': 'ASC',
       })
       .getRawMany();
+
+    ret.forEach(i => {
+      if (i.replyType === 0 && i.commentId) {
+        i.isReply = 1;
+      } else {
+        i.isReply = 0;
+      }
+    });
+
+    return ret;
   }
 
   /**
@@ -76,7 +99,7 @@ export class TopicService {
    */
   async selectListPage(limitTopicDto: LimitTopicDto): Promise<any> {
     // eslint-disable-next-line prefer-const
-    let { page, limit, topicId, content, topicType, status } = limitTopicDto;
+    let { page, limit, topicId, content, topicType, status, isReply } = limitTopicDto;
     page = page ? page : 1;
     limit = limit ? limit : 10;
     const offset = (page - 1) * limit;
@@ -97,14 +120,26 @@ export class TopicService {
       }
       queryConditionList.push('topic.status IN (:...status)');
     }
+    if (!Utils.isBlank(isReply)) {
+      if (isReply === 0) {
+        queryConditionList.push('commentId IS NOT NULL');
+      } else if (isReply === 1) {
+        queryConditionList.push('commentId IS NULL');
+      }
+    }
     queryConditionList.push('topic.deleteStatus = 0');
     const queryCondition = queryConditionList.join(' AND ');
 
     const queryBuilder = this.topicRepository
       .createQueryBuilder('topic')
       .leftJoinAndSelect(User, 'u', 'u.id = topic.fromUid')
+      .leftJoinAndSelect(Comment, 'c', 'c.replyId = topic.id')
       .select('topic.*')
-      .addSelect('u.userName', 'fromUname')
+      .addSelect(`
+      u.userName AS fromUname,
+      c.id AS commentId,
+      c.replyType AS replyType
+      `)
       .where(queryCondition, {
         topicId: topicId,
         content: `%${content}%`,
@@ -122,6 +157,14 @@ export class TopicService {
         'topic.createTime': 'ASC',
       })
       .getRawMany();
+
+    ret.forEach(i => {
+      if (i.replyType === 0 && i.commentId) {
+        i.isReply = 1;
+      } else {
+        i.isReply = 0;
+      }
+    });
 
     const retCount = await queryBuilder.getCount();
 

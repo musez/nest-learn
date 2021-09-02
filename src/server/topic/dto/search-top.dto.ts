@@ -6,4 +6,5 @@ export class SearchTopicDto extends PickType(LimitTopicDto, [
   'content',
   'topicType',
   'status',
+  'isReply'
 ]) {}

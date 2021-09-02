@@ -53,6 +53,12 @@ export enum ReplyType {
   REPLY = 1, // 回复
 }
 
+// 评论是否回复类型
+export enum IsReplyType {
+  UN_REPLY = 0, // 未回复
+  REPLY = 1 // 已回复
+}
+
 // 字典类型
 export enum DictType {
   TEXT = 0, // 字符串
