@@ -209,7 +209,7 @@ export class RoleService {
   /**
    * 修改状态
    */
-  async updateStatus(baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto, curUser?,): Promise<any> {
+  async updateStatus(baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto, curUser?): Promise<any> {
     // eslint-disable-next-line prefer-const
     let { ids, status } = baseModifyStatusByIdsDto;
     if (!Utils.isArray(ids)) {
@@ -238,7 +238,7 @@ export class RoleService {
     await this.roleRepository
       .createQueryBuilder()
       .update(Role)
-      .set({ deleteStatus: 1, deleteBy: curUser ? curUser!.id : null , deleteTime: Utils.now() })
+      .set({ deleteStatus: 1, deleteBy: curUser ? curUser!.id : null, deleteTime: Utils.now() })
       .where('id = :id', { id: id })
       .execute();
   }
@@ -246,11 +246,8 @@ export class RoleService {
   /**
    * 删除（批量）
    */
-  async deleteByIds(
-    baseFindByIdsDto: BaseFindByIdsDto,
-    curUser,
-  ): Promise<void> {
-     let { ids } = baseFindByIdsDto;
+  async deleteByIds(baseFindByIdsDto: BaseFindByIdsDto, curUser): Promise<void> {
+    let { ids } = baseFindByIdsDto;
 
     if (!Utils.isArray(ids)) {
       ids = Utils.split(ids.toString());
@@ -258,7 +255,7 @@ export class RoleService {
     await this.roleRepository
       .createQueryBuilder()
       .update(Role)
-      .set({ deleteStatus: 1, deleteBy: curUser ? curUser!.id : null , deleteTime: Utils.now() })
+      .set({ deleteStatus: 1, deleteBy: curUser ? curUser!.id : null, deleteTime: Utils.now() })
       .where('id IN (:ids)', { ids: ids })
       .execute();
   }
@@ -266,9 +263,7 @@ export class RoleService {
   /**
    * 绑定权限
    */
-  async bindPermissions(
-    bindRolePermissionDto: BindRolePermissionDto,
-  ): Promise<void> {
+  async bindPermissions(bindRolePermissionDto: BindRolePermissionDto): Promise<void> {
     // eslint-disable-next-line prefer-const
     let { id, permissions } = bindRolePermissionDto;
 
@@ -311,7 +306,7 @@ export class RoleService {
   /**
    * 获取权限
    */
-  async selectPermissionsByRoleId(baseFindByIdDto: BaseFindByIdDto,): Promise<Role> {
+  async selectPermissionsByRoleId(baseFindByIdDto: BaseFindByIdDto): Promise<Role> {
     const { id } = baseFindByIdDto;
     const ret = await this.roleRepository.findOne({
       relations: ['rolePermissions'],

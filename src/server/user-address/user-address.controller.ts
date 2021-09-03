@@ -36,7 +36,8 @@ export class UserAddressController {
   constructor(
     private readonly userAddressService: UserAddressService,
     private readonly excelService: ExcelService,
-  ) {}
+  ) {
+  }
 
   @Post('add')
   @Auth('mall:userAddress:add')
@@ -48,9 +49,7 @@ export class UserAddressController {
   @Get('findList')
   @Auth('mall:userAddress:findList')
   @ApiOperation({ summary: '获取列表' })
-  async findList(
-    @Query() searchDto: SearchUserAddressDto,
-  ): Promise<UserAddress[]> {
+  async findList(@Query() searchDto: SearchUserAddressDto): Promise<UserAddress[]> {
     return await this.userAddressService.selectList(searchDto);
   }
 
@@ -64,19 +63,14 @@ export class UserAddressController {
   @Get('findById')
   @Auth('mall:userAddress:findById')
   @ApiOperation({ summary: '获取详情（主键 id）' })
-  async findById(
-    @Query() baseFindByIdDto: BaseFindByIdDto,
-  ): Promise<UserAddress> {
+  async findById(@Query() baseFindByIdDto: BaseFindByIdDto): Promise<UserAddress> {
     return await this.userAddressService.selectById(baseFindByIdDto);
   }
 
   @Get('exportExcel')
   @Auth('mall:userAddress:exportExcel')
   @ApiOperation({ summary: '列表（Excel 导出）' })
-  async exportExcel(
-    @Query() searchDto: SearchUserAddressDto,
-    @Res() res,
-  ): Promise<any> {
+  async exportExcel(@Query() searchDto: SearchUserAddressDto, @Res() res): Promise<any> {
     const list = await this.userAddressService.selectList(searchDto);
 
     list.forEach((v) => {
@@ -116,8 +110,8 @@ export class UserAddressController {
     res.setHeader(
       'Content-Disposition',
       'attachment; filename=' +
-        encodeURIComponent(`用户地址_${Utils.dayjsFormat('YYYYMMDD')}`) +
-        '.xlsx', // 中文名需要进行 url 转码
+      encodeURIComponent(`用户地址_${Utils.dayjsFormat('YYYYMMDD')}`) +
+      '.xlsx', // 中文名需要进行 url 转码
     );
     // res.setTimeout(30 * 60 * 1000); // 防止网络原因造成超时。
     res.end(result, 'binary');
@@ -126,10 +120,7 @@ export class UserAddressController {
   @Post('update')
   @Auth('mall:userAddress:update')
   @ApiOperation({ summary: '修改' })
-  async update(
-    @CurUser() curUser,
-    @Body() updateDto: UpdateUserAddressDto,
-  ): Promise<any> {
+  async update(@CurUser() curUser, @Body() updateDto: UpdateUserAddressDto): Promise<any> {
     const { id } = updateDto;
     const isExistId = await this.userAddressService.isExistId(id);
     if (!isExistId) {
@@ -142,10 +133,7 @@ export class UserAddressController {
   @Post('updateStatus')
   @Auth('mall:userAddress:updateStatus')
   @ApiOperation({ summary: '修改状态' })
-  async updateStatus(
-    @CurUser() curUser,
-    @Body() baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto,
-  ): Promise<any> {
+  async updateStatus(@CurUser() curUser, @Body() baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto): Promise<any> {
     return this.userAddressService.updateStatus(baseModifyStatusByIdsDto, curUser);
   }
 
@@ -169,10 +157,7 @@ export class UserAddressController {
   @Post('deleteBatch')
   @Auth('mall:userAddress:deleteBatch')
   @ApiOperation({ summary: '删除（批量）' })
-  async deleteBatch(
-    @CurUser() curUser,
-    @Body() baseFindByIdsDto: BaseFindByIdsDto,
-  ): Promise<any> {
+  async deleteBatch(@CurUser() curUser, @Body() baseFindByIdsDto: BaseFindByIdsDto): Promise<any> {
     return await this.userAddressService.deleteByIds(baseFindByIdsDto, curUser);
   }
 }

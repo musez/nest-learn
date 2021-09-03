@@ -59,19 +59,14 @@ export class HolidayController {
   @Post('add')
   @Auth('system:holiday:add')
   @ApiOperation({ summary: '添加' })
-  async add(
-    @CurUser() curUser,
-    @Body() createHolidayDto: CreateHolidayDto,
-  ): Promise<CreateHolidayDto> {
+  async add(@CurUser() curUser, @Body() createHolidayDto: CreateHolidayDto): Promise<CreateHolidayDto> {
     return this.holidayService.insert(createHolidayDto, curUser);
   }
 
   @Get('findList')
   @Auth('system:holiday:findList')
   @ApiOperation({ summary: '获取列表' })
-  async findList(
-    @Query() searchHolidayDto: SearchHolidayDto,
-  ): Promise<Holiday[]> {
+  async findList(@Query() searchHolidayDto: SearchHolidayDto): Promise<Holiday[]> {
     return await this.holidayService.selectList(searchHolidayDto);
   }
 
@@ -92,10 +87,7 @@ export class HolidayController {
   @Get('getDays')
   @Auth('system:holiday:getDays')
   @ApiOperation({ summary: '获取 n 天内的日期' })
-  async getDays(
-    @CurUser() curUser,
-    @Query() baseDaysDto: BaseDaysDto,
-  ): Promise<any> {
+  async getDays(@CurUser() curUser, @Query() baseDaysDto: BaseDaysDto): Promise<any> {
     const { days } = baseDaysDto;
     const dayList = Utils.dayjsGetDay(parseInt(String(days)));
     return this.holidayService.selectDays(dayList, curUser);
@@ -104,10 +96,7 @@ export class HolidayController {
   @Get('exportExcel')
   @Auth('system:holiday:exportExcel')
   @ApiOperation({ summary: '列表（Excel 导出）' })
-  async exportExcel(
-    @Query() searchDto: SearchHolidayDto,
-    @Res() res,
-  ): Promise<any> {
+  async exportExcel(@Query() searchDto: SearchHolidayDto, @Res() res): Promise<any> {
     const list = await this.holidayService.selectList(searchDto);
 
     const columns = [
@@ -247,10 +236,7 @@ export class HolidayController {
   @Post('update')
   @Auth('system:holiday:update')
   @ApiOperation({ summary: '修改' })
-  async update(
-    @CurUser() curUser,
-    @Body() updateHolidayDto: UpdateHolidayDto,
-  ): Promise<any> {
+  async update(@CurUser() curUser, @Body() updateHolidayDto: UpdateHolidayDto): Promise<any> {
     const { id } = updateHolidayDto;
 
     const isExistId = await this.holidayService.isExistId(id);
@@ -264,20 +250,14 @@ export class HolidayController {
   @Post('updateStatus')
   @Auth('system:holiday:updateStatus')
   @ApiOperation({ summary: '修改状态' })
-  async updateStatus(
-    @CurUser() curUser,
-    @Body() baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto,
-  ): Promise<any> {
+  async updateStatus(@CurUser() curUser, @Body() baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto): Promise<any> {
     return this.holidayService.updateStatus(baseModifyStatusByIdsDto, curUser);
   }
 
   @Post('delete')
   @Auth('system:holiday:delete')
   @ApiOperation({ summary: '删除' })
-  async delete(
-    @CurUser() curUser,
-    @Body() baseFindByIdDto: BaseFindByIdDto,
-  ): Promise<any> {
+  async delete(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
     const { id } = baseFindByIdDto;
 
     const isExistId = await this.holidayService.isExistId(id);
@@ -291,10 +271,7 @@ export class HolidayController {
   @Post('deleteBatch')
   @Auth('system:holiday:deleteBatch')
   @ApiOperation({ summary: '删除（批量）' })
-  async deleteBatch(
-    @CurUser() curUser,
-    @Body() baseFindByIdsDto: BaseFindByIdsDto,
-  ): Promise<any> {
+  async deleteBatch(@CurUser() curUser, @Body() baseFindByIdsDto: BaseFindByIdsDto): Promise<any> {
     return await this.holidayService.deleteByIds(baseFindByIdsDto, curUser);
   }
 }

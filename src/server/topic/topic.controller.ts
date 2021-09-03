@@ -124,10 +124,7 @@ export class TopicController {
   @Post('delete')
   @Auth('system:topic:delete')
   @ApiOperation({ summary: '删除' })
-  async delete(
-    @CurUser() curUser,
-    @Body() baseFindByIdDto: BaseFindByIdDto,
-  ): Promise<any> {
+  async delete(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
     const { id } = baseFindByIdDto;
     const isExistId = await this.topicService.isExistId(id);
 
@@ -141,10 +138,7 @@ export class TopicController {
   @Post('deleteBatch')
   @Auth('system:topic:deleteBatch')
   @ApiOperation({ summary: '删除（批量）' })
-  async deleteBatch(
-    @CurUser() curUser,
-    @Body() baseFindByIdsDto: BaseFindByIdsDto,
-  ): Promise<any> {
+  async deleteBatch(@CurUser() curUser, @Body() baseFindByIdsDto: BaseFindByIdsDto): Promise<any> {
     return await this.topicService.deleteByIds(baseFindByIdsDto, curUser);
   }
 }

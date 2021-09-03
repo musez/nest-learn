@@ -394,9 +394,7 @@ export class ArticleService {
   /**
    * 获取评论
    */
-  async selectCommentPageById(
-    limitArticleTopDto: LimitArticleTopDto,
-  ): Promise<any> {
+  async selectCommentPageById(limitArticleTopDto: LimitArticleTopDto): Promise<any> {
     const { id, page, limit } = limitArticleTopDto;
 
     const [topicRet, commentRet] = await Promise.all([

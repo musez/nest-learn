@@ -727,9 +727,7 @@ export class UserService {
   /**
    * 获取权限（权限合集）
    */
-  async selectAuthPermissionsByUserId(
-    baseFindByIdDto: BaseFindByIdDto,
-  ): Promise<any> {
+  async selectAuthPermissionsByUserId(baseFindByIdDto: BaseFindByIdDto,): Promise<any> {
     return await this.permissionService.selectByUserId(baseFindByIdDto);
   }
 

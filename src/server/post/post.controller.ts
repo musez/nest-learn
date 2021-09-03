@@ -32,7 +32,8 @@ export class PostController {
   constructor(
     private readonly postService: PostService,
     private readonly excelService: ExcelService,
-  ) {}
+  ) {
+  }
 
   @Post('add')
   @Auth('account:post:add')
@@ -65,10 +66,7 @@ export class PostController {
   @Get('exportExcel')
   @Auth('account:post:exportExcel')
   @ApiOperation({ summary: '列表（Excel 导出）' })
-  async exportExcel(
-    @Query() searchPostDto: SearchPostDto,
-    @Res() res,
-  ): Promise<any> {
+  async exportExcel(@Query() searchPostDto: SearchPostDto, @Res() res): Promise<any> {
     const list = await this.postService.selectList(searchPostDto);
 
     const columns = [
@@ -93,8 +91,8 @@ export class PostController {
     res.setHeader(
       'Content-Disposition',
       'attachment; filename=' +
-        encodeURIComponent(`岗位_${Utils.dayjsFormat('YYYYMMDD')}`) +
-        '.xlsx', // 中文名需要进行 url 转码
+      encodeURIComponent(`岗位_${Utils.dayjsFormat('YYYYMMDD')}`) +
+      '.xlsx', // 中文名需要进行 url 转码
     );
     res.setTimeout(30 * 60 * 1000); // 防止网络原因造成超时。
     res.end(result, 'binary');
@@ -103,10 +101,7 @@ export class PostController {
   @Post('update')
   @Auth('account:post:update')
   @ApiOperation({ summary: '修改' })
-  async update(
-    @CurUser() curUser,
-    @Body() updatePostDto: UpdatePostDto,
-  ): Promise<any> {
+  async update(@CurUser() curUser, @Body() updatePostDto: UpdatePostDto): Promise<any> {
     const { id } = updatePostDto;
     const isExistId = await this.postService.isExistId(id);
 
@@ -119,20 +114,14 @@ export class PostController {
   @Post('updateStatus')
   @Auth('account:post:updateStatus')
   @ApiOperation({ summary: '修改状态' })
-  async updateStatus(
-    @CurUser() curUser,
-    @Body() baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto,
-  ): Promise<any> {
+  async updateStatus(@CurUser() curUser, @Body() baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto): Promise<any> {
     return this.postService.updateStatus(baseModifyStatusByIdsDto, curUser);
   }
 
   @Post('delete')
   @Auth('account:post:delete')
   @ApiOperation({ summary: '删除' })
-  async delete(
-    @CurUser() curUser,
-    @Body() baseFindByIdDto: BaseFindByIdDto,
-  ): Promise<any> {
+  async delete(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
     const { id } = baseFindByIdDto;
     const isExistId = await this.postService.isExistId(id);
 
@@ -145,10 +134,7 @@ export class PostController {
   @Post('deleteBatch')
   @Auth('system:post:deleteBatch')
   @ApiOperation({ summary: '删除（批量）' })
-  async deleteBatch(
-    @CurUser() curUser,
-    @Body() baseFindByIdsDto: BaseFindByIdsDto,
-  ): Promise<any> {
+  async deleteBatch(@CurUser() curUser, @Body() baseFindByIdsDto: BaseFindByIdsDto): Promise<any> {
     return await this.postService.deleteByIds(baseFindByIdsDto, curUser);
   }
 }

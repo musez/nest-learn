@@ -37,7 +37,8 @@ export class DictController {
   constructor(
     private readonly dictService: DictService,
     private readonly dictItemService: DictItemService,
-  ) {}
+  ) {
+  }
 
   @Post('add')
   @Auth('system:dict:add')
@@ -79,9 +80,7 @@ export class DictController {
   @Get('findItemListPage')
   @Auth('system:dict:findItemListPage')
   @ApiOperation({ summary: '获取字典项列表（分页）' })
-  async findItemListPage(
-    @Query() limitDictItemDto: LimitDictItemDto,
-  ): Promise<any> {
+  async findItemListPage(@Query() limitDictItemDto: LimitDictItemDto): Promise<any> {
     return await this.dictItemService.selectListPage(limitDictItemDto);
   }
 
@@ -95,10 +94,7 @@ export class DictController {
   @Post('update')
   @Auth('system:dict:update')
   @ApiOperation({ summary: '修改' })
-  async update(
-    @CurUser() curUser,
-    @Body() updateDictDto: UpdateDictDto,
-  ): Promise<any> {
+  async update(@CurUser() curUser, @Body() updateDictDto: UpdateDictDto): Promise<any> {
     const { id } = updateDictDto;
     const isExistId = await this.dictService.isExistId(id);
 
@@ -112,20 +108,14 @@ export class DictController {
   @Post('updateStatus')
   @Auth('system:dict:updateStatus')
   @ApiOperation({ summary: '修改状态' })
-  async updateStatus(
-    @CurUser() curUser,
-    @Body() baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto,
-  ): Promise<any> {
+  async updateStatus(@CurUser() curUser, @Body() baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto): Promise<any> {
     return this.dictService.updateStatus(baseModifyStatusByIdsDto, curUser);
   }
 
   @Post('delete')
   @Auth('system:dict:delete')
   @ApiOperation({ summary: '删除' })
-  async delete(
-    @CurUser() curUser,
-    @Body() baseFindByIdDto: BaseFindByIdDto,
-  ): Promise<any> {
+  async delete(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
     const { id } = baseFindByIdDto;
     const isExistId = await this.dictService.isExistId(id);
 
@@ -139,19 +129,14 @@ export class DictController {
   @Post('deleteBatch')
   @Auth('system:dict:deleteBatch')
   @ApiOperation({ summary: '删除（批量）' })
-  async deleteBatch(
-    @CurUser() curUser,
-    @Body() baseFindByIdsDto: BaseFindByIdsDto,
-  ): Promise<any> {
+  async deleteBatch(@CurUser() curUser, @Body() baseFindByIdsDto: BaseFindByIdsDto): Promise<any> {
     return await this.dictService.deleteByIds(baseFindByIdsDto, curUser);
   }
 
   @Get('findItemById')
   @Auth('system:dict:findItemById')
   @ApiOperation({ summary: '获取字典详情（主键 id）' })
-  async findItemById(
-    @Query() baseFindByIdDto: BaseFindByIdDto,
-  ): Promise<any> {
+  async findItemById(@Query() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
     return await this.dictItemService.selectByDictId(baseFindByIdDto);
   }
 }

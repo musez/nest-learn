@@ -56,9 +56,7 @@ export class ArticleController {
   @Get('findList')
   @Auth('cms:article:findList')
   @ApiOperation({ summary: '获取列表' })
-  async findList(
-    @Query() searchArticleDto: SearchArticleDto,
-  ): Promise<Article[]> {
+  async findList(@Query() searchArticleDto: SearchArticleDto): Promise<Article[]> {
     return await this.articleService.selectList(searchArticleDto);
   }
 
@@ -93,10 +91,7 @@ export class ArticleController {
   @Get('exportExcel')
   @Auth('account:article:exportExcel')
   @ApiOperation({ summary: '列表（Excel 导出）' })
-  async exportExcel(
-    @Query() searchArticleDto: SearchArticleDto,
-    @Res() res,
-  ): Promise<any> {
+  async exportExcel(@Query() searchArticleDto: SearchArticleDto, @Res() res): Promise<any> {
     const list = await this.articleService.selectList(searchArticleDto);
 
     list.forEach(v => {
@@ -166,10 +161,7 @@ export class ArticleController {
   @Post('update')
   @Auth('cms:article:update')
   @ApiOperation({ summary: '修改' })
-  async update(
-    @CurUser() curUser,
-    @Body() updateArticleDto: UpdateArticleDto,
-  ): Promise<any> {
+  async update(@CurUser() curUser, @Body() updateArticleDto: UpdateArticleDto): Promise<any> {
     const { id } = updateArticleDto;
     const isExistId = await this.articleService.isExistId(id);
     if (!isExistId) {
@@ -196,10 +188,7 @@ export class ArticleController {
   @Post('unPublish')
   @Auth('cms:article:unPublish')
   @ApiOperation({ summary: '取消发布' })
-  async unPublish(
-    @CurUser() curUser,
-    @Body() baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto,
-  ): Promise<any> {
+  async unPublish(@CurUser() curUser, @Body() baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto): Promise<any> {
     baseModifyStatusByIdsDto.status = 0;
     return await this.articleService.updateStatus(
       baseModifyStatusByIdsDto,
@@ -210,10 +199,7 @@ export class ArticleController {
   @Post('inRecycle')
   @Auth('cms:article:inRecycle')
   @ApiOperation({ summary: '回收站移入' })
-  async inRecycle(
-    @CurUser() curUser,
-    @Body() baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto,
-  ): Promise<any> {
+  async inRecycle(@CurUser() curUser, @Body() baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto): Promise<any> {
     baseModifyStatusByIdsDto.status = 3;
     return await this.articleService.updateStatus(
       baseModifyStatusByIdsDto,
@@ -224,10 +210,7 @@ export class ArticleController {
   @Post('outRecycle')
   @Auth('cms:article:outRecycle')
   @ApiOperation({ summary: '回收站移出' })
-  async outRecycle(
-    @CurUser() curUser,
-    @Body() baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto,
-  ): Promise<any> {
+  async outRecycle(@CurUser() curUser, @Body() baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto): Promise<any> {
     baseModifyStatusByIdsDto.status = 2;
     return await this.articleService.updateStatus(
       baseModifyStatusByIdsDto,
@@ -238,10 +221,7 @@ export class ArticleController {
   @Post('deleteRecycle')
   @Auth('cms:article:deleteRecycle')
   @ApiOperation({ summary: '回收站删除' })
-  async delete(
-    @CurUser() curUser,
-    @Body() baseFindByIdDto: BaseFindByIdDto,
-  ): Promise<any> {
+  async delete(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
     const { id } = baseFindByIdDto;
     const isExistId = await this.articleService.isExistId(id);
 
@@ -255,10 +235,7 @@ export class ArticleController {
   @Post('deleteRecycleBatch')
   @Auth('cms:article:deleteRecycleBatch')
   @ApiOperation({ summary: '回收站删除（批量）' })
-  async deleteRecycleBatch(
-    @CurUser() curUser,
-    @Body() baseFindByIdsDto: BaseFindByIdsDto,
-  ): Promise<any> {
+  async deleteRecycleBatch(@CurUser() curUser, @Body() baseFindByIdsDto: BaseFindByIdsDto): Promise<any> {
     return await this.articleService.deleteByIds(baseFindByIdsDto, curUser);
   }
 
@@ -272,28 +249,21 @@ export class ArticleController {
   @Get('findCommentById')
   @Auth('cms:article:findCommentById')
   @ApiOperation({ summary: '获取评论和回复（主键 id）' })
-  async findCommentById(
-    @Query() baseFindByIdDto: BaseFindByIdDto,
-  ): Promise<any> {
+  async findCommentById(@Query() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
     return await this.articleService.selectCommentById(baseFindByIdDto);
   }
 
   @Get('findCommentPageById')
   @Auth('cms:article:findCommentPageById')
   @ApiOperation({ summary: '获取评论和回复（主键 id）' })
-  async findCommentPageById(
-    @Query() limitArticleTopDto: LimitArticleTopDto,
-  ): Promise<any> {
+  async findCommentPageById(@Query() limitArticleTopDto: LimitArticleTopDto): Promise<any> {
     return await this.articleService.selectCommentPageById(limitArticleTopDto);
   }
 
   @Post('addComment')
   @Auth('cms:article:addComment')
   @ApiOperation({ summary: '添加评论' })
-  async addComment(
-    @CurUser() curUser,
-    @Body() createArticleCommentDto: CreateArticleCommentDto,
-  ): Promise<any> {
+  async addComment(@CurUser() curUser, @Body() createArticleCommentDto: CreateArticleCommentDto): Promise<any> {
     return await this.articleService.insertComment(
       createArticleCommentDto,
       curUser,

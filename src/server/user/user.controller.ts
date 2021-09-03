@@ -50,17 +50,14 @@ export class UserController {
   constructor(
     private readonly userService: UserService,
     private readonly excelService: ExcelService,
-  ) {}
+  ) {
+  }
 
   @Post('add')
   @Auth('account:user:add')
   @ApiOperation({ summary: '添加' })
-  async add(
-    @CurUser() curUser,
-    @Body() createUserDto: CreateUserDto,
-  ): Promise<CreateUserDto | void> {
+  async add(@CurUser() curUser, @Body() createUserDto: CreateUserDto): Promise<CreateUserDto | void> {
     const { userName } = createUserDto;
-
     const isExistUserName = await this.userService.isExistUserName(userName);
     if (isExistUserName) {
       throw new ApiException(`用户名：${userName} 已存在！`, 1009);
@@ -93,14 +90,11 @@ export class UserController {
   @Get('exportExcel')
   @Auth('account:user:exportExcel')
   @ApiOperation({ summary: '列表（Excel 导出）' })
-  async exportExcel(
-    @Query() searchUserDto: SearchUserDto,
-    @Res() res,
-  ): Promise<any> {
+  async exportExcel(@Query() searchUserDto: SearchUserDto, @Res() res): Promise<any> {
     const list = await this.userService.selectList(searchUserDto);
 
     list.forEach((v) => {
-      if (v.userinfo) {
+      if (v.userinf) {
         v.provinceId = v.userinfo.provinceId;
         v.cityId = v.userinfo.cityId;
         v.districtId = v.userinfo.districtId;
@@ -146,8 +140,8 @@ export class UserController {
     res.setHeader(
       'Content-Disposition',
       'attachment; filename=' +
-        encodeURIComponent(`用户_${Utils.dayjsFormat('YYYYMMDD')}`) +
-        '.xlsx', // 中文名需要进行 url 转码
+      encodeURIComponent(`用户_${Utils.dayjsFormat('YYYYMMDD')}`) +
+      '.xlsx', // 中文名需要进行 url 转码
     );
     // res.setTimeout(30 * 60 * 1000); // 防止网络原因造成超时。
     res.end(result, 'binary');
@@ -237,10 +231,7 @@ export class UserController {
   @Post('update')
   @Auth('account:user:update')
   @ApiOperation({ summary: '修改' })
-  async update(
-    @CurUser() curUser,
-    @Body() updateUserDto: UpdateUserDto,
-  ): Promise<any> {
+  async update(@CurUser() curUser, @Body() updateUserDto: UpdateUserDto): Promise<any> {
     const { id } = updateUserDto;
 
     const isExistId = await this.userService.isExistId(id);
@@ -264,10 +255,7 @@ export class UserController {
   @Post('delete')
   @Auth('account:user:delete')
   @ApiOperation({ summary: '删除' })
-  async delete(
-    @CurUser() curUser,
-    @Body() baseFindByIdDto: BaseFindByIdDto,
-  ): Promise<any> {
+  async delete(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
     const { id } = baseFindByIdDto;
 
     const isExistId = await this.userService.isExistId(id);
@@ -281,20 +269,14 @@ export class UserController {
   @Post('deleteBatch')
   @Auth('system:user:deleteBatch')
   @ApiOperation({ summary: '删除（批量）' })
-  async deleteBatch(
-    @CurUser() curUser,
-    @Body() baseFindByIdsDto: BaseFindByIdsDto,
-  ): Promise<any> {
+  async deleteBatch(@CurUser() curUser, @Body() baseFindByIdsDto: BaseFindByIdsDto): Promise<any> {
     return await this.userService.deleteByIds(baseFindByIdsDto, curUser);
   }
 
   @Post('bindGroups')
   @Auth('account:user:bindGroups')
   @ApiOperation({ summary: '绑定用户组' })
-  async bindGroups(
-    @CurUser() curUser,
-    @Body() bindUserGroupDto: BindUserGroupDto,
-  ): Promise<any> {
+  async bindGroups(@CurUser() curUser, @Body() bindUserGroupDto: BindUserGroupDto): Promise<any> {
     const { id } = bindUserGroupDto;
 
     const isExistId = await this.userService.isExistId(id);
@@ -323,10 +305,7 @@ export class UserController {
   @Post('bindRoles')
   @Auth('account:user:bindRoles')
   @ApiOperation({ summary: '绑定角色' })
-  async bindRoles(
-    @CurUser() curUser,
-    @Body() bindUserRoleDto: BindUserRoleDto,
-  ): Promise<any> {
+  async bindRoles(@CurUser() curUser, @Body() bindUserRoleDto: BindUserRoleDto): Promise<any> {
     const { id } = bindUserRoleDto;
 
     const isExistId = await this.userService.isExistId(id);
@@ -339,10 +318,7 @@ export class UserController {
   @Get('getRoles')
   @Auth('account:user:getRoles')
   @ApiOperation({ summary: '获取角色' })
-  async findRolesByUserId(
-    @CurUser() curUser,
-    @Query() baseFindByIdDto: BaseFindByIdDto,
-  ): Promise<any> {
+  async findRolesByUserId(@CurUser() curUser, @Query() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
     const { id } = baseFindByIdDto;
 
     const isExistId = await this.userService.isExistId(id);
@@ -356,12 +332,8 @@ export class UserController {
   @Post('bindPermissions')
   @Auth('account:user:bindPermissions')
   @ApiOperation({ summary: '绑定权限' })
-  async bindPermissions(
-    @CurUser() curUser,
-    @Body() bindUserPermissionDto: BindUserPermissionDto,
-  ): Promise<any> {
+  async bindPermissions(@CurUser() curUser, @Body() bindUserPermissionDto: BindUserPermissionDto): Promise<any> {
     const { id } = bindUserPermissionDto;
-
     const isExistId = await this.userService.isExistId(id);
     if (!isExistId) {
       throw new ApiException(`数据 id：${id} 不存在！`, 404);
@@ -372,10 +344,7 @@ export class UserController {
   @Get('getPermissions')
   @Auth('account:user:getPermissions')
   @ApiOperation({ summary: '获取权限' })
-  async findPermissionsByUserId(
-    @CurUser() curUser,
-    @Query() baseFindByIdDto: BaseFindByIdDto,
-  ): Promise<any> {
+  async findPermissionsByUserId(@CurUser() curUser, @Query() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
     const { id } = baseFindByIdDto;
 
     const isExistId = await this.userService.isExistId(id);

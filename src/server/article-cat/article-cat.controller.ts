@@ -42,24 +42,20 @@ export class ArticleCatController {
   constructor(
     private readonly articleCatService: ArticleCatService,
     private readonly excelService: ExcelService,
-  ) {}
+  ) {
+  }
 
   @Post('add')
   @Auth('cms:articleCat:add')
   @ApiOperation({ summary: '添加' })
-  async add(
-    @CurUser() curUser,
-    @Body() createArticleCatDto: CreateArticleCatDto,
-  ) {
+  async add(@CurUser() curUser, @Body() createArticleCatDto: CreateArticleCatDto) {
     return this.articleCatService.insert(createArticleCatDto, curUser);
   }
 
   @Get('findList')
   @Auth('cms:articleCat:findList')
   @ApiOperation({ summary: '获取列表' })
-  async findList(
-    @Query() searchArticleCatDto: SearchArticleCatDto,
-  ): Promise<ArticleCat[]> {
+  async findList(@Query() searchArticleCatDto: SearchArticleCatDto): Promise<ArticleCat[]> {
     return await this.articleCatService.selectList(searchArticleCatDto);
   }
 
@@ -83,19 +79,14 @@ export class ArticleCatController {
   @Get('findById')
   @Auth('cms:articleCat:findById')
   @ApiOperation({ summary: '获取详情（主键 id）' })
-  async findById(
-    @Query() baseFindByIdDto: BaseFindByIdDto,
-  ): Promise<ArticleCat> {
+  async findById(@Query() baseFindByIdDto: BaseFindByIdDto): Promise<ArticleCat> {
     return await this.articleCatService.selectById(baseFindByIdDto);
   }
 
   @Get('exportExcel')
   @Auth('account:articleCat:exportExcel')
   @ApiOperation({ summary: '列表（Excel 导出）' })
-  async exportExcel(
-    @Query() searchArticleCatDto: SearchArticleCatDto,
-    @Res() res,
-  ): Promise<any> {
+  async exportExcel(@Query() searchArticleCatDto: SearchArticleCatDto, @Res() res): Promise<any> {
     const list = await this.articleCatService.selectAll(searchArticleCatDto);
 
     const columns = [
@@ -120,8 +111,8 @@ export class ArticleCatController {
     res.setHeader(
       'Content-Disposition',
       'attachment; filename=' +
-        encodeURIComponent(`文章分类_${Utils.dayjsFormat('YYYYMMDD')}`) +
-        '.xlsx', // 中文名需要进行 url 转码
+      encodeURIComponent(`文章分类_${Utils.dayjsFormat('YYYYMMDD')}`) +
+      '.xlsx', // 中文名需要进行 url 转码
     );
     res.setTimeout(30 * 60 * 1000); // 防止网络原因造成超时。
     res.end(result, 'binary');
@@ -130,30 +121,21 @@ export class ArticleCatController {
   @Post('update')
   @Auth('cms:articleCat:update')
   @ApiOperation({ summary: '修改' })
-  async update(
-    @CurUser() curUser,
-    @Body() updateArticleCatDto: UpdateArticleCatDto,
-  ): Promise<any> {
+  async update(@CurUser() curUser, @Body() updateArticleCatDto: UpdateArticleCatDto): Promise<any> {
     return this.articleCatService.update(updateArticleCatDto, curUser);
   }
 
   @Post('updateStatus')
   @Auth('cms:articleCat:updateStatus')
   @ApiOperation({ summary: '修改状态' })
-  async updateStatus(
-    @CurUser() curUser,
-    @Body() baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto,
-  ): Promise<any> {
+  async updateStatus(@CurUser() curUser, @Body() baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto): Promise<any> {
     return this.articleCatService.updateStatus(baseModifyStatusByIdsDto, curUser);
   }
 
   @Post('delete')
   @Auth('cms:articleCat:delete')
   @ApiOperation({ summary: '删除' })
-  async delete(
-    @CurUser() curUser,
-    @Body() baseFindByIdDto: BaseFindByIdDto,
-  ): Promise<any> {
+  async delete(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
     const { id } = baseFindByIdDto;
     const isExistId = await this.articleCatService.isExistId(id);
 
@@ -167,10 +149,7 @@ export class ArticleCatController {
   @Post('deleteBatch')
   @Auth('system:articleCat:deleteBatch')
   @ApiOperation({ summary: '删除（批量）' })
-  async deleteBatch(
-    @CurUser() curUser,
-    @Body() baseFindByIdsDto: BaseFindByIdsDto,
-  ): Promise<any> {
+  async deleteBatch(@CurUser() curUser, @Body() baseFindByIdsDto: BaseFindByIdsDto): Promise<any> {
     return await this.articleCatService.deleteByIds(baseFindByIdsDto, curUser);
   }
 }

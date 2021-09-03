@@ -37,7 +37,8 @@ export class OrgController {
   constructor(
     private readonly orgService: OrgService,
     private readonly excelService: ExcelService,
-  ) {}
+  ) {
+  }
 
   @Post('add')
   @Auth('account:org:add')
@@ -77,10 +78,7 @@ export class OrgController {
   @Get('exportExcel')
   @Auth('account:org:exportExcel')
   @ApiOperation({ summary: '列表（Excel 导出）' })
-  async exportExcel(
-    @Query() searchOrgDto: SearchOrgDto,
-    @Res() res,
-  ): Promise<any> {
+  async exportExcel(@Query() searchOrgDto: SearchOrgDto, @Res() res): Promise<any> {
     const list = await this.orgService.selectAll(searchOrgDto);
 
     const columns = [
@@ -114,8 +112,8 @@ export class OrgController {
     res.setHeader(
       'Content-Disposition',
       'attachment; filename=' +
-        encodeURIComponent(`组织机构_${Utils.dayjsFormat('YYYYMMDD')}`) +
-        '.xlsx', // 中文名需要进行 url 转码
+      encodeURIComponent(`组织机构_${Utils.dayjsFormat('YYYYMMDD')}`) +
+      '.xlsx', // 中文名需要进行 url 转码
     );
     res.setTimeout(30 * 60 * 1000); // 防止网络原因造成超时。
     res.end(result, 'binary');
@@ -124,10 +122,7 @@ export class OrgController {
   @Post('update')
   @Auth('account:org:update')
   @ApiOperation({ summary: '修改' })
-  async update(
-    @CurUser() curUser,
-    @Body() updateOrgDto: UpdateOrgDto,
-  ): Promise<any> {
+  async update(@CurUser() curUser, @Body() updateOrgDto: UpdateOrgDto): Promise<any> {
     const { id } = updateOrgDto;
     const isExistId = await this.orgService.isExistId(id);
 
@@ -140,20 +135,14 @@ export class OrgController {
   @Post('updateStatus')
   @Auth('account:org:updateStatus')
   @ApiOperation({ summary: '修改状态' })
-  async updateStatus(
-    @CurUser() curUser,
-    @Body() baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto,
-  ): Promise<any> {
+  async updateStatus(@CurUser() curUser, @Body() baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto): Promise<any> {
     return this.orgService.updateStatus(baseModifyStatusByIdsDto, curUser);
   }
 
   @Post('delete')
   @Auth('account:org:delete')
   @ApiOperation({ summary: '删除' })
-  async delete(
-    @CurUser() curUser,
-    @Body() baseFindByIdDto: BaseFindByIdDto,
-  ): Promise<any> {
+  async delete(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
     const { id } = baseFindByIdDto;
     const isExistId = await this.orgService.isExistId(id);
 
@@ -167,10 +156,7 @@ export class OrgController {
   @Post('deleteBatch')
   @Auth('account:org:deleteBatch')
   @ApiOperation({ summary: '删除（批量）' })
-  async deleteBatch(
-    @CurUser() curUser,
-    @Body() baseFindByIdsDto: BaseFindByIdsDto,
-  ): Promise<any> {
+  async deleteBatch(@CurUser() curUser, @Body() baseFindByIdsDto: BaseFindByIdsDto): Promise<any> {
     return await this.orgService.deleteByIds(baseFindByIdsDto, curUser);
   }
 }

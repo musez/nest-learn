@@ -20,7 +20,8 @@ export class AreaController {
   constructor(
     private readonly areaService: AreaService,
     private readonly excelService: ExcelService,
-  ) {}
+  ) {
+  }
 
   @Get('findList')
   @Auth('system:area:findList')
@@ -45,9 +46,7 @@ export class AreaController {
   @Get('findListByPId')
   @Auth('system:area:findListByPId')
   @ApiOperation({ summary: '获取子代列表（父 id）' })
-  async findListByPId(
-    @Query() baseFindByPIdDto: BaseFindByPIdDto,
-  ): Promise<any> {
+  async findListByPId(@Query() baseFindByPIdDto: BaseFindByPIdDto): Promise<any> {
     return this.areaService.selectListByPId(baseFindByPIdDto);
   }
 
@@ -68,10 +67,7 @@ export class AreaController {
   @Get('exportExcel')
   @Auth('account:area:exportExcel')
   @ApiOperation({ summary: '列表（Excel 导出）' })
-  async exportExcel(
-    @Query() searchAreaDto: SearchAreaDto,
-    @Res() res,
-  ): Promise<any> {
+  async exportExcel(@Query() searchAreaDto: SearchAreaDto, @Res() res): Promise<any> {
     const list = await this.areaService.selectList(searchAreaDto);
 
     const columns = [
@@ -98,8 +94,8 @@ export class AreaController {
     res.setHeader(
       'Content-Disposition',
       'attachment; filename=' +
-        encodeURIComponent(`地区_${Utils.dayjsFormat('YYYYMMDD')}`) +
-        '.xlsx', // 中文名需要进行 url 转码
+      encodeURIComponent(`地区_${Utils.dayjsFormat('YYYYMMDD')}`) +
+      '.xlsx', // 中文名需要进行 url 转码
     );
     // res.setTimeout(30 * 60 * 1000); // 防止网络原因造成超时。
     res.end(result, 'binary');

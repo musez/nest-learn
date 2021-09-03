@@ -20,7 +20,8 @@ export class AuthController {
   constructor(
     private readonly authService: AuthService,
     private readonly userService: UserService,
-  ) {}
+  ) {
+  }
 
   @UseGuards(LocalAuthGuard)
   @ApiOperation({ summary: '登录' })
@@ -57,9 +58,7 @@ export class AuthController {
 
   @Post('register')
   @ApiOperation({ summary: '注册' })
-  async register(
-    @Body() registerUserDto: RegisterUserDto,
-  ): Promise<CreateUserDto | void> {
+  async register(@Body() registerUserDto: RegisterUserDto): Promise<CreateUserDto | void> {
     const { userName, userPwd, userPwdConfirm } = registerUserDto;
 
     if (userPwd !== userPwdConfirm) {

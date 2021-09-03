@@ -40,7 +40,8 @@ export class GroupController {
     private readonly groupService: GroupService,
     private readonly excelService: ExcelService,
     private readonly groupPermissionService: GroupPermissionService,
-  ) {}
+  ) {
+  }
 
   @Post('add')
   @Auth('account:group:add')
@@ -73,10 +74,7 @@ export class GroupController {
   @Get('exportExcel')
   @Auth('account:group:exportExcel')
   @ApiOperation({ summary: '列表（Excel 导出）' })
-  async exportExcel(
-    @Query() searchGroupDto: SearchGroupDto,
-    @Res() res,
-  ): Promise<any> {
+  async exportExcel(@Query() searchGroupDto: SearchGroupDto, @Res() res): Promise<any> {
     const list = await this.groupService.selectList(searchGroupDto);
 
     const columns = [
@@ -101,8 +99,8 @@ export class GroupController {
     res.setHeader(
       'Content-Disposition',
       'attachment; filename=' +
-        encodeURIComponent(`用户组_${Utils.dayjsFormat('YYYYMMDD')}`) +
-        '.xlsx', // 中文名需要进行 url 转码
+      encodeURIComponent(`用户组_${Utils.dayjsFormat('YYYYMMDD')}`) +
+      '.xlsx', // 中文名需要进行 url 转码
     );
     res.setTimeout(30 * 60 * 1000); // 防止网络原因造成超时。
     res.end(result, 'binary');
@@ -111,10 +109,7 @@ export class GroupController {
   @Post('update')
   @Auth('account:group:update')
   @ApiOperation({ summary: '修改' })
-  async update(
-    @CurUser() curUser,
-    @Body() updateGroupDto: UpdateGroupDto,
-  ): Promise<any> {
+  async update(@CurUser() curUser, @Body() updateGroupDto: UpdateGroupDto): Promise<any> {
     const { id } = updateGroupDto;
     const isExistId = await this.groupService.isExistId(id);
 
@@ -128,20 +123,14 @@ export class GroupController {
   @Post('updateStatus')
   @Auth('account:group:updateStatus')
   @ApiOperation({ summary: '修改状态' })
-  async updateStatus(
-    @CurUser() curUser,
-    @Body() baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto,
-  ): Promise<any> {
+  async updateStatus(@CurUser() curUser, @Body() baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto): Promise<any> {
     return this.groupService.updateStatus(baseModifyStatusByIdsDto, curUser);
   }
 
   @Post('delete')
   @Auth('account:group:delete')
   @ApiOperation({ summary: '删除' })
-  async delete(
-    @CurUser() curUser,
-    @Body() baseFindByIdDto: BaseFindByIdDto,
-  ): Promise<any> {
+  async delete(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
     const { id } = baseFindByIdDto;
     const isExistId = await this.groupService.isExistId(id);
 
@@ -155,20 +144,14 @@ export class GroupController {
   @Post('deleteBatch')
   @Auth('system:group:deleteBatch')
   @ApiOperation({ summary: '删除（批量）' })
-  async deleteBatch(
-    @CurUser() curUser,
-    @Body() baseFindByIdsDto: BaseFindByIdsDto,
-  ): Promise<any> {
+  async deleteBatch(@CurUser() curUser, @Body() baseFindByIdsDto: BaseFindByIdsDto): Promise<any> {
     return await this.groupService.deleteByIds(baseFindByIdsDto, curUser);
   }
 
   @Post('bindRoles')
   @Auth('account:group:bindRoles')
   @ApiOperation({ summary: '绑定用户组角色' })
-  async bindRoles(
-    @CurUser() curUser,
-    @Body() bindGroupRoleDto: BindGroupRoleDto,
-  ): Promise<any> {
+  async bindRoles(@CurUser() curUser, @Body() bindGroupRoleDto: BindGroupRoleDto): Promise<any> {
     const { id } = bindGroupRoleDto;
     const isExistId = await this.groupService.isExistId(id);
 
@@ -182,10 +165,7 @@ export class GroupController {
   @Get('getRoles')
   @Auth('account:group:getRoles')
   @ApiOperation({ summary: '获取用户组角色' })
-  async findRolesByGroupId(
-    @CurUser() curUser,
-    @Query() baseFindByIdDto: BaseFindByIdDto,
-  ): Promise<any> {
+  async findRolesByGroupId(@CurUser() curUser, @Query() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
     const { id } = baseFindByIdDto;
     const isExistId = await this.groupService.isExistId(id);
 
@@ -199,10 +179,7 @@ export class GroupController {
   @Post('bindPermissions')
   @Auth('account:group:bindPermissions')
   @ApiOperation({ summary: '绑定权限' })
-  async bindPermissions(
-    @CurUser() curUser,
-    @Body() bindGroupPermissionDto: BindGroupPermissionDto,
-  ): Promise<any> {
+  async bindPermissions(@CurUser() curUser, @Body() bindGroupPermissionDto: BindGroupPermissionDto): Promise<any> {
     const { id } = bindGroupPermissionDto;
 
     const isExistId = await this.groupService.isExistId(id);
@@ -215,10 +192,7 @@ export class GroupController {
   @Get('getPermissions')
   @Auth('account:group:getPermissions')
   @ApiOperation({ summary: '获取权限' })
-  async findPermissionsByGroupId(
-    @CurUser() curUser,
-    @Query() baseFindByIdDto: BaseFindByIdDto,
-  ): Promise<any> {
+  async findPermissionsByGroupId(@CurUser() curUser, @Query() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
     const { id } = baseFindByIdDto;
 
     const isExistId = await this.groupService.isExistId(id);
