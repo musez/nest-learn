@@ -71,7 +71,7 @@ export class CommentService {
         status: status,
       })
       .orderBy({
-        'comment.status': 'DESC',
+        'comment.status': 'ASC',
         'comment.createTime': 'ASC',
       })
       .getRawMany();
@@ -130,7 +130,7 @@ export class CommentService {
       .offset(offset)
       .limit(limit)
       .orderBy({
-        'comment.status': 'DESC',
+        'comment.status': 'ASC',
         'comment.createTime': 'ASC',
       })
       .getRawMany();

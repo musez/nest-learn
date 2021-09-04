@@ -41,6 +41,7 @@ import { QiniuModule } from './server/qiniu/qiniu.module';
 import { StatisticsModule } from './server/statistics/statistics.module';
 import { UserPermissionModule } from './server/user-permission/user-permission.module';
 import { GroupPermissionModule } from './server/group-permission/group-permission.module';
+import { FeedbackModule } from './server/feedback/feedback.module';
 import AppConfig from './config/app.config';
 import MysqlConfig from './config/mysql.config';
 import RedisConfig from './config/redis.config';
@@ -121,6 +122,7 @@ import QiNiuConfig from './config/qiniu.config';
     HolidayModule,
     // WechatModule,
     // TaskModule,
+    FeedbackModule,
     StatisticsModule,
     UserPermissionModule,
     GroupPermissionModule,

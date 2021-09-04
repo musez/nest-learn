@@ -13,6 +13,7 @@ import { Holiday } from './entities/holiday.entity';
 import { SearchHolidayDto } from './dto/search-holiday.dto';
 import { LimitHolidayDto } from './dto/limit-holiday.dto';
 import { ApiException } from '../../common/exception/api-exception';
+import * as dayjs from 'dayjs';
 
 @Injectable()
 export class HolidayService {
@@ -191,7 +192,7 @@ export class HolidayService {
     queryConditionList.push('deleteStatus = 0');
     const queryCondition = queryConditionList.join(' AND ');
 
-    const dayListStr = dayList.map((v) => {
+    let dayListStr = dayList.map((v) => {
       return v.toString();
     });
 
@@ -205,7 +206,30 @@ export class HolidayService {
         createTime: 'DESC',
       })
       .getMany();
-    return ret;
+
+    const map = new Map();
+    for (const v of ret) {
+      // @ts-ignore
+      map.set(v.date, v);
+    }
+
+    dayListStr = dayListStr.map(v => {
+      if (map.has(v)) {
+        return map.get(v);
+      } else {
+        const day = dayjs(v).day();
+        return {
+          name: null,
+          date: v,
+          weekday: day,
+          restType: [0, 6].includes(day) ? 3 : 0,
+          description: null,
+          status: null,
+        };
+      }
+    });
+
+    return dayListStr;
   }
 
   /**

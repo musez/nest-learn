@@ -44,8 +44,8 @@ export class AreaService {
         'hasChildren',
       )
       .orderBy({
-        status: 'DESC',
-        createTime: 'DESC',
+        'a.areaCode': 'ASC',
+        'a.createTime': 'DESC',
       })
       .where(queryCondition, {
         parentIds: parentIds,
@@ -85,7 +85,7 @@ export class AreaService {
       .skip(offset)
       .take(limit)
       .orderBy({
-        status: 'DESC',
+        areaCode: 'ASC',
         createTime: 'DESC',
       })
       .getManyAndCount();

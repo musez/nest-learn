@@ -1,8 +1,8 @@
 // 状态类型
 export enum StatusType {
-  DISABLE = 0, // 禁用或未发布
-  ENABLE = 1, // 启用或发布
-  DRAFT = 2, // 草稿
+  DISABLE = 0, // 禁用/未发布/未审核
+  ENABLE = 1, // 启用/发布/审核通过
+  DRAFT = 2, // 草稿/审核未通过
   RECYCLE = 3, // 回收站
 }
 
@@ -111,10 +111,25 @@ export enum PermissionHiddenType {
   HIDE = 1, // 隐藏
 }
 
-//地区级别
+// 地区级别
 export enum AreaLevelType {
   PROVINCE = 1, // 省份
   CITY = 2, // 城市
   DISTRICT = 3, // 区/县
   STREET = 4, // 街道/办
+}
+
+// 建议反馈类型
+export enum FeedbackType {
+  OTHER = 0, // 其他
+  SUGGESTION = 1, // 建议
+  COMPLAINT = 2, // 投诉
+}
+
+// 业务类型
+export enum BusinessType {
+  OTHER = 0, // 其他
+  USER = 1, // 用户
+  CMS = 2, // 文章
+  SYSTEM = 3, // 系统
 }

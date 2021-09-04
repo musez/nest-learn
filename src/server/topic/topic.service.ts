@@ -65,12 +65,12 @@ export class TopicService {
       .createQueryBuilder('topic')
       .leftJoinAndSelect(User, 'u', 'u.id = topic.fromUid')
       .leftJoinAndSelect(Comment, 'c', 'c.replyId = topic.id')
-      .select('topic.*')
-      .addSelect(`
-      u.userName AS fromUname,
-      c.id AS commentId,
-      c.replyType AS replyType
-      `)
+      .select([
+        'topic.*',
+        'u.userName AS fromUname',
+        'c.id AS commentId',
+        'c.replyType AS replyType'
+      ])
       .where(queryCondition, {
         topicId: topicId,
         content: `%${content}%`,
@@ -78,7 +78,7 @@ export class TopicService {
         status: status,
       })
       .orderBy({
-        'topic.status': 'DESC',
+        'topic.status': 'ASC',
         'topic.createTime': 'ASC',
       })
       .getRawMany();
@@ -134,12 +134,12 @@ export class TopicService {
       .createQueryBuilder('topic')
       .leftJoinAndSelect(User, 'u', 'u.id = topic.fromUid')
       .leftJoinAndSelect(Comment, 'c', 'c.replyId = topic.id')
-      .select('topic.*')
-      .addSelect(`
-      u.userName AS fromUname,
-      c.id AS commentId,
-      c.replyType AS replyType
-      `)
+      .select([
+        'topic.*',
+        'u.userName AS fromUname',
+        'c.id AS commentId',
+        'c.replyType AS replyType',
+      ])
       .where(queryCondition, {
         topicId: topicId,
         content: `%${content}%`,
@@ -153,7 +153,7 @@ export class TopicService {
       .offset(offset)
       .limit(limit)
       .orderBy({
-        'topic.status': 'DESC',
+        'topic.status': 'ASC',
         'topic.createTime': 'ASC',
       })
       .getRawMany();

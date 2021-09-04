@@ -1,6 +1,6 @@
 import { Column, Entity } from 'typeorm';
 import { BaseEntity } from '../../base.entity';
-import { TopicType } from '../../../constants/dicts.enum';
+import { StatusType, TopicType } from '../../../constants/dicts.enum';
 
 @Entity('sys_topic')
 export class Topic extends BaseEntity {
@@ -24,4 +24,10 @@ export class Topic extends BaseEntity {
 
   @Column('uuid', { comment: '评论用户 id' })
   fromUid: string;
+
+  @Column('tinyint', {
+    comment: '状态（0：未审核；1：审核通过；2：审核未通过）',
+    default: StatusType.DISABLE,
+  })
+  status: StatusType;
 }

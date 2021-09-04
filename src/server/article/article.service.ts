@@ -23,6 +23,7 @@ import { LimitArticleTopDto } from './dto/limit-article-topic.dto';
 import { CreateArticleCommentDto } from './dto/create-article-comment.dto';
 import { ArticlePrefix } from '../../constants/article.prefix';
 import { CacheService } from '../cache/cache.service';
+import { TopicType } from '../../constants/dicts.enum';
 
 @Injectable()
 export class ArticleService {
@@ -350,7 +351,7 @@ export class ArticleService {
     const [topicRet, commentRet] = await Promise.all([
       this.topicService.selectList({
         topicId: id,
-        topicType: 0,
+        topicType: TopicType.ARTICLE,
       }),
       this.commentService.selectList({
         commentId: id,
@@ -402,7 +403,7 @@ export class ArticleService {
         page,
         limit,
         topicId: id,
-        topicType: 0,
+        topicType: TopicType.ARTICLE,
       }),
       this.commentService.selectList({
         commentId: id,
@@ -458,7 +459,7 @@ export class ArticleService {
 
     if (type === 0) {
       const params = Object.assign(form, {
-        topicType: 0,
+        topicType: TopicType.ARTICLE,
         topicId: id,
         fromUid: curUser.id,
       });

@@ -103,7 +103,7 @@ export class CommentController {
       encodeURIComponent(`文章评论回复_${Utils.dayjsFormat('YYYYMMDD')}`) +
       '.xlsx', // 中文名需要进行 url 转码
     );
-    res.setTimeout(30 * 60 * 1000); // 防止网络原因造成超时。
+    // res.setTimeout(30 * 60 * 1000); // 防止网络原因造成超时。
     res.end(result, 'binary');
   }
 
@@ -125,6 +125,22 @@ export class CommentController {
   @ApiOperation({ summary: '修改状态' })
   async updateStatus(@CurUser() curUser, @Body() baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto): Promise<any> {
     return this.commentService.updateStatus(baseModifyStatusByIdsDto, curUser);
+  }
+
+  @Post('pass')
+  @Auth('system:comment:pass')
+  @ApiOperation({ summary: '审核通过' })
+  async pass(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
+    const { id } = baseFindByIdDto;
+    return this.commentService.updateStatus({ ids: id, status: 1 }, curUser);
+  }
+
+  @Post('reject')
+  @Auth('system:comment:reject')
+  @ApiOperation({ summary: '审核驳回' })
+  async reject(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
+    const { id } = baseFindByIdDto;
+    return this.commentService.updateStatus({ ids: id, status: 1 }, curUser);
   }
 
   @Post('delete')

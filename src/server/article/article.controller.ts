@@ -154,7 +154,7 @@ export class ArticleController {
       encodeURIComponent(`文章_${Utils.dayjsFormat('YYYYMMDD')}`) +
       '.xlsx', // 中文名需要进行 url 转码
     );
-    res.setTimeout(30 * 60 * 1000); // 防止网络原因造成超时。
+    // res.setTimeout(30 * 60 * 1000); // 防止网络原因造成超时。
     res.end(result, 'binary');
   }
 
