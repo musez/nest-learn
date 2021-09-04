@@ -1,0 +1,102 @@
+import { Controller, Get, Post, Body, Put, Param, Delete, UseGuards, Query } from '@nestjs/common';
+import { FeedbackService } from './feedback.service';
+import { Feedback } from './entities/feedback.entity';
+import { CreateFeedbackDto } from './dto/create-feedback.dto';
+import { UpdateFeedbackDto } from './dto/update-feedback.dto';
+import { SearchFeedbackDto } from './dto/search-feedback.dto';
+import { LimitFeedbackDto } from './dto/limit-feedback.dto';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { AuthGuard } from '../../common/guards/auth.guard';
+import { ApiBasicAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ExcelService } from '../excel/excel.service';
+import { Auth } from '../../common/decorators/auth.decorator';
+import { BaseFindByIdDto, BaseFindByIdsDto, BaseModifyStatusByIdsDto } from '../base.dto';
+import { CurUser } from '../../common/decorators/cur-user.decorator';
+import { ApiException } from '../../common/exception/api-exception';
+
+@ApiTags('建议反馈')
+@Controller('feedback')
+@ApiBasicAuth('token')
+@UseGuards(JwtAuthGuard, AuthGuard)
+export class FeedbackController {
+  constructor(
+    private readonly feedbackService: FeedbackService,
+    private readonly excelService: ExcelService,
+  ) {
+  }
+
+  @Post('add')
+  @Auth('account:feedback:add')
+  @ApiOperation({ summary: '添加' })
+  create(@Body() createFeedbackDto: CreateFeedbackDto) {
+    return this.feedbackService.insert(createFeedbackDto);
+  }
+
+  @Get('findList')
+  @Auth('account:feedback:findList')
+  @ApiOperation({ summary: '获取列表' })
+  findList(@Query() searchFeedbackDto: SearchFeedbackDto) {
+    return this.feedbackService.selectList(searchFeedbackDto)
+  }
+
+  @Get('findListPage')
+  @Auth('account:feedback:findListPage')
+  @ApiOperation({ summary: '获取列表（分页）' })
+  async findListPage(@Query() limitFeedbackDto: LimitFeedbackDto): Promise<any> {
+    return await this.feedbackService.selectListPage(limitFeedbackDto);
+  }
+
+  @Get('findById')
+  @Auth('account:feedback:findById')
+  @ApiOperation({ summary: '获取详情（主键 id）' })
+  async findById(@Query() baseFindByIdDto: BaseFindByIdDto): Promise<Feedback> {
+    return await this.feedbackService.selectById(baseFindByIdDto);
+  }
+
+  @Post('pass')
+  @Auth('system:feedback:pass')
+  @ApiOperation({ summary: '审核通过' })
+  async pass(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
+    const { id } = baseFindByIdDto;
+    return this.feedbackService.updateStatus({ ids: id, status: 1 }, curUser);
+  }
+
+  @Post('reject')
+  @Auth('system:feedback:reject')
+  @ApiOperation({ summary: '审核驳回' })
+  async reject(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
+    const { id } = baseFindByIdDto;
+    return this.feedbackService.updateStatus({ ids: id, status: 1 }, curUser);
+  }
+
+  @Post('updateStatus')
+  @Auth('account:feedback:updateStatus')
+  @ApiOperation({ summary: '修改状态' })
+  async updateStatus(
+    @CurUser() curUser,
+    @Body() baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto,
+  ): Promise<any> {
+    return this.feedbackService.updateStatus(baseModifyStatusByIdsDto, curUser);
+  }
+
+  @Post('delete')
+  @Auth('account:feedback:delete')
+  @ApiOperation({ summary: '删除' })
+  async delete(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
+    const { id } = baseFindByIdDto;
+
+    const isExistId = await this.feedbackService.isExistId(id);
+    if (!isExistId) {
+      throw new ApiException(`数据 id：${id} 不存在！`, 404);
+    }
+
+    return await this.feedbackService.deleteById(baseFindByIdDto, curUser);
+  }
+
+  @Post('deleteBatch')
+  @Auth('system:feedback:deleteBatch')
+  @ApiOperation({ summary: '删除（批量）' })
+  async deleteBatch(@CurUser() curUser, @Body() baseFindByIdsDto: BaseFindByIdsDto): Promise<any> {
+    return await this.feedbackService.deleteByIds(baseFindByIdsDto, curUser);
+  }
+}
