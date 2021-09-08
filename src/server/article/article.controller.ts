@@ -29,7 +29,7 @@ import { Auth } from '../../common/decorators/auth.decorator';
 import { AuthGuard } from '../../common/guards/auth.guard';
 import { Utils } from '../../utils';
 import { ExcelService } from '../excel/excel.service';
-import { ArticleDict, IsCommentDict, StatusDict } from '../../constants/dicts.const';
+import { ArticleDict, ArticleStatusDict, IsCommentDict, StatusDict } from '../../constants/dicts.const';
 import { ApiException } from '../../common/exception/api-exception';
 import { LimitArticleTopDto } from './dto/limit-article-topic.dto';
 import { CreateArticleCommentDto } from './dto/create-article-comment.dto';
@@ -107,13 +107,7 @@ export class ArticleController {
       { key: 'author', name: '作者', type: 'String', size: 10 },
       { key: 'source', name: '来源', type: 'String', size: 10 },
       { key: 'keywords', name: '关键字', type: 'String', size: 10 },
-      {
-        key: 'type',
-        name: '文章类型',
-        type: 'Enum',
-        size: 10,
-        default: ArticleDict,
-      },
+      { key: 'type', name: '文章类型', type: 'Enum', size: 10, default: ArticleDict },
       { key: 'contentUrl', name: '链接', type: 'String', size: 10 },
       { key: 'weight', name: '权重', type: 'String', size: 10 },
       { key: 'content', name: '内容', type: 'String', size: 20 },
@@ -124,20 +118,8 @@ export class ArticleController {
       { key: 'collectCount', name: '收藏量', type: 'String', size: 10 },
       { key: 'shareCount', name: '分享量', type: 'String', size: 10 },
       { key: 'commentCount', name: '评论', type: 'String', size: 10 },
-      {
-        key: 'isComment',
-        name: '是否可以评论',
-        type: 'Enum',
-        size: 10,
-        default: IsCommentDict,
-      },
-      {
-        key: 'status',
-        name: '状态',
-        type: 'Enum',
-        size: 10,
-        default: StatusDict,
-      },
+      { key: 'isComment', name: '是否可以评论', type: 'Enum', size: 10, default: IsCommentDict },
+      { key: 'status', name: '状态', type: 'Enum', size: 10, default: ArticleStatusDict },
       { key: 'description', name: '备注', type: 'String', size: 20 },
       { key: 'createTime', name: '创建时间', type: 'String', size: 20 },
       { key: 'updateTime', name: '修改时间', type: 'String', size: 20 },
@@ -174,10 +156,7 @@ export class ArticleController {
   @Post('publish')
   @Auth('cms:article:publish')
   @ApiOperation({ summary: '发布' })
-  async publish(
-    @CurUser() curUser,
-    @Body() baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto,
-  ): Promise<any> {
+  async publish(@CurUser() curUser, @Body() baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto): Promise<any> {
     baseModifyStatusByIdsDto.status = 1;
     return await this.articleService.updateStatus(
       baseModifyStatusByIdsDto,

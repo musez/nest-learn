@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Put, Param, Delete, UseGuards, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, UseGuards, Query, Res } from '@nestjs/common';
 import { FeedbackService } from './feedback.service';
 import { Feedback } from './entities/feedback.entity';
 import { CreateFeedbackDto } from './dto/create-feedback.dto';
@@ -13,6 +13,12 @@ import { Auth } from '../../common/decorators/auth.decorator';
 import { BaseFindByIdDto, BaseFindByIdsDto, BaseModifyStatusByIdsDto } from '../base.dto';
 import { CurUser } from '../../common/decorators/cur-user.decorator';
 import { ApiException } from '../../common/exception/api-exception';
+import {
+  BusinessTypeDict,
+  FeedbackStatusDict,
+  FeedbackTypeDict,
+} from '../../constants/dicts.const';
+import { Utils } from '../../utils';
 
 @ApiTags('建议反馈')
 @Controller('feedback')
@@ -36,7 +42,7 @@ export class FeedbackController {
   @Auth('account:feedback:findList')
   @ApiOperation({ summary: '获取列表' })
   findList(@Query() searchFeedbackDto: SearchFeedbackDto) {
-    return this.feedbackService.selectList(searchFeedbackDto)
+    return this.feedbackService.selectList(searchFeedbackDto);
   }
 
   @Get('findListPage')
@@ -53,9 +59,44 @@ export class FeedbackController {
     return await this.feedbackService.selectById(baseFindByIdDto);
   }
 
+  @Get('exportExcel')
+  @Auth('account:feedback:exportExcel')
+  @ApiOperation({ summary: '列表（Excel 导出）' })
+  async exportExcel(@Query() searchFeedbackDto: SearchFeedbackDto, @Res() res): Promise<any> {
+    const list = await this.feedbackService.selectList(searchFeedbackDto);
+
+    const columns = [
+
+      { key: 'name', name: '姓名', type: 'String', size: 10 },
+      { key: 'mobile', name: '手机号', type: 'String', size: 15 },
+      { key: 'email', name: '邮箱', type: 'String', size: 15 },
+      { key: 'userType', name: '建议反馈类型', type: 'Enum', size: 10, default: FeedbackTypeDict },
+      { key: 'userType', name: '业务类型', type: 'Enum', size: 10, default: BusinessTypeDict },
+      { key: 'content', name: '内容', type: 'String', size: 20 },
+      { key: 'status', name: '状态', type: 'Enum', size: 10, default: FeedbackStatusDict },
+      { key: 'description', name: '备注', type: 'String', size: 20 },
+      { key: 'createTime', name: '创建时间', type: 'String', size: 20 },
+      { key: 'updateTime', name: '修改时间', type: 'String', size: 20 },
+    ];
+
+    const result = await this.excelService.exportExcel(columns, list);
+    res.setHeader(
+      'Content-Type',
+      'application/vnd.openxmlformats;charset=utf-8',
+    );
+    res.setHeader(
+      'Content-Disposition',
+      'attachment; filename=' +
+      encodeURIComponent(`用户_${Utils.dayjsFormat('YYYYMMDD')}`) +
+      '.xlsx', // 中文名需要进行 url 转码
+    );
+    // res.setTimeout(30 * 60 * 1000); // 防止网络原因造成超时。
+    res.end(result, 'binary');
+  }
+
   @Post('pass')
   @Auth('system:feedback:pass')
-  @ApiOperation({ summary: '审核通过' })
+  @ApiOperation({ summary: '处理' })
   async pass(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
     const { id } = baseFindByIdDto;
     return this.feedbackService.updateStatus({ ids: id, status: 1 }, curUser);
@@ -63,19 +104,16 @@ export class FeedbackController {
 
   @Post('reject')
   @Auth('system:feedback:reject')
-  @ApiOperation({ summary: '审核驳回' })
+  @ApiOperation({ summary: '忽略' })
   async reject(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
     const { id } = baseFindByIdDto;
-    return this.feedbackService.updateStatus({ ids: id, status: 1 }, curUser);
+    return this.feedbackService.updateStatus({ ids: id, status: 2 }, curUser);
   }
 
   @Post('updateStatus')
   @Auth('account:feedback:updateStatus')
   @ApiOperation({ summary: '修改状态' })
-  async updateStatus(
-    @CurUser() curUser,
-    @Body() baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto,
-  ): Promise<any> {
+  async updateStatus(@CurUser() curUser, @Body() baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto): Promise<any> {
     return this.feedbackService.updateStatus(baseModifyStatusByIdsDto, curUser);
   }
 

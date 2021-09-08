@@ -21,8 +21,8 @@ import { ExcelService } from '../excel/excel.service';
 import { SearchTopicDto } from './dto/search-top.dto';
 import { Topic } from './entities/topic.entity';
 import { LimitTopicDto } from './dto/limit-top.dto';
-import { StatusType } from '../../constants/dicts.enum';
 import { ApiException } from '../../common/exception/api-exception';
+import { TopicStatusDict } from '../../constants/dicts.const';
 
 @ApiTags('评论')
 @Controller('topic')
@@ -74,13 +74,7 @@ export class TopicController {
       { key: 'topicType', name: '主题类型', type: 'String', size: 10 },
       { key: 'content', name: '评论内容', type: 'String', size: 20 },
       { key: 'fromUid', name: '评论用户 id', type: 'String', size: 10 },
-      {
-        key: 'status',
-        name: '状态',
-        type: 'Enum',
-        size: 10,
-        default: StatusType,
-      },
+      { key: 'status', name: '状态', type: 'Enum', size: 10, default: TopicStatusDict },
       { key: 'description', name: '评论用户', type: 'String', size: 20 },
       { key: 'createTime', name: '创建时间', type: 'String', size: 20 },
       { key: 'updateTime', name: '修改时间', type: 'String', size: 20 },
@@ -127,7 +121,7 @@ export class TopicController {
   @ApiOperation({ summary: '审核驳回' })
   async reject(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
     const { id } = baseFindByIdDto;
-    return this.topicService.updateStatus({ ids: id, status: 1 }, curUser);
+    return this.topicService.updateStatus({ ids: id, status: 2 }, curUser);
   }
 
   @Post('updateStatus')

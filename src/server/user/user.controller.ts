@@ -104,13 +104,7 @@ export class UserController {
 
     const columns = [
       { key: 'userName', name: '用户名', type: 'String', size: 10 },
-      {
-        key: 'userType',
-        name: '用户类型',
-        type: 'Enum',
-        size: 10,
-        default: UserDict,
-      },
+      { key: 'userType', name: '用户类型', type: 'Enum', size: 10, default: UserDict },
       { key: 'name', name: '姓名', type: 'String', size: 10 },
       { key: 'mobile', name: '手机号', type: 'String', size: 15 },
       { key: 'email', name: '邮箱', type: 'String', size: 15 },
@@ -120,13 +114,7 @@ export class UserController {
       { key: 'cityId', name: '城市', type: 'String', size: 15 },
       { key: 'districtId', name: '区/县', type: 'String', size: 15 },
       { key: 'address', name: '详细地址', type: 'String', size: 30 },
-      {
-        key: 'status',
-        name: '状态',
-        type: 'Enum',
-        size: 10,
-        default: StatusDict,
-      },
+      { key: 'status', name: '状态', type: 'Enum', size: 10, default: StatusDict },
       { key: 'description', name: '备注', type: 'String', size: 20 },
       { key: 'createTime', name: '创建时间', type: 'String', size: 20 },
       { key: 'updateTime', name: '修改时间', type: 'String', size: 20 },
@@ -167,35 +155,17 @@ export class UserController {
   async importExcel(@CurUser() curUser, @UploadedFile() file): Promise<any> {
     const columns = [
       { key: 'userName', name: '用户名', type: 'String', index: 1 },
-      {
-        key: 'userType',
-        name: '用户类型',
-        type: 'Enum',
-        enum: UserDict,
-        index: 2,
-      },
+      { key: 'userType', name: '用户类型', type: 'Enum', enum: UserDict, index: 2 },
       { key: 'name', name: '姓名', type: 'String', index: 3 },
       { key: 'mobile', name: '手机号', type: 'String', index: 4 },
       { key: 'email', name: '邮箱', type: 'String', index: 5 },
       { key: 'sex', name: '性别', type: 'Enum', enum: SexDict, index: 6 },
-      {
-        key: 'birthday',
-        name: '生日',
-        type: 'Date',
-        format: 'YYYY-MM-DD',
-        index: 7,
-      },
+      { key: 'birthday', name: '生日', type: 'Date', format: 'YYYY-MM-DD', index: 7 },
       { key: 'provinceId', name: '省份', type: 'String', size: 15, index: 8 },
       { key: 'cityId', name: '城市', type: 'String', size: 15, index: 9 },
       { key: 'districtId', name: '区/县', type: 'String', size: 15, index: 10 },
       { key: 'address', name: '详细地址', type: 'String', size: 30, index: 11 },
-      {
-        key: 'status',
-        name: '状态',
-        type: 'Enum',
-        enum: StatusDict,
-        index: 12,
-      },
+      { key: 'status', name: '状态', type: 'Enum', enum: StatusDict, index: 12 },
       { key: 'description', name: '备注', type: 'String', index: 13 },
     ];
 
@@ -245,10 +215,7 @@ export class UserController {
   @Post('updateStatus')
   @Auth('account:user:updateStatus')
   @ApiOperation({ summary: '修改状态' })
-  async updateStatus(
-    @CurUser() curUser,
-    @Body() baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto,
-  ): Promise<any> {
+  async updateStatus(@CurUser() curUser, @Body() baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto): Promise<any> {
     return this.userService.updateStatus(baseModifyStatusByIdsDto, curUser);
   }
 

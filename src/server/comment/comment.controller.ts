@@ -21,6 +21,7 @@ import { LimitCommentDto } from './dto/limit-comment.dto';
 import { SearchCommentDto } from './dto/search-comment.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { AuthGuard } from '../../common/guards/auth.guard';
+import { ReplyTypeDict, TopicStatusDict } from '../../constants/dicts.const';
 
 @Controller('comment')
 @ApiTags('评论回复')
@@ -70,23 +71,11 @@ export class CommentController {
     const columns = [
       { key: 'commentId', name: '评论 id', type: 'String', size: 10 },
       { key: 'replyId', name: '回复目标 id', type: 'String', size: 10 },
-      {
-        key: 'replyType',
-        name: '回复类型',
-        type: 'Enum',
-        size: 10,
-        default: ReplyType,
-      },
+      { key: 'replyType', name: '回复类型', type: 'Enum', size: 10, default: ReplyTypeDict },
       { key: 'content', name: '回复内容', type: 'String', size: 20 },
       { key: 'fromUid', name: '回复用户 id', type: 'String', size: 10 },
       { key: 'toUid', name: '目标用户 id', type: 'String', size: 10 },
-      {
-        key: 'status',
-        name: '状态',
-        type: 'Enum',
-        size: 10,
-        default: StatusType,
-      },
+      { key: 'status', name: '状态', type: 'Enum', size: 10, default: TopicStatusDict },
       { key: 'description', name: '评论用户', type: 'String', size: 20 },
       { key: 'createTime', name: '创建时间', type: 'String', size: 20 },
       { key: 'updateTime', name: '修改时间', type: 'String', size: 20 },
@@ -140,7 +129,7 @@ export class CommentController {
   @ApiOperation({ summary: '审核驳回' })
   async reject(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
     const { id } = baseFindByIdDto;
-    return this.commentService.updateStatus({ ids: id, status: 1 }, curUser);
+    return this.commentService.updateStatus({ ids: id, status: 2 }, curUser);
   }
 
   @Post('delete')

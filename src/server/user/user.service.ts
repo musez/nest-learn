@@ -495,7 +495,7 @@ export class UserService {
   /**
    * 修改状态
    */
-  async updateStatus(baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto, curUser?,): Promise<any> {
+  async updateStatus(baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto, curUser?): Promise<any> {
     // eslint-disable-next-line prefer-const
     let { ids, status } = baseModifyStatusByIdsDto;
     if (!Utils.isArray(ids)) {
@@ -538,7 +538,7 @@ export class UserService {
   /**
    * 删除（批量）
    */
-  async deleteByIds(baseFindByIdsDto: BaseFindByIdsDto, curUser?,): Promise<void> {
+  async deleteByIds(baseFindByIdsDto: BaseFindByIdsDto, curUser?): Promise<void> {
     let { ids } = baseFindByIdsDto;
 
     if (!Utils.isArray(ids)) {
@@ -618,6 +618,7 @@ export class UserService {
    * 绑定角色
    */
   async bindRoles(bindUserRoleDto: BindUserRoleDto): Promise<void> {
+    // eslint-disable-next-line prefer-const
     let { id, roles } = bindUserRoleDto;
 
     if (roles && !Utils.isArray(roles)) {
@@ -673,6 +674,7 @@ export class UserService {
    * 绑定权限
    */
   async bindPermissions(bindUserPermissionDto: BindUserPermissionDto): Promise<void> {
+    // eslint-disable-next-line prefer-const
     let { id, permissions } = bindUserPermissionDto;
 
     if (permissions && !Utils.isArray(permissions)) {
@@ -727,7 +729,7 @@ export class UserService {
   /**
    * 获取权限（权限合集）
    */
-  async selectAuthPermissionsByUserId(baseFindByIdDto: BaseFindByIdDto,): Promise<any> {
+  async selectAuthPermissionsByUserId(baseFindByIdDto: BaseFindByIdDto): Promise<any> {
     return await this.permissionService.selectByUserId(baseFindByIdDto);
   }
 

@@ -936,6 +936,83 @@
   resolved "https://registry.npm.taobao.org/@sqltools/formatter/download/@sqltools/formatter-1.2.2.tgz#9390a8127c0dcba61ebd7fdcc748655e191bdd68"
   integrity sha1-k5CoEnwNy6YevX/cx0hlXhkb3Wg=
 
+"@tnwx/accesstoken@^2.5.6":
+  version "2.5.6"
+  resolved "https://registry.nlark.com/@tnwx/accesstoken/download/@tnwx/accesstoken-2.5.6.tgz#f77ff9faac7ea85e5a8e90f26cf1a64f076a33a9"
+  integrity sha1-93/5+qx+qF5ajpDybPGmTwdqM6k=
+  dependencies:
+    "@tnwx/cache" "^2.5.6"
+    "@tnwx/kits" "^2.5.6"
+
+"@tnwx/cache@^2.5.6":
+  version "2.5.6"
+  resolved "https://registry.nlark.com/@tnwx/cache/download/@tnwx/cache-2.5.6.tgz#855cc1bf9c6f33de2e61533f6cbbc4059541f6df"
+  integrity sha1-hVzBv5xvM94uYVM/bLvEBZVB9t8=
+
+"@tnwx/commons@^2.5.6":
+  version "2.5.6"
+  resolved "https://registry.nlark.com/@tnwx/commons/download/@tnwx/commons-2.5.6.tgz#b0c79d70cc19bada99d8dcaf68fe378e271de414"
+  integrity sha1-sMedcMwZutqZ2NyvaP43jicd5BQ=
+  dependencies:
+    "@tnwx/accesstoken" "^2.5.6"
+    "@tnwx/cache" "^2.5.6"
+    "@tnwx/kits" "^2.5.6"
+
+"@tnwx/kits@^2.5.6":
+  version "2.5.6"
+  resolved "https://registry.nlark.com/@tnwx/kits/download/@tnwx/kits-2.5.6.tgz#44e816d3688b7e1902ecaee41fa830850c367a01"
+  integrity sha1-ROgW02iLfhkC7K7kH6gwhQw2egE=
+  dependencies:
+    axios "^0.19.0"
+    concat-stream "^2.0.0"
+    request "^2.88.0"
+    urlencode "^1.1.0"
+    uuid "^3.3.3"
+    xml2js "^0.4.22"
+
+"@tnwx/miniprogram@^2.5.6":
+  version "2.5.6"
+  resolved "https://registry.nlark.com/@tnwx/miniprogram/download/@tnwx/miniprogram-2.5.6.tgz#d8c9ccf191d861661523fd06536c9b5cc2e14840"
+  integrity sha1-2MnM8ZHYYWYVI/0GU2ybXMLhSEA=
+  dependencies:
+    "@tnwx/commons" "^2.5.6"
+
+"@tnwx/opencp@^2.5.6":
+  version "2.5.6"
+  resolved "https://registry.nlark.com/@tnwx/opencp/download/@tnwx/opencp-2.5.6.tgz#20472d4cbb22d37d61e5e26f05321c63c449e9fb"
+  integrity sha1-IEctTLsi031h5eJvBTIcY8RJ6fs=
+  dependencies:
+    "@tnwx/commons" "^2.5.6"
+
+"@tnwx/openmp@^2.5.6":
+  version "2.5.6"
+  resolved "https://registry.nlark.com/@tnwx/openmp/download/@tnwx/openmp-2.5.6.tgz#3aa3c8c050dd57e5e5f288b13d0f7d4ba79b8464"
+  integrity sha1-OqPIwFDdV+Xl8oixPQ99S6ebhGQ=
+  dependencies:
+    "@tnwx/commons" "^2.5.6"
+
+"@tnwx/wxcp@^2.5.6":
+  version "2.5.6"
+  resolved "https://registry.nlark.com/@tnwx/wxcp/download/@tnwx/wxcp-2.5.6.tgz#1a65b0b4927abd33d9c2a791fc78d52718079b65"
+  integrity sha1-GmWwtJJ6vTPZwqeR/HjVJxgHm2U=
+  dependencies:
+    "@tnwx/commons" "^2.5.6"
+
+"@tnwx/wxmp@^2.5.6":
+  version "2.5.6"
+  resolved "https://registry.nlark.com/@tnwx/wxmp/download/@tnwx/wxmp-2.5.6.tgz#fe6113f23182f81a032bbbe252289f2a57efabea"
+  integrity sha1-/mET8jGC+BoDK7viUiifKlfvq+o=
+  dependencies:
+    "@tnwx/commons" "^2.5.6"
+
+"@tnwx/wxpay@^2.5.6":
+  version "2.5.6"
+  resolved "https://registry.nlark.com/@tnwx/wxpay/download/@tnwx/wxpay-2.5.6.tgz#9acd9977abb7ce3ce18319604dad659f227d8a62"
+  integrity sha1-ms2Zd6u3zjzhgxlgTa1lnyJ9imI=
+  dependencies:
+    "@tnwx/cache" "^2.5.6"
+    "@tnwx/kits" "^2.5.6"
+
 "@tootallnate/once@1":
   version "1.1.2"
   resolved "https://registry.npm.taobao.org/@tootallnate/once/download/@tootallnate/once-1.1.2.tgz#ccb91445360179a04e7fe6aff78c00ffc1eeaf82"
@@ -1902,6 +1979,13 @@ axios@0.21.1, axios@^0.21.0:
   dependencies:
     follow-redirects "^1.10.0"
 
+axios@^0.19.0:
+  version "0.19.2"
+  resolved "https://registry.nlark.com/axios/download/axios-0.19.2.tgz?cache=0&sync_timestamp=1630942656836&other_urls=https%3A%2F%2Fregistry.nlark.com%2Faxios%2Fdownload%2Faxios-0.19.2.tgz#3ea36c5d8818d0d5f8a8a97a6d36b86cdc00cb27"
+  integrity sha1-PqNsXYgY0NX4qKl6bTa4bNwAyyc=
+  dependencies:
+    follow-redirects "1.5.10"
+
 babel-jest@^26.6.3:
   version "26.6.3"
   resolved "https://registry.npm.taobao.org/babel-jest/download/babel-jest-26.6.3.tgz?cache=0&sync_timestamp=1607352581115&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fbabel-jest%2Fdownload%2Fbabel-jest-26.6.3.tgz#d87d25cb0037577a0c89f82e5755c5d293c01056"
@@ -2566,6 +2650,16 @@ concat-stream@^1.5.2:
     buffer-from "^1.0.0"
     inherits "^2.0.3"
     readable-stream "^2.2.2"
+    typedarray "^0.0.6"
+
+concat-stream@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.nlark.com/concat-stream/download/concat-stream-2.0.0.tgz#414cf5af790a48c60ab9be4527d56d5e41133cb1"
+  integrity sha1-QUz1r3kKSMYKub5FJ9VtXkETPLE=
+  dependencies:
+    buffer-from "^1.0.0"
+    inherits "^2.0.3"
+    readable-stream "^3.0.2"
     typedarray "^0.0.6"
 
 consola@^2.15.0:
@@ -4301,7 +4395,7 @@ humanize-ms@^1.2.0, humanize-ms@^1.2.1:
   dependencies:
     ms "^2.0.0"
 
-iconv-lite@0.4.24, iconv-lite@^0.4.15, iconv-lite@^0.4.24, iconv-lite@^0.4.4:
+iconv-lite@0.4.24, iconv-lite@^0.4.15, iconv-lite@^0.4.24, iconv-lite@^0.4.4, iconv-lite@~0.4.11:
   version "0.4.24"
   resolved "https://registry.npm.taobao.org/iconv-lite/download/iconv-lite-0.4.24.tgz#2022b4b25fbddc21d2f524974a474aafe733908b"
   integrity sha1-ICK0sl+93CHS9SSXSkdKr+czkIs=
@@ -6920,7 +7014,7 @@ readable-stream@2, readable-stream@2.3.7, readable-stream@^2.0.0, readable-strea
     string_decoder "~1.1.1"
     util-deprecate "~1.0.1"
 
-readable-stream@^3.1.1, readable-stream@^3.4.0, readable-stream@^3.6.0:
+readable-stream@^3.0.2, readable-stream@^3.1.1, readable-stream@^3.4.0, readable-stream@^3.6.0:
   version "3.6.0"
   resolved "https://registry.npm.taobao.org/readable-stream/download/readable-stream-3.6.0.tgz#337bbda3adc0706bd3e024426a286d4b4b2c9198"
   integrity sha1-M3u9o63AcGvT4CRCaihtS0sskZg=
@@ -7016,7 +7110,7 @@ request-promise-native@^1.0.8:
     stealthy-require "^1.1.1"
     tough-cookie "^2.3.3"
 
-request@^2.88.2:
+request@^2.88.0, request@^2.88.2:
   version "2.88.2"
   resolved "https://registry.npm.taobao.org/request/download/request-2.88.2.tgz#d73c918731cb5a87da047e207234146f664d12b3"
   integrity sha1-1zyRhzHLWofaBH4gcjQUb2ZNErM=
@@ -7991,6 +8085,22 @@ tmpl@1.0.x:
   resolved "https://registry.npm.taobao.org/tmpl/download/tmpl-1.0.4.tgz#23640dd7b42d00433911140820e5cf440e521dd1"
   integrity sha1-I2QN17QtAEM5ERQIIOXPRA5SHdE=
 
+tnwx@^2.5.6:
+  version "2.5.6"
+  resolved "https://registry.nlark.com/tnwx/download/tnwx-2.5.6.tgz#c9cd53f312ccc95ce52ca5a435a07de4988558dc"
+  integrity sha1-yc1T8xLMyVzlLKWkNaB95JiFWNw=
+  dependencies:
+    "@tnwx/accesstoken" "^2.5.6"
+    "@tnwx/cache" "^2.5.6"
+    "@tnwx/commons" "^2.5.6"
+    "@tnwx/kits" "^2.5.6"
+    "@tnwx/miniprogram" "^2.5.6"
+    "@tnwx/opencp" "^2.5.6"
+    "@tnwx/openmp" "^2.5.6"
+    "@tnwx/wxcp" "^2.5.6"
+    "@tnwx/wxmp" "^2.5.6"
+    "@tnwx/wxpay" "^2.5.6"
+
 to-fast-properties@^2.0.0:
   version "2.0.0"
   resolved "https://registry.npm.taobao.org/to-fast-properties/download/to-fast-properties-2.0.0.tgz#dc5e698cbd079265bc73e0377681a4e4e83f616e"
@@ -8361,6 +8471,13 @@ urix@^0.1.0:
   resolved "https://registry.npm.taobao.org/urix/download/urix-0.1.0.tgz#da937f7a62e21fec1fd18d49b35c2935067a6c72"
   integrity sha1-2pN/emLiH+wf0Y1Js1wpNQZ6bHI=
 
+urlencode@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.npm.taobao.org/urlencode/download/urlencode-1.1.0.tgz#1f2ba26f013c85f0133f7a3ad6ff2730adf7cbb7"
+  integrity sha1-HyuibwE8hfATP3o61v8nMK33y7c=
+  dependencies:
+    iconv-lite "~0.4.11"
+
 urllib@^2.34.1:
   version "2.37.3"
   resolved "https://registry.nlark.com/urllib/download/urllib-2.37.3.tgz#e5044a54947fbe9fe006188bbe73041970334111"
@@ -8435,7 +8552,7 @@ uuid@8.3.2, uuid@^8.3.0, uuid@^8.3.2:
   resolved "https://registry.npm.taobao.org/uuid/download/uuid-8.3.2.tgz?cache=0&sync_timestamp=1607458532020&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fuuid%2Fdownload%2Fuuid-8.3.2.tgz#80d5b5ced271bb9af6c445f21a1a04c606cefbe2"
   integrity sha1-gNW1ztJxu5r2xEXyGhoExgbO++I=
 
-uuid@^3.2.1, uuid@^3.3.2:
+uuid@^3.2.1, uuid@^3.3.2, uuid@^3.3.3:
   version "3.4.0"
   resolved "https://registry.npm.taobao.org/uuid/download/uuid-3.4.0.tgz?cache=0&sync_timestamp=1607458532020&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fuuid%2Fdownload%2Fuuid-3.4.0.tgz#b23e4358afa8a202fe7a100af1f5f883f02007ee"
   integrity sha1-sj5DWK+oogL+ehAK8fX4g/AgB+4=
@@ -8696,7 +8813,7 @@ xml-name-validator@^3.0.0:
   resolved "https://registry.npm.taobao.org/xml-name-validator/download/xml-name-validator-3.0.0.tgz#6ae73e06de4d8c6e47f9fb181f78d648ad457c6a"
   integrity sha1-auc+Bt5NjG5H+fsYH3jWSK1FfGo=
 
-xml2js@^0.4.23:
+xml2js@^0.4.22, xml2js@^0.4.23:
   version "0.4.23"
   resolved "https://registry.nlark.com/xml2js/download/xml2js-0.4.23.tgz#a0c69516752421eb2ac758ee4d4ccf58843eac66"
   integrity sha1-oMaVFnUkIesqx1juTUzPWIQ+rGY=

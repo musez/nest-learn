@@ -3,7 +3,7 @@ import {
   ApiTags,
   ApiBasicAuth,
   ApiBody,
-  ApiOperation,
+  ApiOperation, ApiResponse,
 } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './guards/local-auth.guard';
@@ -23,9 +23,8 @@ export class AuthController {
   ) {
   }
 
-  @UseGuards(LocalAuthGuard)
-  @ApiOperation({ summary: '登录' })
   @Post('/login')
+  @UseGuards(LocalAuthGuard)
   @ApiBody({
     schema: {
       type: 'object',
@@ -41,6 +40,9 @@ export class AuthController {
       },
     },
   })
+  @ApiResponse({ status: 1000, description: '用户名或密码错误！'})
+  @ApiResponse({ status: 1007, description: '验证码错误！'})
+  @ApiOperation({ summary: '登录' })
   async login(@CurUser() curUser, @Body() body) {
     const { captchaId, captchaText } = body;
 
@@ -57,6 +59,8 @@ export class AuthController {
   }
 
   @Post('register')
+  @ApiResponse({ status: 1008, description: '密码不一致！'})
+  @ApiResponse({ status: 1009, description: '用户名已存在！'})
   @ApiOperation({ summary: '注册' })
   async register(@Body() registerUserDto: RegisterUserDto): Promise<CreateUserDto | void> {
     const { userName, userPwd, userPwdConfirm } = registerUserDto;
