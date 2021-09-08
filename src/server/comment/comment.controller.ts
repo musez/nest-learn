@@ -103,7 +103,7 @@ export class CommentController {
     const { id } = updateCommentDto;
     const isExistId = await this.commentService.isExistId(id);
     if (!isExistId) {
-      throw new ApiException(`数据 id：${id} 不存在！`, 404);
+      throw new ApiException(`数据 id：${id} 不存在！`, 404, 200);
     }
 
     return this.commentService.update(updateCommentDto, curUser);
@@ -140,7 +140,7 @@ export class CommentController {
     const isExistId = await this.commentService.isExistId(id);
 
     if (!isExistId) {
-      throw new ApiException(`数据 id：${id} 不存在！`, 404);
+      throw new ApiException(`数据 id：${id} 不存在！`, 404, 200);
     }
 
     return await this.commentService.deleteById(baseFindByIdDto, curUser);

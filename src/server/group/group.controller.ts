@@ -114,7 +114,7 @@ export class GroupController {
     const isExistId = await this.groupService.isExistId(id);
 
     if (!isExistId) {
-      throw new ApiException(`数据 id：${id} 不存在！`, 404);
+      throw new ApiException(`数据 id：${id} 不存在！`, 404, 200);
     }
 
     return this.groupService.update(updateGroupDto, curUser);
@@ -135,7 +135,7 @@ export class GroupController {
     const isExistId = await this.groupService.isExistId(id);
 
     if (!isExistId) {
-      throw new ApiException(`数据 id：${id} 不存在！`, 404);
+      throw new ApiException(`数据 id：${id} 不存在！`, 404, 200);
     }
 
     return await this.groupService.deleteById(baseFindByIdDto, curUser);
@@ -156,7 +156,7 @@ export class GroupController {
     const isExistId = await this.groupService.isExistId(id);
 
     if (!isExistId) {
-      throw new ApiException(`数据 id：${id} 不存在！`, 404);
+      throw new ApiException(`数据 id：${id} 不存在！`, 404, 200);
     }
 
     return await this.groupService.bindRoles(bindGroupRoleDto);
@@ -170,7 +170,7 @@ export class GroupController {
     const isExistId = await this.groupService.isExistId(id);
 
     if (!isExistId) {
-      throw new ApiException(`数据 id：${id} 不存在！`, 404);
+      throw new ApiException(`数据 id：${id} 不存在！`, 404, 200);
     }
 
     return await this.groupService.selectRolesByGroupId(baseFindByIdDto);
@@ -184,7 +184,7 @@ export class GroupController {
 
     const isExistId = await this.groupService.isExistId(id);
     if (!isExistId) {
-      throw new ApiException(`数据 id：${id} 不存在！`, 404);
+      throw new ApiException(`数据 id：${id} 不存在！`, 404, 200);
     }
     return await this.groupService.bindPermissions(bindGroupPermissionDto);
   }
@@ -197,7 +197,7 @@ export class GroupController {
 
     const isExistId = await this.groupService.isExistId(id);
     if (!isExistId) {
-      throw new ApiException(`数据 id：${id} 不存在！`, 404);
+      throw new ApiException(`数据 id：${id} 不存在！`, 404, 200);
     }
 
     return await this.groupService.selectPermissionsByGroupId(baseFindByIdDto);

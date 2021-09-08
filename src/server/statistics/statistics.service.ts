@@ -26,7 +26,7 @@ export class StatisticsService {
     if (browseRet && linkRet && collectRet && shareRet && commentRet) {
       return Object.assign({}, browseRet, linkRet, collectRet, shareRet, commentRet);
     } else {
-      throw new ApiException('获取异常！', 500);
+      throw new ApiException('获取异常！', 500, 200);
     }
   }
 }

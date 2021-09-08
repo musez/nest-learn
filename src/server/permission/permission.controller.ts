@@ -147,7 +147,7 @@ export class PermissionController {
     const isExistId = await this.permissionService.isExistId(id);
 
     if (!isExistId) {
-      throw new ApiException(`数据 id：${id} 不存在！`, 404);
+      throw new ApiException(`数据 id：${id} 不存在！`, 404, 200);
     }
     return this.permissionService.update(updatePermissionDto, curUser);
   }
@@ -167,7 +167,7 @@ export class PermissionController {
     const isExistId = await this.permissionService.isExistId(id);
 
     if (!isExistId) {
-      throw new ApiException(`数据 id：${id} 不存在！`, 404);
+      throw new ApiException(`数据 id：${id} 不存在！`, 404, 200);
     }
     return await this.permissionService.deleteById(baseFindByIdDto, curUser);
   }

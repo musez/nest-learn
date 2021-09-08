@@ -60,7 +60,7 @@ export class UserController {
     const { userName } = createUserDto;
     const isExistUserName = await this.userService.isExistUserName(userName);
     if (isExistUserName) {
-      throw new ApiException(`用户名：${userName} 已存在！`, 1009);
+      throw new ApiException(`用户名：${userName} 已存在！`, 1009, 200);
     }
 
     return this.userService.insert(createUserDto, curUser);
@@ -187,7 +187,7 @@ export class UserController {
     const ret = await this.userService.insertBatch(successRows, curUser);
 
     if (!ret) {
-      throw new ApiException(`操作异常！`, 500);
+      throw new ApiException(`操作异常！`, 500, 200);
     }
 
     return {
@@ -206,7 +206,7 @@ export class UserController {
 
     const isExistId = await this.userService.isExistId(id);
     if (!isExistId) {
-      throw new ApiException(`数据 id：${id} 不存在！`, 404);
+      throw new ApiException(`数据 id：${id} 不存在！`, 404, 200);
     }
 
     return this.userService.update(updateUserDto, curUser);
@@ -227,7 +227,7 @@ export class UserController {
 
     const isExistId = await this.userService.isExistId(id);
     if (!isExistId) {
-      throw new ApiException(`数据 id：${id} 不存在！`, 404);
+      throw new ApiException(`数据 id：${id} 不存在！`, 404, 200);
     }
 
     return await this.userService.deleteById(baseFindByIdDto, curUser);
@@ -248,7 +248,7 @@ export class UserController {
 
     const isExistId = await this.userService.isExistId(id);
     if (!isExistId) {
-      throw new ApiException(`数据 id：${id} 不存在！`, 404);
+      throw new ApiException(`数据 id：${id} 不存在！`, 404, 200);
     }
     return await this.userService.bindGroups(bindUserGroupDto);
   }
@@ -264,7 +264,7 @@ export class UserController {
 
     const isExistId = await this.userService.isExistId(id);
     if (!isExistId) {
-      throw new ApiException(`数据 id：${id} 不存在！`, 404);
+      throw new ApiException(`数据 id：${id} 不存在！`, 404, 200);
     }
     return await this.userService.selectGroupsByUserId(baseFindByIdDto);
   }
@@ -277,7 +277,7 @@ export class UserController {
 
     const isExistId = await this.userService.isExistId(id);
     if (!isExistId) {
-      throw new ApiException(`数据 id：${id} 不存在！`, 404);
+      throw new ApiException(`数据 id：${id} 不存在！`, 404, 200);
     }
     return await this.userService.bindRoles(bindUserRoleDto);
   }
@@ -290,7 +290,7 @@ export class UserController {
 
     const isExistId = await this.userService.isExistId(id);
     if (!isExistId) {
-      throw new ApiException(`数据 id：${id} 不存在！`, 404);
+      throw new ApiException(`数据 id：${id} 不存在！`, 404, 200);
     }
 
     return await this.userService.selectRolesByUserId(baseFindByIdDto);
@@ -303,7 +303,7 @@ export class UserController {
     const { id } = bindUserPermissionDto;
     const isExistId = await this.userService.isExistId(id);
     if (!isExistId) {
-      throw new ApiException(`数据 id：${id} 不存在！`, 404);
+      throw new ApiException(`数据 id：${id} 不存在！`, 404, 200);
     }
     return await this.userService.bindPermissions(bindUserPermissionDto);
   }
@@ -316,7 +316,7 @@ export class UserController {
 
     const isExistId = await this.userService.isExistId(id);
     if (!isExistId) {
-      throw new ApiException(`数据 id：${id} 不存在！`, 404);
+      throw new ApiException(`数据 id：${id} 不存在！`, 404, 200);
     }
 
     return await this.userService.selectPermissionsByUserId(baseFindByIdDto);

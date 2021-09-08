@@ -6,6 +6,8 @@ import * as express from 'express';
 import { join } from 'path';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger'; // api文档插件
 import * as helmet from 'helmet';
+import * as rateLimit from 'express-rate-limit';
+import * as compression from 'compression';
 import { TransformInterceptor } from './common/interceptor/transform.interceptor';
 import { ValidationPipe } from './common/pipe/validation.pipe';
 import { HttpExceptionFilter } from './common/filter/http-exception.filter';
@@ -25,6 +27,13 @@ async function bootstrap() {
 
   // 使用跨站脚本攻击类的库
   app.use(helmet());
+  // 为了保护您的应用程序免受暴力攻击，您必须实现某种速率限制。幸运的是，NPM上已经有很多各种中间件可用。其中一个是快速限额。
+  app.use(rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 100, // limit each IP to 100 requests per windowMs
+  }));
+  // 压缩，用于减少请求响应的体积
+  app.use(compression());
 
   // 配置 public 文件夹为静态目录，以达到可直接访问下面文件的目的
   app.useStaticAssets(join(__dirname, '..', 'public'), {

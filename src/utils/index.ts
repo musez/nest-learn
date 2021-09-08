@@ -34,6 +34,10 @@ export class Utils {
     return dayjs(Date.now()).format('YYYY-MM-DD HH:mm:ss');
   }
 
+  static valueOf() {
+    return dayjs().valueOf();
+  }
+
   static dayjsFormat(format: string) {
     return dayjs(Date.now()).format(format);
   }

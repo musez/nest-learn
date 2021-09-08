@@ -31,7 +31,7 @@ export class ValidationPipe implements PipeTransform {
       Logger.error(`字段校验不通过: ${msg}`);
       // 抛出这个异常，逻辑就会交付 nest 的错误拦截去了
       // 要拦截这个错误做处理，可以从 filters 入手
-      throw new ApiException(`字段校验不通过: ${msg}`, 400);
+      throw new ApiException(`字段校验不通过: ${msg}`, 400, 200);
     }
     return object;
   }

@@ -84,7 +84,7 @@ export class ArticleController {
     if (ret && incrementRet) {
       return ret;
     } else {
-      throw new ApiException('查询异常！', 500);
+      throw new ApiException('查询异常！', 500, 200);
     }
   }
 
@@ -147,7 +147,7 @@ export class ArticleController {
     const { id } = updateArticleDto;
     const isExistId = await this.articleService.isExistId(id);
     if (!isExistId) {
-      throw new ApiException(`数据 id：${id} 不存在！`, 404);
+      throw new ApiException(`数据 id：${id} 不存在！`, 404, 200);
     }
 
     return this.articleService.update(updateArticleDto, curUser);
@@ -205,7 +205,7 @@ export class ArticleController {
     const isExistId = await this.articleService.isExistId(id);
 
     if (!isExistId) {
-      throw new ApiException(`数据 id：${id} 不存在！`, 404);
+      throw new ApiException(`数据 id：${id} 不存在！`, 404, 200);
     }
 
     return await this.articleService.deleteById(baseFindByIdDto, curUser);

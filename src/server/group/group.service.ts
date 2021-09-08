@@ -133,7 +133,7 @@ export class GroupService {
       },
     });
     if (!ret) {
-      throw new ApiException(`数据 id：${id} 不存在！`, 404);
+      throw new ApiException(`数据 id：${id} 不存在！`, 404, 200);
     }
 
     if (ret?.groupRoles?.length > 0) {
@@ -220,7 +220,7 @@ export class GroupService {
       .execute();
 
     if (!ret) {
-      throw new ApiException('更新异常！', 500);
+      throw new ApiException('更新异常！', 500, 200);
     }
 
     return ret;
@@ -285,7 +285,7 @@ export class GroupService {
 
     const deleteRet = await this.groupRoleService.deleteByGroupId(id);
     if (!deleteRet) {
-      throw new ApiException('操作异常！', 500);
+      throw new ApiException('操作异常！', 500, 200);
     }
 
     const ret = await this.groupRoleService.insertBatch(groupRoles);
@@ -293,7 +293,7 @@ export class GroupService {
     if (ret) {
       return null;
     } else {
-      throw new ApiException('操作异常！', 500);
+      throw new ApiException('操作异常！', 500, 200);
     }
   }
 
@@ -316,6 +316,7 @@ export class GroupService {
    * 绑定权限
    */
   async bindPermissions(bindGroupPermissionDto: BindGroupPermissionDto): Promise<void> {
+    // eslint-disable-next-line prefer-const
     let { id, permissions } = bindGroupPermissionDto;
 
     if (permissions && !Utils.isArray(permissions)) {
@@ -340,7 +341,7 @@ export class GroupService {
 
     const deleteRet = await this.groupPermissionService.deleteByGroupId(id);
     if (!deleteRet) {
-      throw new ApiException('操作异常！', 500);
+      throw new ApiException('操作异常！', 500, 200);
     }
 
     const ret = await this.groupPermissionService.insertBatch(groupPermissions);
@@ -348,7 +349,7 @@ export class GroupService {
     if (ret) {
       return null;
     } else {
-      throw new ApiException('操作异常！', 500);
+      throw new ApiException('操作异常！', 500, 200);
     }
   }
 

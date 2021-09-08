@@ -102,7 +102,7 @@ export class TopicController {
     const { id } = updateTopicDto;
     const isExistId = await this.topicService.isExistId(id);
     if (!isExistId) {
-      throw new ApiException(`数据 id：${id} 不存在！`, 404);
+      throw new ApiException(`数据 id：${id} 不存在！`, 404, 200);
     }
 
     return this.topicService.update(updateTopicDto, curUser);
@@ -139,7 +139,7 @@ export class TopicController {
     const isExistId = await this.topicService.isExistId(id);
 
     if (!isExistId) {
-      throw new ApiException(`数据 id：${id} 不存在！`, 404);
+      throw new ApiException(`数据 id：${id} 不存在！`, 404, 200);
     }
 
     return await this.topicService.deleteById(baseFindByIdDto, curUser);

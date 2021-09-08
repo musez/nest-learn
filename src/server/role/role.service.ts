@@ -132,7 +132,7 @@ export class RoleService {
       },
     });
     if (!ret) {
-      throw new ApiException(`数据 id：${id} 不存在！`, 404);
+      throw new ApiException(`数据 id：${id} 不存在！`, 404, 200);
     }
     if (ret?.rolePermissions?.length > 0) {
       const ids = ret.rolePermissions.map((v) => v.id);
@@ -223,7 +223,7 @@ export class RoleService {
       .execute();
 
     if (!ret) {
-      throw new ApiException('更新异常！', 500);
+      throw new ApiException('更新异常！', 500, 200);
     }
 
     return ret;
@@ -291,7 +291,7 @@ export class RoleService {
 
     const deleteRet = await this.rolePermissionService.deleteByRoleId(id);
     if (!deleteRet) {
-      throw new ApiException('操作异常！', 500);
+      throw new ApiException('操作异常！', 500, 200);
     }
 
     const ret = await this.rolePermissionService.insertBatch(rolePermissions);
@@ -299,7 +299,7 @@ export class RoleService {
     if (ret) {
       return null;
     } else {
-      throw new ApiException('操作异常！', 500);
+      throw new ApiException('操作异常！', 500, 200);
     }
   }
 

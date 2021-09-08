@@ -22,7 +22,7 @@ export class PostService {
 
     const isExist = await this.postRepository.findOne({ name: name });
     if (isExist) {
-      throw new ApiException(`岗位名称：${name} 已存在！`, 1009);
+      throw new ApiException(`岗位名称：${name} 已存在！`, 1009, 200);
     }
 
     let post = new SysPost();
@@ -139,7 +139,7 @@ export class PostService {
     const { id } = updatePostDto;
     const isExist = await this.postRepository.findOne(id);
     if (Utils.isNil(isExist)) {
-      throw new ApiException(`数据 id：${id} 不存在！`, 404);
+      throw new ApiException(`数据 id：${id} 不存在！`, 404, 200);
     }
 
     let post = new SysPost();
@@ -168,7 +168,7 @@ export class PostService {
       .execute();
 
     if (!ret) {
-      throw new ApiException('更新异常！', 500);
+      throw new ApiException('更新异常！', 500, 200);
     }
 
     return ret;
@@ -181,7 +181,7 @@ export class PostService {
     const { id } = baseFindByIdDto;
     const isExist = await this.postRepository.findOne(id);
     if (Utils.isNil(isExist)) {
-      throw new ApiException(`数据 id：${baseFindByIdDto} 不存在！`, 404);
+      throw new ApiException(`数据 id：${baseFindByIdDto} 不存在！`, 404, 200);
     }
 
     // await this.postRepository.delete(isExist);

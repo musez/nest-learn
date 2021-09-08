@@ -222,7 +222,7 @@ export class HolidayController {
 
     const ret = await this.holidayService.insertBatch(rows, curUser);
     if (!ret) {
-      throw new ApiException(`操作异常！`, 500);
+      throw new ApiException(`操作异常！`, 500, 200);
     }
 
     return {
@@ -241,7 +241,7 @@ export class HolidayController {
 
     const isExistId = await this.holidayService.isExistId(id);
     if (!isExistId) {
-      throw new ApiException(`数据 id：${id} 不存在！`, 404);
+      throw new ApiException(`数据 id：${id} 不存在！`, 404, 200);
     }
 
     return this.holidayService.update(updateHolidayDto, curUser);
@@ -262,7 +262,7 @@ export class HolidayController {
 
     const isExistId = await this.holidayService.isExistId(id);
     if (!isExistId) {
-      throw new ApiException(`数据 id：${id} 不存在！`, 404);
+      throw new ApiException(`数据 id：${id} 不存在！`, 404, 200);
     }
 
     return await this.holidayService.deleteById(baseFindByIdDto, curUser);

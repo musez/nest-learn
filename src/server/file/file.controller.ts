@@ -77,7 +77,7 @@ export class FileController {
   @UseInterceptors(FileInterceptor('file'))
   upload(@CurUser() curUser, @UploadedFile() file, @Body() body) {
     if (Utils.isNil(file)) {
-      throw new ApiException(`文件不能为空！`, 404);
+      throw new ApiException(`文件不能为空！`, 404, 200);
     }
 
     return this.fileService.insert(file, body, curUser);
@@ -134,7 +134,7 @@ export class FileController {
   )
   uploads(@CurUser() curUser, @UploadedFiles() files, @Body() body) {
     if (Utils.isNil(files.files)) {
-      throw new ApiException(`文件不能为空！`, 404);
+      throw new ApiException(`文件不能为空！`, 404, 200);
     }
 
     return this.fileService.insertBatch(files.files, body, curUser);
@@ -193,7 +193,7 @@ export class FileController {
     const isExistId = await this.fileService.isExistId(id);
 
     if (!isExistId) {
-      throw new ApiException(`数据 id：${id} 不存在！`, 404);
+      throw new ApiException(`数据 id：${id} 不存在！`, 404, 200);
     }
 
     return await this.fileService.deleteById(baseFindByIdDto, curUser);

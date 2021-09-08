@@ -111,7 +111,7 @@ export class RoleController {
     const isExistId = await this.roleService.isExistId(id);
 
     if (!isExistId) {
-      throw new ApiException(`数据 id：${id} 不存在！`, 404);
+      throw new ApiException(`数据 id：${id} 不存在！`, 404, 200);
     }
     return this.roleService.update(updateRoleDto, curUser);
   }
@@ -134,7 +134,7 @@ export class RoleController {
     const isExistId = await this.roleService.isExistId(id);
 
     if (!isExistId) {
-      throw new ApiException(`数据 id：${id} 不存在！`, 404);
+      throw new ApiException(`数据 id：${id} 不存在！`, 404, 200);
     }
     return await this.roleService.deleteById(baseFindByIdDto, curUser);
   }
@@ -157,7 +157,7 @@ export class RoleController {
     const isExistId = await this.roleService.isExistId(id);
 
     if (!isExistId) {
-      throw new ApiException(`数据 id：${id} 不存在！`, 404);
+      throw new ApiException(`数据 id：${id} 不存在！`, 404, 200);
     }
     return await this.roleService.bindPermissions(bindRolePermissionDto);
   }
@@ -170,7 +170,7 @@ export class RoleController {
     const isExistId = await this.roleService.isExistId(id);
 
     if (!isExistId) {
-      throw new ApiException(`数据 id：${id} 不存在！`, 404);
+      throw new ApiException(`数据 id：${id} 不存在！`, 404, 200);
     }
     return await this.roleService.selectPermissionsByRoleId(baseFindByIdDto);
   }

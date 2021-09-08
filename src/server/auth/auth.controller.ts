@@ -40,8 +40,8 @@ export class AuthController {
       },
     },
   })
-  @ApiResponse({ status: 1000, description: '用户名或密码错误！'})
-  @ApiResponse({ status: 1007, description: '验证码错误！'})
+  @ApiResponse({ status: 1000, description: '用户名或密码错误！' })
+  @ApiResponse({ status: 1007, description: '验证码错误！' })
   @ApiOperation({ summary: '登录' })
   async login(@CurUser() curUser, @Body() body) {
     const { captchaId, captchaText } = body;
@@ -54,24 +54,24 @@ export class AuthController {
       await this.userService.incrementLoginCount(curUser!.id); // 登录次数 +1
       return this.authService.login(curUser);
     } else {
-      throw new ApiException('验证码错误！', 1007);
+      throw new ApiException('验证码错误！', 1007, 200);
     }
   }
 
   @Post('register')
-  @ApiResponse({ status: 1008, description: '密码不一致！'})
-  @ApiResponse({ status: 1009, description: '用户名已存在！'})
+  @ApiResponse({ status: 1008, description: '密码不一致！' })
+  @ApiResponse({ status: 1009, description: '用户名已存在！' })
   @ApiOperation({ summary: '注册' })
   async register(@Body() registerUserDto: RegisterUserDto): Promise<CreateUserDto | void> {
     const { userName, userPwd, userPwdConfirm } = registerUserDto;
 
     if (userPwd !== userPwdConfirm) {
-      throw new ApiException('密码不一致！', 1008);
+      throw new ApiException('密码不一致！', 1008, 200);
     }
 
     const isExistUserName = await this.userService.isExistUserName(userName);
     if (isExistUserName) {
-      throw new ApiException(`用户名：${userName} 已存在！`, 1009);
+      throw new ApiException(`用户名：${userName} 已存在！`, 1009, 200);
     }
 
     await this.userService.insert(registerUserDto);
@@ -85,7 +85,7 @@ export class AuthController {
     const { id } = curUser;
     const isExistId = await this.userService.isExistId(id);
     if (!isExistId) {
-      throw new ApiException(`数据 id：${id} 不存在！`, 404);
+      throw new ApiException(`数据 id：${id} 不存在！`, 404, 200);
     }
 
     return await this.userService.selectAuthPermissionsByUserId(id);
@@ -100,7 +100,7 @@ export class AuthController {
 
     const isExistId = await this.userService.isExistId(id);
     if (!isExistId) {
-      throw new ApiException(`数据 id：${id} 不存在！`, 404);
+      throw new ApiException(`数据 id：${id} 不存在！`, 404, 200);
     }
 
     return await this.userService.selectAuthByUserId({ id });

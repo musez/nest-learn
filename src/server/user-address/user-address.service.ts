@@ -105,7 +105,7 @@ export class UserAddressService {
     });
 
     if (!ret) {
-      throw new ApiException('查询异常！', 500);
+      throw new ApiException('查询异常！', 500, 200);
     }
 
     return ret;
@@ -189,7 +189,7 @@ export class UserAddressService {
     const retCount = await queryBuilder.getCount();
 
     if (!ret) {
-      throw new ApiException('查询异常！', 500);
+      throw new ApiException('查询异常！', 500, 200);
     }
 
     return {
@@ -249,7 +249,7 @@ export class UserAddressService {
       .execute();
 
     if (!ret) {
-      throw new ApiException('更新异常！', 500);
+      throw new ApiException('更新异常！', 500, 200);
     }
 
     return ret;
@@ -286,7 +286,7 @@ export class UserAddressService {
       .execute();
 
     if (!ret) {
-      throw new ApiException('删除异常！', 500);
+      throw new ApiException('删除异常！', 500, 200);
     }
 
     return null;

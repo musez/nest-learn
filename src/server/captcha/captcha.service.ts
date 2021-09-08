@@ -54,7 +54,7 @@ export class CaptchaService {
     const key = `${CaptchaPrefix.CAPTCHA}${captchaId}`;
     const captcha = await this.cacheService.get(key);
     if (!captcha) {
-      throw new ApiException('验证码错误！', 1007);
+      throw new ApiException('验证码错误！', 1007, 200);
     }
     await this.cacheService.del(key);
 

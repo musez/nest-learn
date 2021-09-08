@@ -4,7 +4,7 @@ import { Logger } from '../../utils/log4js.util';
 
 @Injectable()
 export class CacheService {
-  private client: any;
+  public client;
 
   constructor(private redisService: RedisService) {
     this.getClient()
@@ -16,9 +16,8 @@ export class CacheService {
       });
   }
 
-  public async getClient() {
+  async getClient() {
     this.client = await this.redisService.getClient();
-    return this.client
   }
 
   /**

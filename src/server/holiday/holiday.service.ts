@@ -240,7 +240,7 @@ export class HolidayService {
 
     const isExistId = await this.isExistId(id);
     if (!isExistId) {
-      throw new ApiException(`数据 id：${id} 不存在！`, 404);
+      throw new ApiException(`数据 id：${id} 不存在！`, 404, 200);
     }
 
     let holiday = new Holiday();

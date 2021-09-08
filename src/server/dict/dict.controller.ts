@@ -99,7 +99,7 @@ export class DictController {
     const isExistId = await this.dictService.isExistId(id);
 
     if (!isExistId) {
-      throw new ApiException(`数据 id：${id} 不存在！`, 404);
+      throw new ApiException(`数据 id：${id} 不存在！`, 404, 200);
     }
 
     return this.dictService.update(updateDictDto, curUser);
@@ -120,7 +120,7 @@ export class DictController {
     const isExistId = await this.dictService.isExistId(id);
 
     if (!isExistId) {
-      throw new ApiException(`数据 id：${id} 不存在！`, 404);
+      throw new ApiException(`数据 id：${id} 不存在！`, 404, 200);
     }
 
     return await this.dictService.deleteById(baseFindByIdDto, curUser);

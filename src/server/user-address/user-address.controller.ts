@@ -124,7 +124,7 @@ export class UserAddressController {
     const { id } = updateDto;
     const isExistId = await this.userAddressService.isExistId(id);
     if (!isExistId) {
-      throw new ApiException(`数据 id：${id} 不存在！`, 404);
+      throw new ApiException(`数据 id：${id} 不存在！`, 404, 200);
     }
 
     return this.userAddressService.update(updateDto, curUser);
@@ -148,7 +148,7 @@ export class UserAddressController {
     const isExistId = await this.userAddressService.isExistId(id);
 
     if (!isExistId) {
-      throw new ApiException(`数据 id：${id} 不存在！`, 404);
+      throw new ApiException(`数据 id：${id} 不存在！`, 404, 200);
     }
 
     return await this.userAddressService.deleteById(baseFindByIdDto, curUser);

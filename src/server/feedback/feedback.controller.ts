@@ -125,7 +125,7 @@ export class FeedbackController {
 
     const isExistId = await this.feedbackService.isExistId(id);
     if (!isExistId) {
-      throw new ApiException(`数据 id：${id} 不存在！`, 404);
+      throw new ApiException(`数据 id：${id} 不存在！`, 404, 200);
     }
 
     return await this.feedbackService.deleteById(baseFindByIdDto, curUser);

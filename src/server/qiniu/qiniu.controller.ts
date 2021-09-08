@@ -73,7 +73,7 @@ export class QiniuController {
   }))
   async upload(@CurUser() curUser, @UploadedFile() file, @Body() body) {
     if (Utils.isNil(file)) {
-      throw new ApiException(`文件不能为空！`, 404);
+      throw new ApiException(`文件不能为空！`, 404, 200);
     }
 
     return await this.qiniuService.upload(file, body, curUser);
@@ -128,7 +128,7 @@ export class QiniuController {
   ]))
   async uploads(@CurUser() curUser, @UploadedFiles() files, @Body() body) {
     if (Utils.isNil(files.files)) {
-      throw new ApiException(`文件不能为空！`, 404);
+      throw new ApiException(`文件不能为空！`, 404, 200);
     }
 
     return await this.qiniuService.uploads(files.files, body, curUser);

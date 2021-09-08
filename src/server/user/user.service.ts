@@ -30,6 +30,8 @@ import { Area } from '../area/entities/area.entity';
 import { BindUserPermissionDto } from '../user-permission/dto/bind-user-permission.dto';
 import { UserPermission } from '../user-permission/entities/user-permission.entity';
 import { UserPermissionService } from '../user-permission/user-permission.service';
+import { UserPrefix } from '../../constants/user.prefix';
+import { CacheService } from '../cache/cache.service';
 
 @Injectable()
 export class UserService {
@@ -44,6 +46,7 @@ export class UserService {
     private readonly userRoleService: UserRoleService,
     private readonly userPermissionService: UserPermissionService,
     private readonly cryptoUtil: CryptoUtil,
+    private readonly cacheService: CacheService,
   ) {
   }
 
@@ -68,6 +71,8 @@ export class UserService {
    * 修改登录次数
    */
   async incrementLoginCount(id: string): Promise<any> {
+    const client = await this.cacheService.getClient();
+
     const findOneRet = await this.userRepository.findOne({
       where: {
         id: id,
@@ -77,9 +82,10 @@ export class UserService {
     });
 
     if (!findOneRet) {
-      throw new ApiException(`数据 id：${id} 不存在！`, 404);
+      throw new ApiException(`数据 id：${id} 不存在！`, 404, 200);
     }
 
+    this.cacheService.client.zadd(`${UserPrefix.ONLINE_USER}`, id, Utils.valueOf());
     const incrementRet = await this.userRepository.increment(
       { id: id },
       'loginCount',
@@ -87,10 +93,17 @@ export class UserService {
     );
 
     if (!incrementRet) {
-      throw new ApiException('登录次数异常！', 500);
+      throw new ApiException('登录次数异常！', 500, 200);
     }
 
     return incrementRet;
+  }
+
+  /**
+   * 获取在线用户
+   */
+  async selectOnline(curUser?): Promise<any> {
+    return this.cacheService.client.zrevrangebyscore(`${UserPrefix.ONLINE_USER}`, '+inf', '-inf', 'withscores');
   }
 
   /**
@@ -133,7 +146,7 @@ export class UserService {
     if (saveRet && saveUIRet) {
       return createUserDto;
     } else {
-      throw new ApiException('保存异常！', 500);
+      throw new ApiException('保存异常！', 500, 200);
     }
   }
 
@@ -184,7 +197,7 @@ export class UserService {
     if (saveRet && saveUIRet) {
       return createUserDto;
     } else {
-      throw new ApiException('保存异常！', 500);
+      throw new ApiException('保存异常！', 500, 200);
     }
   }
 
@@ -268,7 +281,7 @@ export class UserService {
     });
 
     if (!ret) {
-      throw new ApiException('查询异常！', 500);
+      throw new ApiException('查询异常！', 500, 200);
     }
 
     return ret;
@@ -365,7 +378,7 @@ export class UserService {
     const retCount = await queryBuilder.getCount();
 
     if (!ret) {
-      throw new ApiException('查询异常！', 500);
+      throw new ApiException('查询异常！', 500, 200);
     }
 
     return {
@@ -389,7 +402,7 @@ export class UserService {
       },
     });
     if (!ret) {
-      throw new ApiException(`数据 id：${id} 不存在！`, 404);
+      throw new ApiException(`数据 id：${id} 不存在！`, 404, 200);
     }
 
     if (ret?.userGroups?.length > 0) {
@@ -488,7 +501,7 @@ export class UserService {
     if (updateRet && updateUIRet) {
       return updateUserDto;
     } else {
-      throw new ApiException('更新异常！', 500);
+      throw new ApiException('更新异常！', 500, 200);
     }
   }
 
@@ -509,7 +522,7 @@ export class UserService {
       .execute();
 
     if (!ret) {
-      throw new ApiException('更新异常！', 500);
+      throw new ApiException('更新异常！', 500, 200);
     }
 
     return ret;
@@ -529,7 +542,7 @@ export class UserService {
       .execute();
 
     if (!ret) {
-      throw new ApiException('删除异常！', 500);
+      throw new ApiException('删除异常！', 500, 200);
     }
 
     return null;
@@ -552,7 +565,7 @@ export class UserService {
       .execute();
 
     if (!ret) {
-      throw new ApiException('删除异常！', 500);
+      throw new ApiException('删除异常！', 500, 200);
     }
 
     return null;
@@ -587,7 +600,7 @@ export class UserService {
 
     const deleteRet = await this.userGroupService.deleteByUserId(id);
     if (!deleteRet) {
-      throw new ApiException('操作异常！', 500);
+      throw new ApiException('操作异常！', 500, 200);
     }
 
     const ret = await this.userGroupService.insertBatch(userGroups);
@@ -595,7 +608,7 @@ export class UserService {
     if (ret) {
       return null;
     } else {
-      throw new ApiException('操作异常！', 500);
+      throw new ApiException('操作异常！', 500, 200);
     }
   }
 
@@ -643,7 +656,7 @@ export class UserService {
 
     const deleteRet = await this.userRoleService.deleteByUserId(id);
     if (!deleteRet) {
-      throw new ApiException('操作异常！', 500);
+      throw new ApiException('操作异常！', 500, 200);
     }
 
     const ret = await this.userRoleService.insertBatch(userRoles);
@@ -651,7 +664,7 @@ export class UserService {
     if (ret) {
       return null;
     } else {
-      throw new ApiException('操作异常！', 500);
+      throw new ApiException('操作异常！', 500, 200);
     }
   }
 
@@ -699,7 +712,7 @@ export class UserService {
 
     const deleteRet = await this.userPermissionService.deleteByUserId(id);
     if (!deleteRet) {
-      throw new ApiException('操作异常！', 500);
+      throw new ApiException('操作异常！', 500, 200);
     }
 
     const ret = await this.userPermissionService.insertBatch(userPermissions);
@@ -707,7 +720,7 @@ export class UserService {
     if (ret) {
       return null;
     } else {
-      throw new ApiException('操作异常！', 500);
+      throw new ApiException('操作异常！', 500, 200);
     }
   }
 

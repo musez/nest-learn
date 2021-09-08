@@ -27,7 +27,7 @@ export class FeedbackService {
     if (ret) {
       return ret;
     } else {
-      throw new ApiException('保存异常！', 500);
+      throw new ApiException('保存异常！', 500, 200);
     }
   }
 
@@ -80,7 +80,7 @@ export class FeedbackService {
       .getRawMany();
 
     if (!ret) {
-      throw new ApiException('查询异常！', 500);
+      throw new ApiException('查询异常！', 500, 200);
     }
 
     return ret;
@@ -146,7 +146,7 @@ export class FeedbackService {
     const retCount = await queryBuilder.getCount();
 
     if (!ret) {
-      throw new ApiException('查询异常！', 500);
+      throw new ApiException('查询异常！', 500, 200);
     }
 
     return {
@@ -169,7 +169,7 @@ export class FeedbackService {
       },
     });
     if (!ret) {
-      throw new ApiException(`数据 id：${id} 不存在！`, 404);
+      throw new ApiException(`数据 id：${id} 不存在！`, 404, 200);
     }
     return ret;
   }
@@ -203,7 +203,7 @@ export class FeedbackService {
       .execute();
 
     if (!ret) {
-      throw new ApiException('更新异常！', 500);
+      throw new ApiException('更新异常！', 500, 200);
     }
 
     return ret;
@@ -223,7 +223,7 @@ export class FeedbackService {
       .execute();
 
     if (!ret) {
-      throw new ApiException('删除异常！', 500);
+      throw new ApiException('删除异常！', 500, 200);
     }
 
     return null;
@@ -246,7 +246,7 @@ export class FeedbackService {
       .execute();
 
     if (!ret) {
-      throw new ApiException('删除异常！', 500);
+      throw new ApiException('删除异常！', 500, 200);
     }
 
     return null;
