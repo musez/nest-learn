@@ -46,6 +46,9 @@ export class ArticleService {
 
     let article = new Article();
     article = Utils.dto2entity(createArticleDto, article);
+    if (curUser) {
+      article.createBy = curUser!.id;
+    }
 
     const ret = await this.articleRepository.save(article);
     if (!ret) {

@@ -97,7 +97,7 @@ export class RoleService {
     queryConditionList.push('deleteStatus = 0');
     const queryCondition = queryConditionList.join(' AND ');
 
-    const res = await this.roleRepository
+    const ret = await this.roleRepository
       .createQueryBuilder()
       .where(queryCondition, {
         name: `%${name}%`,
@@ -112,8 +112,8 @@ export class RoleService {
       .getManyAndCount();
 
     return {
-      list: res[0],
-      total: res[1],
+      list: ret[0],
+      total: ret[1],
       page: page,
       limit: limit,
     };

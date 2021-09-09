@@ -65,6 +65,18 @@ export class Area {
   })
   center: string;
 
+  @Column('varchar', {
+    comment: '经度坐标',
+    nullable: true,
+  })
+  long: string;
+
+  @Column('varchar', {
+    comment: '纬度坐标',
+    nullable: true,
+  })
+  lat: string;
+
   @CreateDateColumn({ comment: '创建时间', type: 'datetime', nullable: true })
   createTime: Date;
 

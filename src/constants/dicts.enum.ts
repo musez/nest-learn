@@ -133,3 +133,8 @@ export enum BusinessType {
   CMS = 2, // 文章
   SYSTEM = 3, // 系统
 }
+
+// 导入模块
+export enum ImportType {
+  AREA = 1, // 地区
+}

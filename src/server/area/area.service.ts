@@ -6,6 +6,8 @@ import { Area } from './entities/area.entity';
 import { BaseFindByPIdDto } from '../base.dto';
 import { LimitAreaDto } from './dto/limit-area.dto';
 import { SearchAreaDto } from './dto/search-area.dto';
+import { ApiException } from '../../common/exception/api-exception';
+import { CreateAreaDto } from './dto/create-area.dto';
 
 @Injectable()
 export class AreaService {
@@ -13,6 +15,29 @@ export class AreaService {
     @InjectRepository(Area)
     private readonly areaRepository: Repository<Area>,
   ) {
+  }
+
+  /**
+   * 添加（批量）
+   */
+  async insertBatch(createAreaDto: CreateAreaDto[], curUser?): Promise<CreateAreaDto[] | void> {
+    const areaList: CreateAreaDto[] = [];
+    createAreaDto.forEach((item) => {
+      let area = new Area();
+      area = Utils.dto2entityImport(item, area);
+      if (curUser) {
+        area.createBy = curUser!.id;
+      }
+      areaList.push(area);
+    });
+
+    const ret = this.areaRepository.save(areaList);
+
+    if (ret) {
+      return ret;
+    } else {
+      throw new ApiException('保存异常！', 500, 200);
+    }
   }
 
   /**
@@ -187,5 +212,17 @@ export class AreaService {
    */
   async selectById(id: string): Promise<Area> {
     return await this.areaRepository.findOne(id);
+  }
+
+  /**
+   * 是否存在（地区编码）
+   */
+  async isExistAreaCode(areaCode: string): Promise<boolean> {
+    const isExist = await this.areaRepository.findOne({ areaCode: areaCode });
+    if (Utils.isNil(isExist)) {
+      return false;
+    } else {
+      return true;
+    }
   }
 }
