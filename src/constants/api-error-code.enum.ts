@@ -6,6 +6,7 @@ export enum ApiErrorCode {
   PARAMS_ERROR = 400, // 参数错误
   FORBIDDEN = 401, // 没有权限执行此操作
   NOT_FOUND = 404, // 找不到请求的资源
+  NOT_ACTION = 405, // 未满足条件，不能执行该操作
 
   LOGIN_ERROR = 1000, // 用户名或密码错误
   LOGIN_TIMEOUT = 1001, // 登录超时

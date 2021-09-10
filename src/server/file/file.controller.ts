@@ -8,7 +8,7 @@ import {
   UploadedFile,
   UploadedFiles,
   UseGuards,
-  Res,
+  Res, HttpStatus,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -35,6 +35,7 @@ import { CurUser } from '../../common/decorators/cur-user.decorator';
 import { Auth } from '../../common/decorators/auth.decorator';
 import { AuthGuard } from '../../common/guards/auth.guard';
 import { ApiException } from '../../common/exception/api-exception';
+import { ApiErrorCode } from '../../constants/api-error-code.enum';
 
 @Controller('file')
 @ApiTags('文件')
@@ -77,7 +78,7 @@ export class FileController {
   @UseInterceptors(FileInterceptor('file'))
   upload(@CurUser() curUser, @UploadedFile() file, @Body() body) {
     if (Utils.isNil(file)) {
-      throw new ApiException(`文件不能为空！`, 404, 200);
+      throw new ApiException(`文件不能为空！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
     }
 
     return this.fileService.insert(file, body, curUser);
@@ -134,7 +135,7 @@ export class FileController {
   )
   uploads(@CurUser() curUser, @UploadedFiles() files, @Body() body) {
     if (Utils.isNil(files.files)) {
-      throw new ApiException(`文件不能为空！`, 404, 200);
+      throw new ApiException(`文件不能为空！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
     }
 
     return this.fileService.insertBatch(files.files, body, curUser);
@@ -167,7 +168,7 @@ export class FileController {
     res.setHeader('Content-Type', file.mimeType);
     // 格式必须为 binary 否则会出错
     const content = fs.readFileSync(file.fileUrl, 'binary');
-    res.writeHead(200, 'Ok');
+    res.writeHead(HttpStatus.OK, 'Ok');
     res.write(content, 'binary'); // 格式必须为 binary，否则会出错
     res.end();
   }
@@ -193,7 +194,7 @@ export class FileController {
     const isExistId = await this.fileService.isExistId(id);
 
     if (!isExistId) {
-      throw new ApiException(`数据 id：${id} 不存在！`, 404, 200);
+      throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
     }
 
     return await this.fileService.deleteById(baseFindByIdDto, curUser);

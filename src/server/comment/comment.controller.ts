@@ -2,7 +2,7 @@ import {
   Controller,
   Get,
   Post,
-  Body, UseGuards,
+  Body, UseGuards, HttpStatus,
 } from '@nestjs/common';
 import { CommentService } from './comment.service';
 import { CreateCommentDto } from './dto/create-comment.dto';
@@ -22,6 +22,7 @@ import { SearchCommentDto } from './dto/search-comment.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { AuthGuard } from '../../common/guards/auth.guard';
 import { ReplyTypeDict, TopicStatusDict } from '../../constants/dicts.const';
+import { ApiErrorCode } from '../../constants/api-error-code.enum';
 
 @Controller('comment')
 @ApiTags('评论回复')
@@ -103,7 +104,7 @@ export class CommentController {
     const { id } = updateCommentDto;
     const isExistId = await this.commentService.isExistId(id);
     if (!isExistId) {
-      throw new ApiException(`数据 id：${id} 不存在！`, 404, 200);
+      throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
     }
 
     return this.commentService.update(updateCommentDto, curUser);
@@ -140,7 +141,7 @@ export class CommentController {
     const isExistId = await this.commentService.isExistId(id);
 
     if (!isExistId) {
-      throw new ApiException(`数据 id：${id} 不存在！`, 404, 200);
+      throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
     }
 
     return await this.commentService.deleteById(baseFindByIdDto, curUser);

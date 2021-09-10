@@ -5,7 +5,7 @@ import {
   Query,
   Body,
   UseGuards,
-  Res,
+  Res, HttpStatus,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -28,6 +28,7 @@ import { Utils } from '../../utils';
 import { ExcelService } from '../excel/excel.service';
 import { StatusDict } from '../../constants/dicts.const';
 import { ApiException } from '../../common/exception/api-exception';
+import { ApiErrorCode } from '../../constants/api-error-code.enum';
 
 @Controller('role')
 @ApiTags('角色')
@@ -111,7 +112,7 @@ export class RoleController {
     const isExistId = await this.roleService.isExistId(id);
 
     if (!isExistId) {
-      throw new ApiException(`数据 id：${id} 不存在！`, 404, 200);
+      throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
     }
     return this.roleService.update(updateRoleDto, curUser);
   }
@@ -134,7 +135,7 @@ export class RoleController {
     const isExistId = await this.roleService.isExistId(id);
 
     if (!isExistId) {
-      throw new ApiException(`数据 id：${id} 不存在！`, 404, 200);
+      throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
     }
     return await this.roleService.deleteById(baseFindByIdDto, curUser);
   }
@@ -157,7 +158,7 @@ export class RoleController {
     const isExistId = await this.roleService.isExistId(id);
 
     if (!isExistId) {
-      throw new ApiException(`数据 id：${id} 不存在！`, 404, 200);
+      throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
     }
     return await this.roleService.bindPermissions(bindRolePermissionDto);
   }
@@ -170,7 +171,7 @@ export class RoleController {
     const isExistId = await this.roleService.isExistId(id);
 
     if (!isExistId) {
-      throw new ApiException(`数据 id：${id} 不存在！`, 404, 200);
+      throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
     }
     return await this.roleService.selectPermissionsByRoleId(baseFindByIdDto);
   }

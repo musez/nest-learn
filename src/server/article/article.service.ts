@@ -1,14 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Utils } from './../../utils/index';
 import { CreateArticleDto } from './dto/create-article.dto';
 import { UpdateArticleDto } from './dto/update-article.dto';
-import {
-  BaseFindByIdDto,
-  BaseFindByIdsDto,
-  BaseModifyStatusByIdsDto,
-} from '../base.dto';
+import { BaseFindByIdDto, BaseFindByIdsDto, BaseModifyStatusByIdsDto } from '../base.dto';
 import { Article } from './entities/article.entity';
 import { SearchArticleDto } from './dto/search-article.dto';
 import { LimitArticleDto } from './dto/limit-article.dto';
@@ -24,6 +20,7 @@ import { CreateArticleCommentDto } from './dto/create-article-comment.dto';
 import { ArticlePrefix } from '../../constants/article.prefix';
 import { CacheService } from '../cache/cache.service';
 import { TopicType } from '../../constants/dicts.enum';
+import { ApiErrorCode } from '../../constants/api-error-code.enum';
 
 @Injectable()
 export class ArticleService {
@@ -52,7 +49,7 @@ export class ArticleService {
 
     const ret = await this.articleRepository.save(article);
     if (!ret) {
-      throw new ApiException('操作异常！', 500, 200);
+      throw new ApiException('操作异常！', ApiErrorCode.ERROR, HttpStatus.OK);
     }
     return await this.bindArticleCats(ret.id, cats);
   }
@@ -187,6 +184,25 @@ export class ArticleService {
   }
 
   /**
+   * 获取数量
+   */
+  async selectCount(): Promise<any> {
+    const [retTotal, retPublic] = await Promise.all([
+      this.articleRepository.count(),
+      this.articleRepository.count({ status: 1 }),
+    ]);
+
+    if (retTotal && retPublic) {
+      return {
+        total: retTotal,
+        public: retPublic,
+      };
+    } else {
+      throw new ApiException('获取异常！', ApiErrorCode.ERROR, HttpStatus.OK);
+    }
+  }
+
+  /**
    * 获取详情（主键 id）
    */
   async selectById(baseFindByIdDto: BaseFindByIdDto): Promise<Article> {
@@ -198,7 +214,7 @@ export class ArticleService {
       },
     });
     if (!ret) {
-      throw new ApiException(`数据 id：${id} 不存在！`, 404, 200);
+      throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
     }
     if (ret?.articleDataCats?.length > 0) {
       const ids = ret.articleDataCats.map((v) => v.id);
@@ -237,7 +253,7 @@ export class ArticleService {
 
     const ret = await this.articleRepository.update(id, article);
     if (!ret) {
-      throw new ApiException('操作异常！', 500, 200);
+      throw new ApiException('操作异常！', ApiErrorCode.ERROR, HttpStatus.OK);
     }
 
     if (cats) {
@@ -333,7 +349,7 @@ export class ArticleService {
 
     const deleteRet = await this.articleDataCatService.deleteByArticleId(id);
     if (!deleteRet) {
-      throw new ApiException('操作异常！', 500, 200);
+      throw new ApiException('操作异常！', ApiErrorCode.ERROR, HttpStatus.OK);
     }
 
     const ret = await this.articleDataCatService.insertBatch(articleDataCats);
@@ -341,7 +357,7 @@ export class ArticleService {
     if (ret) {
       return null;
     } else {
-      throw new ApiException('操作异常！', 500, 200);
+      throw new ApiException('操作异常！', ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 

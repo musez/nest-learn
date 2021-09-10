@@ -5,7 +5,7 @@ import {
   Query,
   Body,
   UseGuards,
-  Res,
+  Res, HttpStatus,
 } from '@nestjs/common';
 import { ApiTags, ApiBasicAuth, ApiOperation } from '@nestjs/swagger';
 import { PostService } from './post.service';
@@ -23,6 +23,7 @@ import { Utils } from '../../utils';
 import { ExcelService } from '../excel/excel.service';
 import { StatusType } from '../../constants/dicts.enum';
 import { ApiException } from '../../common/exception/api-exception';
+import { ApiErrorCode } from '../../constants/api-error-code.enum';
 
 @Controller('post')
 @ApiTags('岗位')
@@ -106,7 +107,7 @@ export class PostController {
     const isExistId = await this.postService.isExistId(id);
 
     if (!isExistId) {
-      throw new ApiException(`数据 id：${id} 不存在！`, 404, 200);
+      throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
     }
     return this.postService.update(updatePostDto, curUser);
   }
@@ -126,7 +127,7 @@ export class PostController {
     const isExistId = await this.postService.isExistId(id);
 
     if (!isExistId) {
-      throw new ApiException(`数据 id：${id} 不存在！`, 404, 200);
+      throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
     }
     return await this.postService.deleteById(baseFindByIdDto, curUser);
   }

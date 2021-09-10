@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateArticleCatDto } from './dto/create-article-cat.dto';
@@ -14,6 +14,7 @@ import {
 import { SearchArticleCatDto } from './dto/search-article-cat.dto';
 import { LimitArticleCatDto } from './dto/limit-article-cat.dto';
 import { ApiException } from '../../common/exception/api-exception';
+import { ApiErrorCode } from '../../constants/api-error-code.enum';
 
 @Injectable()
 export class ArticleCatService {
@@ -280,6 +281,16 @@ export class ArticleCatService {
   }
 
   /**
+   * 获取是否有子分类（主键 id）
+   */
+  async isExistChildrenById(baseFindByIdDto: BaseFindByIdDto): Promise<boolean> {
+    const { id } = baseFindByIdDto;
+    const ret = await this.articleCatRepository.findOne({ parentId: id, deleteStatus: 1 });
+    if (ret) return true;
+    else return false;
+  }
+
+  /**
    * 修改
    */
   async update(updateArticleCatDto: UpdateArticleCatDto, curUser?): Promise<void> {
@@ -308,7 +319,7 @@ export class ArticleCatService {
       .execute();
 
     if (!ret) {
-      throw new ApiException('更新异常！', 500, 200);
+      throw new ApiException('更新异常！', ApiErrorCode.ERROR, HttpStatus.OK);
     }
 
     return ret;
@@ -319,6 +330,11 @@ export class ArticleCatService {
    */
   async deleteById(baseFindByIdDto: BaseFindByIdDto, curUser?): Promise<void> {
     const { id } = baseFindByIdDto;
+
+    const ret = await this.isExistChildrenById(baseFindByIdDto);
+    if (ret) {
+      throw new ApiException('存在子分类，不允许删除！', ApiErrorCode.NOT_ACTION, HttpStatus.OK);
+    }
 
     await this.articleCatRepository
       .createQueryBuilder()
@@ -337,6 +353,14 @@ export class ArticleCatService {
     if (!Utils.isArray(ids)) {
       ids = Utils.split(ids.toString());
     }
+
+    for (const id of ids) {
+      const ret = await this.isExistChildrenById({ id });
+      if (ret) {
+        throw new ApiException('存在子分类，不允许删除！', ApiErrorCode.NOT_ACTION, HttpStatus.OK);
+      }
+    }
+
     await this.articleCatRepository
       .createQueryBuilder()
       .update(ArticleCat)

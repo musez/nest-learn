@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { CreateTopicDto } from './dto/create-topic.dto';
 import { UpdateTopicDto } from './dto/update-topic.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -12,6 +12,7 @@ import { Org } from '../org/entities/org.entity';
 import { User } from '../user/entities/user.entity';
 import { ApiException } from '../../common/exception/api-exception';
 import { Comment } from '../comment/entities/comment.entity';
+import { ApiErrorCode } from '../../constants/api-error-code.enum';
 
 @Injectable()
 export class TopicService {
@@ -225,7 +226,7 @@ export class TopicService {
       .execute();
 
     if (!ret) {
-      throw new ApiException('更新异常！', 500, 200);
+      throw new ApiException('更新异常！', ApiErrorCode.ERROR, HttpStatus.OK);
     }
 
     return ret;

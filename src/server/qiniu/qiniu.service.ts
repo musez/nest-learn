@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { ApiException } from '../../common/exception/api-exception';
 import { ConfigService } from '@nestjs/config';
 // @ts-ignore
@@ -6,6 +6,7 @@ import * as qiniu from 'qiniu';
 import { BaseQiniuDto } from './dto/base-qiniu.dto';
 import { FileService } from '../file/file.service';
 import { BaseFindByIdDto } from '../base.dto';
+import { ApiErrorCode } from '../../constants/api-error-code.enum';
 
 @Injectable()
 export class QiniuService {
@@ -22,7 +23,7 @@ export class QiniuService {
     try {
       return this.configService.get('qiniu');
     } catch (e) {
-      throw new ApiException('获取配置失败！', 500, 200);
+      throw new ApiException('获取配置失败！', ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -39,7 +40,7 @@ export class QiniuService {
       });
       return await putPolicy.uploadToken(mac);
     } catch (e) {
-      throw new ApiException('生成 token 失败！', 500, 200);
+      throw new ApiException('生成 token 失败！', ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -76,7 +77,7 @@ export class QiniuService {
           async (respErr, respBody, respInfo) => {
             if (respErr) {
               console.error(respErr);
-              throw new ApiException(respErr.message, 500, 200);
+              throw new ApiException(respErr.message, ApiErrorCode.ERROR, HttpStatus.OK);
             }
 
             if (respInfo.statusCode == 200) {
@@ -91,7 +92,7 @@ export class QiniuService {
               const ret = await this.fileService.insert(file, body, curUser);
               _res(ret);
             } else {
-              throw new ApiException(respInfo, respInfo.statusCode, 200);
+              throw new ApiException(respInfo, respInfo.statusCode, HttpStatus.OK);
             }
           },
         );
@@ -139,7 +140,7 @@ export class QiniuService {
             async (respErr, respBody, respInfo) => {
               if (respErr) {
                 console.error(respErr);
-                throw new ApiException(respErr.message, 500, 200);
+                throw new ApiException(respErr.message, ApiErrorCode.ERROR, HttpStatus.OK);
               }
 
               if (respInfo.statusCode == 200) {
@@ -158,7 +159,7 @@ export class QiniuService {
                   _res(ret);
                 }
               } else {
-                throw new ApiException(respInfo, respInfo.statusCode, 200);
+                throw new ApiException(respInfo, respInfo.statusCode, HttpStatus.OK);
               }
             },
           );
@@ -198,7 +199,7 @@ export class QiniuService {
         function(err, respBody, respInfo) {
           if (err) {
             console.log(err);
-            throw new ApiException('获取异常！', 500, 200);
+            throw new ApiException('获取异常！', ApiErrorCode.ERROR, HttpStatus.OK);
           }
 
           if (respInfo.statusCode == 200) {
@@ -206,7 +207,7 @@ export class QiniuService {
             _res(respBody);
           } else {
             console.log(respInfo, respBody);
-            throw new ApiException(respBody.error, respInfo.statusCode, 200);
+            throw new ApiException(respBody.error, respInfo.statusCode, HttpStatus.OK);
           }
         });
     });

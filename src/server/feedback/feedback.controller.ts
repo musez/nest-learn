@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, UseGuards, Query, Res } from '@nestjs/common';
+import { Controller, Get, Post, Body, UseGuards, Query, Res, HttpStatus } from '@nestjs/common';
 import { FeedbackService } from './feedback.service';
 import { Feedback } from './entities/feedback.entity';
 import { CreateFeedbackDto } from './dto/create-feedback.dto';
@@ -19,6 +19,7 @@ import {
   FeedbackTypeDict,
 } from '../../constants/dicts.const';
 import { Utils } from '../../utils';
+import { ApiErrorCode } from '../../constants/api-error-code.enum';
 
 @ApiTags('建议反馈')
 @Controller('feedback')
@@ -125,7 +126,7 @@ export class FeedbackController {
 
     const isExistId = await this.feedbackService.isExistId(id);
     if (!isExistId) {
-      throw new ApiException(`数据 id：${id} 不存在！`, 404, 200);
+      throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
     }
 
     return await this.feedbackService.deleteById(baseFindByIdDto, curUser);

@@ -1,4 +1,14 @@
-import { Controller, Get, Query, UseGuards, Res, Post, UseInterceptors, UploadedFile } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Query,
+  UseGuards,
+  Res,
+  Post,
+  UseInterceptors,
+  UploadedFile,
+  HttpStatus,
+} from '@nestjs/common';
 import { ApiTags, ApiBasicAuth, ApiOperation, ApiConsumes, ApiBody } from '@nestjs/swagger';
 import { AreaService } from './area.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -16,6 +26,7 @@ import { CurUser } from '../../common/decorators/cur-user.decorator';
 import { ApiException } from '../../common/exception/api-exception';
 import { ImportLogService } from '../import-log/import-log.service';
 import { ImportType } from '../../constants/dicts.enum';
+import { ApiErrorCode } from '../../constants/api-error-code.enum';
 
 @Controller('area')
 @ApiTags('地区')
@@ -169,7 +180,7 @@ export class AreaController {
         errorCount: errorRows.length,
       };
     } else {
-      throw new ApiException(`操作异常！`, 500, 200);
+      throw new ApiException(`操作异常！`, ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 }

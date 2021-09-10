@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Utils } from './../../utils/index';
@@ -32,6 +32,7 @@ import { UserPermission } from '../user-permission/entities/user-permission.enti
 import { UserPermissionService } from '../user-permission/user-permission.service';
 import { UserPrefix } from '../../constants/user.prefix';
 import { CacheService } from '../cache/cache.service';
+import { ApiErrorCode } from '../../constants/api-error-code.enum';
 
 @Injectable()
 export class UserService {
@@ -82,7 +83,7 @@ export class UserService {
     });
 
     if (!findOneRet) {
-      throw new ApiException(`数据 id：${id} 不存在！`, 404, 200);
+      throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
     }
 
     this.cacheService.client.zadd(`${UserPrefix.ONLINE_USER}`, id, Utils.valueOf());
@@ -93,7 +94,7 @@ export class UserService {
     );
 
     if (!incrementRet) {
-      throw new ApiException('登录次数异常！', 500, 200);
+      throw new ApiException('登录次数异常！', ApiErrorCode.ERROR, HttpStatus.OK);
     }
 
     return incrementRet;
@@ -146,7 +147,7 @@ export class UserService {
     if (saveRet && saveUIRet) {
       return createUserDto;
     } else {
-      throw new ApiException('保存异常！', 500, 200);
+      throw new ApiException('保存异常！', ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -197,7 +198,7 @@ export class UserService {
     if (saveRet && saveUIRet) {
       return createUserDto;
     } else {
-      throw new ApiException('保存异常！', 500, 200);
+      throw new ApiException('保存异常！', ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -281,7 +282,7 @@ export class UserService {
     });
 
     if (!ret) {
-      throw new ApiException('查询异常！', 500, 200);
+      throw new ApiException('查询异常！', ApiErrorCode.ERROR, HttpStatus.OK);
     }
 
     return ret;
@@ -378,7 +379,7 @@ export class UserService {
     const retCount = await queryBuilder.getCount();
 
     if (!ret) {
-      throw new ApiException('查询异常！', 500, 200);
+      throw new ApiException('查询异常！', ApiErrorCode.ERROR, HttpStatus.OK);
     }
 
     return {
@@ -402,7 +403,7 @@ export class UserService {
       },
     });
     if (!ret) {
-      throw new ApiException(`数据 id：${id} 不存在！`, 404, 200);
+      throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
     }
 
     if (ret?.userGroups?.length > 0) {
@@ -501,7 +502,7 @@ export class UserService {
     if (updateRet && updateUIRet) {
       return updateUserDto;
     } else {
-      throw new ApiException('更新异常！', 500, 200);
+      throw new ApiException('更新异常！', ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -522,7 +523,7 @@ export class UserService {
       .execute();
 
     if (!ret) {
-      throw new ApiException('更新异常！', 500, 200);
+      throw new ApiException('更新异常！', ApiErrorCode.ERROR, HttpStatus.OK);
     }
 
     return ret;
@@ -542,7 +543,7 @@ export class UserService {
       .execute();
 
     if (!ret) {
-      throw new ApiException('删除异常！', 500, 200);
+      throw new ApiException('删除异常！', ApiErrorCode.ERROR, HttpStatus.OK);
     }
 
     return null;
@@ -565,7 +566,7 @@ export class UserService {
       .execute();
 
     if (!ret) {
-      throw new ApiException('删除异常！', 500, 200);
+      throw new ApiException('删除异常！', ApiErrorCode.ERROR, HttpStatus.OK);
     }
 
     return null;
@@ -600,7 +601,7 @@ export class UserService {
 
     const deleteRet = await this.userGroupService.deleteByUserId(id);
     if (!deleteRet) {
-      throw new ApiException('操作异常！', 500, 200);
+      throw new ApiException('操作异常！', ApiErrorCode.ERROR, HttpStatus.OK);
     }
 
     const ret = await this.userGroupService.insertBatch(userGroups);
@@ -608,7 +609,7 @@ export class UserService {
     if (ret) {
       return null;
     } else {
-      throw new ApiException('操作异常！', 500, 200);
+      throw new ApiException('操作异常！', ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -656,7 +657,7 @@ export class UserService {
 
     const deleteRet = await this.userRoleService.deleteByUserId(id);
     if (!deleteRet) {
-      throw new ApiException('操作异常！', 500, 200);
+      throw new ApiException('操作异常！', ApiErrorCode.ERROR, HttpStatus.OK);
     }
 
     const ret = await this.userRoleService.insertBatch(userRoles);
@@ -664,7 +665,7 @@ export class UserService {
     if (ret) {
       return null;
     } else {
-      throw new ApiException('操作异常！', 500, 200);
+      throw new ApiException('操作异常！', ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -712,7 +713,7 @@ export class UserService {
 
     const deleteRet = await this.userPermissionService.deleteByUserId(id);
     if (!deleteRet) {
-      throw new ApiException('操作异常！', 500, 200);
+      throw new ApiException('操作异常！', ApiErrorCode.ERROR, HttpStatus.OK);
     }
 
     const ret = await this.userPermissionService.insertBatch(userPermissions);
@@ -720,7 +721,7 @@ export class UserService {
     if (ret) {
       return null;
     } else {
-      throw new ApiException('操作异常！', 500, 200);
+      throw new ApiException('操作异常！', ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 

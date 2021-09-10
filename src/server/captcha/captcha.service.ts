@@ -1,8 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { ApiException } from '../../common/exception/api-exception';
 import * as svgCaptcha from 'svg-captcha';
 import { CacheService } from '../cache/cache.service';
 import { CaptchaPrefix } from '../../constants/captcha.prefix';
+import { ApiErrorCode } from '../../constants/api-error-code.enum';
 
 /**
  * 使用方式一、控制器中发送验证码
@@ -54,7 +55,7 @@ export class CaptchaService {
     const key = `${CaptchaPrefix.CAPTCHA}${captchaId}`;
     const captcha = await this.cacheService.get(key);
     if (!captcha) {
-      throw new ApiException('验证码错误！', 1007, 200);
+      throw new ApiException('验证码错误！', ApiErrorCode.INVALID_CAPTCHA, HttpStatus.OK);
     }
     await this.cacheService.del(key);
 

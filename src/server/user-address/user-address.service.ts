@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateUserAddressDto } from './dto/create-user-address.dto';
@@ -15,6 +15,7 @@ import { LimitUserAddressDto } from './dto/limit-user-address.dto';
 import { UserService } from '../user/user.service';
 import { ApiException } from '../../common/exception/api-exception';
 import { Area } from '../area/entities/area.entity';
+import { ApiErrorCode } from '../../constants/api-error-code.enum';
 
 @Injectable()
 export class UserAddressService {
@@ -105,7 +106,7 @@ export class UserAddressService {
     });
 
     if (!ret) {
-      throw new ApiException('查询异常！', 500, 200);
+      throw new ApiException('查询异常！', ApiErrorCode.ERROR, HttpStatus.OK);
     }
 
     return ret;
@@ -189,7 +190,7 @@ export class UserAddressService {
     const retCount = await queryBuilder.getCount();
 
     if (!ret) {
-      throw new ApiException('查询异常！', 500, 200);
+      throw new ApiException('查询异常！', ApiErrorCode.ERROR, HttpStatus.OK);
     }
 
     return {
@@ -249,7 +250,7 @@ export class UserAddressService {
       .execute();
 
     if (!ret) {
-      throw new ApiException('更新异常！', 500, 200);
+      throw new ApiException('更新异常！', ApiErrorCode.ERROR, HttpStatus.OK);
     }
 
     return ret;
@@ -286,7 +287,7 @@ export class UserAddressService {
       .execute();
 
     if (!ret) {
-      throw new ApiException('删除异常！', 500, 200);
+      throw new ApiException('删除异常！', ApiErrorCode.ERROR, HttpStatus.OK);
     }
 
     return null;

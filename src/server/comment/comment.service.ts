@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -11,6 +11,7 @@ import { SearchCommentDto } from './dto/search-comment.dto';
 import { Org } from '../org/entities/org.entity';
 import { User } from '../user/entities/user.entity';
 import { ApiException } from '../../common/exception/api-exception';
+import { ApiErrorCode } from '../../constants/api-error-code.enum';
 
 @Injectable()
 export class CommentService {
@@ -195,7 +196,7 @@ export class CommentService {
       .execute();
 
     if (!ret) {
-      throw new ApiException('更新异常！', 500, 200);
+      throw new ApiException('更新异常！', ApiErrorCode.ERROR, HttpStatus.OK);
     }
 
     return ret;

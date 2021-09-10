@@ -5,7 +5,7 @@ import {
   Query,
   Body,
   UseGuards,
-  Res,
+  Res, HttpStatus,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -37,6 +37,7 @@ import {
   StatusDict,
 } from '../../constants/dicts.const';
 import { ApiException } from '../../common/exception/api-exception';
+import { ApiErrorCode } from '../../constants/api-error-code.enum';
 
 @Controller('permission')
 @ApiTags('权限')
@@ -147,7 +148,7 @@ export class PermissionController {
     const isExistId = await this.permissionService.isExistId(id);
 
     if (!isExistId) {
-      throw new ApiException(`数据 id：${id} 不存在！`, 404, 200);
+      throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
     }
     return this.permissionService.update(updatePermissionDto, curUser);
   }
@@ -167,7 +168,7 @@ export class PermissionController {
     const isExistId = await this.permissionService.isExistId(id);
 
     if (!isExistId) {
-      throw new ApiException(`数据 id：${id} 不存在！`, 404, 200);
+      throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
     }
     return await this.permissionService.deleteById(baseFindByIdDto, curUser);
   }

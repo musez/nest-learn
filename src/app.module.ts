@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
 import { ScheduleModule } from '@nestjs/schedule';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Connection } from 'typeorm';
@@ -50,6 +50,7 @@ import JwtConfig from './config/jwt.config';
 import SwaggerConfig from './config/swagger.config';
 import WechatConfig from './config/wechat.config';
 import QiNiuConfig from './config/qiniu.config';
+import { LoggerMiddleware } from './common/middleware/logger.middleware';
 
 @Module({
   imports: [
@@ -135,10 +136,10 @@ import QiNiuConfig from './config/qiniu.config';
 export class AppModule {
   constructor(private readonly connection: Connection) {}
 
-  // configure(consumer: MiddlewareConsumer) {
-  //   consumer
-  //     .apply(LoggerMiddleware)
-  //     .exclude({ path: 'hello', method: RequestMethod.GET })
-  //     .forRoutes({ path: '*', method: RequestMethod.ALL });
-  // }
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(LoggerMiddleware)
+      .exclude({ path: 'hello', method: RequestMethod.GET })
+      .forRoutes({ path: '*', method: RequestMethod.ALL });
+  }
 }

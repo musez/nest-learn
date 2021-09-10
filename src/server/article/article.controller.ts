@@ -5,7 +5,7 @@ import {
   Query,
   Body,
   UseGuards,
-  Res,
+  Res, HttpStatus,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -34,6 +34,7 @@ import { ApiException } from '../../common/exception/api-exception';
 import { LimitArticleTopDto } from './dto/limit-article-topic.dto';
 import { CreateArticleCommentDto } from './dto/create-article-comment.dto';
 import * as trimHtml from 'trim-html';
+import { ApiErrorCode } from '../../constants/api-error-code.enum';
 
 @Controller('article')
 @ApiTags('文章')
@@ -84,7 +85,7 @@ export class ArticleController {
     if (ret && incrementRet) {
       return ret;
     } else {
-      throw new ApiException('查询异常！', 500, 200);
+      throw new ApiException('查询异常！', ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -147,7 +148,7 @@ export class ArticleController {
     const { id } = updateArticleDto;
     const isExistId = await this.articleService.isExistId(id);
     if (!isExistId) {
-      throw new ApiException(`数据 id：${id} 不存在！`, 404, 200);
+      throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
     }
 
     return this.articleService.update(updateArticleDto, curUser);
@@ -205,7 +206,7 @@ export class ArticleController {
     const isExistId = await this.articleService.isExistId(id);
 
     if (!isExistId) {
-      throw new ApiException(`数据 id：${id} 不存在！`, 404, 200);
+      throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
     }
 
     return await this.articleService.deleteById(baseFindByIdDto, curUser);

@@ -5,7 +5,7 @@ import {
   Query,
   Body,
   UseGuards,
-  Res,
+  Res, HttpStatus,
 } from '@nestjs/common';
 import { ApiTags, ApiBasicAuth, ApiOperation } from '@nestjs/swagger';
 import { OrgService } from './org.service';
@@ -28,6 +28,7 @@ import { Utils } from '../../utils';
 import { ExcelService } from '../excel/excel.service';
 import { OrgDict, StatusDict } from '../../constants/dicts.const';
 import { ApiException } from '../../common/exception/api-exception';
+import { ApiErrorCode } from '../../constants/api-error-code.enum';
 
 @Controller('org')
 @ApiTags('组织机构')
@@ -127,7 +128,7 @@ export class OrgController {
     const isExistId = await this.orgService.isExistId(id);
 
     if (!isExistId) {
-      throw new ApiException(`数据 id：${id} 不存在！`, 404, 200);
+      throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
     }
     return this.orgService.update(updateOrgDto, curUser);
   }
@@ -147,7 +148,7 @@ export class OrgController {
     const isExistId = await this.orgService.isExistId(id);
 
     if (!isExistId) {
-      throw new ApiException(`数据 id：${id} 不存在！`, 404, 200);
+      throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
     }
 
     return await this.orgService.deleteById(baseFindByIdDto, curUser);

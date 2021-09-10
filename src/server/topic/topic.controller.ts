@@ -5,7 +5,7 @@ import {
   Body,
   UseGuards,
   Query,
-  Res,
+  Res, HttpStatus,
 } from '@nestjs/common';
 import { TopicService } from './topic.service';
 import { CreateTopicDto } from './dto/create-topic.dto';
@@ -23,6 +23,7 @@ import { Topic } from './entities/topic.entity';
 import { LimitTopicDto } from './dto/limit-top.dto';
 import { ApiException } from '../../common/exception/api-exception';
 import { TopicStatusDict } from '../../constants/dicts.const';
+import { ApiErrorCode } from '../../constants/api-error-code.enum';
 
 @ApiTags('评论')
 @Controller('topic')
@@ -102,7 +103,7 @@ export class TopicController {
     const { id } = updateTopicDto;
     const isExistId = await this.topicService.isExistId(id);
     if (!isExistId) {
-      throw new ApiException(`数据 id：${id} 不存在！`, 404, 200);
+      throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
     }
 
     return this.topicService.update(updateTopicDto, curUser);
@@ -139,7 +140,7 @@ export class TopicController {
     const isExistId = await this.topicService.isExistId(id);
 
     if (!isExistId) {
-      throw new ApiException(`数据 id：${id} 不存在！`, 404, 200);
+      throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
     }
 
     return await this.topicService.deleteById(baseFindByIdDto, curUser);

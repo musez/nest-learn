@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Utils } from './../../utils/index';
@@ -22,6 +22,7 @@ import { User } from '../user/entities/user.entity';
 import { UserRole } from '../user-role/entities/user-role.entity';
 import { ApiException } from '../../common/exception/api-exception';
 import { UserPermission } from '../user-permission/entities/user-permission.entity';
+import { ApiErrorCode } from '../../constants/api-error-code.enum';
 
 @Injectable()
 export class PermissionService {
@@ -367,6 +368,16 @@ export class PermissionService {
   }
 
   /**
+   * 获取是否有子分类（主键 id）
+   */
+  async isExistChildrenById(baseFindByIdDto: BaseFindByIdDto): Promise<boolean> {
+    const { id } = baseFindByIdDto;
+    const ret = await this.permissionRepository.findOne({ parentId: id, deleteStatus: 1 });
+    if (ret) return true;
+    else return false;
+  }
+
+  /**
    * 修改
    */
   async update(updatePermissionDto: UpdatePermissionDto, curUser?) {
@@ -397,7 +408,7 @@ export class PermissionService {
       .execute();
 
     if (!ret) {
-      throw new ApiException('更新异常！', 500, 200);
+      throw new ApiException('更新异常！', ApiErrorCode.ERROR, HttpStatus.OK);
     }
 
     return ret;
@@ -408,6 +419,11 @@ export class PermissionService {
    */
   async deleteById(baseFindByIdDto: BaseFindByIdDto, curUser?): Promise<void> {
     const { id } = baseFindByIdDto;
+
+    const ret = await this.isExistChildrenById(baseFindByIdDto);
+    if (ret) {
+      throw new ApiException('存在子分类，不允许删除！', ApiErrorCode.NOT_ACTION, HttpStatus.OK);
+    }
 
     await this.permissionRepository
       .createQueryBuilder()
@@ -426,6 +442,14 @@ export class PermissionService {
     if (!Utils.isArray(ids)) {
       ids = Utils.split(ids.toString());
     }
+
+    for (const id of ids) {
+      const ret = await this.isExistChildrenById({ id });
+      if (ret) {
+        throw new ApiException('存在子分类，不允许删除！', ApiErrorCode.NOT_ACTION, HttpStatus.OK);
+      }
+    }
+
     await this.permissionRepository
       .createQueryBuilder()
       .update(Permission)

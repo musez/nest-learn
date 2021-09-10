@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { CreateImportLogDto } from './dto/create-import-log.dto';
 import { UpdateImportLogDto } from './dto/update-import-log.dto';
 import { LimitImportLogDto } from './dto/limit-import-log.dto';
@@ -8,6 +8,7 @@ import { ApiException } from '../../common/exception/api-exception';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ImportLog } from './entities/import-log.entity';
+import { ApiErrorCode } from '../../constants/api-error-code.enum';
 
 @Injectable()
 export class ImportLogService {
@@ -32,7 +33,7 @@ export class ImportLogService {
     if (ret) {
       return createImportLogDto;
     } else {
-      throw new ApiException('保存异常！', 500, 200);
+      throw new ApiException('保存异常！', ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -69,7 +70,7 @@ export class ImportLogService {
       .getRawMany();
 
     if (!ret) {
-      throw new ApiException('查询异常！', 500, 200);
+      throw new ApiException('查询异常！', ApiErrorCode.ERROR, HttpStatus.OK);
     }
 
     return ret;
@@ -113,7 +114,7 @@ export class ImportLogService {
       .getManyAndCount();
 
     if (!ret) {
-      throw new ApiException('查询异常！', 500, 200);
+      throw new ApiException('查询异常！', ApiErrorCode.ERROR, HttpStatus.OK);
     }
 
     return {

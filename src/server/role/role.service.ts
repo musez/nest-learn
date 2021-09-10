@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Utils } from './../../utils/index';
@@ -18,6 +18,7 @@ import { UserGroup } from '../user-group/entities/user-group.entity';
 import { User } from '../user/entities/user.entity';
 import { UserRole } from '../user-role/entities/user-role.entity';
 import { ApiException } from '../../common/exception/api-exception';
+import { ApiErrorCode } from '../../constants/api-error-code.enum';
 
 @Injectable()
 export class RoleService {
@@ -132,7 +133,7 @@ export class RoleService {
       },
     });
     if (!ret) {
-      throw new ApiException(`数据 id：${id} 不存在！`, 404, 200);
+      throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
     }
     if (ret?.rolePermissions?.length > 0) {
       const ids = ret.rolePermissions.map((v) => v.id);
@@ -223,7 +224,7 @@ export class RoleService {
       .execute();
 
     if (!ret) {
-      throw new ApiException('更新异常！', 500, 200);
+      throw new ApiException('更新异常！', ApiErrorCode.ERROR, HttpStatus.OK);
     }
 
     return ret;
@@ -291,7 +292,7 @@ export class RoleService {
 
     const deleteRet = await this.rolePermissionService.deleteByRoleId(id);
     if (!deleteRet) {
-      throw new ApiException('操作异常！', 500, 200);
+      throw new ApiException('操作异常！', ApiErrorCode.ERROR, HttpStatus.OK);
     }
 
     const ret = await this.rolePermissionService.insertBatch(rolePermissions);
@@ -299,7 +300,7 @@ export class RoleService {
     if (ret) {
       return null;
     } else {
-      throw new ApiException('操作异常！', 500, 200);
+      throw new ApiException('操作异常！', ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 

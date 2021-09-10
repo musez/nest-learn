@@ -1,35 +1,24 @@
 import {
+  Body,
   Controller,
   Get,
+  HttpStatus,
   Post,
   Query,
-  Body,
-  UseGuards,
-  UseInterceptors,
   Res,
   UploadedFile,
+  UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
-import {
-  ApiTags,
-  ApiBasicAuth,
-  ApiOperation,
-  ApiConsumes,
-  ApiBody,
-} from '@nestjs/swagger';
-import {
-  FileInterceptor,
-} from '@nestjs/platform-express';
+import { ApiBasicAuth, ApiBody, ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { UserService } from './user.service';
 import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { LimitUserDto } from './dto/limit-user.dto';
-import {
-  BaseFindByIdDto,
-  BaseFindByIdsDto,
-  BaseModifyStatusByIdsDto,
-} from '../base.dto';
+import { BaseFindByIdDto, BaseFindByIdsDto, BaseModifyStatusByIdsDto } from '../base.dto';
 import { BindUserGroupDto } from '../user-group/dto/bind-user-group.dto';
 import { BindUserRoleDto } from '../user-role/dto/bind-user-role.dto';
 import { CurUser } from '../../common/decorators/cur-user.decorator';
@@ -41,6 +30,7 @@ import { Utils } from './../../utils/index';
 import { SexDict, StatusDict, UserDict } from '../../constants/dicts.const';
 import { ApiException } from '../../common/exception/api-exception';
 import { BindUserPermissionDto } from '../user-permission/dto/bind-user-permission.dto';
+import { ApiErrorCode } from '../../constants/api-error-code.enum';
 
 @ApiTags('用户')
 @Controller('user')
@@ -60,7 +50,7 @@ export class UserController {
     const { userName } = createUserDto;
     const isExistUserName = await this.userService.isExistUserName(userName);
     if (isExistUserName) {
-      throw new ApiException(`用户名：${userName} 已存在！`, 1009, 200);
+      throw new ApiException(`用户名：${userName} 已存在！`, ApiErrorCode.USER_NAME_EXISTS, HttpStatus.OK);
     }
 
     return this.userService.insert(createUserDto, curUser);
@@ -187,7 +177,7 @@ export class UserController {
     const ret = await this.userService.insertBatch(successRows, curUser);
 
     if (!ret) {
-      throw new ApiException(`操作异常！`, 500, 200);
+      throw new ApiException(`操作异常！`, ApiErrorCode.ERROR, HttpStatus.OK);
     }
 
     return {
@@ -206,7 +196,7 @@ export class UserController {
 
     const isExistId = await this.userService.isExistId(id);
     if (!isExistId) {
-      throw new ApiException(`数据 id：${id} 不存在！`, 404, 200);
+      throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
     }
 
     return this.userService.update(updateUserDto, curUser);
@@ -227,7 +217,7 @@ export class UserController {
 
     const isExistId = await this.userService.isExistId(id);
     if (!isExistId) {
-      throw new ApiException(`数据 id：${id} 不存在！`, 404, 200);
+      throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
     }
 
     return await this.userService.deleteById(baseFindByIdDto, curUser);
@@ -248,7 +238,7 @@ export class UserController {
 
     const isExistId = await this.userService.isExistId(id);
     if (!isExistId) {
-      throw new ApiException(`数据 id：${id} 不存在！`, 404, 200);
+      throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
     }
     return await this.userService.bindGroups(bindUserGroupDto);
   }
@@ -264,7 +254,7 @@ export class UserController {
 
     const isExistId = await this.userService.isExistId(id);
     if (!isExistId) {
-      throw new ApiException(`数据 id：${id} 不存在！`, 404, 200);
+      throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
     }
     return await this.userService.selectGroupsByUserId(baseFindByIdDto);
   }
@@ -277,7 +267,7 @@ export class UserController {
 
     const isExistId = await this.userService.isExistId(id);
     if (!isExistId) {
-      throw new ApiException(`数据 id：${id} 不存在！`, 404, 200);
+      throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
     }
     return await this.userService.bindRoles(bindUserRoleDto);
   }
@@ -290,7 +280,7 @@ export class UserController {
 
     const isExistId = await this.userService.isExistId(id);
     if (!isExistId) {
-      throw new ApiException(`数据 id：${id} 不存在！`, 404, 200);
+      throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
     }
 
     return await this.userService.selectRolesByUserId(baseFindByIdDto);
@@ -303,7 +293,7 @@ export class UserController {
     const { id } = bindUserPermissionDto;
     const isExistId = await this.userService.isExistId(id);
     if (!isExistId) {
-      throw new ApiException(`数据 id：${id} 不存在！`, 404, 200);
+      throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
     }
     return await this.userService.bindPermissions(bindUserPermissionDto);
   }
@@ -316,7 +306,7 @@ export class UserController {
 
     const isExistId = await this.userService.isExistId(id);
     if (!isExistId) {
-      throw new ApiException(`数据 id：${id} 不存在！`, 404, 200);
+      throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
     }
 
     return await this.userService.selectPermissionsByUserId(baseFindByIdDto);

@@ -1,14 +1,11 @@
-import {
-  ArgumentMetadata,
-  Injectable,
-  PipeTransform,
-} from '@nestjs/common';
+import { ArgumentMetadata, HttpStatus, Injectable, PipeTransform } from '@nestjs/common';
 // 可以识别校验装饰器数据
 import { validate } from 'class-validator';
 // plainToClass 会把一个普通的js对象转换成指定类的实例
 import { plainToClass } from 'class-transformer';
 import { Logger } from '../../utils/log4js.util';
 import { ApiException } from '../exception/api-exception';
+import { ApiErrorCode } from '../../constants/api-error-code.enum';
 
 @Injectable()
 export class ValidationPipe implements PipeTransform {
@@ -31,7 +28,7 @@ export class ValidationPipe implements PipeTransform {
       Logger.error(`字段校验不通过: ${msg}`);
       // 抛出这个异常，逻辑就会交付 nest 的错误拦截去了
       // 要拦截这个错误做处理，可以从 filters 入手
-      throw new ApiException(`字段校验不通过: ${msg}`, 400, 200);
+      throw new ApiException(`字段校验不通过: ${msg}`, ApiErrorCode.PARAMS_ERROR, HttpStatus.OK);
     }
     return object;
   }

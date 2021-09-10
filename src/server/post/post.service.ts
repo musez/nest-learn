@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreatePostDto } from './dto/create-post.dto';
@@ -8,6 +8,7 @@ import { Utils } from '../../utils';
 import { LimitPostDto } from './dto/limit-post.dto';
 import { BaseFindByIdDto, BaseFindByIdsDto, BaseModifyStatusByIdsDto } from '../base.dto';
 import { ApiException } from '../../common/exception/api-exception';
+import { ApiErrorCode } from '../../constants/api-error-code.enum';
 
 @Injectable()
 export class PostService {
@@ -22,7 +23,7 @@ export class PostService {
 
     const isExist = await this.postRepository.findOne({ name: name });
     if (isExist) {
-      throw new ApiException(`岗位名称：${name} 已存在！`, 1009, 200);
+      throw new ApiException(`岗位名称：${name} 已存在！`, ApiErrorCode.USER_NAME_EXISTS, HttpStatus.OK);
     }
 
     let post = new SysPost();
@@ -139,7 +140,7 @@ export class PostService {
     const { id } = updatePostDto;
     const isExist = await this.postRepository.findOne(id);
     if (Utils.isNil(isExist)) {
-      throw new ApiException(`数据 id：${id} 不存在！`, 404, 200);
+      throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
     }
 
     let post = new SysPost();
@@ -168,7 +169,7 @@ export class PostService {
       .execute();
 
     if (!ret) {
-      throw new ApiException('更新异常！', 500, 200);
+      throw new ApiException('更新异常！', ApiErrorCode.ERROR, HttpStatus.OK);
     }
 
     return ret;
@@ -181,7 +182,7 @@ export class PostService {
     const { id } = baseFindByIdDto;
     const isExist = await this.postRepository.findOne(id);
     if (Utils.isNil(isExist)) {
-      throw new ApiException(`数据 id：${baseFindByIdDto} 不存在！`, 404, 200);
+      throw new ApiException(`数据 id：${baseFindByIdDto} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
     }
 
     // await this.postRepository.delete(isExist);

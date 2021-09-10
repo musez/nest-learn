@@ -8,7 +8,7 @@ import {
   Query,
   Res,
   UploadedFiles,
-  UseGuards,
+  UseGuards, HttpStatus,
 } from '@nestjs/common';
 import { QiniuService } from './qiniu.service';
 import { CurUser } from '../../common/decorators/cur-user.decorator';
@@ -21,6 +21,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { AuthGuard } from '../../common/guards/auth.guard';
 import { Auth } from '../../common/decorators/auth.decorator';
 import { BaseFindByIdDto } from '../base.dto';
+import { ApiErrorCode } from '../../constants/api-error-code.enum';
 
 @ApiTags('七牛云')
 @Controller('qiniu')
@@ -73,7 +74,7 @@ export class QiniuController {
   }))
   async upload(@CurUser() curUser, @UploadedFile() file, @Body() body) {
     if (Utils.isNil(file)) {
-      throw new ApiException(`文件不能为空！`, 404, 200);
+      throw new ApiException(`文件不能为空！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
     }
 
     return await this.qiniuService.upload(file, body, curUser);
@@ -128,7 +129,7 @@ export class QiniuController {
   ]))
   async uploads(@CurUser() curUser, @UploadedFiles() files, @Body() body) {
     if (Utils.isNil(files.files)) {
-      throw new ApiException(`文件不能为空！`, 404, 200);
+      throw new ApiException(`文件不能为空！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
     }
 
     return await this.qiniuService.uploads(files.files, body, curUser);

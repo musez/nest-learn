@@ -5,7 +5,7 @@ import {
   Body,
   Query,
   Res,
-  UseGuards,
+  UseGuards, HttpStatus,
 } from '@nestjs/common';
 import { ApiBasicAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { UserAddressService } from './user-address.service';
@@ -27,6 +27,7 @@ import { StatusDict } from '../../constants/dicts.const';
 import { ApiException } from '../../common/exception/api-exception';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { AuthGuard } from '../../common/guards/auth.guard';
+import { ApiErrorCode } from '../../constants/api-error-code.enum';
 
 @ApiTags('用户地址')
 @ApiBasicAuth('token')
@@ -124,7 +125,7 @@ export class UserAddressController {
     const { id } = updateDto;
     const isExistId = await this.userAddressService.isExistId(id);
     if (!isExistId) {
-      throw new ApiException(`数据 id：${id} 不存在！`, 404, 200);
+      throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
     }
 
     return this.userAddressService.update(updateDto, curUser);
@@ -148,7 +149,7 @@ export class UserAddressController {
     const isExistId = await this.userAddressService.isExistId(id);
 
     if (!isExistId) {
-      throw new ApiException(`数据 id：${id} 不存在！`, 404, 200);
+      throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
     }
 
     return await this.userAddressService.deleteById(baseFindByIdDto, curUser);

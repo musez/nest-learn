@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { CreateFeedbackDto } from './dto/create-feedback.dto';
 import { UpdateFeedbackDto } from './dto/update-feedback.dto';
@@ -9,6 +9,7 @@ import { ApiException } from '../../common/exception/api-exception';
 import { BaseFindByIdDto, BaseFindByIdsDto, BaseModifyStatusByIdsDto } from '../base.dto';
 import { Feedback } from './entities/feedback.entity';
 import { InjectRepository } from '@nestjs/typeorm';
+import { ApiErrorCode } from '../../constants/api-error-code.enum';
 
 @Injectable()
 export class FeedbackService {
@@ -27,7 +28,7 @@ export class FeedbackService {
     if (ret) {
       return ret;
     } else {
-      throw new ApiException('保存异常！', 500, 200);
+      throw new ApiException('保存异常！', ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -80,7 +81,7 @@ export class FeedbackService {
       .getRawMany();
 
     if (!ret) {
-      throw new ApiException('查询异常！', 500, 200);
+      throw new ApiException('查询异常！', ApiErrorCode.ERROR, HttpStatus.OK);
     }
 
     return ret;
@@ -146,7 +147,7 @@ export class FeedbackService {
     const retCount = await queryBuilder.getCount();
 
     if (!ret) {
-      throw new ApiException('查询异常！', 500, 200);
+      throw new ApiException('查询异常！', ApiErrorCode.ERROR, HttpStatus.OK);
     }
 
     return {
@@ -169,7 +170,7 @@ export class FeedbackService {
       },
     });
     if (!ret) {
-      throw new ApiException(`数据 id：${id} 不存在！`, 404, 200);
+      throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
     }
     return ret;
   }
@@ -203,7 +204,7 @@ export class FeedbackService {
       .execute();
 
     if (!ret) {
-      throw new ApiException('更新异常！', 500, 200);
+      throw new ApiException('更新异常！', ApiErrorCode.ERROR, HttpStatus.OK);
     }
 
     return ret;
@@ -223,7 +224,7 @@ export class FeedbackService {
       .execute();
 
     if (!ret) {
-      throw new ApiException('删除异常！', 500, 200);
+      throw new ApiException('删除异常！', ApiErrorCode.ERROR, HttpStatus.OK);
     }
 
     return null;
@@ -246,7 +247,7 @@ export class FeedbackService {
       .execute();
 
     if (!ret) {
-      throw new ApiException('删除异常！', 500, 200);
+      throw new ApiException('删除异常！', ApiErrorCode.ERROR, HttpStatus.OK);
     }
 
     return null;

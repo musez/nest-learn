@@ -1,8 +1,7 @@
-import { Injectable } from '@nestjs/common';
-import { CreateStatisticDto } from './dto/create-statistic.dto';
-import { UpdateStatisticDto } from './dto/update-statistic.dto';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { ApiException } from '../../common/exception/api-exception';
 import { ArticleService } from '../article/article.service';
+import { ApiErrorCode } from '../../constants/api-error-code.enum';
 
 @Injectable()
 export class StatisticsService {
@@ -13,6 +12,13 @@ export class StatisticsService {
 
   /**
    * 获取配置文件
+   */
+  public async selectCount() {
+    return null;
+  }
+
+  /**
+   * 获取获取新闻
    */
   public async selectArticle() {
     const [browseRet, linkRet, collectRet, shareRet, commentRet] = await Promise.all([
@@ -26,7 +32,7 @@ export class StatisticsService {
     if (browseRet && linkRet && collectRet && shareRet && commentRet) {
       return Object.assign({}, browseRet, linkRet, collectRet, shareRet, commentRet);
     } else {
-      throw new ApiException('获取异常！', 500, 200);
+      throw new ApiException('获取异常！', ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 }

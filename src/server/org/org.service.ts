@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateOrgDto } from './dto/create-org.dto';
@@ -13,6 +13,7 @@ import {
   BaseFindByPIdDto, BaseModifyStatusByIdsDto,
 } from '../base.dto';
 import { ApiException } from '../../common/exception/api-exception';
+import { ApiErrorCode } from '../../constants/api-error-code.enum';
 
 @Injectable()
 export class OrgService {
@@ -280,6 +281,16 @@ export class OrgService {
   }
 
   /**
+   * 获取是否有子分类（主键 id）
+   */
+  async isExistChildrenById(baseFindByIdDto: BaseFindByIdDto): Promise<boolean> {
+    const { id } = baseFindByIdDto;
+    const ret = await this.orgRepository.findOne({ parentId: id, deleteStatus: 1 });
+    if (ret) return true;
+    else return false;
+  }
+
+  /**
    * 修改
    */
   async update(updateOrgDto: UpdateOrgDto, curUser?): Promise<void> {
@@ -311,7 +322,7 @@ export class OrgService {
       .execute();
 
     if (!ret) {
-      throw new ApiException('更新异常！', 500, 200);
+      throw new ApiException('更新异常！', ApiErrorCode.ERROR, HttpStatus.OK);
     }
 
     return ret;
@@ -322,6 +333,11 @@ export class OrgService {
    */
   async deleteById(baseFindByIdDto: BaseFindByIdDto, curUser?): Promise<void> {
     const { id } = baseFindByIdDto;
+
+    const ret = await this.isExistChildrenById(baseFindByIdDto);
+    if (ret) {
+      throw new ApiException('存在子分类，不允许删除！', ApiErrorCode.NOT_ACTION, HttpStatus.OK);
+    }
 
     await this.orgRepository
       .createQueryBuilder()
@@ -340,6 +356,14 @@ export class OrgService {
     if (!Utils.isArray(ids)) {
       ids = Utils.split(ids.toString());
     }
+
+    for (const id of ids) {
+      const ret = await this.isExistChildrenById({ id });
+      if (ret) {
+        throw new ApiException('存在子分类，不允许删除！', ApiErrorCode.NOT_ACTION, HttpStatus.OK);
+      }
+    }
+
     await this.orgRepository
       .createQueryBuilder()
       .update(Org)

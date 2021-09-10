@@ -12,6 +12,13 @@ export class StatisticsController {
   constructor(private readonly statisticsService: StatisticsService) {
   }
 
+  @Get('findCount')
+  @Auth('cms:statistics:findCount')
+  @ApiOperation({ summary: '获取数量' })
+  async findCount(): Promise<any> {
+    return this.statisticsService.selectCount();
+  }
+
   @Get('findArticle')
   @Auth('cms:statistics:findArticle')
   @ApiOperation({ summary: '获取新闻' })

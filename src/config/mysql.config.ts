@@ -13,6 +13,6 @@ export default registerAs('mysql', () => ({
   multipleStatements: false,
   dropSchema: false,
   synchronize: false, // 是否自动将实体类同步到数据库
-  logging: true,
-  // logger: new DbLogger(),	// 配置项添加自定义的 log 类
+  // logging: false,
+  logger: new DbLogger(),	// 配置项添加自定义的 log 类
 }));

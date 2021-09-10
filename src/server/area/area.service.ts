@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Utils } from './../../utils/index';
@@ -8,6 +8,7 @@ import { LimitAreaDto } from './dto/limit-area.dto';
 import { SearchAreaDto } from './dto/search-area.dto';
 import { ApiException } from '../../common/exception/api-exception';
 import { CreateAreaDto } from './dto/create-area.dto';
+import { ApiErrorCode } from '../../constants/api-error-code.enum';
 
 @Injectable()
 export class AreaService {
@@ -36,7 +37,7 @@ export class AreaService {
     if (ret) {
       return ret;
     } else {
-      throw new ApiException('保存异常！', 500, 200);
+      throw new ApiException('保存异常！', ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 

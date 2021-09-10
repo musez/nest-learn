@@ -7,7 +7,7 @@ import {
   UseGuards,
   UseInterceptors,
   UploadedFile,
-  Res,
+  Res, HttpStatus,
 } from '@nestjs/common';
 import {
   FileInterceptor,
@@ -44,6 +44,7 @@ import {
   WeekdayDict,
 } from '../../constants/dicts.const';
 import { ApiException } from '../../common/exception/api-exception';
+import { ApiErrorCode } from '../../constants/api-error-code.enum';
 
 @Controller('holiday')
 @ApiTags('节假日')
@@ -222,7 +223,7 @@ export class HolidayController {
 
     const ret = await this.holidayService.insertBatch(rows, curUser);
     if (!ret) {
-      throw new ApiException(`操作异常！`, 500, 200);
+      throw new ApiException(`操作异常！`, ApiErrorCode.ERROR, HttpStatus.OK);
     }
 
     return {
@@ -241,7 +242,7 @@ export class HolidayController {
 
     const isExistId = await this.holidayService.isExistId(id);
     if (!isExistId) {
-      throw new ApiException(`数据 id：${id} 不存在！`, 404, 200);
+      throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
     }
 
     return this.holidayService.update(updateHolidayDto, curUser);
@@ -262,7 +263,7 @@ export class HolidayController {
 
     const isExistId = await this.holidayService.isExistId(id);
     if (!isExistId) {
-      throw new ApiException(`数据 id：${id} 不存在！`, 404, 200);
+      throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
     }
 
     return await this.holidayService.deleteById(baseFindByIdDto, curUser);

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Utils } from './../../utils/index';
@@ -18,6 +18,7 @@ import { BindGroupPermissionDto } from '../group-permission/dto/bind-group-premi
 import { GroupPermissionService } from '../group-permission/group-permission.service';
 import { GroupPermission } from '../group-permission/entities/group-permission.entity';
 import { PermissionService } from '../permission/permission.service';
+import { ApiErrorCode } from '../../constants/api-error-code.enum';
 
 @Injectable()
 export class GroupService {
@@ -133,7 +134,7 @@ export class GroupService {
       },
     });
     if (!ret) {
-      throw new ApiException(`数据 id：${id} 不存在！`, 404, 200);
+      throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
     }
 
     if (ret?.groupRoles?.length > 0) {
@@ -220,7 +221,7 @@ export class GroupService {
       .execute();
 
     if (!ret) {
-      throw new ApiException('更新异常！', 500, 200);
+      throw new ApiException('更新异常！', ApiErrorCode.ERROR, HttpStatus.OK);
     }
 
     return ret;
@@ -285,7 +286,7 @@ export class GroupService {
 
     const deleteRet = await this.groupRoleService.deleteByGroupId(id);
     if (!deleteRet) {
-      throw new ApiException('操作异常！', 500, 200);
+      throw new ApiException('操作异常！', ApiErrorCode.ERROR, HttpStatus.OK);
     }
 
     const ret = await this.groupRoleService.insertBatch(groupRoles);
@@ -293,7 +294,7 @@ export class GroupService {
     if (ret) {
       return null;
     } else {
-      throw new ApiException('操作异常！', 500, 200);
+      throw new ApiException('操作异常！', ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -341,7 +342,7 @@ export class GroupService {
 
     const deleteRet = await this.groupPermissionService.deleteByGroupId(id);
     if (!deleteRet) {
-      throw new ApiException('操作异常！', 500, 200);
+      throw new ApiException('操作异常！', ApiErrorCode.ERROR, HttpStatus.OK);
     }
 
     const ret = await this.groupPermissionService.insertBatch(groupPermissions);
@@ -349,7 +350,7 @@ export class GroupService {
     if (ret) {
       return null;
     } else {
-      throw new ApiException('操作异常！', 500, 200);
+      throw new ApiException('操作异常！', ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 

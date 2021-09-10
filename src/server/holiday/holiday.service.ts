@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { CreateHolidayDto } from './dto/create-holiday.dto';
 import { UpdateHolidayDto } from './dto/update-holiday.dto';
 import {
@@ -14,6 +14,7 @@ import { SearchHolidayDto } from './dto/search-holiday.dto';
 import { LimitHolidayDto } from './dto/limit-holiday.dto';
 import { ApiException } from '../../common/exception/api-exception';
 import * as dayjs from 'dayjs';
+import { ApiErrorCode } from '../../constants/api-error-code.enum';
 
 @Injectable()
 export class HolidayService {
@@ -240,7 +241,7 @@ export class HolidayService {
 
     const isExistId = await this.isExistId(id);
     if (!isExistId) {
-      throw new ApiException(`数据 id：${id} 不存在！`, 404, 200);
+      throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
     }
 
     let holiday = new Holiday();

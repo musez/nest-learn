@@ -1,8 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
-import { Strategy, IStrategyOptions } from 'passport-local';
+import { IStrategyOptions, Strategy } from 'passport-local';
 import { ApiException } from '../../../common/exception/api-exception';
 import { AuthService } from '../auth.service';
+import { ApiErrorCode } from '../../../constants/api-error-code.enum';
 
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy) {
@@ -16,6 +17,6 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
   async validate(userName: string, userPwd: string): Promise<any> {
     const user = await this.authService.validateUser(userName, userPwd);
     if (user) return user;
-    else throw new ApiException('用户名或密码错误！', 1000, 200);
+    else throw new ApiException('用户名或密码错误！', ApiErrorCode.LOGIN_ERROR, HttpStatus.OK);
   }
 }

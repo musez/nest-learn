@@ -4,7 +4,7 @@ import {
   Post,
   Body,
   Query,
-  UseGuards,
+  UseGuards, HttpStatus,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -28,6 +28,7 @@ import { CreateDictItemDto } from '../dict-item/dto/create-dict-item.dto';
 import { SearchDictItemDto } from '../dict-item/dto/search-dict-item.dto';
 import { DictItem } from '../dict-item/entities/dict-item.entity';
 import { LimitDictItemDto } from '../dict-item/dto/limit-dict-item.dto';
+import { ApiErrorCode } from '../../constants/api-error-code.enum';
 
 @ApiTags('字典')
 @Controller('dict')
@@ -99,7 +100,7 @@ export class DictController {
     const isExistId = await this.dictService.isExistId(id);
 
     if (!isExistId) {
-      throw new ApiException(`数据 id：${id} 不存在！`, 404, 200);
+      throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
     }
 
     return this.dictService.update(updateDictDto, curUser);
@@ -120,7 +121,7 @@ export class DictController {
     const isExistId = await this.dictService.isExistId(id);
 
     if (!isExistId) {
-      throw new ApiException(`数据 id：${id} 不存在！`, 404, 200);
+      throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
     }
 
     return await this.dictService.deleteById(baseFindByIdDto, curUser);
