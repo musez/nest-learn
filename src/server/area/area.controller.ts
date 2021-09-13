@@ -146,12 +146,11 @@ export class AreaController {
     const successRows = [],
       errorRows = [];
 
-
     for (const item of rows) {
       const { areaCode } = item;
       const ret = await this.areaService.isExistAreaCode(areaCode);
       if (ret) {
-        item.errorMsg = `数据 areaCode：${areaCode} 已存在！`;
+        item.errorMsg = `数据 地区编码（areaCode）：${areaCode} 已存在！`;
         errorRows.push(item);
         continue;
       }
@@ -159,24 +158,20 @@ export class AreaController {
       successRows.push(item);
     }
 
-    console.log('successRows',successRows);
-    console.log('errorRows',errorRows);
-
-
     const ret = await this.areaService.insertBatch(successRows, curUser);
     const retLog = await this.importLogService.insert({
       importType: ImportType.AREA,
       successCount: successRows.length,
-      successData: JSON.stringify(successRows),
+      successData: successRows.length ? JSON.stringify(successRows) : null,
       errorCount: errorRows.length,
-      errorData: JSON.stringify(errorRows),
+      errorData: errorRows.length ? JSON.stringify(errorRows) : null,
     }, curUser);
 
     if (ret && retLog) {
       return {
-        successData: successRows,
+        successList: successRows,
         successCount: successRows.length,
-        errorData: errorRows,
+        errorList: errorRows,
         errorCount: errorRows.length,
       };
     } else {

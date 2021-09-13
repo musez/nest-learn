@@ -157,4 +157,6 @@ export const FeedbackStatusDict = {
 // 导入模块
 export const ImportTypeDict = {
   '1': '地区', // 地区
+  '2': '节假日', // 节假日
+  '3': '用户', // 用户
 };

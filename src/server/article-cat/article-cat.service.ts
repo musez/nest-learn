@@ -285,7 +285,7 @@ export class ArticleCatService {
    */
   async isExistChildrenById(baseFindByIdDto: BaseFindByIdDto): Promise<boolean> {
     const { id } = baseFindByIdDto;
-    const ret = await this.articleCatRepository.findOne({ parentId: id, deleteStatus: 1 });
+    const ret = await this.articleCatRepository.findOne({ parentId: id, deleteStatus: 0 });
     if (ret) return true;
     else return false;
   }
@@ -353,7 +353,6 @@ export class ArticleCatService {
     if (!Utils.isArray(ids)) {
       ids = Utils.split(ids.toString());
     }
-
     for (const id of ids) {
       const ret = await this.isExistChildrenById({ id });
       if (ret) {

@@ -7,11 +7,7 @@ import { Org } from './entities/org.entity';
 import { Utils } from '../../utils';
 import { SearchOrgDto } from './dto/search-org.dto';
 import { LimitOrgDto } from './dto/limit-org.dto';
-import {
-  BaseFindByIdDto,
-  BaseFindByIdsDto,
-  BaseFindByPIdDto, BaseModifyStatusByIdsDto,
-} from '../base.dto';
+import { BaseFindByIdDto, BaseFindByIdsDto, BaseFindByPIdDto, BaseModifyStatusByIdsDto } from '../base.dto';
 import { ApiException } from '../../common/exception/api-exception';
 import { ApiErrorCode } from '../../constants/api-error-code.enum';
 
@@ -285,7 +281,7 @@ export class OrgService {
    */
   async isExistChildrenById(baseFindByIdDto: BaseFindByIdDto): Promise<boolean> {
     const { id } = baseFindByIdDto;
-    const ret = await this.orgRepository.findOne({ parentId: id, deleteStatus: 1 });
+    const ret = await this.orgRepository.findOne({ parentId: id, deleteStatus: 0 });
     if (ret) return true;
     else return false;
   }
@@ -350,7 +346,7 @@ export class OrgService {
   /**
    * 删除（批量）
    */
-  async deleteByIds(baseFindByIdsDto: BaseFindByIdsDto, curUser?,): Promise<void> {
+  async deleteByIds(baseFindByIdsDto: BaseFindByIdsDto, curUser?): Promise<void> {
     let { ids } = baseFindByIdsDto;
 
     if (!Utils.isArray(ids)) {

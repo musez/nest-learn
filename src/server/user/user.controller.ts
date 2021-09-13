@@ -31,6 +31,8 @@ import { SexDict, StatusDict, UserDict } from '../../constants/dicts.const';
 import { ApiException } from '../../common/exception/api-exception';
 import { BindUserPermissionDto } from '../user-permission/dto/bind-user-permission.dto';
 import { ApiErrorCode } from '../../constants/api-error-code.enum';
+import { ImportType } from '../../constants/dicts.enum';
+import { ImportLogService } from '../import-log/import-log.service';
 
 @ApiTags('用户')
 @Controller('user')
@@ -40,6 +42,7 @@ export class UserController {
   constructor(
     private readonly userService: UserService,
     private readonly excelService: ExcelService,
+    private readonly importLogService: ImportLogService,
   ) {
   }
 
@@ -169,23 +172,31 @@ export class UserController {
       if (ret) {
         item.errorMsg = `数据 userName：${userName} 已存在！`;
         errorRows.push(item);
-      } else {
-        successRows.push(item);
+        continue;
       }
+
+      successRows.push(item);
     }
 
     const ret = await this.userService.insertBatch(successRows, curUser);
+    const retLog = await this.importLogService.insert({
+      importType: ImportType.USER,
+      successCount: successRows.length,
+      successData: successRows.length ? JSON.stringify(successRows) : null,
+      errorCount: errorRows.length,
+      errorData: errorRows.length ? JSON.stringify(errorRows) : null,
+    }, curUser);
 
-    if (!ret) {
+    if (ret && retLog) {
+      return {
+        successList: successRows,
+        successCount: ret.length,
+        errorList: errorRows,
+        errorCount: ret.length,
+      };
+    } else {
       throw new ApiException(`操作异常！`, ApiErrorCode.ERROR, HttpStatus.OK);
     }
-
-    return {
-      successList: ret,
-      successCount: ret.length,
-      errorList: errorRows,
-      errorCount: ret.length,
-    };
   }
 
   @Post('update')

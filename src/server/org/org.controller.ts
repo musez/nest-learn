@@ -1,12 +1,4 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Query,
-  Body,
-  UseGuards,
-  Res, HttpStatus,
-} from '@nestjs/common';
+import { Controller, Get, Post, Query, Body, UseGuards, Res, HttpStatus } from '@nestjs/common';
 import { ApiTags, ApiBasicAuth, ApiOperation } from '@nestjs/swagger';
 import { OrgService } from './org.service';
 import { CreateOrgDto } from './dto/create-org.dto';
@@ -16,12 +8,7 @@ import { CurUser } from '../../common/decorators/cur-user.decorator';
 import { SearchOrgDto } from './dto/search-org.dto';
 import { Org } from './entities/org.entity';
 import { LimitOrgDto } from './dto/limit-org.dto';
-import {
-  BaseFindByIdDto,
-  BaseFindByIdsDto,
-  BaseFindByPIdDto,
-  BaseModifyStatusByIdsDto,
-} from '../base.dto';
+import { BaseFindByIdDto, BaseFindByIdsDto, BaseFindByPIdDto, BaseModifyStatusByIdsDto } from '../base.dto';
 import { AuthGuard } from '../../common/guards/auth.guard';
 import { Auth } from '../../common/decorators/auth.decorator';
 import { Utils } from '../../utils';

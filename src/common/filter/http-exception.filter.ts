@@ -36,7 +36,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
     Status code: ${status}
     Response: ${exception.toString()} \n  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
     `;
-    Logger.info(logFormat);
+    Logger.error(logFormat);
 
     // 此刻的时间
     const nowDate = dayjs(Date.now()).format('YYYY-MM-DD HH:mm:ss');

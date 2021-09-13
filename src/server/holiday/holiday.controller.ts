@@ -38,13 +38,11 @@ import { AuthGuard } from '../../common/guards/auth.guard';
 import { Utils } from '../../utils';
 import { BaseDaysDto } from './dto/base-holiday.dto';
 import { ExcelService } from '../excel/excel.service';
-import {
-  RestDict,
-  StatusDict,
-  WeekdayDict,
-} from '../../constants/dicts.const';
+import { RestDict, StatusDict, WeekdayDict } from '../../constants/dicts.const';
 import { ApiException } from '../../common/exception/api-exception';
 import { ApiErrorCode } from '../../constants/api-error-code.enum';
+import { ImportType } from '../../constants/dicts.enum';
+import { ImportLogService } from '../import-log/import-log.service';
 
 @Controller('holiday')
 @ApiTags('节假日')
@@ -54,6 +52,7 @@ export class HolidayController {
   constructor(
     private readonly holidayService: HolidayService,
     private readonly excelService: ExcelService,
+    private readonly importLogService: ImportLogService,
   ) {
   }
 
@@ -103,27 +102,9 @@ export class HolidayController {
     const columns = [
       { key: 'name', name: '名称', type: 'String', size: 10 },
       { key: 'date', name: '日期', type: 'String', size: 10 },
-      {
-        key: 'weekday',
-        name: '周几',
-        type: 'Enum',
-        size: 10,
-        default: WeekdayDict,
-      },
-      {
-        key: 'restType',
-        name: '类型',
-        type: 'Enum',
-        size: 10,
-        default: RestDict,
-      },
-      {
-        key: 'status',
-        name: '状态',
-        type: 'Enum',
-        size: 10,
-        default: StatusDict,
-      },
+      { key: 'weekday', name: '周几', type: 'Enum', size: 10, default: WeekdayDict },
+      { key: 'restType', name: '类型', type: 'Enum', size: 10, default: RestDict },
+      { key: 'status', name: '状态', type: 'Enum', size: 10, default: StatusDict },
       { key: 'description', name: '备注', type: 'String', size: 20 },
       { key: 'createTime', name: '创建时间', type: 'String', size: 20 },
       { key: 'updateTime', name: '修改时间', type: 'String', size: 20 },
@@ -165,41 +146,19 @@ export class HolidayController {
     const columns = [
       { key: 'name', name: '名称', type: 'String', size: 10, index: 1 },
       { key: 'date', name: '日期', type: 'String', size: 10, index: 2 },
-      {
-        key: 'weekday',
-        name: '周几',
-        type: 'Enum',
-        size: 10,
-        enum: WeekdayDict,
-        index: 3,
-      },
-      {
-        key: 'restType',
-        name: '类型',
-        type: 'Enum',
-        size: 10,
-        enum: RestDict,
-        index: 4,
-      },
-      {
-        key: 'status',
-        name: '状态',
-        type: 'Enum',
-        size: 10,
-        enum: StatusDict,
-        index: 5,
-      },
+      { key: 'weekday', name: '周几', type: 'Enum', size: 10, enum: WeekdayDict, index: 3 },
+      { key: 'restType', name: '类型', type: 'Enum', size: 10, enum: RestDict, index: 4 },
+      { key: 'status', name: '状态', type: 'Enum', size: 10, enum: StatusDict, index: 5 },
       { key: 'description', name: '备注', type: 'String', size: 20, index: 6 },
     ];
-    const rows = await this.excelService.importExcel(columns, file);
 
+    const rows = await this.excelService.importExcel(columns, file);
     // 自动获取周几
     rows.forEach((v) => {
       if (v.date) {
         v.weekday = dayjs(v.date).day();
       }
     });
-
     const successRows = [],
       errorRows = [];
 
@@ -209,29 +168,37 @@ export class HolidayController {
       if (!date) {
         item.errorMsg = `数据 日期（date） 不能为空！`;
         errorRows.push(item);
-        return;
+        continue;
       }
 
       if (!restType) {
         item.errorMsg = `数据 类型（restType） 不能为空！`;
         errorRows.push(item);
-        return;
+        continue;
       }
 
       successRows.push(item);
     }
 
     const ret = await this.holidayService.insertBatch(rows, curUser);
-    if (!ret) {
+    const retLog = await this.importLogService.insert({
+      importType: ImportType.HOLIDAY,
+      successCount: successRows.length,
+      successData: successRows.length ? JSON.stringify(successRows) : null,
+      errorCount: errorRows.length,
+      errorData: errorRows.length ? JSON.stringify(errorRows) : null,
+    }, curUser);
+
+    if (ret && retLog) {
+      return {
+        successList: successRows,
+        successCount: ret.length,
+        errorList: errorRows,
+        errorCount: ret.length,
+      };
+    } else {
       throw new ApiException(`操作异常！`, ApiErrorCode.ERROR, HttpStatus.OK);
     }
-
-    return {
-      successList: ret,
-      successCount: ret.length,
-      errorList: errorRows,
-      errorCount: ret.length,
-    };
   }
 
   @Post('update')

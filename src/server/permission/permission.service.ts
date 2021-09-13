@@ -5,12 +5,7 @@ import { Utils } from './../../utils/index';
 import { UpdatePermissionDto } from './dto/update-permission.dto';
 import { Permission } from './entities/permission.entity';
 import { CreatePermissionDto } from './dto/create-permission.dto';
-import {
-  BaseFindByIdDto,
-  BaseFindByIdsDto,
-  BaseFindByPIdDto,
-  BaseModifyStatusByIdsDto,
-} from '../base.dto';
+import { BaseFindByIdDto, BaseFindByIdsDto, BaseFindByPIdDto, BaseModifyStatusByIdsDto } from '../base.dto';
 import { SearchPermissionDto } from './dto/search-permission.dto';
 import { LimitPermissionDto } from './dto/limit-permission.dto';
 import { RolePermission } from '../role-permission/entities/role-permission.entity';
@@ -372,7 +367,7 @@ export class PermissionService {
    */
   async isExistChildrenById(baseFindByIdDto: BaseFindByIdDto): Promise<boolean> {
     const { id } = baseFindByIdDto;
-    const ret = await this.permissionRepository.findOne({ parentId: id, deleteStatus: 1 });
+    const ret = await this.permissionRepository.findOne({ parentId: id, deleteStatus: 0 });
     if (ret) return true;
     else return false;
   }

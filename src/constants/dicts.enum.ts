@@ -137,4 +137,6 @@ export enum BusinessType {
 // 导入模块
 export enum ImportType {
   AREA = 1, // 地区
+  HOLIDAY = 2, // 节假日
+  USER = 3, // 用户
 }
