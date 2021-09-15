@@ -80,10 +80,10 @@ export class FeedbackService {
           status: status,
         })
         .orderBy({
-          'status': 'DESC',
+          'status': 'ASC',
           'createTime': 'DESC',
         })
-        .getRawMany();
+        .getMany();
 
       if (!ret) {
         throw new ApiException('查询异常！', ApiErrorCode.ERROR, HttpStatus.OK);
@@ -131,7 +131,7 @@ export class FeedbackService {
       queryConditionList.push('deleteStatus = 0');
       const queryCondition = queryConditionList.join(' AND ');
 
-      const queryBuilder = this.feedbackRepository
+      const ret = await this.feedbackRepository
         .createQueryBuilder()
         .where(queryCondition, {
           name: `%${name}%`,
@@ -140,28 +140,23 @@ export class FeedbackService {
           feedbackType: feedbackType,
           businessType: businessType,
           status: status,
-        });
-
-      const ret = await queryBuilder
-        // .skip(offset)
-        // .take(limit)
-        .offset(offset)
-        .limit(limit)
+        })
+        .skip(offset)
+        .take(limit)
         .orderBy({
-          'status': 'DESC',
+          'status': 'ASC',
           'createTime': 'DESC',
         })
-        .getRawMany();
-
-      const retCount = await queryBuilder.getCount();
+        .getManyAndCount();
+      ;
 
       if (!ret) {
         throw new ApiException('查询异常！', ApiErrorCode.ERROR, HttpStatus.OK);
       }
 
       return {
-        list: ret,
-        total: retCount,
+        list: ret[0],
+        total: ret[1],
         page: page,
         limit: limit,
       };

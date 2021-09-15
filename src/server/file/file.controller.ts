@@ -23,7 +23,7 @@ import {
   FileFieldsInterceptor,
 } from '@nestjs/platform-express';
 
-import fs from 'fs';
+import * as fs from 'fs';
 import { Utils } from './../../utils/index';
 import { FileService } from './file.service';
 import { CreateFileDto } from './dto/create-file.dto';
@@ -171,12 +171,12 @@ export class FileController {
   @ApiQuery({ name: 'id', description: '主键 id', required: true })
   async findFileUrl(@Query() baseFindByIdDto: BaseFindByIdDto, @Res() res) {
     try {
-      const file = await this.fileService.selectById(baseFindByIdDto);
+      const { mimeType, fileUrl } = await this.fileService.selectById(baseFindByIdDto);
 
       // 设置请求的返回头 type，content 的 type 类型列表见上面
-      res.setHeader('Content-Type', file.mimeType);
+      res.setHeader('Content-Type', mimeType);
       // 格式必须为 binary 否则会出错
-      const content = fs.readFileSync(file.fileUrl, 'binary');
+      const content = fs.readFileSync(fileUrl, 'binary');
       res.writeHead(HttpStatus.OK, 'Ok');
       res.write(content, 'binary'); // 格式必须为 binary，否则会出错
       res.end();
