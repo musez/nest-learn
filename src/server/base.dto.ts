@@ -1,10 +1,4 @@
-import {
-  IsDefined,
-  IsOptional,
-  IsNotEmpty,
-  IsInt,
-  IsUUID,
-} from 'class-validator';
+import { IsDefined, IsOptional, IsNotEmpty, IsInt, IsUUID } from 'class-validator';
 import { Transform } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
@@ -77,4 +71,9 @@ export class BaseFindByIdsDto {
 export class BaseFindByPIdDto {
   @ApiPropertyOptional({ description: 'parentId', example: null })
   readonly parentId: string;
+}
+
+export class BaseFileDto {
+  @ApiProperty({ description: 'file', example: null })
+  readonly file: string;
 }

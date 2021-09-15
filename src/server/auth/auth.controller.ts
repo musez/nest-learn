@@ -2,13 +2,14 @@ import { Body, Controller, Get, HttpStatus, Post, UseGuards } from '@nestjs/comm
 import { ApiBasicAuth, ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './guards/local-auth.guard';
-import { RegisterUserDto } from '../user/dto/register-user.dto';
+import { RegisterUserDto } from './dto/register-user.dto';
 import { CreateUserDto } from '../user/dto/create-user.dto';
 import { UserService } from '../user/user.service';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { CurUser } from '../../common/decorators/cur-user.decorator';
 import { ApiException } from '../../common/exception/api-exception';
 import { ApiErrorCode } from '../../constants/api-error-code.enum';
+import { LoginUserDto } from './dto/login-user.dto';
 
 @ApiTags('认证')
 @Controller('auth')
@@ -21,27 +22,27 @@ export class AuthController {
 
   @Post('/login')
   @UseGuards(LocalAuthGuard)
-  @ApiBody({
-    schema: {
-      type: 'object',
-      properties: {
-        userName: { type: 'string', description: '用户名', example: 'admin' },
-        userPwd: { type: 'string', description: '密码', example: '888888' },
-        captchaId: {
-          type: 'string',
-          description: '验证码 id',
-          example: '888888',
-        },
-        captchaText: { type: 'string', description: '验证码', example: 'icmz' },
-      },
-    },
-  })
+  // @ApiBody({
+  //   schema: {
+  //     type: 'object',
+  //     properties: {
+  //       userName: { type: 'string', description: '用户名', example: 'admin' },
+  //       userPwd: { type: 'string', description: '密码', example: '888888' },
+  //       captchaId: {
+  //         type: 'string',
+  //         description: '验证码 id',
+  //         example: '888888',
+  //       },
+  //       captchaText: { type: 'string', description: '验证码', example: 'icmz' },
+  //     },
+  //   },
+  // })
   @ApiResponse({ status: ApiErrorCode.LOGIN_ERROR, description: '用户名或密码错误！' })
   @ApiResponse({ status: ApiErrorCode.INVALID_CAPTCHA, description: '验证码错误！' })
   @ApiOperation({ summary: '登录' })
-  async login(@CurUser() curUser, @Body() body) {
+  async login(@CurUser() curUser, @Body() loginUserDto: LoginUserDto) {
     try {
-      const { captchaId, captchaText } = body;
+      const { captchaId, captchaText } = loginUserDto;
 
       const validateCaptcha = await this.authService.validateCaptcha(
         captchaId,

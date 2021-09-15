@@ -1,11 +1,6 @@
-import {
-  IsDefined,
-  IsNotEmpty,
-  MinLength,
-  MaxLength,
-} from 'class-validator';
+import { IsDefined, IsNotEmpty, MinLength, MaxLength } from 'class-validator';
 import { ApiProperty, PickType } from '@nestjs/swagger';
-import { BaseUserDto } from './base-user.dto';
+import { BaseUserDto } from '../../user/dto/base-user.dto';
 import { UserConstants } from '../../../constants/swagger.const';
 
 export class RegisterUserDto extends PickType(BaseUserDto, [

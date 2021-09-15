@@ -21,7 +21,7 @@ export class BaseUserDto {
   @IsUUID('all')
   readonly id: string;
 
-  @ApiProperty({ description: '名称', required: true, example: 'wang' })
+  @ApiProperty({ description: '名称', required: true, example: 'admin' })
   @IsDefined({ message: '名称不能为空！' })
   @IsNotEmpty({ message: '名称不能为空！' })
   @MinLength(UserConstants.USERNAME_MIN_LENGTH, {
