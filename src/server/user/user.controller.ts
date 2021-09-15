@@ -50,13 +50,17 @@ export class UserController {
   @Auth('account:user:add')
   @ApiOperation({ summary: '添加' })
   async add(@CurUser() curUser, @Body() createUserDto: CreateUserDto): Promise<CreateUserDto | void> {
-    const { userName } = createUserDto;
-    const isExistUserName = await this.userService.isExistUserName(userName);
-    if (isExistUserName) {
-      throw new ApiException(`用户名：${userName} 已存在！`, ApiErrorCode.USER_NAME_EXISTS, HttpStatus.OK);
-    }
+    try {
+      const { userName } = createUserDto;
+      const isExistUserName = await this.userService.isExistUserName(userName);
+      if (isExistUserName) {
+        throw new ApiException(`用户名：${userName} 已存在！`, ApiErrorCode.USER_NAME_EXISTS, HttpStatus.OK);
+      }
 
-    return this.userService.insert(createUserDto, curUser);
+      return this.userService.insert(createUserDto, curUser);
+    } catch (e) {
+      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+    }
   }
 
   @Get('findList')
@@ -84,48 +88,52 @@ export class UserController {
   @Auth('account:user:exportExcel')
   @ApiOperation({ summary: '列表（Excel 导出）' })
   async exportExcel(@Query() searchUserDto: SearchUserDto, @Res() res): Promise<any> {
-    const list = await this.userService.selectList(searchUserDto);
+    try {
+      const list = await this.userService.selectList(searchUserDto);
 
-    list.forEach((v) => {
-      if (v.userinf) {
-        v.provinceId = v.userinfo.provinceId;
-        v.cityId = v.userinfo.cityId;
-        v.districtId = v.userinfo.districtId;
-        v.address = v.userinfo.address;
-      }
-    });
+      list.forEach((v) => {
+        if (v.userinf) {
+          v.provinceId = v.userinfo.provinceId;
+          v.cityId = v.userinfo.cityId;
+          v.districtId = v.userinfo.districtId;
+          v.address = v.userinfo.address;
+        }
+      });
 
-    const columns = [
-      { key: 'userName', name: '用户名', type: 'String', size: 10 },
-      { key: 'userType', name: '用户类型', type: 'Enum', size: 10, default: UserDict },
-      { key: 'name', name: '姓名', type: 'String', size: 10 },
-      { key: 'mobile', name: '手机号', type: 'String', size: 15 },
-      { key: 'email', name: '邮箱', type: 'String', size: 15 },
-      { key: 'sex', name: '性别', type: 'Enum', size: 10, default: SexDict },
-      { key: 'birthday', name: '生日', type: 'String', size: 15 },
-      { key: 'provinceId', name: '省份', type: 'String', size: 15 },
-      { key: 'cityId', name: '城市', type: 'String', size: 15 },
-      { key: 'districtId', name: '区/县', type: 'String', size: 15 },
-      { key: 'address', name: '详细地址', type: 'String', size: 30 },
-      { key: 'status', name: '状态', type: 'Enum', size: 10, default: StatusDict },
-      { key: 'description', name: '备注', type: 'String', size: 20 },
-      { key: 'createTime', name: '创建时间', type: 'String', size: 20 },
-      { key: 'updateTime', name: '修改时间', type: 'String', size: 20 },
-    ];
+      const columns = [
+        { key: 'userName', name: '用户名', type: 'String', size: 10 },
+        { key: 'userType', name: '用户类型', type: 'Enum', size: 10, default: UserDict },
+        { key: 'name', name: '姓名', type: 'String', size: 10 },
+        { key: 'mobile', name: '手机号', type: 'String', size: 15 },
+        { key: 'email', name: '邮箱', type: 'String', size: 15 },
+        { key: 'sex', name: '性别', type: 'Enum', size: 10, default: SexDict },
+        { key: 'birthday', name: '生日', type: 'String', size: 15 },
+        { key: 'provinceId', name: '省份', type: 'String', size: 15 },
+        { key: 'cityId', name: '城市', type: 'String', size: 15 },
+        { key: 'districtId', name: '区/县', type: 'String', size: 15 },
+        { key: 'address', name: '详细地址', type: 'String', size: 30 },
+        { key: 'status', name: '状态', type: 'Enum', size: 10, default: StatusDict },
+        { key: 'description', name: '备注', type: 'String', size: 20 },
+        { key: 'createTime', name: '创建时间', type: 'String', size: 20 },
+        { key: 'updateTime', name: '修改时间', type: 'String', size: 20 },
+      ];
 
-    const result = await this.excelService.exportExcel(columns, list);
-    res.setHeader(
-      'Content-Type',
-      'application/vnd.openxmlformats;charset=utf-8',
-    );
-    res.setHeader(
-      'Content-Disposition',
-      'attachment; filename=' +
-      encodeURIComponent(`用户_${Utils.dayjsFormat('YYYYMMDD')}`) +
-      '.xlsx', // 中文名需要进行 url 转码
-    );
-    // res.setTimeout(30 * 60 * 1000); // 防止网络原因造成超时。
-    res.end(result, 'binary');
+      const result = await this.excelService.exportExcel(columns, list);
+      res.setHeader(
+        'Content-Type',
+        'application/vnd.openxmlformats;charset=utf-8',
+      );
+      res.setHeader(
+        'Content-Disposition',
+        'attachment; filename=' +
+        encodeURIComponent(`用户_${Utils.dayjsFormat('YYYYMMDD')}`) +
+        '.xlsx', // 中文名需要进行 url 转码
+      );
+      // res.setTimeout(30 * 60 * 1000); // 防止网络原因造成超时。
+      res.end(result, 'binary');
+    } catch (e) {
+      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+    }
   }
 
   @Post('importExcel')
@@ -146,56 +154,60 @@ export class UserController {
   })
   @UseInterceptors(FileInterceptor('file'))
   async importExcel(@CurUser() curUser, @UploadedFile() file): Promise<any> {
-    const columns = [
-      { key: 'userName', name: '用户名', type: 'String', index: 1 },
-      { key: 'userType', name: '用户类型', type: 'Enum', enum: UserDict, index: 2 },
-      { key: 'name', name: '姓名', type: 'String', index: 3 },
-      { key: 'mobile', name: '手机号', type: 'String', index: 4 },
-      { key: 'email', name: '邮箱', type: 'String', index: 5 },
-      { key: 'sex', name: '性别', type: 'Enum', enum: SexDict, index: 6 },
-      { key: 'birthday', name: '生日', type: 'Date', format: 'YYYY-MM-DD', index: 7 },
-      { key: 'provinceId', name: '省份', type: 'String', size: 15, index: 8 },
-      { key: 'cityId', name: '城市', type: 'String', size: 15, index: 9 },
-      { key: 'districtId', name: '区/县', type: 'String', size: 15, index: 10 },
-      { key: 'address', name: '详细地址', type: 'String', size: 30, index: 11 },
-      { key: 'status', name: '状态', type: 'Enum', enum: StatusDict, index: 12 },
-      { key: 'description', name: '备注', type: 'String', index: 13 },
-    ];
+    try {
+      const columns = [
+        { key: 'userName', name: '用户名', type: 'String', index: 1 },
+        { key: 'userType', name: '用户类型', type: 'Enum', enum: UserDict, index: 2 },
+        { key: 'name', name: '姓名', type: 'String', index: 3 },
+        { key: 'mobile', name: '手机号', type: 'String', index: 4 },
+        { key: 'email', name: '邮箱', type: 'String', index: 5 },
+        { key: 'sex', name: '性别', type: 'Enum', enum: SexDict, index: 6 },
+        { key: 'birthday', name: '生日', type: 'Date', format: 'YYYY-MM-DD', index: 7 },
+        { key: 'provinceId', name: '省份', type: 'String', size: 15, index: 8 },
+        { key: 'cityId', name: '城市', type: 'String', size: 15, index: 9 },
+        { key: 'districtId', name: '区/县', type: 'String', size: 15, index: 10 },
+        { key: 'address', name: '详细地址', type: 'String', size: 30, index: 11 },
+        { key: 'status', name: '状态', type: 'Enum', enum: StatusDict, index: 12 },
+        { key: 'description', name: '备注', type: 'String', index: 13 },
+      ];
 
-    const rows = await this.excelService.importExcel(columns, file);
-    const successRows = [],
-      errorRows = [];
+      const rows = await this.excelService.importExcel(columns, file);
+      const successRows = [],
+        errorRows = [];
 
-    for (const item of rows) {
-      const { userName } = item;
-      const ret = await this.userService.isExistUserName(userName);
-      if (ret) {
-        item.errorMsg = `数据 userName：${userName} 已存在！`;
-        errorRows.push(item);
-        continue;
+      for (const item of rows) {
+        const { userName } = item;
+        const ret = await this.userService.isExistUserName(userName);
+        if (ret) {
+          item.errorMsg = `数据 userName：${userName} 已存在！`;
+          errorRows.push(item);
+          continue;
+        }
+
+        successRows.push(item);
       }
 
-      successRows.push(item);
-    }
+      const ret = await this.userService.insertBatch(successRows, curUser);
+      const retLog = await this.importLogService.insert({
+        importType: ImportType.USER,
+        successCount: successRows.length,
+        successData: successRows.length ? JSON.stringify(successRows) : null,
+        errorCount: errorRows.length,
+        errorData: errorRows.length ? JSON.stringify(errorRows) : null,
+      }, curUser);
 
-    const ret = await this.userService.insertBatch(successRows, curUser);
-    const retLog = await this.importLogService.insert({
-      importType: ImportType.USER,
-      successCount: successRows.length,
-      successData: successRows.length ? JSON.stringify(successRows) : null,
-      errorCount: errorRows.length,
-      errorData: errorRows.length ? JSON.stringify(errorRows) : null,
-    }, curUser);
-
-    if (ret && retLog) {
-      return {
-        successList: successRows,
-        successCount: ret.length,
-        errorList: errorRows,
-        errorCount: ret.length,
-      };
-    } else {
-      throw new ApiException(`操作异常！`, ApiErrorCode.ERROR, HttpStatus.OK);
+      if (ret && retLog) {
+        return {
+          successList: successRows,
+          successCount: ret.length,
+          errorList: errorRows,
+          errorCount: ret.length,
+        };
+      } else {
+        throw new ApiException(`操作异常！`, ApiErrorCode.ERROR, HttpStatus.OK);
+      }
+    } catch (e) {
+      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -203,14 +215,18 @@ export class UserController {
   @Auth('account:user:update')
   @ApiOperation({ summary: '修改' })
   async update(@CurUser() curUser, @Body() updateUserDto: UpdateUserDto): Promise<any> {
-    const { id } = updateUserDto;
+    try {
+      const { id } = updateUserDto;
 
-    const isExistId = await this.userService.isExistId(id);
-    if (!isExistId) {
-      throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
+      const isExistId = await this.userService.isExistId(id);
+      if (!isExistId) {
+        throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
+      }
+
+      return this.userService.update(updateUserDto, curUser);
+    } catch (e) {
+      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
     }
-
-    return this.userService.update(updateUserDto, curUser);
   }
 
   @Post('updateStatus')
@@ -224,14 +240,18 @@ export class UserController {
   @Auth('account:user:delete')
   @ApiOperation({ summary: '删除' })
   async delete(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
-    const { id } = baseFindByIdDto;
+    try {
+      const { id } = baseFindByIdDto;
 
-    const isExistId = await this.userService.isExistId(id);
-    if (!isExistId) {
-      throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
+      const isExistId = await this.userService.isExistId(id);
+      if (!isExistId) {
+        throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
+      }
+
+      return await this.userService.deleteById(baseFindByIdDto, curUser);
+    } catch (e) {
+      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
     }
-
-    return await this.userService.deleteById(baseFindByIdDto, curUser);
   }
 
   @Post('deleteBatch')
@@ -245,13 +265,17 @@ export class UserController {
   @Auth('account:user:bindGroups')
   @ApiOperation({ summary: '绑定用户组' })
   async bindGroups(@CurUser() curUser, @Body() bindUserGroupDto: BindUserGroupDto): Promise<any> {
-    const { id } = bindUserGroupDto;
+    try {
+      const { id } = bindUserGroupDto;
 
-    const isExistId = await this.userService.isExistId(id);
-    if (!isExistId) {
-      throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
+      const isExistId = await this.userService.isExistId(id);
+      if (!isExistId) {
+        throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
+      }
+      return await this.userService.bindGroups(bindUserGroupDto);
+    } catch (e) {
+      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
     }
-    return await this.userService.bindGroups(bindUserGroupDto);
   }
 
   @Get('getGroups')
@@ -261,65 +285,85 @@ export class UserController {
     @CurUser() curUser,
     @Query() baseFindByIdDto: BaseFindByIdDto,
   ): Promise<any> {
-    const { id } = baseFindByIdDto;
+    try {
+      const { id } = baseFindByIdDto;
 
-    const isExistId = await this.userService.isExistId(id);
-    if (!isExistId) {
-      throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
+      const isExistId = await this.userService.isExistId(id);
+      if (!isExistId) {
+        throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
+      }
+      return await this.userService.selectGroupsByUserId(baseFindByIdDto);
+    } catch (e) {
+      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
     }
-    return await this.userService.selectGroupsByUserId(baseFindByIdDto);
   }
 
   @Post('bindRoles')
   @Auth('account:user:bindRoles')
   @ApiOperation({ summary: '绑定角色' })
   async bindRoles(@CurUser() curUser, @Body() bindUserRoleDto: BindUserRoleDto): Promise<any> {
-    const { id } = bindUserRoleDto;
+    try {
+      const { id } = bindUserRoleDto;
 
-    const isExistId = await this.userService.isExistId(id);
-    if (!isExistId) {
-      throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
+      const isExistId = await this.userService.isExistId(id);
+      if (!isExistId) {
+        throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
+      }
+      return await this.userService.bindRoles(bindUserRoleDto);
+    } catch (e) {
+      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
     }
-    return await this.userService.bindRoles(bindUserRoleDto);
   }
 
   @Get('getRoles')
   @Auth('account:user:getRoles')
   @ApiOperation({ summary: '获取角色' })
   async findRolesByUserId(@CurUser() curUser, @Query() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
-    const { id } = baseFindByIdDto;
+    try {
+      const { id } = baseFindByIdDto;
 
-    const isExistId = await this.userService.isExistId(id);
-    if (!isExistId) {
-      throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
+      const isExistId = await this.userService.isExistId(id);
+      if (!isExistId) {
+        throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
+      }
+
+      return await this.userService.selectRolesByUserId(baseFindByIdDto);
+    } catch (e) {
+      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
     }
-
-    return await this.userService.selectRolesByUserId(baseFindByIdDto);
   }
 
   @Post('bindPermissions')
   @Auth('account:user:bindPermissions')
   @ApiOperation({ summary: '绑定权限' })
   async bindPermissions(@CurUser() curUser, @Body() bindUserPermissionDto: BindUserPermissionDto): Promise<any> {
-    const { id } = bindUserPermissionDto;
-    const isExistId = await this.userService.isExistId(id);
-    if (!isExistId) {
-      throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
+    try {
+      const { id } = bindUserPermissionDto;
+      const isExistId = await this.userService.isExistId(id);
+      if (!isExistId) {
+        throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
+      }
+      return await this.userService.bindPermissions(bindUserPermissionDto);
+    } catch (e) {
+      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
     }
-    return await this.userService.bindPermissions(bindUserPermissionDto);
   }
 
   @Get('getPermissions')
   @Auth('account:user:getPermissions')
   @ApiOperation({ summary: '获取权限' })
   async findPermissionsByUserId(@CurUser() curUser, @Query() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
-    const { id } = baseFindByIdDto;
+    try {
+      const { id } = baseFindByIdDto;
 
-    const isExistId = await this.userService.isExistId(id);
-    if (!isExistId) {
-      throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
+      const isExistId = await this.userService.isExistId(id);
+      if (!isExistId) {
+        throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
+      }
+
+      return await this.userService.selectPermissionsByUserId(baseFindByIdDto);
+    } catch (e) {
+      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
     }
-
-    return await this.userService.selectPermissionsByUserId(baseFindByIdDto);
   }
 }

@@ -67,57 +67,65 @@ export class OrgController {
   @Auth('account:org:exportExcel')
   @ApiOperation({ summary: '列表（Excel 导出）' })
   async exportExcel(@Query() searchOrgDto: SearchOrgDto, @Res() res): Promise<any> {
-    const list = await this.orgService.selectAll(searchOrgDto);
+    try {
+      const list = await this.orgService.selectAll(searchOrgDto);
 
-    const columns = [
-      { key: 'name', name: '名称', type: 'String', size: 10 },
-      { key: 'shortName', name: '简称', type: 'String', size: 10 },
-      {
-        key: 'orgType',
-        name: '机构类型',
-        type: 'Enum',
-        size: 10,
-        default: OrgDict,
-      },
-      { key: 'orgLevel', name: '机构级次码', type: 'String', size: 10 },
-      {
-        key: 'status',
-        name: '状态',
-        type: 'Enum',
-        size: 10,
-        default: StatusDict,
-      },
-      { key: 'description', name: '备注', type: 'String', size: 20 },
-      { key: 'createTime', name: '创建时间', type: 'String', size: 20 },
-      { key: 'updateTime', name: '修改时间', type: 'String', size: 20 },
-    ];
-    const result = await this.excelService.exportExcel(columns, list);
+      const columns = [
+        { key: 'name', name: '名称', type: 'String', size: 10 },
+        { key: 'shortName', name: '简称', type: 'String', size: 10 },
+        {
+          key: 'orgType',
+          name: '机构类型',
+          type: 'Enum',
+          size: 10,
+          default: OrgDict,
+        },
+        { key: 'orgLevel', name: '机构级次码', type: 'String', size: 10 },
+        {
+          key: 'status',
+          name: '状态',
+          type: 'Enum',
+          size: 10,
+          default: StatusDict,
+        },
+        { key: 'description', name: '备注', type: 'String', size: 20 },
+        { key: 'createTime', name: '创建时间', type: 'String', size: 20 },
+        { key: 'updateTime', name: '修改时间', type: 'String', size: 20 },
+      ];
+      const result = await this.excelService.exportExcel(columns, list);
 
-    res.setHeader(
-      'Content-Type',
-      'application/vnd.openxmlformats;charset=utf-8',
-    );
-    res.setHeader(
-      'Content-Disposition',
-      'attachment; filename=' +
-      encodeURIComponent(`组织机构_${Utils.dayjsFormat('YYYYMMDD')}`) +
-      '.xlsx', // 中文名需要进行 url 转码
-    );
-    // res.setTimeout(30 * 60 * 1000); // 防止网络原因造成超时。
-    res.end(result, 'binary');
+      res.setHeader(
+        'Content-Type',
+        'application/vnd.openxmlformats;charset=utf-8',
+      );
+      res.setHeader(
+        'Content-Disposition',
+        'attachment; filename=' +
+        encodeURIComponent(`组织机构_${Utils.dayjsFormat('YYYYMMDD')}`) +
+        '.xlsx', // 中文名需要进行 url 转码
+      );
+      // res.setTimeout(30 * 60 * 1000); // 防止网络原因造成超时。
+      res.end(result, 'binary');
+    } catch (e) {
+      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+    }
   }
 
   @Post('update')
   @Auth('account:org:update')
   @ApiOperation({ summary: '修改' })
   async update(@CurUser() curUser, @Body() updateOrgDto: UpdateOrgDto): Promise<any> {
-    const { id } = updateOrgDto;
-    const isExistId = await this.orgService.isExistId(id);
+    try {
+      const { id } = updateOrgDto;
+      const isExistId = await this.orgService.isExistId(id);
 
-    if (!isExistId) {
-      throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
+      if (!isExistId) {
+        throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
+      }
+      return this.orgService.update(updateOrgDto, curUser);
+    } catch (e) {
+      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
     }
-    return this.orgService.update(updateOrgDto, curUser);
   }
 
   @Post('updateStatus')
@@ -131,14 +139,18 @@ export class OrgController {
   @Auth('account:org:delete')
   @ApiOperation({ summary: '删除' })
   async delete(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
-    const { id } = baseFindByIdDto;
-    const isExistId = await this.orgService.isExistId(id);
+    try {
+      const { id } = baseFindByIdDto;
+      const isExistId = await this.orgService.isExistId(id);
 
-    if (!isExistId) {
-      throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
+      if (!isExistId) {
+        throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
+      }
+
+      return await this.orgService.deleteById(baseFindByIdDto, curUser);
+    } catch (e) {
+      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
     }
-
-    return await this.orgService.deleteById(baseFindByIdDto, curUser);
   }
 
   @Post('deleteBatch')

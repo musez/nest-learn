@@ -76,49 +76,57 @@ export class GroupController {
   @Auth('account:group:exportExcel')
   @ApiOperation({ summary: '列表（Excel 导出）' })
   async exportExcel(@Query() searchGroupDto: SearchGroupDto, @Res() res): Promise<any> {
-    const list = await this.groupService.selectList(searchGroupDto);
+    try {
+      const list = await this.groupService.selectList(searchGroupDto);
 
-    const columns = [
-      { key: 'name', name: '名称', type: 'String', size: 10 },
-      {
-        key: 'status',
-        name: '状态',
-        type: 'Enum',
-        size: 10,
-        default: StatusDict,
-      },
-      { key: 'description', name: '备注', type: 'String', size: 20 },
-      { key: 'createTime', name: '创建时间', type: 'String', size: 20 },
-      { key: 'updateTime', name: '修改时间', type: 'String', size: 20 },
-    ];
-    const result = await this.excelService.exportExcel(columns, list);
+      const columns = [
+        { key: 'name', name: '名称', type: 'String', size: 10 },
+        {
+          key: 'status',
+          name: '状态',
+          type: 'Enum',
+          size: 10,
+          default: StatusDict,
+        },
+        { key: 'description', name: '备注', type: 'String', size: 20 },
+        { key: 'createTime', name: '创建时间', type: 'String', size: 20 },
+        { key: 'updateTime', name: '修改时间', type: 'String', size: 20 },
+      ];
+      const result = await this.excelService.exportExcel(columns, list);
 
-    res.setHeader(
-      'Content-Type',
-      'application/vnd.openxmlformats;charset=utf-8',
-    );
-    res.setHeader(
-      'Content-Disposition',
-      'attachment; filename=' +
-      encodeURIComponent(`用户组_${Utils.dayjsFormat('YYYYMMDD')}`) +
-      '.xlsx', // 中文名需要进行 url 转码
-    );
-    // res.setTimeout(30 * 60 * 1000); // 防止网络原因造成超时。
-    res.end(result, 'binary');
+      res.setHeader(
+        'Content-Type',
+        'application/vnd.openxmlformats;charset=utf-8',
+      );
+      res.setHeader(
+        'Content-Disposition',
+        'attachment; filename=' +
+        encodeURIComponent(`用户组_${Utils.dayjsFormat('YYYYMMDD')}`) +
+        '.xlsx', // 中文名需要进行 url 转码
+      );
+      // res.setTimeout(30 * 60 * 1000); // 防止网络原因造成超时。
+      res.end(result, 'binary');
+    } catch (e) {
+      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+    }
   }
 
   @Post('update')
   @Auth('account:group:update')
   @ApiOperation({ summary: '修改' })
   async update(@CurUser() curUser, @Body() updateGroupDto: UpdateGroupDto): Promise<any> {
-    const { id } = updateGroupDto;
-    const isExistId = await this.groupService.isExistId(id);
+    try {
+      const { id } = updateGroupDto;
+      const isExistId = await this.groupService.isExistId(id);
 
-    if (!isExistId) {
-      throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
+      if (!isExistId) {
+        throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
+      }
+
+      return this.groupService.update(updateGroupDto, curUser);
+    } catch (e) {
+      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
     }
-
-    return this.groupService.update(updateGroupDto, curUser);
   }
 
   @Post('updateStatus')
@@ -132,14 +140,18 @@ export class GroupController {
   @Auth('account:group:delete')
   @ApiOperation({ summary: '删除' })
   async delete(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
-    const { id } = baseFindByIdDto;
-    const isExistId = await this.groupService.isExistId(id);
+    try {
+      const { id } = baseFindByIdDto;
+      const isExistId = await this.groupService.isExistId(id);
 
-    if (!isExistId) {
-      throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
+      if (!isExistId) {
+        throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
+      }
+
+      return await this.groupService.deleteById(baseFindByIdDto, curUser);
+    } catch (e) {
+      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
     }
-
-    return await this.groupService.deleteById(baseFindByIdDto, curUser);
   }
 
   @Post('deleteBatch')
@@ -153,54 +165,70 @@ export class GroupController {
   @Auth('account:group:bindRoles')
   @ApiOperation({ summary: '绑定用户组角色' })
   async bindRoles(@CurUser() curUser, @Body() bindGroupRoleDto: BindGroupRoleDto): Promise<any> {
-    const { id } = bindGroupRoleDto;
-    const isExistId = await this.groupService.isExistId(id);
+    try {
+      const { id } = bindGroupRoleDto;
+      const isExistId = await this.groupService.isExistId(id);
 
-    if (!isExistId) {
-      throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
+      if (!isExistId) {
+        throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
+      }
+
+      return await this.groupService.bindRoles(bindGroupRoleDto);
+    } catch (e) {
+      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
     }
-
-    return await this.groupService.bindRoles(bindGroupRoleDto);
   }
 
   @Get('getRoles')
   @Auth('account:group:getRoles')
   @ApiOperation({ summary: '获取用户组角色' })
   async findRolesByGroupId(@CurUser() curUser, @Query() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
-    const { id } = baseFindByIdDto;
-    const isExistId = await this.groupService.isExistId(id);
+    try {
+      const { id } = baseFindByIdDto;
+      const isExistId = await this.groupService.isExistId(id);
 
-    if (!isExistId) {
-      throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
+      if (!isExistId) {
+        throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
+      }
+
+      return await this.groupService.selectRolesByGroupId(baseFindByIdDto);
+    } catch (e) {
+      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
     }
-
-    return await this.groupService.selectRolesByGroupId(baseFindByIdDto);
   }
 
   @Post('bindPermissions')
   @Auth('account:group:bindPermissions')
   @ApiOperation({ summary: '绑定权限' })
   async bindPermissions(@CurUser() curUser, @Body() bindGroupPermissionDto: BindGroupPermissionDto): Promise<any> {
-    const { id } = bindGroupPermissionDto;
+    try {
+      const { id } = bindGroupPermissionDto;
 
-    const isExistId = await this.groupService.isExistId(id);
-    if (!isExistId) {
-      throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
+      const isExistId = await this.groupService.isExistId(id);
+      if (!isExistId) {
+        throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
+      }
+      return await this.groupService.bindPermissions(bindGroupPermissionDto);
+    } catch (e) {
+      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
     }
-    return await this.groupService.bindPermissions(bindGroupPermissionDto);
   }
 
   @Get('getPermissions')
   @Auth('account:group:getPermissions')
   @ApiOperation({ summary: '获取权限' })
   async findPermissionsByGroupId(@CurUser() curUser, @Query() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
-    const { id } = baseFindByIdDto;
+    try {
+      const { id } = baseFindByIdDto;
 
-    const isExistId = await this.groupService.isExistId(id);
-    if (!isExistId) {
-      throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
+      const isExistId = await this.groupService.isExistId(id);
+      if (!isExistId) {
+        throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
+      }
+
+      return await this.groupService.selectPermissionsByGroupId(baseFindByIdDto);
+    } catch (e) {
+      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
     }
-
-    return await this.groupService.selectPermissionsByGroupId(baseFindByIdDto);
   }
 }

@@ -44,13 +44,17 @@ export class AreaController {
   @Auth('system:area:findList')
   @ApiOperation({ summary: '获取列表（默认返回 []）' })
   async findList(@Query() searchAreaDto: SearchAreaDto): Promise<Area[]> {
-    const { parentId, areaName } = searchAreaDto;
+    try {
+      const { parentId, areaName } = searchAreaDto;
 
-    if (Utils.isBlank(parentId) && Utils.isBlank(areaName)) {
-      return [];
+      if (Utils.isBlank(parentId) && Utils.isBlank(areaName)) {
+        return [];
+      }
+
+      return await this.areaService.selectList(searchAreaDto);
+    } catch (e) {
+      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
     }
-
-    return await this.areaService.selectList(searchAreaDto);
   }
 
   @Get('findListPage')
@@ -85,33 +89,37 @@ export class AreaController {
   @Auth('account:area:exportExcel')
   @ApiOperation({ summary: '列表（Excel 导出）' })
   async exportExcel(@Query() searchAreaDto: SearchAreaDto, @Res() res): Promise<any> {
-    const list = await this.areaService.selectList(searchAreaDto);
+    try {
+      const list = await this.areaService.selectList(searchAreaDto);
 
-    const columns = [
-      { key: 'areaName', name: '地区名称', type: 'String', size: 10 },
-      { key: 'areaCode', name: '地区编码', type: 'String', size: 10 },
-      { key: 'level', name: '地区级别', type: 'Enum', size: 10, default: AreaLevelDict },
-      { key: 'cityCode', name: '城市编码', type: 'String', size: 10 },
-      { key: 'center', name: '城市中心点', type: 'String', size: 10 },
-      { key: 'long', name: '经度', type: 'String', size: 10 },
-      { key: 'lat', name: '纬度', type: 'String', size: 10 },
-      { key: 'createTime', name: '创建时间', type: 'String', size: 20 },
-      { key: 'updateTime', name: '修改时间', type: 'String', size: 20 },
-    ];
-    const result = await this.excelService.exportExcel(columns, list);
+      const columns = [
+        { key: 'areaName', name: '地区名称', type: 'String', size: 10 },
+        { key: 'areaCode', name: '地区编码', type: 'String', size: 10 },
+        { key: 'level', name: '地区级别', type: 'Enum', size: 10, default: AreaLevelDict },
+        { key: 'cityCode', name: '城市编码', type: 'String', size: 10 },
+        { key: 'center', name: '城市中心点', type: 'String', size: 10 },
+        { key: 'long', name: '经度', type: 'String', size: 10 },
+        { key: 'lat', name: '纬度', type: 'String', size: 10 },
+        { key: 'createTime', name: '创建时间', type: 'String', size: 20 },
+        { key: 'updateTime', name: '修改时间', type: 'String', size: 20 },
+      ];
+      const result = await this.excelService.exportExcel(columns, list);
 
-    res.setHeader(
-      'Content-Type',
-      'application/vnd.openxmlformats;charset=utf-8',
-    );
-    res.setHeader(
-      'Content-Disposition',
-      'attachment; filename=' +
-      encodeURIComponent(`地区_${Utils.dayjsFormat('YYYYMMDD')}`) +
-      '.xlsx', // 中文名需要进行 url 转码
-    );
-    // res.setTimeout(30 * 60 * 1000); // 防止网络原因造成超时。
-    res.end(result, 'binary');
+      res.setHeader(
+        'Content-Type',
+        'application/vnd.openxmlformats;charset=utf-8',
+      );
+      res.setHeader(
+        'Content-Disposition',
+        'attachment; filename=' +
+        encodeURIComponent(`地区_${Utils.dayjsFormat('YYYYMMDD')}`) +
+        '.xlsx', // 中文名需要进行 url 转码
+      );
+      // res.setTimeout(30 * 60 * 1000); // 防止网络原因造成超时。
+      res.end(result, 'binary');
+    } catch (e) {
+      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+    }
   }
 
   @Post('importExcel')
@@ -132,50 +140,54 @@ export class AreaController {
   })
   @UseInterceptors(FileInterceptor('file'))
   async importExcel(@CurUser() curUser, @UploadedFile() file): Promise<any> {
-    const columns = [
-      { key: 'areaName', name: '地区名称', type: 'String', index: 1 },
-      { key: 'areaCode', name: '地区编码', type: 'String', index: 2 },
-      { key: 'level', name: '地区级别', type: 'Enum', enum: AreaLevelDict, index: 3 },
-      { key: 'cityCode', name: '城市编码', type: 'String', index: 4 },
-      { key: 'center', name: '城市中心点', type: 'String', index: 5 },
-      { key: 'long', name: '经度', type: 'String', index: 6 },
-      { key: 'lat', name: '纬度', type: 'String', index: 7 },
-    ];
+    try {
+      const columns = [
+        { key: 'areaName', name: '地区名称', type: 'String', index: 1 },
+        { key: 'areaCode', name: '地区编码', type: 'String', index: 2 },
+        { key: 'level', name: '地区级别', type: 'Enum', enum: AreaLevelDict, index: 3 },
+        { key: 'cityCode', name: '城市编码', type: 'String', index: 4 },
+        { key: 'center', name: '城市中心点', type: 'String', index: 5 },
+        { key: 'long', name: '经度', type: 'String', index: 6 },
+        { key: 'lat', name: '纬度', type: 'String', index: 7 },
+      ];
 
-    const rows = await this.excelService.importExcel(columns, file);
-    const successRows = [],
-      errorRows = [];
+      const rows = await this.excelService.importExcel(columns, file);
+      const successRows = [],
+        errorRows = [];
 
-    for (const item of rows) {
-      const { areaCode } = item;
-      const ret = await this.areaService.isExistAreaCode(areaCode);
-      if (ret) {
-        item.errorMsg = `数据 地区编码（areaCode）：${areaCode} 已存在！`;
-        errorRows.push(item);
-        continue;
+      for (const item of rows) {
+        const { areaCode } = item;
+        const ret = await this.areaService.isExistAreaCode(areaCode);
+        if (ret) {
+          item.errorMsg = `数据 地区编码（areaCode）：${areaCode} 已存在！`;
+          errorRows.push(item);
+          continue;
+        }
+
+        successRows.push(item);
       }
 
-      successRows.push(item);
-    }
-
-    const ret = await this.areaService.insertBatch(successRows, curUser);
-    const retLog = await this.importLogService.insert({
-      importType: ImportType.AREA,
-      successCount: successRows.length,
-      successData: successRows.length ? JSON.stringify(successRows) : null,
-      errorCount: errorRows.length,
-      errorData: errorRows.length ? JSON.stringify(errorRows) : null,
-    }, curUser);
-
-    if (ret && retLog) {
-      return {
-        successList: successRows,
+      const ret = await this.areaService.insertBatch(successRows, curUser);
+      const retLog = await this.importLogService.insert({
+        importType: ImportType.AREA,
         successCount: successRows.length,
-        errorList: errorRows,
+        successData: successRows.length ? JSON.stringify(successRows) : null,
         errorCount: errorRows.length,
-      };
-    } else {
-      throw new ApiException(`操作异常！`, ApiErrorCode.ERROR, HttpStatus.OK);
+        errorData: errorRows.length ? JSON.stringify(errorRows) : null,
+      }, curUser);
+
+      if (ret && retLog) {
+        return {
+          successList: successRows,
+          successCount: successRows.length,
+          errorList: errorRows,
+          errorCount: errorRows.length,
+        };
+      } else {
+        throw new ApiException(`操作异常！`, ApiErrorCode.ERROR, HttpStatus.OK);
+      }
+    } catch (e) {
+      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 }

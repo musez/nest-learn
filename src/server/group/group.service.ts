@@ -36,157 +36,181 @@ export class GroupService {
    * 添加
    */
   async insert(createGroupDto: CreateGroupDto, curUser?): Promise<CreateGroupDto> {
-    let group = new Group();
-    group = Utils.dto2entity(createGroupDto, group);
-    if (curUser) {
-      group.createBy = curUser!.id;
+    try {
+      let group = new Group();
+      group = Utils.dto2entity(createGroupDto, group);
+      if (curUser) {
+        group.createBy = curUser!.id;
+      }
+      return await this.groupRepository.save(group);
+    } catch (e) {
+      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
     }
-    return await this.groupRepository.save(group);
   }
 
   /**
    * 获取列表
    */
   async selectList(query): Promise<any[]> {
-    // eslint-disable-next-line prefer-const
-    let { name, status } = query;
+    try {
+      // eslint-disable-next-line prefer-const
+      let { name, status } = query;
 
-    const queryConditionList = [];
-    if (!Utils.isBlank(name)) {
-      queryConditionList.push('name LIKE :name');
-    }
-    if (!Utils.isBlank(status)) {
-      if (!Utils.isArray(status)) {
-        status = Utils.split(status.toString());
+      const queryConditionList = [];
+      if (!Utils.isBlank(name)) {
+        queryConditionList.push('name LIKE :name');
       }
-      queryConditionList.push('status IN (:...status)');
-    }
-    queryConditionList.push('deleteStatus = 0');
-    const queryCondition = queryConditionList.join(' AND ');
+      if (!Utils.isBlank(status)) {
+        if (!Utils.isArray(status)) {
+          status = Utils.split(status.toString());
+        }
+        queryConditionList.push('status IN (:...status)');
+      }
+      queryConditionList.push('deleteStatus = 0');
+      const queryCondition = queryConditionList.join(' AND ');
 
-    return await this.groupRepository
-      .createQueryBuilder()
-      .where(queryCondition, {
-        name: `%${name}%`,
-        status: status,
-      })
-      .orderBy({
-        status: 'DESC',
-        createTime: 'DESC',
-      })
-      .getMany();
+      return await this.groupRepository
+        .createQueryBuilder()
+        .where(queryCondition, {
+          name: `%${name}%`,
+          status: status,
+        })
+        .orderBy({
+          status: 'DESC',
+          createTime: 'DESC',
+        })
+        .getMany();
+    } catch (e) {
+      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+    }
   }
 
   /**
    * 获取列表（分页）
    */
   async selectListPage(limitGroupDto: LimitGroupDto): Promise<any> {
-    // eslint-disable-next-line prefer-const
-    let { page, limit, name, status } = limitGroupDto;
-    page = page ? page : 1;
-    limit = limit ? limit : 10;
-    const offset = (page - 1) * limit;
+    try {
+      // eslint-disable-next-line prefer-const
+      let { page, limit, name, status } = limitGroupDto;
+      page = page ? page : 1;
+      limit = limit ? limit : 10;
+      const offset = (page - 1) * limit;
 
-    const queryConditionList = [];
-    if (!Utils.isBlank(name)) {
-      queryConditionList.push('name LIKE :name');
-    }
-    if (!Utils.isBlank(status)) {
-      if (!Utils.isArray(status)) {
-        status = Utils.split(status.toString());
+      const queryConditionList = [];
+      if (!Utils.isBlank(name)) {
+        queryConditionList.push('name LIKE :name');
       }
-      queryConditionList.push('status IN (:...status)');
+      if (!Utils.isBlank(status)) {
+        if (!Utils.isArray(status)) {
+          status = Utils.split(status.toString());
+        }
+        queryConditionList.push('status IN (:...status)');
+      }
+      queryConditionList.push('deleteStatus = 0');
+      const queryCondition = queryConditionList.join(' AND ');
+
+      const res = await this.groupRepository
+        .createQueryBuilder()
+        .where(queryCondition, {
+          name: `%${name}%`,
+          status: status,
+        })
+        .skip(offset)
+        .take(limit)
+        .orderBy({
+          status: 'DESC',
+          createTime: 'DESC',
+        })
+        .getManyAndCount();
+
+      return {
+        list: res[0],
+        total: res[1],
+        page: page,
+        limit: limit,
+      };
+    } catch (e) {
+      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
     }
-    queryConditionList.push('deleteStatus = 0');
-    const queryCondition = queryConditionList.join(' AND ');
-
-    const res = await this.groupRepository
-      .createQueryBuilder()
-      .where(queryCondition, {
-        name: `%${name}%`,
-        status: status,
-      })
-      .skip(offset)
-      .take(limit)
-      .orderBy({
-        status: 'DESC',
-        createTime: 'DESC',
-      })
-      .getManyAndCount();
-
-    return {
-      list: res[0],
-      total: res[1],
-      page: page,
-      limit: limit,
-    };
   }
 
   /**
    * 获取详情（主键 id）
    */
   async selectById(baseFindByIdDto: BaseFindByIdDto): Promise<Group> {
-    const { id } = baseFindByIdDto;
-    const ret = await this.groupRepository.findOne({
-      relations: ['groupRoles', 'groupPermissions'],
-      where: {
-        id: id,
-      },
-    });
-    if (!ret) {
-      throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
-    }
-
-    if (ret?.groupRoles?.length > 0) {
-      const ids = ret.groupRoles.map((v) => v.id);
-
-      const groupRoleRet = await this.groupRoleService.selectByGroupIds(ids);
-      const groupRoles = groupRoleRet.filter(v => v.role).map((v) => {
-        return v.role;
+    try {
+      const { id } = baseFindByIdDto;
+      const ret = await this.groupRepository.findOne({
+        relations: ['groupRoles', 'groupPermissions'],
+        where: {
+          id: id,
+        },
       });
-      // @ts-ignore
-      ret.groupRoles = groupRoles;
-    }
+      if (!ret) {
+        throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
+      }
 
-    if (ret?.groupPermissions?.length > 0) {
-      const ids = ret.groupPermissions.map((v) => v.id);
+      if (ret?.groupRoles?.length > 0) {
+        const ids = ret.groupRoles.map((v) => v.id);
 
-      const groupPermissionsRet = await this.groupPermissionService.selectByGroupIds(ids);
-      const groupPermissions = groupPermissionsRet.filter(v => v.permission).map((v) => {
-        return v.permission;
-      });
-      // @ts-ignore
-      ret.groupPermissions = groupPermissions;
+        const groupRoleRet = await this.groupRoleService.selectByGroupIds(ids);
+        const groupRoles = groupRoleRet.filter(v => v.role).map((v) => {
+          return v.role;
+        });
+        // @ts-ignore
+        ret.groupRoles = groupRoles;
+      }
+
+      if (ret?.groupPermissions?.length > 0) {
+        const ids = ret.groupPermissions.map((v) => v.id);
+
+        const groupPermissionsRet = await this.groupPermissionService.selectByGroupIds(ids);
+        const groupPermissions = groupPermissionsRet.filter(v => v.permission).map((v) => {
+          return v.permission;
+        });
+        // @ts-ignore
+        ret.groupPermissions = groupPermissions;
+      }
+      return ret;
+    } catch (e) {
+      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
     }
-    return ret;
   }
 
   /**
    * 获取角色（用户 id）
    */
   async selectByUserId(baseFindByIdDto: BaseFindByIdDto): Promise<any> {
-    const { id } = baseFindByIdDto;
-    const userGroup = await this.groupRepository
-      .createQueryBuilder('g')
-      .innerJoinAndSelect(UserGroup, 'ug', 'g.id = ug.groupId')
-      .innerJoinAndSelect(User, 'u', 'u.id = ug.userId')
-      .where('u.id = :id AND u.deleteStatus = 0 AND g.deleteStatus = 0', {
-        id: id,
-      })
-      .getMany();
+    try {
+      const { id } = baseFindByIdDto;
+      const userGroup = await this.groupRepository
+        .createQueryBuilder('g')
+        .innerJoinAndSelect(UserGroup, 'ug', 'g.id = ug.groupId')
+        .innerJoinAndSelect(User, 'u', 'u.id = ug.userId')
+        .where('u.id = :id AND u.deleteStatus = 0 AND g.deleteStatus = 0', {
+          id: id,
+        })
+        .getMany();
 
-    return userGroup;
+      return userGroup;
+    } catch (e) {
+      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+    }
   }
 
   /**
    * 是否存在（主键 id）
    */
   async isExistId(id: string): Promise<boolean> {
-    const isExist = await this.groupRepository.findOne(id);
-    if (Utils.isNil(isExist)) {
-      return false;
-    } else {
-      return true;
+    try {
+      const isExist = await this.groupRepository.findOne(id);
+      if (Utils.isNil(isExist)) {
+        return false;
+      } else {
+        return true;
+      }
+    } catch (e) {
+      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -194,107 +218,127 @@ export class GroupService {
    * 修改
    */
   async update(updateGroupDto: UpdateGroupDto, curUser?): Promise<void> {
-    const { id } = updateGroupDto;
+    try {
+      const { id } = updateGroupDto;
 
-    let group = new Group();
-    group = Utils.dto2entity(updateGroupDto, group);
-    if (curUser) {
-      group.updateBy = curUser!.id;
+      let group = new Group();
+      group = Utils.dto2entity(updateGroupDto, group);
+      if (curUser) {
+        group.updateBy = curUser!.id;
+      }
+      await this.groupRepository.update(id, group);
+    } catch (e) {
+      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
     }
-    await this.groupRepository.update(id, group);
   }
 
   /**
    * 修改状态
    */
   async updateStatus(baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto, curUser?): Promise<any> {
-    // eslint-disable-next-line prefer-const
-    let { ids, status } = baseModifyStatusByIdsDto;
-    if (!Utils.isArray(ids)) {
-      ids = Utils.split(ids.toString());
-    }
-    const ret = this.groupRepository
-      .createQueryBuilder()
-      .update(Group)
-      .set({ status: status, updateBy: curUser ? curUser!.id : null })
-      .where('id IN (:ids)', { ids: ids })
-      .execute();
+    try {
+      // eslint-disable-next-line prefer-const
+      let { ids, status } = baseModifyStatusByIdsDto;
+      if (!Utils.isArray(ids)) {
+        ids = Utils.split(ids.toString());
+      }
+      const ret = this.groupRepository
+        .createQueryBuilder()
+        .update(Group)
+        .set({ status: status, updateBy: curUser ? curUser!.id : null })
+        .where('id IN (:ids)', { ids: ids })
+        .execute();
 
-    if (!ret) {
-      throw new ApiException('更新异常！', ApiErrorCode.ERROR, HttpStatus.OK);
-    }
+      if (!ret) {
+        throw new ApiException('更新异常！', ApiErrorCode.ERROR, HttpStatus.OK);
+      }
 
-    return ret;
+      return ret;
+    } catch (e) {
+      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+    }
   }
 
   /**
    * 删除
    */
   async deleteById(baseFindByIdDto: BaseFindByIdDto, curUser?): Promise<void> {
-    const { id } = baseFindByIdDto;
+    try {
+      const { id } = baseFindByIdDto;
 
-    await this.groupRepository
-      .createQueryBuilder()
-      .update(Group)
-      .set({ deleteStatus: 1, deleteBy: curUser ? curUser!.id : null, deleteTime: Utils.now() })
-      .where('id = :id', { id: id })
-      .execute();
+      await this.groupRepository
+        .createQueryBuilder()
+        .update(Group)
+        .set({ deleteStatus: 1, deleteBy: curUser ? curUser!.id : null, deleteTime: Utils.now() })
+        .where('id = :id', { id: id })
+        .execute();
+    } catch (e) {
+      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+    }
   }
 
   /**
    * 删除（批量）
    */
   async deleteByIds(baseFindByIdsDto: BaseFindByIdsDto, curUser?): Promise<void> {
-    let { ids } = baseFindByIdsDto;
+    try {
+      let { ids } = baseFindByIdsDto;
 
-    if (!Utils.isArray(ids)) {
-      ids = Utils.split(ids.toString());
+      if (!Utils.isArray(ids)) {
+        ids = Utils.split(ids.toString());
+      }
+      await this.groupRepository
+        .createQueryBuilder()
+        .update(Group)
+        .set({ deleteStatus: 1, deleteBy: curUser ? curUser!.id : null, deleteTime: Utils.now() })
+        .where('id IN (:ids)', { ids: ids })
+        .execute();
+    } catch (e) {
+      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
     }
-    await this.groupRepository
-      .createQueryBuilder()
-      .update(Group)
-      .set({ deleteStatus: 1, deleteBy: curUser ? curUser!.id : null, deleteTime: Utils.now() })
-      .where('id IN (:ids)', { ids: ids })
-      .execute();
   }
 
   /**
    * 绑定角色
    */
   async bindRoles(bindGroupRoleDto: BindGroupRoleDto): Promise<void> {
-    // eslint-disable-next-line prefer-const
-    let { id, roles } = bindGroupRoleDto;
+    try {
+      // eslint-disable-next-line prefer-const
+      let { id, roles } = bindGroupRoleDto;
 
-    if (roles && !Utils.isArray(roles)) {
-      roles = Utils.split(',');
-    }
+      if (roles && !Utils.isArray(roles)) {
+        roles = Utils.split(',');
+      }
 
-    const groupRet = await this.groupRepository.findOne({
-      where: {
-        id: id,
-      },
-    });
+      const groupRet = await this.groupRepository.findOne({
+        where: {
+          id: id,
+        },
+      });
 
-    const groupRoles = [];
-    for (const item of roles) {
-      const roleRet = await this.roleService.selectById({ id: item });
-      const groupRole = new GroupRole();
-      groupRole.group = groupRet;
-      groupRole.role = roleRet;
-      groupRoles.push(groupRole);
-    }
+      const groupRoles = [];
+      for (const item of roles) {
+        const roleRet = await this.roleService.selectById({ id: item });
+        const groupRole = new GroupRole();
+        groupRole.group = groupRet;
+        groupRole.role = roleRet;
+        groupRoles.push(groupRole);
+      }
 
-    const deleteRet = await this.groupRoleService.deleteByGroupId(id);
-    if (!deleteRet) {
-      throw new ApiException('操作异常！', ApiErrorCode.ERROR, HttpStatus.OK);
-    }
+      const deleteRet = await this.groupRoleService.deleteByGroupId(id);
+      if (!deleteRet) {
+        throw new ApiException('操作异常！', ApiErrorCode.ERROR, HttpStatus.OK);
+      }
 
-    const ret = await this.groupRoleService.insertBatch(groupRoles);
+      const ret = await this.groupRoleService.insertBatch(groupRoles);
 
-    if (ret) {
-      return null;
-    } else {
-      throw new ApiException('操作异常！', ApiErrorCode.ERROR, HttpStatus.OK);
+      if (ret) {
+        return null;
+      } else {
+        throw new ApiException('操作异常！', ApiErrorCode.ERROR, HttpStatus.OK);
+      }
+    } catch (e) {
+      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -302,55 +346,63 @@ export class GroupService {
    * 获取角色
    */
   async selectRolesByGroupId(baseFindByIdDto: BaseFindByIdDto): Promise<Group> {
-    const { id } = baseFindByIdDto;
-    const ret = await this.groupRepository.findOne({
-      relations: ['groupRoles'],
-      where: {
-        id: id,
-      },
-    });
+    try {
+      const { id } = baseFindByIdDto;
+      const ret = await this.groupRepository.findOne({
+        relations: ['groupRoles'],
+        where: {
+          id: id,
+        },
+      });
 
-    return ret;
+      return ret;
+    } catch (e) {
+      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+    }
   }
 
   /**
    * 绑定权限
    */
   async bindPermissions(bindGroupPermissionDto: BindGroupPermissionDto): Promise<void> {
-    // eslint-disable-next-line prefer-const
-    let { id, permissions } = bindGroupPermissionDto;
+    try {
+      // eslint-disable-next-line prefer-const
+      let { id, permissions } = bindGroupPermissionDto;
 
-    if (permissions && !Utils.isArray(permissions)) {
-      permissions = Utils.split(',');
-    }
+      if (permissions && !Utils.isArray(permissions)) {
+        permissions = Utils.split(',');
+      }
 
-    const groupRet = await this.groupRepository.findOne({
-      where: {
-        id: id,
-      },
-    });
+      const groupRet = await this.groupRepository.findOne({
+        where: {
+          id: id,
+        },
+      });
 
-    const groupPermissions = [];
-    for (const item of permissions) {
-      const permissionRet = await this.permissionService.selectById({ id: item });
-      const groupPermission = new GroupPermission();
-      groupPermission.group = groupRet;
-      groupPermission.permission = permissionRet;
+      const groupPermissions = [];
+      for (const item of permissions) {
+        const permissionRet = await this.permissionService.selectById({ id: item });
+        const groupPermission = new GroupPermission();
+        groupPermission.group = groupRet;
+        groupPermission.permission = permissionRet;
 
-      groupPermissions.push(groupPermission);
-    }
+        groupPermissions.push(groupPermission);
+      }
 
-    const deleteRet = await this.groupPermissionService.deleteByGroupId(id);
-    if (!deleteRet) {
-      throw new ApiException('操作异常！', ApiErrorCode.ERROR, HttpStatus.OK);
-    }
+      const deleteRet = await this.groupPermissionService.deleteByGroupId(id);
+      if (!deleteRet) {
+        throw new ApiException('操作异常！', ApiErrorCode.ERROR, HttpStatus.OK);
+      }
 
-    const ret = await this.groupPermissionService.insertBatch(groupPermissions);
+      const ret = await this.groupPermissionService.insertBatch(groupPermissions);
 
-    if (ret) {
-      return null;
-    } else {
-      throw new ApiException('操作异常！', ApiErrorCode.ERROR, HttpStatus.OK);
+      if (ret) {
+        return null;
+      } else {
+        throw new ApiException('操作异常！', ApiErrorCode.ERROR, HttpStatus.OK);
+      }
+    } catch (e) {
+      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -358,14 +410,18 @@ export class GroupService {
    * 获取权限
    */
   async selectPermissionsByGroupId(baseFindByIdDto: BaseFindByIdDto): Promise<Group> {
-    const { id } = baseFindByIdDto;
-    const ret = await this.groupRepository.findOne({
-      relations: ['groupPermissions'],
-      where: {
-        id: id,
-      },
-    });
+    try {
+      const { id } = baseFindByIdDto;
+      const ret = await this.groupRepository.findOne({
+        relations: ['groupPermissions'],
+        where: {
+          id: id,
+        },
+      });
 
-    return ret;
+      return ret;
+    } catch (e) {
+      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+    }
   }
 }

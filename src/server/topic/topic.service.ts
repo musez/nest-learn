@@ -26,174 +26,194 @@ export class TopicService {
    * 添加
    */
   async insert(createTopicDto: CreateTopicDto, curUser?): Promise<CreateTopicDto> {
-    return await this.topicRepository.save(createTopicDto);
+    try {
+      return await this.topicRepository.save(createTopicDto);
+    } catch (e) {
+      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+    }
   }
 
   /**
    * 获取列表
    */
   async selectList(searchTopicDto: SearchTopicDto): Promise<any[]> {
-    // eslint-disable-next-line prefer-const
-    let { topicId, content, topicType, status, isReply } = searchTopicDto;
+    try {
+      // eslint-disable-next-line prefer-const
+      let { topicId, content, topicType, status, isReply } = searchTopicDto;
 
-    const queryConditionList = [];
-    if (!Utils.isBlank(topicId)) {
-      queryConditionList.push('topic.topicId = :topicId');
-    }
-    if (!Utils.isBlank(content)) {
-      queryConditionList.push('topic.content LIKE :content');
-    }
-    if (!Utils.isBlank(topicType)) {
-      queryConditionList.push('topic.topicType = :topicType');
-    }
-    if (!Utils.isBlank(status)) {
-      if (!Utils.isArray(status)) {
-        status = Utils.split(status.toString());
+      const queryConditionList = [];
+      if (!Utils.isBlank(topicId)) {
+        queryConditionList.push('topic.topicId = :topicId');
       }
-      queryConditionList.push('topic.status IN (:...status)');
-    }
-    if (!Utils.isBlank(isReply)) {
-      if (isReply === 0) {
-        queryConditionList.push('commentId IS NOT NULL');
-      } else if (isReply === 1) {
-        queryConditionList.push('commentId IS NULL');
+      if (!Utils.isBlank(content)) {
+        queryConditionList.push('topic.content LIKE :content');
       }
-    }
-    queryConditionList.push('topic.deleteStatus = 0');
-    const queryCondition = queryConditionList.join(' AND ');
-
-    const ret = await this.topicRepository
-      .createQueryBuilder('topic')
-      .leftJoinAndSelect(User, 'u', 'u.id = topic.fromUid')
-      .leftJoinAndSelect(Comment, 'c', 'c.replyId = topic.id')
-      .select([
-        'topic.*',
-        'u.userName AS fromUname',
-        'c.id AS commentId',
-        'c.replyType AS replyType'
-      ])
-      .where(queryCondition, {
-        topicId: topicId,
-        content: `%${content}%`,
-        topicType: topicType,
-        status: status,
-      })
-      .orderBy({
-        'topic.status': 'ASC',
-        'topic.createTime': 'ASC',
-      })
-      .getRawMany();
-
-    ret.forEach(i => {
-      if (i.replyType === 0 && i.commentId) {
-        i.isReply = 1;
-      } else {
-        i.isReply = 0;
+      if (!Utils.isBlank(topicType)) {
+        queryConditionList.push('topic.topicType = :topicType');
       }
-    });
+      if (!Utils.isBlank(status)) {
+        if (!Utils.isArray(status)) {
+          status = Utils.split(status.toString());
+        }
+        queryConditionList.push('topic.status IN (:...status)');
+      }
+      if (!Utils.isBlank(isReply)) {
+        if (isReply === 0) {
+          queryConditionList.push('commentId IS NOT NULL');
+        } else if (isReply === 1) {
+          queryConditionList.push('commentId IS NULL');
+        }
+      }
+      queryConditionList.push('topic.deleteStatus = 0');
+      const queryCondition = queryConditionList.join(' AND ');
 
-    return ret;
+      const ret = await this.topicRepository
+        .createQueryBuilder('topic')
+        .leftJoinAndSelect(User, 'u', 'u.id = topic.fromUid')
+        .leftJoinAndSelect(Comment, 'c', 'c.replyId = topic.id')
+        .select([
+          'topic.*',
+          'u.userName AS fromUname',
+          'c.id AS commentId',
+          'c.replyType AS replyType',
+        ])
+        .where(queryCondition, {
+          topicId: topicId,
+          content: `%${content}%`,
+          topicType: topicType,
+          status: status,
+        })
+        .orderBy({
+          'topic.status': 'ASC',
+          'topic.createTime': 'ASC',
+        })
+        .getRawMany();
+
+      ret.forEach(i => {
+        if (i.replyType === 0 && i.commentId) {
+          i.isReply = 1;
+        } else {
+          i.isReply = 0;
+        }
+      });
+
+      return ret;
+    } catch (e) {
+      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+    }
   }
 
   /**
    * 获取列表（分页）
    */
   async selectListPage(limitTopicDto: LimitTopicDto): Promise<any> {
-    // eslint-disable-next-line prefer-const
-    let { page, limit, topicId, content, topicType, status, isReply } = limitTopicDto;
-    page = page ? page : 1;
-    limit = limit ? limit : 10;
-    const offset = (page - 1) * limit;
+    try {
+      // eslint-disable-next-line prefer-const
+      let { page, limit, topicId, content, topicType, status, isReply } = limitTopicDto;
+      page = page ? page : 1;
+      limit = limit ? limit : 10;
+      const offset = (page - 1) * limit;
 
-    const queryConditionList = [];
-    if (!Utils.isBlank(topicId)) {
-      queryConditionList.push('topic.topicId = :topicId');
-    }
-    if (!Utils.isBlank(content)) {
-      queryConditionList.push('topic.content LIKE :content');
-    }
-    if (!Utils.isBlank(topicType)) {
-      queryConditionList.push('topic.topicType = :topicType');
-    }
-    if (!Utils.isBlank(status)) {
-      if (!Utils.isArray(status)) {
-        status = Utils.split(status.toString());
+      const queryConditionList = [];
+      if (!Utils.isBlank(topicId)) {
+        queryConditionList.push('topic.topicId = :topicId');
       }
-      queryConditionList.push('topic.status IN (:...status)');
-    }
-    if (!Utils.isBlank(isReply)) {
-      if (isReply === 0) {
-        queryConditionList.push('commentId IS NOT NULL');
-      } else if (isReply === 1) {
-        queryConditionList.push('commentId IS NULL');
+      if (!Utils.isBlank(content)) {
+        queryConditionList.push('topic.content LIKE :content');
       }
-    }
-    queryConditionList.push('topic.deleteStatus = 0');
-    const queryCondition = queryConditionList.join(' AND ');
+      if (!Utils.isBlank(topicType)) {
+        queryConditionList.push('topic.topicType = :topicType');
+      }
+      if (!Utils.isBlank(status)) {
+        if (!Utils.isArray(status)) {
+          status = Utils.split(status.toString());
+        }
+        queryConditionList.push('topic.status IN (:...status)');
+      }
+      if (!Utils.isBlank(isReply)) {
+        if (isReply === 0) {
+          queryConditionList.push('commentId IS NOT NULL');
+        } else if (isReply === 1) {
+          queryConditionList.push('commentId IS NULL');
+        }
+      }
+      queryConditionList.push('topic.deleteStatus = 0');
+      const queryCondition = queryConditionList.join(' AND ');
 
-    const queryBuilder = this.topicRepository
-      .createQueryBuilder('topic')
-      .leftJoinAndSelect(User, 'u', 'u.id = topic.fromUid')
-      .leftJoinAndSelect(Comment, 'c', 'c.replyId = topic.id')
-      .select([
-        'topic.*',
-        'u.userName AS fromUname',
-        'c.id AS commentId',
-        'c.replyType AS replyType',
-      ])
-      .where(queryCondition, {
-        topicId: topicId,
-        content: `%${content}%`,
-        topicType: topicType,
-        status: status,
+      const queryBuilder = this.topicRepository
+        .createQueryBuilder('topic')
+        .leftJoinAndSelect(User, 'u', 'u.id = topic.fromUid')
+        .leftJoinAndSelect(Comment, 'c', 'c.replyId = topic.id')
+        .select([
+          'topic.*',
+          'u.userName AS fromUname',
+          'c.id AS commentId',
+          'c.replyType AS replyType',
+        ])
+        .where(queryCondition, {
+          topicId: topicId,
+          content: `%${content}%`,
+          topicType: topicType,
+          status: status,
+        });
+
+      const ret = await queryBuilder
+        // .skip(offset)
+        // .take(limit)
+        .offset(offset)
+        .limit(limit)
+        .orderBy({
+          'topic.status': 'ASC',
+          'topic.createTime': 'ASC',
+        })
+        .getRawMany();
+
+      ret.forEach(i => {
+        if (i.replyType === 0 && i.commentId) {
+          i.isReply = 1;
+        } else {
+          i.isReply = 0;
+        }
       });
 
-    const ret = await queryBuilder
-      // .skip(offset)
-      // .take(limit)
-      .offset(offset)
-      .limit(limit)
-      .orderBy({
-        'topic.status': 'ASC',
-        'topic.createTime': 'ASC',
-      })
-      .getRawMany();
+      const retCount = await queryBuilder.getCount();
 
-    ret.forEach(i => {
-      if (i.replyType === 0 && i.commentId) {
-        i.isReply = 1;
-      } else {
-        i.isReply = 0;
-      }
-    });
-
-    const retCount = await queryBuilder.getCount();
-
-    return {
-      list: ret,
-      total: retCount,
-      page: page,
-      limit: limit,
-    };
+      return {
+        list: ret,
+        total: retCount,
+        page: page,
+        limit: limit,
+      };
+    } catch (e) {
+      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+    }
   }
 
   /**
    * 获取详情（主键 id）
    */
   async selectById(baseFindByIdDto: BaseFindByIdDto): Promise<Topic> {
-    const { id } = baseFindByIdDto;
-    return await this.topicRepository.findOne(id);
+    try {
+      const { id } = baseFindByIdDto;
+      return await this.topicRepository.findOne(id);
+    } catch (e) {
+      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+    }
   }
 
   /**
    * 是否存在（主键 id）
    */
   async isExistId(id: string): Promise<boolean> {
-    const isExist = await this.topicRepository.findOne(id);
-    if (Utils.isNil(isExist)) {
-      return false;
-    } else {
-      return true;
+    try {
+      const isExist = await this.topicRepository.findOne(id);
+      if (Utils.isNil(isExist)) {
+        return false;
+      } else {
+        return true;
+      }
+    } catch (e) {
+      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -201,65 +221,81 @@ export class TopicService {
    * 修改
    */
   async update(updateTopicDto: UpdateTopicDto, curUser?): Promise<void> {
-    const { id } = updateTopicDto;
+    try {
+      const { id } = updateTopicDto;
 
-    let article = new Topic();
-    article = Utils.dto2entity(updateTopicDto, article);
+      let article = new Topic();
+      article = Utils.dto2entity(updateTopicDto, article);
 
-    await this.topicRepository.update(id, article);
+      await this.topicRepository.update(id, article);
+    } catch (e) {
+      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+    }
   }
 
   /**
    * 修改状态
    */
   async updateStatus(baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto, curUser?): Promise<any> {
-    // eslint-disable-next-line prefer-const
-    let { ids, status } = baseModifyStatusByIdsDto;
-    if (!Utils.isArray(ids)) {
-      ids = Utils.split(ids.toString());
-    }
-    const ret = this.topicRepository
-      .createQueryBuilder()
-      .update(Topic)
-      .set({ status: status, updateBy: curUser ? curUser!.id : null })
-      .where('id IN (:ids)', { ids: ids })
-      .execute();
+    try {
+      // eslint-disable-next-line prefer-const
+      let { ids, status } = baseModifyStatusByIdsDto;
+      if (!Utils.isArray(ids)) {
+        ids = Utils.split(ids.toString());
+      }
+      const ret = this.topicRepository
+        .createQueryBuilder()
+        .update(Topic)
+        .set({ status: status, updateBy: curUser ? curUser!.id : null })
+        .where('id IN (:ids)', { ids: ids })
+        .execute();
 
-    if (!ret) {
-      throw new ApiException('更新异常！', ApiErrorCode.ERROR, HttpStatus.OK);
-    }
+      if (!ret) {
+        throw new ApiException('更新异常！', ApiErrorCode.ERROR, HttpStatus.OK);
+      }
 
-    return ret;
+      return ret;
+    } catch (e) {
+      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+    }
   }
 
   /**
    * 删除
    */
   async deleteById(baseFindByIdDto: BaseFindByIdDto, curUser?): Promise<void> {
-    const { id } = baseFindByIdDto;
+    try {
+      const { id } = baseFindByIdDto;
 
-    await this.topicRepository
-      .createQueryBuilder()
-      .update(Org)
-      .set({ deleteStatus: 1, deleteBy: curUser ? curUser!.id : null, deleteTime: Utils.now() })
-      .where('id = :id', { id: id })
-      .execute();
+      await this.topicRepository
+        .createQueryBuilder()
+        .update(Org)
+        .set({ deleteStatus: 1, deleteBy: curUser ? curUser!.id : null, deleteTime: Utils.now() })
+        .where('id = :id', { id: id })
+        .execute();
+    } catch (e) {
+      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+    }
   }
 
   /**
    * 删除（批量）
    */
   async deleteByIds(baseFindByIdsDto: BaseFindByIdsDto, curUser?): Promise<void> {
-    let { ids } = baseFindByIdsDto;
+    try {
+      let { ids } = baseFindByIdsDto;
 
-    if (!Utils.isArray(ids)) {
-      ids = Utils.split(ids.toString());
+      if (!Utils.isArray(ids)) {
+        ids = Utils.split(ids.toString());
+      }
+      await this.topicRepository
+        .createQueryBuilder()
+        .update(Topic)
+        .set({ deleteStatus: 1, deleteBy: curUser ? curUser!.id : null, deleteTime: Utils.now() })
+        .where('id IN (:ids)', { ids: ids })
+        .execute();
+    } catch (e) {
+      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
     }
-    await this.topicRepository
-      .createQueryBuilder()
-      .update(Topic)
-      .set({ deleteStatus: 1, deleteBy: curUser ? curUser!.id : null, deleteTime: Utils.now() })
-      .where('id IN (:ids)', { ids: ids })
-      .execute();
   }
 }

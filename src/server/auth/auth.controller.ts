@@ -40,17 +40,21 @@ export class AuthController {
   @ApiResponse({ status: ApiErrorCode.INVALID_CAPTCHA, description: '验证码错误！' })
   @ApiOperation({ summary: '登录' })
   async login(@CurUser() curUser, @Body() body) {
-    const { captchaId, captchaText } = body;
+    try {
+      const { captchaId, captchaText } = body;
 
-    const validateCaptcha = await this.authService.validateCaptcha(
-      captchaId,
-      captchaText,
-    );
-    if (validateCaptcha) {
-      await this.userService.incrementLoginCount(curUser!.id); // 登录次数 +1
-      return this.authService.login(curUser);
-    } else {
-      throw new ApiException('验证码错误！', ApiErrorCode.INVALID_CAPTCHA, HttpStatus.OK);
+      const validateCaptcha = await this.authService.validateCaptcha(
+        captchaId,
+        captchaText,
+      );
+      if (validateCaptcha) {
+        await this.userService.incrementLoginCount(curUser!.id); // 登录次数 +1
+        return this.authService.login(curUser);
+      } else {
+        throw new ApiException('验证码错误！', ApiErrorCode.INVALID_CAPTCHA, HttpStatus.OK);
+      }
+    } catch (e) {
+      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -59,18 +63,22 @@ export class AuthController {
   @ApiResponse({ status: ApiErrorCode.USER_NAME_EXISTS, description: '用户名已存在！' })
   @ApiOperation({ summary: '注册' })
   async register(@Body() registerUserDto: RegisterUserDto): Promise<CreateUserDto | void> {
-    const { userName, userPwd, userPwdConfirm } = registerUserDto;
+    try {
+      const { userName, userPwd, userPwdConfirm } = registerUserDto;
 
-    if (userPwd !== userPwdConfirm) {
-      throw new ApiException('密码不一致！', ApiErrorCode.INVALID_PASSWORD, HttpStatus.OK);
+      if (userPwd !== userPwdConfirm) {
+        throw new ApiException('密码不一致！', ApiErrorCode.INVALID_PASSWORD, HttpStatus.OK);
+      }
+
+      const isExistUserName = await this.userService.isExistUserName(userName);
+      if (isExistUserName) {
+        throw new ApiException(`用户名：${userName} 已存在！`, ApiErrorCode.USER_NAME_EXISTS, HttpStatus.OK);
+      }
+
+      await this.userService.insert(registerUserDto);
+    } catch (e) {
+      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
     }
-
-    const isExistUserName = await this.userService.isExistUserName(userName);
-    if (isExistUserName) {
-      throw new ApiException(`用户名：${userName} 已存在！`, ApiErrorCode.USER_NAME_EXISTS, HttpStatus.OK);
-    }
-
-    await this.userService.insert(registerUserDto);
   }
 
   @Get('getPermissionsByToken')
@@ -78,13 +86,17 @@ export class AuthController {
   @ApiBasicAuth('token')
   @ApiOperation({ summary: '根据 token 获取权限（权限合集）' })
   async getPermissionsByToken(@CurUser() curUser): Promise<any> {
-    const { id } = curUser;
-    const isExistId = await this.userService.isExistId(id);
-    if (!isExistId) {
-      throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
-    }
+    try {
+      const { id } = curUser;
+      const isExistId = await this.userService.isExistId(id);
+      if (!isExistId) {
+        throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
+      }
 
-    return await this.userService.selectAuthPermissionsByUserId(id);
+      return await this.userService.selectAuthPermissionsByUserId(id);
+    } catch (e) {
+      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+    }
   }
 
   @Get('getAuthByToken')
@@ -92,13 +104,17 @@ export class AuthController {
   @ApiBasicAuth('token')
   @ApiOperation({ summary: '根据 token 获取权限（用户、用户组、角色、权限合集）' })
   async getAuthByToken(@CurUser() curUser): Promise<any> {
-    const { id } = curUser;
+    try {
+      const { id } = curUser;
 
-    const isExistId = await this.userService.isExistId(id);
-    if (!isExistId) {
-      throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
+      const isExistId = await this.userService.isExistId(id);
+      if (!isExistId) {
+        throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
+      }
+
+      return await this.userService.selectAuthByUserId({ id });
+    } catch (e) {
+      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
     }
-
-    return await this.userService.selectAuthByUserId({ id });
   }
 }

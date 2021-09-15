@@ -79,13 +79,17 @@ export class ArticleController {
   @Auth('cms:article:findInfoById')
   @ApiOperation({ summary: '获取详情（主键 id）' })
   async findInfoById(@CurUser() curUser, @Query() baseFindByIdDto: BaseFindByIdDto): Promise<Article> {
-    const ret = await this.articleService.selectById(baseFindByIdDto);
-    const incrementRet = await this.articleService.browse(baseFindByIdDto, curUser);
+    try {
+      const ret = await this.articleService.selectById(baseFindByIdDto);
+      const incrementRet = await this.articleService.browse(baseFindByIdDto, curUser);
 
-    if (ret && incrementRet) {
-      return ret;
-    } else {
-      throw new ApiException('查询异常！', ApiErrorCode.ERROR, HttpStatus.OK);
+      if (ret && incrementRet) {
+        return ret;
+      } else {
+        throw new ApiException('查询异常！', ApiErrorCode.ERROR, HttpStatus.OK);
+      }
+    } catch (e) {
+      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -93,52 +97,56 @@ export class ArticleController {
   @Auth('account:article:exportExcel')
   @ApiOperation({ summary: '列表（Excel 导出）' })
   async exportExcel(@Query() searchArticleDto: SearchArticleDto, @Res() res): Promise<any> {
-    const list = await this.articleService.selectList(searchArticleDto);
+    try {
+      const list = await this.articleService.selectList(searchArticleDto);
 
-    list.forEach(v => {
-      if (v?.content) {
-        const content = trimHtml(v.content, { preserveTags: true });
-        v.centent = content.html;
-      }
-    });
+      list.forEach(v => {
+        if (v?.content) {
+          const content = trimHtml(v.content, { preserveTags: true });
+          v.centent = content.html;
+        }
+      });
 
-    const columns = [
-      { key: 'title', name: '标题', type: 'String', size: 10 },
-      { key: 'summary', name: '摘要', type: 'String', size: 10 },
-      { key: 'author', name: '作者', type: 'String', size: 10 },
-      { key: 'source', name: '来源', type: 'String', size: 10 },
-      { key: 'keywords', name: '关键字', type: 'String', size: 10 },
-      { key: 'type', name: '文章类型', type: 'Enum', size: 10, default: ArticleDict },
-      { key: 'contentUrl', name: '链接', type: 'String', size: 10 },
-      { key: 'weight', name: '权重', type: 'String', size: 10 },
-      { key: 'content', name: '内容', type: 'String', size: 20 },
-      { key: 'publicTime', name: '发布时间', type: 'String', size: 10 },
-      { key: 'publicBy', name: '发布人', type: 'String', size: 10 },
-      { key: 'browseCount', name: '浏览量', type: 'String', size: 10 },
-      { key: 'linkCount', name: '点赞量', type: 'String', size: 10 },
-      { key: 'collectCount', name: '收藏量', type: 'String', size: 10 },
-      { key: 'shareCount', name: '分享量', type: 'String', size: 10 },
-      { key: 'commentCount', name: '评论', type: 'String', size: 10 },
-      { key: 'isComment', name: '是否可以评论', type: 'Enum', size: 10, default: IsCommentDict },
-      { key: 'status', name: '状态', type: 'Enum', size: 10, default: ArticleStatusDict },
-      { key: 'description', name: '备注', type: 'String', size: 20 },
-      { key: 'createTime', name: '创建时间', type: 'String', size: 20 },
-      { key: 'updateTime', name: '修改时间', type: 'String', size: 20 },
-    ];
-    const result = await this.excelService.exportExcel(columns, list);
+      const columns = [
+        { key: 'title', name: '标题', type: 'String', size: 10 },
+        { key: 'summary', name: '摘要', type: 'String', size: 10 },
+        { key: 'author', name: '作者', type: 'String', size: 10 },
+        { key: 'source', name: '来源', type: 'String', size: 10 },
+        { key: 'keywords', name: '关键字', type: 'String', size: 10 },
+        { key: 'type', name: '文章类型', type: 'Enum', size: 10, default: ArticleDict },
+        { key: 'contentUrl', name: '链接', type: 'String', size: 10 },
+        { key: 'weight', name: '权重', type: 'String', size: 10 },
+        { key: 'content', name: '内容', type: 'String', size: 20 },
+        { key: 'publicTime', name: '发布时间', type: 'String', size: 10 },
+        { key: 'publicBy', name: '发布人', type: 'String', size: 10 },
+        { key: 'browseCount', name: '浏览量', type: 'String', size: 10 },
+        { key: 'linkCount', name: '点赞量', type: 'String', size: 10 },
+        { key: 'collectCount', name: '收藏量', type: 'String', size: 10 },
+        { key: 'shareCount', name: '分享量', type: 'String', size: 10 },
+        { key: 'commentCount', name: '评论', type: 'String', size: 10 },
+        { key: 'isComment', name: '是否可以评论', type: 'Enum', size: 10, default: IsCommentDict },
+        { key: 'status', name: '状态', type: 'Enum', size: 10, default: ArticleStatusDict },
+        { key: 'description', name: '备注', type: 'String', size: 20 },
+        { key: 'createTime', name: '创建时间', type: 'String', size: 20 },
+        { key: 'updateTime', name: '修改时间', type: 'String', size: 20 },
+      ];
+      const result = await this.excelService.exportExcel(columns, list);
 
-    res.setHeader(
-      'Content-Type',
-      'application/vnd.openxmlformats;charset=utf-8',
-    );
-    res.setHeader(
-      'Content-Disposition',
-      'attachment; filename=' +
-      encodeURIComponent(`文章_${Utils.dayjsFormat('YYYYMMDD')}`) +
-      '.xlsx', // 中文名需要进行 url 转码
-    );
-    // res.setTimeout(30 * 60 * 1000); // 防止网络原因造成超时。
-    res.end(result, 'binary');
+      res.setHeader(
+        'Content-Type',
+        'application/vnd.openxmlformats;charset=utf-8',
+      );
+      res.setHeader(
+        'Content-Disposition',
+        'attachment; filename=' +
+        encodeURIComponent(`文章_${Utils.dayjsFormat('YYYYMMDD')}`) +
+        '.xlsx', // 中文名需要进行 url 转码
+      );
+      // res.setTimeout(30 * 60 * 1000); // 防止网络原因造成超时。
+      res.end(result, 'binary');
+    } catch (e) {
+      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+    }
   }
 
   @Post('update')
@@ -169,47 +177,63 @@ export class ArticleController {
   @Auth('cms:article:unPublish')
   @ApiOperation({ summary: '取消发布' })
   async unPublish(@CurUser() curUser, @Body() baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto): Promise<any> {
-    baseModifyStatusByIdsDto.status = 0;
-    return await this.articleService.updateStatus(
-      baseModifyStatusByIdsDto,
-      curUser,
-    );
+    try {
+      baseModifyStatusByIdsDto.status = 0;
+      return await this.articleService.updateStatus(
+        baseModifyStatusByIdsDto,
+        curUser,
+      );
+    } catch (e) {
+      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+    }
   }
 
   @Post('inRecycle')
   @Auth('cms:article:inRecycle')
   @ApiOperation({ summary: '回收站移入' })
   async inRecycle(@CurUser() curUser, @Body() baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto): Promise<any> {
-    baseModifyStatusByIdsDto.status = 3;
-    return await this.articleService.updateStatus(
-      baseModifyStatusByIdsDto,
-      curUser,
-    );
+    try {
+      baseModifyStatusByIdsDto.status = 3;
+      return await this.articleService.updateStatus(
+        baseModifyStatusByIdsDto,
+        curUser,
+      );
+    } catch (e) {
+      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+    }
   }
 
   @Post('outRecycle')
   @Auth('cms:article:outRecycle')
   @ApiOperation({ summary: '回收站移出' })
   async outRecycle(@CurUser() curUser, @Body() baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto): Promise<any> {
-    baseModifyStatusByIdsDto.status = 2;
-    return await this.articleService.updateStatus(
-      baseModifyStatusByIdsDto,
-      curUser,
-    );
+    try {
+      baseModifyStatusByIdsDto.status = 2;
+      return await this.articleService.updateStatus(
+        baseModifyStatusByIdsDto,
+        curUser,
+      );
+    } catch (e) {
+      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+    }
   }
 
   @Post('deleteRecycle')
   @Auth('cms:article:deleteRecycle')
   @ApiOperation({ summary: '回收站删除' })
   async delete(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
-    const { id } = baseFindByIdDto;
-    const isExistId = await this.articleService.isExistId(id);
+    try {
+      const { id } = baseFindByIdDto;
+      const isExistId = await this.articleService.isExistId(id);
 
-    if (!isExistId) {
-      throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
+      if (!isExistId) {
+        throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
+      }
+
+      return await this.articleService.deleteById(baseFindByIdDto, curUser);
+    } catch (e) {
+      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
     }
-
-    return await this.articleService.deleteById(baseFindByIdDto, curUser);
   }
 
   @Post('deleteRecycleBatch')

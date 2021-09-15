@@ -28,156 +28,180 @@ export class HolidayService {
    * 添加
    */
   async insert(createHolidayDto: CreateHolidayDto, curUser?): Promise<CreateHolidayDto> {
-    const holiday = new Holiday();
-    if (curUser) {
-      holiday.createBy = curUser!.id;
-    }
-    await this.holidayRepository.save(createHolidayDto);
+    try {
+      const holiday = new Holiday();
+      if (curUser) {
+        holiday.createBy = curUser!.id;
+      }
+      await this.holidayRepository.save(createHolidayDto);
 
-    return createHolidayDto;
+      return createHolidayDto;
+    } catch (e) {
+      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+    }
   }
 
   /**
    * 添加（批量）
    */
   async insertBatch(createHolidayDto: CreateHolidayDto[], curUser?): Promise<CreateHolidayDto[]> {
-    const holidayList: CreateHolidayDto[] = [];
+    try {
+      const holidayList: CreateHolidayDto[] = [];
 
-    createHolidayDto.forEach((item) => {
-      let holiday = new Holiday();
-      holiday = Utils.dto2entityImport(item, holiday);
+      createHolidayDto.forEach((item) => {
+        let holiday = new Holiday();
+        holiday = Utils.dto2entityImport(item, holiday);
 
-      if (curUser) {
-        holiday.createBy = curUser!.id;
-      }
-      holidayList.push(holiday);
-    });
-    await this.holidayRepository.save(holidayList);
+        if (curUser) {
+          holiday.createBy = curUser!.id;
+        }
+        holidayList.push(holiday);
+      });
+      await this.holidayRepository.save(holidayList);
 
-    return createHolidayDto;
+      return createHolidayDto;
+    } catch (e) {
+      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+    }
   }
 
   /**
    * 获取列表
    */
   async selectList(searchHolidayDto: SearchHolidayDto): Promise<any[]> {
-    // eslint-disable-next-line prefer-const
-    let { year, name, weekday, restType, status } = searchHolidayDto;
+    try {
+      // eslint-disable-next-line prefer-const
+      let { year, name, weekday, restType, status } = searchHolidayDto;
 
-    const queryConditionList = [];
-    if (!Utils.isBlank(year)) {
-      queryConditionList.push('date LIKE :year');
-    }
-    if (!Utils.isBlank(name)) {
-      queryConditionList.push('name LIKE :name');
-    }
-    if (!Utils.isBlank(weekday)) {
-      queryConditionList.push('weekday = :weekday');
-    }
-    if (!Utils.isBlank(restType)) {
-      queryConditionList.push('restType = :restType');
-    }
-    if (!Utils.isBlank(status)) {
-      if (!Utils.isArray(status)) {
-        status = Utils.split(status.toString());
+      const queryConditionList = [];
+      if (!Utils.isBlank(year)) {
+        queryConditionList.push('date LIKE :year');
       }
-      queryConditionList.push('status IN (:...status)');
-    }
-    queryConditionList.push('deleteStatus = 0');
-    const queryCondition = queryConditionList.join(' AND ');
+      if (!Utils.isBlank(name)) {
+        queryConditionList.push('name LIKE :name');
+      }
+      if (!Utils.isBlank(weekday)) {
+        queryConditionList.push('weekday = :weekday');
+      }
+      if (!Utils.isBlank(restType)) {
+        queryConditionList.push('restType = :restType');
+      }
+      if (!Utils.isBlank(status)) {
+        if (!Utils.isArray(status)) {
+          status = Utils.split(status.toString());
+        }
+        queryConditionList.push('status IN (:...status)');
+      }
+      queryConditionList.push('deleteStatus = 0');
+      const queryCondition = queryConditionList.join(' AND ');
 
-    return await this.holidayRepository
-      .createQueryBuilder()
-      .where(queryCondition, {
-        year: `${year}%`,
-        name: `%${name}%`,
-        weekday: weekday,
-        restType: restType,
-        status: status,
-      })
-      .orderBy({
-        status: 'DESC',
-        date: 'ASC',
-        createTime: 'DESC',
-      })
-      .getMany();
+      return await this.holidayRepository
+        .createQueryBuilder()
+        .where(queryCondition, {
+          year: `${year}%`,
+          name: `%${name}%`,
+          weekday: weekday,
+          restType: restType,
+          status: status,
+        })
+        .orderBy({
+          status: 'DESC',
+          date: 'ASC',
+          createTime: 'DESC',
+        })
+        .getMany();
+    } catch (e) {
+      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+    }
   }
 
   /**
    * 获取列表（分页）
    */
   async selectListPage(limitHolidayDto: LimitHolidayDto): Promise<any> {
-    // eslint-disable-next-line prefer-const
-    let { page, limit, year, name, weekday, restType, status } = limitHolidayDto;
-    page = page ? page : 1;
-    limit = limit ? limit : 10;
-    const offset = (page - 1) * limit;
+    try {
+      // eslint-disable-next-line prefer-const
+      let { page, limit, year, name, weekday, restType, status } = limitHolidayDto;
+      page = page ? page : 1;
+      limit = limit ? limit : 10;
+      const offset = (page - 1) * limit;
 
-    const queryConditionList = [];
-    if (!Utils.isBlank(year)) {
-      queryConditionList.push('date LIKE :year');
-    }
-    if (!Utils.isBlank(name)) {
-      queryConditionList.push('name LIKE :name');
-    }
-    if (!Utils.isBlank(weekday)) {
-      queryConditionList.push('weekday = :weekday');
-    }
-    if (!Utils.isBlank(restType)) {
-      queryConditionList.push('restType = :restType');
-    }
-    if (!Utils.isBlank(status)) {
-      if (!Utils.isArray(status)) {
-        status = Utils.split(status.toString());
+      const queryConditionList = [];
+      if (!Utils.isBlank(year)) {
+        queryConditionList.push('date LIKE :year');
       }
-      queryConditionList.push('status IN (:...status)');
+      if (!Utils.isBlank(name)) {
+        queryConditionList.push('name LIKE :name');
+      }
+      if (!Utils.isBlank(weekday)) {
+        queryConditionList.push('weekday = :weekday');
+      }
+      if (!Utils.isBlank(restType)) {
+        queryConditionList.push('restType = :restType');
+      }
+      if (!Utils.isBlank(status)) {
+        if (!Utils.isArray(status)) {
+          status = Utils.split(status.toString());
+        }
+        queryConditionList.push('status IN (:...status)');
+      }
+      queryConditionList.push('deleteStatus = 0');
+      const queryCondition = queryConditionList.join(' AND ');
+
+      const res = await this.holidayRepository
+        .createQueryBuilder()
+        .where(queryCondition, {
+          year: `${year}%`,
+          name: `%${name}%`,
+          weekday: weekday,
+          restType: restType,
+          status: status,
+        })
+        .skip(offset)
+        .take(limit)
+        .orderBy({
+          status: 'DESC',
+          date: 'ASC',
+          createTime: 'DESC',
+        })
+        .getManyAndCount();
+
+      return {
+        list: res[0],
+        total: res[1],
+        page: page,
+        limit: limit,
+      };
+    } catch (e) {
+      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
     }
-    queryConditionList.push('deleteStatus = 0');
-    const queryCondition = queryConditionList.join(' AND ');
-
-    const res = await this.holidayRepository
-      .createQueryBuilder()
-      .where(queryCondition, {
-        year: `${year}%`,
-        name: `%${name}%`,
-        weekday: weekday,
-        restType: restType,
-        status: status,
-      })
-      .skip(offset)
-      .take(limit)
-      .orderBy({
-        status: 'DESC',
-        date: 'ASC',
-        createTime: 'DESC',
-      })
-      .getManyAndCount();
-
-    return {
-      list: res[0],
-      total: res[1],
-      page: page,
-      limit: limit,
-    };
   }
 
   /**
    * 获取详情（主键 id）
    */
   async selectById(baseFindByIdDto: BaseFindByIdDto): Promise<Holiday> {
-    const { id } = baseFindByIdDto;
-    return await this.holidayRepository.findOne(id);
+    try {
+      const { id } = baseFindByIdDto;
+      return await this.holidayRepository.findOne(id);
+    } catch (e) {
+      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+    }
   }
 
   /**
    * 是否存在（主键 id）
    */
   async isExistId(id: string): Promise<boolean> {
-    const isExist = await this.holidayRepository.findOne(id);
-    if (Utils.isNil(isExist)) {
-      return false;
-    } else {
-      return true;
+    try {
+      const isExist = await this.holidayRepository.findOne(id);
+      if (Utils.isNil(isExist)) {
+        return false;
+      } else {
+        return true;
+      }
+    } catch (e) {
+      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -185,119 +209,139 @@ export class HolidayService {
    * 获取 n 天内的日期
    */
   async selectDays(dayList, curUser?): Promise<any> {
-    const queryConditionList = [];
-    if (dayList.length > 0) {
-      queryConditionList.push('date IN (:date)');
-    }
-
-    queryConditionList.push('deleteStatus = 0');
-    const queryCondition = queryConditionList.join(' AND ');
-
-    let dayListStr = dayList.map((v) => {
-      return v.toString();
-    });
-
-    const ret = await this.holidayRepository
-      .createQueryBuilder()
-      .where(queryCondition, {
-        date: dayListStr,
-      })
-      .orderBy({
-        status: 'DESC',
-        createTime: 'DESC',
-      })
-      .getMany();
-
-    const map = new Map();
-    for (const v of ret) {
-      // @ts-ignore
-      map.set(v.date, v);
-    }
-
-    dayListStr = dayListStr.map(v => {
-      if (map.has(v)) {
-        return map.get(v);
-      } else {
-        const day = dayjs(v).day();
-        return {
-          name: null,
-          date: v,
-          weekday: day,
-          restType: [0, 6].includes(day) ? 3 : 0,
-          description: null,
-          status: null,
-        };
+    try {
+      const queryConditionList = [];
+      if (dayList.length > 0) {
+        queryConditionList.push('date IN (:date)');
       }
-    });
 
-    return dayListStr;
+      queryConditionList.push('deleteStatus = 0');
+      const queryCondition = queryConditionList.join(' AND ');
+
+      let dayListStr = dayList.map((v) => {
+        return v.toString();
+      });
+
+      const ret = await this.holidayRepository
+        .createQueryBuilder()
+        .where(queryCondition, {
+          date: dayListStr,
+        })
+        .orderBy({
+          status: 'DESC',
+          createTime: 'DESC',
+        })
+        .getMany();
+
+      const map = new Map();
+      for (const v of ret) {
+        // @ts-ignore
+        map.set(v.date, v);
+      }
+
+      dayListStr = dayListStr.map(v => {
+        if (map.has(v)) {
+          return map.get(v);
+        } else {
+          const day = dayjs(v).day();
+          return {
+            name: null,
+            date: v,
+            weekday: day,
+            restType: [0, 6].includes(day) ? 3 : 0,
+            description: null,
+            status: null,
+          };
+        }
+      });
+
+      return dayListStr;
+    } catch (e) {
+      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+    }
   }
 
   /**
    * 修改
    */
   async update(updateHolidayDto: UpdateHolidayDto, curUser?): Promise<void> {
-    const { id } = updateHolidayDto;
+    try {
+      const { id } = updateHolidayDto;
 
-    const isExistId = await this.isExistId(id);
-    if (!isExistId) {
-      throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
+      const isExistId = await this.isExistId(id);
+      if (!isExistId) {
+        throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
+      }
+
+      let holiday = new Holiday();
+      holiday = Utils.dto2entity(updateHolidayDto, holiday);
+      if (curUser) {
+        holiday.updateBy = curUser!.id;
+      }
+
+      await this.holidayRepository.update(id, holiday);
+    } catch (e) {
+      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
     }
-
-    let holiday = new Holiday();
-    holiday = Utils.dto2entity(updateHolidayDto, holiday);
-    if (curUser) {
-      holiday.updateBy = curUser!.id;
-    }
-
-    await this.holidayRepository.update(id, holiday);
   }
 
   /**
    * 修改状态
    */
   async updateStatus(baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto, curUser?): Promise<any> {
-    // eslint-disable-next-line prefer-const
-    let { ids, status } = baseModifyStatusByIdsDto;
-    if (!Utils.isArray(ids)) {
-      ids = Utils.split(ids.toString());
+    try {
+      // eslint-disable-next-line prefer-const
+      let { ids, status } = baseModifyStatusByIdsDto;
+      if (!Utils.isArray(ids)) {
+        ids = Utils.split(ids.toString());
+      }
+      return this.holidayRepository
+        .createQueryBuilder()
+        .update(Holiday)
+        .set({ status: status, updateBy: curUser ? curUser!.id : null })
+        .where('id IN (:ids)', { ids: ids })
+        .execute();
+    } catch (e) {
+      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
     }
-    return this.holidayRepository
-      .createQueryBuilder()
-      .update(Holiday)
-      .set({ status: status, updateBy: curUser ? curUser!.id : null })
-      .where('id IN (:ids)', { ids: ids })
-      .execute();
   }
 
   /**
    * 删除
    */
   async deleteById(baseFindByIdDto: BaseFindByIdDto, curUser?): Promise<void> {
-    const { id } = baseFindByIdDto;
+    try {
+      const { id } = baseFindByIdDto;
 
-    await this.holidayRepository
-      .createQueryBuilder()
-      .update(Holiday)
-      .set({ deleteStatus: 1, deleteBy: curUser ? curUser!.id : null, deleteTime: Utils.now() })
-      .where('id = :id', { id: id })
-      .execute();
+      await this.holidayRepository
+        .createQueryBuilder()
+        .update(Holiday)
+        .set({ deleteStatus: 1, deleteBy: curUser ? curUser!.id : null, deleteTime: Utils.now() })
+        .where('id = :id', { id: id })
+        .execute();
+    } catch (e) {
+      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+    }
   }
 
   /**
    * 删除（批量）
    */
   async deleteByIds(baseFindByIdsDto: BaseFindByIdsDto, curUser?): Promise<void> {
-    let { ids } = baseFindByIdsDto;
+    try {
+      let { ids } = baseFindByIdsDto;
 
-    if (!Utils.isArray(ids)) {
-      ids = Utils.split(ids.toString());
+      if (!Utils.isArray(ids)) {
+        ids = Utils.split(ids.toString());
+      }
+      await this.holidayRepository
+        .createQueryBuilder()
+        .update(Holiday)
+        .set({ deleteStatus: 1, deleteBy: curUser ? curUser!.id : null, deleteTime: Utils.now() })
+        .where('id IN (:ids)', { ids: ids })
+        .execute();
+    } catch (e) {
+      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
     }
-    await this.holidayRepository
-      .createQueryBuilder()
-      .update(Holiday)
-      .set({ deleteStatus: 1, deleteBy: curUser ? curUser!.id : null, deleteTime: Utils.now() })
-      .where('id IN (:ids)', { ids: ids })
-      .execute();
   }
 }

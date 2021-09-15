@@ -68,61 +68,77 @@ export class TopicController {
   @Auth('system:topic:exportExcel')
   @ApiOperation({ summary: '列表（Excel 导出）' })
   async exportExcel(@Query() searchTopicDto: SearchTopicDto, @Res() res): Promise<any> {
-    const list = await this.topicService.selectList(searchTopicDto);
+    try {
+      const list = await this.topicService.selectList(searchTopicDto);
 
-    const columns = [
-      { key: 'topicId', name: '主题 id', type: 'String', size: 10 },
-      { key: 'topicType', name: '主题类型', type: 'String', size: 10 },
-      { key: 'content', name: '评论内容', type: 'String', size: 20 },
-      { key: 'fromUid', name: '评论用户 id', type: 'String', size: 10 },
-      { key: 'status', name: '状态', type: 'Enum', size: 10, default: TopicStatusDict },
-      { key: 'description', name: '评论用户', type: 'String', size: 20 },
-      { key: 'createTime', name: '创建时间', type: 'String', size: 20 },
-      { key: 'updateTime', name: '修改时间', type: 'String', size: 20 },
-    ];
-    const result = await this.excelService.exportExcel(columns, list);
+      const columns = [
+        { key: 'topicId', name: '主题 id', type: 'String', size: 10 },
+        { key: 'topicType', name: '主题类型', type: 'String', size: 10 },
+        { key: 'content', name: '评论内容', type: 'String', size: 20 },
+        { key: 'fromUid', name: '评论用户 id', type: 'String', size: 10 },
+        { key: 'status', name: '状态', type: 'Enum', size: 10, default: TopicStatusDict },
+        { key: 'description', name: '评论用户', type: 'String', size: 20 },
+        { key: 'createTime', name: '创建时间', type: 'String', size: 20 },
+        { key: 'updateTime', name: '修改时间', type: 'String', size: 20 },
+      ];
+      const result = await this.excelService.exportExcel(columns, list);
 
-    res.setHeader(
-      'Content-Type',
-      'application/vnd.openxmlformats;charset=utf-8',
-    );
-    res.setHeader(
-      'Content-Disposition',
-      'attachment; filename=' +
-      encodeURIComponent(`文章评论_${Utils.dayjsFormat('YYYYMMDD')}`) +
-      '.xlsx', // 中文名需要进行 url 转码
-    );
-    // res.setTimeout(30 * 60 * 1000); // 防止网络原因造成超时。
-    res.end(result, 'binary');
+      res.setHeader(
+        'Content-Type',
+        'application/vnd.openxmlformats;charset=utf-8',
+      );
+      res.setHeader(
+        'Content-Disposition',
+        'attachment; filename=' +
+        encodeURIComponent(`文章评论_${Utils.dayjsFormat('YYYYMMDD')}`) +
+        '.xlsx', // 中文名需要进行 url 转码
+      );
+      // res.setTimeout(30 * 60 * 1000); // 防止网络原因造成超时。
+      res.end(result, 'binary');
+    } catch (e) {
+      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+    }
   }
 
   @Post('update')
   @Auth('system:topic:update')
   @ApiOperation({ summary: '修改' })
   async update(@CurUser() curUser, @Body() updateTopicDto: UpdateTopicDto): Promise<any> {
-    const { id } = updateTopicDto;
-    const isExistId = await this.topicService.isExistId(id);
-    if (!isExistId) {
-      throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
-    }
+    try {
+      const { id } = updateTopicDto;
+      const isExistId = await this.topicService.isExistId(id);
+      if (!isExistId) {
+        throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
+      }
 
-    return this.topicService.update(updateTopicDto, curUser);
+      return this.topicService.update(updateTopicDto, curUser);
+    } catch (e) {
+      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+    }
   }
 
   @Post('pass')
   @Auth('system:topic:pass')
   @ApiOperation({ summary: '审核通过' })
   async pass(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
-    const { id } = baseFindByIdDto;
-    return this.topicService.updateStatus({ ids: id, status: 1 }, curUser);
+    try {
+      const { id } = baseFindByIdDto;
+      return this.topicService.updateStatus({ ids: id, status: 1 }, curUser);
+    } catch (e) {
+      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+    }
   }
 
   @Post('reject')
   @Auth('system:topic:reject')
   @ApiOperation({ summary: '审核驳回' })
   async reject(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
-    const { id } = baseFindByIdDto;
-    return this.topicService.updateStatus({ ids: id, status: 2 }, curUser);
+    try {
+      const { id } = baseFindByIdDto;
+      return this.topicService.updateStatus({ ids: id, status: 2 }, curUser);
+    } catch (e) {
+      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+    }
   }
 
   @Post('updateStatus')
@@ -136,14 +152,18 @@ export class TopicController {
   @Auth('system:topic:delete')
   @ApiOperation({ summary: '删除' })
   async delete(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
-    const { id } = baseFindByIdDto;
-    const isExistId = await this.topicService.isExistId(id);
+    try {
+      const { id } = baseFindByIdDto;
+      const isExistId = await this.topicService.isExistId(id);
 
-    if (!isExistId) {
-      throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
+      if (!isExistId) {
+        throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
+      }
+
+      return await this.topicService.deleteById(baseFindByIdDto, curUser);
+    } catch (e) {
+      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
     }
-
-    return await this.topicService.deleteById(baseFindByIdDto, curUser);
   }
 
   @Post('deleteBatch')

@@ -77,11 +77,15 @@ export class FileController {
   })
   @UseInterceptors(FileInterceptor('file'))
   upload(@CurUser() curUser, @UploadedFile() file, @Body() body) {
-    if (Utils.isNil(file)) {
-      throw new ApiException(`文件不能为空！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
-    }
+    try {
+      if (Utils.isNil(file)) {
+        throw new ApiException(`文件不能为空！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
+      }
 
-    return this.fileService.insert(file, body, curUser);
+      return this.fileService.insert(file, body, curUser);
+    } catch (e) {
+      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+    }
   }
 
   @Post('uploads')
@@ -134,11 +138,15 @@ export class FileController {
     ]),
   )
   uploads(@CurUser() curUser, @UploadedFiles() files, @Body() body) {
-    if (Utils.isNil(files.files)) {
-      throw new ApiException(`文件不能为空！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
-    }
+    try {
+      if (Utils.isNil(files.files)) {
+        throw new ApiException(`文件不能为空！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
+      }
 
-    return this.fileService.insertBatch(files.files, body, curUser);
+      return this.fileService.insertBatch(files.files, body, curUser);
+    } catch (e) {
+      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+    }
   }
 
   @Get('findListPage')
@@ -162,15 +170,19 @@ export class FileController {
   @ApiOperation({ summary: '获取文件地址' })
   @ApiQuery({ name: 'id', description: '主键 id', required: true })
   async findFileUrl(@Query() baseFindByIdDto: BaseFindByIdDto, @Res() res) {
-    const file = await this.fileService.selectById(baseFindByIdDto);
+    try {
+      const file = await this.fileService.selectById(baseFindByIdDto);
 
-    // 设置请求的返回头 type，content 的 type 类型列表见上面
-    res.setHeader('Content-Type', file.mimeType);
-    // 格式必须为 binary 否则会出错
-    const content = fs.readFileSync(file.fileUrl, 'binary');
-    res.writeHead(HttpStatus.OK, 'Ok');
-    res.write(content, 'binary'); // 格式必须为 binary，否则会出错
-    res.end();
+      // 设置请求的返回头 type，content 的 type 类型列表见上面
+      res.setHeader('Content-Type', file.mimeType);
+      // 格式必须为 binary 否则会出错
+      const content = fs.readFileSync(file.fileUrl, 'binary');
+      res.writeHead(HttpStatus.OK, 'Ok');
+      res.write(content, 'binary'); // 格式必须为 binary，否则会出错
+      res.end();
+    } catch (e) {
+      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+    }
   }
 
   @Get('findByExtId')
@@ -186,28 +198,30 @@ export class FileController {
   @UseGuards(JwtAuthGuard, AuthGuard)
   @Auth('system:file:delete')
   @ApiOperation({ summary: '删除' })
-  async delete(
-    @CurUser() curUser,
-    @Body() baseFindByIdDto: BaseFindByIdDto,
-  ): Promise<any> {
-    const { id } = baseFindByIdDto;
-    const isExistId = await this.fileService.isExistId(id);
+  async delete(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
+    try {
+      const { id } = baseFindByIdDto;
+      const isExistId = await this.fileService.isExistId(id);
 
-    if (!isExistId) {
-      throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
+      if (!isExistId) {
+        throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
+      }
+
+      return await this.fileService.deleteById(baseFindByIdDto, curUser);
+    } catch (e) {
+      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
     }
-
-    return await this.fileService.deleteById(baseFindByIdDto, curUser);
   }
 
   @Post('deleteBatch')
   @UseGuards(JwtAuthGuard, AuthGuard)
   @Auth('system:file:deleteBatch')
   @ApiOperation({ summary: '删除（批量）' })
-  async deleteBatch(
-    @CurUser() curUser,
-    @Body() baseFindByIdsDto: BaseFindByIdsDto,
-  ): Promise<any> {
-    return await this.fileService.deleteByIds(baseFindByIdsDto, curUser);
+  async deleteBatch(@CurUser() curUser, @Body() baseFindByIdsDto: BaseFindByIdsDto): Promise<any> {
+    try {
+      return await this.fileService.deleteByIds(baseFindByIdsDto, curUser);
+    } catch (e) {
+      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+    }
   }
 }

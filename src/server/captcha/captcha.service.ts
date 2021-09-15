@@ -25,40 +25,52 @@ export class CaptchaService {
    * 生成验证码
    */
   getCaptcha(): { data: any; text: string } {
-    const captcha: { data: any; text: string } = svgCaptcha.create({
-      size: 4,
-      ignoreChars: '0o1i',
-    });
+    try {
+      const captcha: { data: any; text: string } = svgCaptcha.create({
+        size: 4,
+        ignoreChars: '0o1i',
+      });
 
-    return captcha;
+      return captcha;
+    } catch (e) {
+      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+    }
   }
 
   /**
    * 缓存到 redis
    */
   async insertCaptcha(captchaId, captchaText): Promise<any> {
-    const key = `${CaptchaPrefix.CAPTCHA}${captchaId}`;
-    return await this.cacheService.set(
-      key,
-      {
-        captchaId,
-        text: captchaText.toLowerCase(),
-      },
-      2 * 60,
-    );
+    try {
+      const key = `${CaptchaPrefix.CAPTCHA}${captchaId}`;
+      return await this.cacheService.set(
+        key,
+        {
+          captchaId,
+          text: captchaText.toLowerCase(),
+        },
+        2 * 60,
+      );
+    } catch (e) {
+      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+    }
   }
 
   /**
    * 从 redis 获取
    */
   async selectCaptcha(captchaId): Promise<any> {
-    const key = `${CaptchaPrefix.CAPTCHA}${captchaId}`;
-    const captcha = await this.cacheService.get(key);
-    if (!captcha) {
-      throw new ApiException('验证码错误！', ApiErrorCode.INVALID_CAPTCHA, HttpStatus.OK);
-    }
-    await this.cacheService.del(key);
+    try {
+      const key = `${CaptchaPrefix.CAPTCHA}${captchaId}`;
+      const captcha = await this.cacheService.get(key);
+      if (!captcha) {
+        throw new ApiException('验证码错误！', ApiErrorCode.INVALID_CAPTCHA, HttpStatus.OK);
+      }
+      await this.cacheService.del(key);
 
-    return captcha;
+      return captcha;
+    } catch (e) {
+      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+    }
   }
 }

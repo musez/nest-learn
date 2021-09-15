@@ -28,9 +28,7 @@ export class ImportLogController {
   @Get('findListPage')
   @Auth('system:importLog:findListPage')
   @ApiOperation({ summary: '获取列表（分页）' })
-  async findListPage(
-    @Query() limitImportLogDto: LimitImportLogDto,
-  ): Promise<any> {
+  async findListPage(@Query() limitImportLogDto: LimitImportLogDto): Promise<any> {
     return await this.importLogService.selectListPage(limitImportLogDto);
   }
 }

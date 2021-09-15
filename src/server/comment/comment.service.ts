@@ -25,144 +25,164 @@ export class CommentService {
    * 添加
    */
   async insert(createCommentDto: CreateCommentDto, curUser?): Promise<CreateCommentDto> {
-    return await this.commentRepository.save(createCommentDto);
+    try {
+      return await this.commentRepository.save(createCommentDto);
+    } catch (e) {
+      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+    }
   }
 
   /**
    * 获取列表
    */
   async selectList(searchCommentDto: SearchCommentDto): Promise<any[]> {
-    // eslint-disable-next-line prefer-const
-    let { commentId, content, replyType, status } = searchCommentDto;
+    try {
+      // eslint-disable-next-line prefer-const
+      let { commentId, content, replyType, status } = searchCommentDto;
 
-    const queryConditionList = [];
-    if (!Utils.isBlank(commentId)) {
-      queryConditionList.push('comment.commentId = :commentId');
-    }
-    if (!Utils.isBlank(content)) {
-      queryConditionList.push('comment.content LIKE :content');
-    }
-    if (!Utils.isBlank(replyType)) {
-      queryConditionList.push('comment.replyType = :replyType');
-    }
-    if (!Utils.isBlank(status)) {
-      if (!Utils.isArray(status)) {
-        status = Utils.split(status.toString());
+      const queryConditionList = [];
+      if (!Utils.isBlank(commentId)) {
+        queryConditionList.push('comment.commentId = :commentId');
       }
-      queryConditionList.push('comment.status IN (:...status)');
-    }
-    queryConditionList.push('comment.deleteStatus = 0');
-    const queryCondition = queryConditionList.join(' AND ');
+      if (!Utils.isBlank(content)) {
+        queryConditionList.push('comment.content LIKE :content');
+      }
+      if (!Utils.isBlank(replyType)) {
+        queryConditionList.push('comment.replyType = :replyType');
+      }
+      if (!Utils.isBlank(status)) {
+        if (!Utils.isArray(status)) {
+          status = Utils.split(status.toString());
+        }
+        queryConditionList.push('comment.status IN (:...status)');
+      }
+      queryConditionList.push('comment.deleteStatus = 0');
+      const queryCondition = queryConditionList.join(' AND ');
 
-    return await this.commentRepository
-      .createQueryBuilder('comment')
-      .leftJoinAndSelect(User, 'uf', 'uf.id = comment.fromUid')
-      .leftJoinAndSelect(User, 'ut', 'ut.id = comment.toUid')
-      .select('comment.*')
-      .addSelect(
-        `
+      return await this.commentRepository
+        .createQueryBuilder('comment')
+        .leftJoinAndSelect(User, 'uf', 'uf.id = comment.fromUid')
+        .leftJoinAndSelect(User, 'ut', 'ut.id = comment.toUid')
+        .select('comment.*')
+        .addSelect(
+          `
        uf.userName AS fromUname,
        ut.userName AS toUname
        `,
-      )
-      .where(queryCondition, {
-        commentId: commentId,
-        content: `%${content}%`,
-        replyType: replyType,
-        status: status,
-      })
-      .orderBy({
-        'comment.status': 'ASC',
-        'comment.createTime': 'ASC',
-      })
-      .getRawMany();
+        )
+        .where(queryCondition, {
+          commentId: commentId,
+          content: `%${content}%`,
+          replyType: replyType,
+          status: status,
+        })
+        .orderBy({
+          'comment.status': 'ASC',
+          'comment.createTime': 'ASC',
+        })
+        .getRawMany();
+    } catch (e) {
+      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+    }
   }
 
   /**
    * 获取列表（分页）
    */
   async selectListPage(limitCommentDto: LimitCommentDto): Promise<any> {
-    // eslint-disable-next-line prefer-const
-    let { page, limit, commentId, content, replyType, status } = limitCommentDto;
-    page = page ? page : 1;
-    limit = limit ? limit : 10;
-    const offset = (page - 1) * limit;
+    try {
+      // eslint-disable-next-line prefer-const
+      let { page, limit, commentId, content, replyType, status } = limitCommentDto;
+      page = page ? page : 1;
+      limit = limit ? limit : 10;
+      const offset = (page - 1) * limit;
 
-    const queryConditionList = [];
-    if (!Utils.isBlank(commentId)) {
-      queryConditionList.push('comment.commentId = :commentId');
-    }
-    if (!Utils.isBlank(content)) {
-      queryConditionList.push('comment.content LIKE :content');
-    }
-    if (!Utils.isBlank(replyType)) {
-      queryConditionList.push('comment.replyType = :replyType');
-    }
-    if (!Utils.isBlank(status)) {
-      if (!Utils.isArray(status)) {
-        status = Utils.split(status.toString());
+      const queryConditionList = [];
+      if (!Utils.isBlank(commentId)) {
+        queryConditionList.push('comment.commentId = :commentId');
       }
-      queryConditionList.push('comment.status IN (:...status)');
-    }
-    queryConditionList.push('comment.deleteStatus = 0');
-    const queryCondition = queryConditionList.join(' AND ');
+      if (!Utils.isBlank(content)) {
+        queryConditionList.push('comment.content LIKE :content');
+      }
+      if (!Utils.isBlank(replyType)) {
+        queryConditionList.push('comment.replyType = :replyType');
+      }
+      if (!Utils.isBlank(status)) {
+        if (!Utils.isArray(status)) {
+          status = Utils.split(status.toString());
+        }
+        queryConditionList.push('comment.status IN (:...status)');
+      }
+      queryConditionList.push('comment.deleteStatus = 0');
+      const queryCondition = queryConditionList.join(' AND ');
 
-    const queryBuilder = this.commentRepository
-      .createQueryBuilder('comment')
-      .leftJoinAndSelect(User, 'uf', 'uf.id = comment.fromUid')
-      .leftJoinAndSelect(User, 'ut', 'ut.id = comment.toUid')
-      .select('comment.*')
-      .addSelect(
-        `
+      const queryBuilder = this.commentRepository
+        .createQueryBuilder('comment')
+        .leftJoinAndSelect(User, 'uf', 'uf.id = comment.fromUid')
+        .leftJoinAndSelect(User, 'ut', 'ut.id = comment.toUid')
+        .select('comment.*')
+        .addSelect(
+          `
        uf.userName AS fromUname,
        ut.userName AS toUname
        `,
-      )
-      .where(queryCondition, {
-        commentId: commentId,
-        content: `%${content}%`,
-        replyType: replyType,
-        status: status,
-      });
+        )
+        .where(queryCondition, {
+          commentId: commentId,
+          content: `%${content}%`,
+          replyType: replyType,
+          status: status,
+        });
 
-    const ret = await queryBuilder
-      // .skip(offset)
-      // .take(limit)
-      .offset(offset)
-      .limit(limit)
-      .orderBy({
-        'comment.status': 'ASC',
-        'comment.createTime': 'ASC',
-      })
-      .getRawMany();
+      const ret = await queryBuilder
+        // .skip(offset)
+        // .take(limit)
+        .offset(offset)
+        .limit(limit)
+        .orderBy({
+          'comment.status': 'ASC',
+          'comment.createTime': 'ASC',
+        })
+        .getRawMany();
 
-    const retCount = await queryBuilder.getCount();
+      const retCount = await queryBuilder.getCount();
 
-    return {
-      list: ret,
-      total: retCount,
-      page: page,
-      limit: limit,
-    };
+      return {
+        list: ret,
+        total: retCount,
+        page: page,
+        limit: limit,
+      };
+    } catch (e) {
+      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+    }
   }
 
   /**
    * 获取详情（主键 id）
    */
   async selectById(baseFindByIdDto: BaseFindByIdDto): Promise<Comment> {
-    const { id } = baseFindByIdDto;
-    return await this.commentRepository.findOne(id);
+    try {
+      const { id } = baseFindByIdDto;
+      return await this.commentRepository.findOne(id);
+    } catch (e) {
+      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+    }
   }
 
   /**
    * 是否存在（主键 id）
    */
   async isExistId(id: string): Promise<boolean> {
-    const isExist = await this.commentRepository.findOne(id);
-    if (Utils.isNil(isExist)) {
-      return false;
-    } else {
-      return true;
+    try {
+      const isExist = await this.commentRepository.findOne(id);
+      if (Utils.isNil(isExist)) {
+        return false;
+      } else {
+        return true;
+      }
+    } catch (e) {
+      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -170,66 +190,82 @@ export class CommentService {
    * 修改
    */
   async update(updateCommentDto: UpdateCommentDto, curUser?): Promise<void> {
-    const { id } = updateCommentDto;
+    try {
+      const { id } = updateCommentDto;
 
-    let article = new Comment();
-    article = Utils.dto2entity(updateCommentDto, article);
+      let article = new Comment();
+      article = Utils.dto2entity(updateCommentDto, article);
 
-    await this.commentRepository.update(id, article);
+      await this.commentRepository.update(id, article);
+    } catch (e) {
+      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+    }
   }
 
   /**
    * 修改状态
    */
   async updateStatus(baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto, curUser?): Promise<any> {
-    // eslint-disable-next-line prefer-const
-    let { ids, status } = baseModifyStatusByIdsDto;
-    if (!Utils.isArray(ids)) {
-      ids = Utils.split(ids.toString());
+    try {
+      // eslint-disable-next-line prefer-const
+      let { ids, status } = baseModifyStatusByIdsDto;
+      if (!Utils.isArray(ids)) {
+        ids = Utils.split(ids.toString());
+      }
+
+      const ret = this.commentRepository
+        .createQueryBuilder()
+        .update(Comment)
+        .set({ status: status, updateBy: curUser ? curUser!.id : null })
+        .where('id IN (:ids)', { ids: ids })
+        .execute();
+
+      if (!ret) {
+        throw new ApiException('更新异常！', ApiErrorCode.ERROR, HttpStatus.OK);
+      }
+
+      return ret;
+    } catch (e) {
+      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
     }
-
-    const ret = this.commentRepository
-      .createQueryBuilder()
-      .update(Comment)
-      .set({ status: status, updateBy: curUser ? curUser!.id : null })
-      .where('id IN (:ids)', { ids: ids })
-      .execute();
-
-    if (!ret) {
-      throw new ApiException('更新异常！', ApiErrorCode.ERROR, HttpStatus.OK);
-    }
-
-    return ret;
   }
 
   /**
    * 删除
    */
   async deleteById(baseFindByIdDto: BaseFindByIdDto, curUser): Promise<void> {
-    const { id } = baseFindByIdDto;
+    try {
+      const { id } = baseFindByIdDto;
 
-    await this.commentRepository
-      .createQueryBuilder()
-      .update(Org)
-      .set({ deleteStatus: 1, deleteBy: curUser ? curUser!.id : null, deleteTime: Utils.now() })
-      .where('id = :id', { id: id })
-      .execute();
+      await this.commentRepository
+        .createQueryBuilder()
+        .update(Org)
+        .set({ deleteStatus: 1, deleteBy: curUser ? curUser!.id : null, deleteTime: Utils.now() })
+        .where('id = :id', { id: id })
+        .execute();
+    } catch (e) {
+      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+    }
   }
 
   /**
    * 删除（批量）
    */
   async deleteByIds(baseFindByIdsDto: BaseFindByIdsDto, curUser?): Promise<void> {
-    let { ids } = baseFindByIdsDto;
+    try {
+      let { ids } = baseFindByIdsDto;
 
-    if (!Utils.isArray(ids)) {
-      ids = Utils.split(ids.toString());
+      if (!Utils.isArray(ids)) {
+        ids = Utils.split(ids.toString());
+      }
+      await this.commentRepository
+        .createQueryBuilder()
+        .update(Comment)
+        .set({ deleteStatus: 1, deleteBy: curUser ? curUser!.id : null, deleteTime: Utils.now() })
+        .where('id IN (:ids)', { ids: ids })
+        .execute();
+    } catch (e) {
+      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
     }
-    await this.commentRepository
-      .createQueryBuilder()
-      .update(Comment)
-      .set({ deleteStatus: 1, deleteBy: curUser ? curUser!.id : null, deleteTime: Utils.now() })
-      .where('id IN (:ids)', { ids: ids })
-      .execute();
   }
 }

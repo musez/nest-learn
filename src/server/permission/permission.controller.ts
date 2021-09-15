@@ -90,67 +90,75 @@ export class PermissionController {
   @Auth('account:permission:exportExcel')
   @ApiOperation({ summary: '列表（Excel 导出）' })
   async exportExcel(@Query() searchPermissionDto: SearchPermissionDto, @Res() res): Promise<any> {
-    const list = await this.permissionService.selectAll(searchPermissionDto);
+    try {
+      const list = await this.permissionService.selectAll(searchPermissionDto);
 
-    const columns = [
-      { key: 'name', name: '名称', type: 'String', size: 10 },
-      {
-        key: 'type',
-        name: '权限类型',
-        type: 'Enum',
-        size: 10,
-        default: PermissionDict,
-      },
-      { key: 'code', name: '权限代码', type: 'String', size: 10 },
-      { key: 'routerComponent', name: '路由组件', type: 'String', size: 10 },
-      {
-        key: 'routerHidden',
-        name: '路由隐藏',
-        type: 'Enum',
-        size: 10,
-        default: PermissionHiddenDict,
-      },
-      { key: 'routerIcon', name: '路由图标', type: 'String', size: 10 },
-      { key: 'sort', name: '路由/权限排序', type: 'String', size: 10 },
-      { key: 'routerPath', name: '路由路径', type: 'String', size: 10 },
-      {
-        key: 'status',
-        name: '状态',
-        type: 'Enum',
-        size: 10,
-        default: StatusDict,
-      },
-      { key: 'description', name: '备注', type: 'String', size: 20 },
-      { key: 'createTime', name: '创建时间', type: 'String', size: 20 },
-      { key: 'updateTime', name: '修改时间', type: 'String', size: 20 },
-    ];
-    const result = await this.excelService.exportExcel(columns, list);
+      const columns = [
+        { key: 'name', name: '名称', type: 'String', size: 10 },
+        {
+          key: 'type',
+          name: '权限类型',
+          type: 'Enum',
+          size: 10,
+          default: PermissionDict,
+        },
+        { key: 'code', name: '权限代码', type: 'String', size: 10 },
+        { key: 'routerComponent', name: '路由组件', type: 'String', size: 10 },
+        {
+          key: 'routerHidden',
+          name: '路由隐藏',
+          type: 'Enum',
+          size: 10,
+          default: PermissionHiddenDict,
+        },
+        { key: 'routerIcon', name: '路由图标', type: 'String', size: 10 },
+        { key: 'sort', name: '路由/权限排序', type: 'String', size: 10 },
+        { key: 'routerPath', name: '路由路径', type: 'String', size: 10 },
+        {
+          key: 'status',
+          name: '状态',
+          type: 'Enum',
+          size: 10,
+          default: StatusDict,
+        },
+        { key: 'description', name: '备注', type: 'String', size: 20 },
+        { key: 'createTime', name: '创建时间', type: 'String', size: 20 },
+        { key: 'updateTime', name: '修改时间', type: 'String', size: 20 },
+      ];
+      const result = await this.excelService.exportExcel(columns, list);
 
-    res.setHeader(
-      'Content-Type',
-      'application/vnd.openxmlformats;charset=utf-8',
-    );
-    res.setHeader(
-      'Content-Disposition',
-      'attachment; filename=' +
-      encodeURIComponent(`权限_${Utils.dayjsFormat('YYYYMMDD')}`) +
-      '.xlsx', // 中文名需要进行 url 转码
-    );
-    // res.setTimeout(30 * 60 * 1000); // 防止网络原因造成超时。
-    res.end(result, 'binary');
+      res.setHeader(
+        'Content-Type',
+        'application/vnd.openxmlformats;charset=utf-8',
+      );
+      res.setHeader(
+        'Content-Disposition',
+        'attachment; filename=' +
+        encodeURIComponent(`权限_${Utils.dayjsFormat('YYYYMMDD')}`) +
+        '.xlsx', // 中文名需要进行 url 转码
+      );
+      // res.setTimeout(30 * 60 * 1000); // 防止网络原因造成超时。
+      res.end(result, 'binary');
+    } catch (e) {
+      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+    }
   }
 
   @Post('update')
   @Auth('account:permission:update')
   @ApiOperation({ summary: '修改' })
   async update(@CurUser() curUser, @Body() updatePermissionDto: UpdatePermissionDto): Promise<any> {
-    const { id } = updatePermissionDto;
-    const isExistId = await this.permissionService.isExistId(id);
+    try {
+      const { id } = updatePermissionDto;
+      const isExistId = await this.permissionService.isExistId(id);
 
-    if (!isExistId) {
-      throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
+      if (!isExistId) {
+        throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
+      }
+      return this.permissionService.update(updatePermissionDto, curUser);
+    } catch (e) {
+      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
     }
-    return this.permissionService.update(updatePermissionDto, curUser);
   }
 
   @Post('updateStatus')
@@ -164,13 +172,17 @@ export class PermissionController {
   @Auth('account:permission:delete')
   @ApiOperation({ summary: '删除' })
   async delete(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
-    const { id } = baseFindByIdDto;
-    const isExistId = await this.permissionService.isExistId(id);
+    try {
+      const { id } = baseFindByIdDto;
+      const isExistId = await this.permissionService.isExistId(id);
 
-    if (!isExistId) {
-      throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
+      if (!isExistId) {
+        throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
+      }
+      return await this.permissionService.deleteById(baseFindByIdDto, curUser);
+    } catch (e) {
+      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
     }
-    return await this.permissionService.deleteById(baseFindByIdDto, curUser);
   }
 
   @Post('deleteBatch')

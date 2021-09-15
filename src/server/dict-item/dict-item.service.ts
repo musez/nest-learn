@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateDictItemDto } from './dto/create-dict-item.dto';
@@ -8,6 +8,8 @@ import { Utils } from '../../utils';
 import { SearchDictItemDto } from './dto/search-dict-item.dto';
 import { LimitDictItemDto } from './dto/limit-dict-item.dto';
 import { BaseFindByIdDto } from '../base.dto';
+import { ApiException } from '../../common/exception/api-exception';
+import { ApiErrorCode } from '../../constants/api-error-code.enum';
 
 @Injectable()
 export class DictItemService {
@@ -21,136 +23,160 @@ export class DictItemService {
    * 添加
    */
   async insert(createDictItemDto: CreateDictItemDto, curUser?): Promise<CreateDictItemDto> {
-    let dictItem = new DictItem();
-    dictItem = Utils.dto2entity(createDictItemDto, dictItem);
-    if (curUser) {
-      dictItem.createBy = curUser!.id;
+    try {
+      let dictItem = new DictItem();
+      dictItem = Utils.dto2entity(createDictItemDto, dictItem);
+      if (curUser) {
+        dictItem.createBy = curUser!.id;
+      }
+      return await this.dictItemRepository.save(dictItem);
+    } catch (e) {
+      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
     }
-    return await this.dictItemRepository.save(dictItem);
   }
 
   /**
    * 添加（批量）
    */
   async insertBatch(createDictItemDto: CreateDictItemDto[], curUser?): Promise<CreateDictItemDto[] | DictItem[]> {
-    const dictItems = [];
+    try {
+      const dictItems = [];
 
-    createDictItemDto.forEach((item) => {
-      let dictItem = new DictItem();
-      dictItem = Utils.dto2entity(item, dictItem);
-      if (curUser) {
-        dictItem.createBy = curUser!.id;
-      }
-      dictItems.push(dictItem);
-    });
+      createDictItemDto.forEach((item) => {
+        let dictItem = new DictItem();
+        dictItem = Utils.dto2entity(item, dictItem);
+        if (curUser) {
+          dictItem.createBy = curUser!.id;
+        }
+        dictItems.push(dictItem);
+      });
 
-    return await this.dictItemRepository.save(dictItems);
+      return await this.dictItemRepository.save(dictItems);
+    } catch (e) {
+      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+    }
   }
 
   /**
    * 获取列表
    */
   async selectList(searchDictItemDto: SearchDictItemDto): Promise<DictItem[]> {
-    const { itemText, dictId } = searchDictItemDto;
+    try {
+      const { itemText, dictId } = searchDictItemDto;
 
-    const queryConditionList = [];
-    if (!Utils.isBlank(itemText)) {
-      queryConditionList.push('itemText LIKE :itemText');
-    }
-    if (!Utils.isBlank(dictId)) {
-      queryConditionList.push('dictId = :dictId');
-    }
-    queryConditionList.push('deleteStatus = 0');
-    const queryCondition = queryConditionList.join(' AND ');
+      const queryConditionList = [];
+      if (!Utils.isBlank(itemText)) {
+        queryConditionList.push('itemText LIKE :itemText');
+      }
+      if (!Utils.isBlank(dictId)) {
+        queryConditionList.push('dictId = :dictId');
+      }
+      queryConditionList.push('deleteStatus = 0');
+      const queryCondition = queryConditionList.join(' AND ');
 
-    return await this.dictItemRepository
-      .createQueryBuilder()
-      .where(queryCondition, {
-        itemText: `%${itemText}%`,
-        dictId: dictId,
-      })
-      .orderBy({
-        status: 'DESC',
-        sort: 'ASC',
-        createTime: 'DESC',
-      })
-      .getMany();
+      return await this.dictItemRepository
+        .createQueryBuilder()
+        .where(queryCondition, {
+          itemText: `%${itemText}%`,
+          dictId: dictId,
+        })
+        .orderBy({
+          status: 'DESC',
+          sort: 'ASC',
+          createTime: 'DESC',
+        })
+        .getMany();
+    } catch (e) {
+      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+    }
   }
 
   /**
    * 获取列表（分页）
    */
   async selectListPage(limitDictItemDto: LimitDictItemDto): Promise<any> {
-    // eslint-disable-next-line prefer-const
-    let { page, limit, itemText } = limitDictItemDto;
-    page = page ? page : 1;
-    limit = limit ? limit : 10;
-    const offset = (page - 1) * limit;
+    try {
+      // eslint-disable-next-line prefer-const
+      let { page, limit, itemText } = limitDictItemDto;
+      page = page ? page : 1;
+      limit = limit ? limit : 10;
+      const offset = (page - 1) * limit;
 
-    const queryConditionList = [];
-    if (!Utils.isBlank(itemText)) {
-      queryConditionList.push('itemText LIKE :itemText');
+      const queryConditionList = [];
+      if (!Utils.isBlank(itemText)) {
+        queryConditionList.push('itemText LIKE :itemText');
+      }
+      queryConditionList.push('deleteStatus = 0');
+      const queryCondition = queryConditionList.join(' AND ');
+
+      const res = await this.dictItemRepository
+        .createQueryBuilder()
+        .where(queryCondition, {
+          itemText: `%${itemText}%`,
+        })
+        .skip(offset)
+        .take(limit)
+        .orderBy({
+          status: 'DESC',
+          sort: 'ASC',
+          createTime: 'DESC',
+        })
+        .getManyAndCount();
+
+      return {
+        list: res[0],
+        total: res[1],
+        page: page,
+        limit: limit,
+      };
+    } catch (e) {
+      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
     }
-    queryConditionList.push('deleteStatus = 0');
-    const queryCondition = queryConditionList.join(' AND ');
-
-    const res = await this.dictItemRepository
-      .createQueryBuilder()
-      .where(queryCondition, {
-        itemText: `%${itemText}%`,
-      })
-      .skip(offset)
-      .take(limit)
-      .orderBy({
-        status: 'DESC',
-        sort: 'ASC',
-        createTime: 'DESC',
-      })
-      .getManyAndCount();
-
-    return {
-      list: res[0],
-      total: res[1],
-      page: page,
-      limit: limit,
-    };
   }
 
   /**
    * 获取列表
    */
   async selectByDictId(baseFindByIdDto: BaseFindByIdDto): Promise<DictItem[]> {
-    const { id } = baseFindByIdDto;
+    try {
+      const { id } = baseFindByIdDto;
 
-    const queryConditionList = [];
-    if (!Utils.isBlank(id)) {
-      queryConditionList.push('dictId = :id');
+      const queryConditionList = [];
+      if (!Utils.isBlank(id)) {
+        queryConditionList.push('dictId = :id');
+      }
+      queryConditionList.push('deleteStatus = 0');
+      const queryCondition = queryConditionList.join(' AND ');
+
+      return await this.dictItemRepository
+        .createQueryBuilder()
+        .where(queryCondition, {
+          id: id,
+        })
+        .orderBy({
+          status: 'DESC',
+          sort: 'ASC',
+          createTime: 'DESC',
+        })
+        .getMany();
+    } catch (e) {
+      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
     }
-    queryConditionList.push('deleteStatus = 0');
-    const queryCondition = queryConditionList.join(' AND ');
-
-    return await this.dictItemRepository
-      .createQueryBuilder()
-      .where(queryCondition, {
-        id: id,
-      })
-      .orderBy({
-        status: 'DESC',
-        sort: 'ASC',
-        createTime: 'DESC',
-      })
-      .getMany();
   }
 
   /**
    * 删除（字典 id）
    */
   async deleteByDictId(id: string, curUser?): Promise<void> {
-    await this.dictItemRepository
-      .createQueryBuilder()
-      .update(DictItem)
-      .set({ deleteStatus: 1, deleteBy: curUser ? curUser!.id : null, deleteTime: Utils.now() })
-      .where('dictId = :id', { id: id })
-      .execute();
+    try {
+      await this.dictItemRepository
+        .createQueryBuilder()
+        .update(DictItem)
+        .set({ deleteStatus: 1, deleteBy: curUser ? curUser!.id : null, deleteTime: Utils.now() })
+        .where('dictId = :id', { id: id })
+        .execute();
+    } catch (e) {
+      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+    }
   }
 }

@@ -64,51 +64,63 @@ export class FeedbackController {
   @Auth('account:feedback:exportExcel')
   @ApiOperation({ summary: '列表（Excel 导出）' })
   async exportExcel(@Query() searchFeedbackDto: SearchFeedbackDto, @Res() res): Promise<any> {
-    const list = await this.feedbackService.selectList(searchFeedbackDto);
+    try {
+      const list = await this.feedbackService.selectList(searchFeedbackDto);
 
-    const columns = [
+      const columns = [
 
-      { key: 'name', name: '姓名', type: 'String', size: 10 },
-      { key: 'mobile', name: '手机号', type: 'String', size: 15 },
-      { key: 'email', name: '邮箱', type: 'String', size: 15 },
-      { key: 'userType', name: '建议反馈类型', type: 'Enum', size: 10, default: FeedbackTypeDict },
-      { key: 'userType', name: '业务类型', type: 'Enum', size: 10, default: BusinessTypeDict },
-      { key: 'content', name: '内容', type: 'String', size: 20 },
-      { key: 'status', name: '状态', type: 'Enum', size: 10, default: FeedbackStatusDict },
-      { key: 'description', name: '备注', type: 'String', size: 20 },
-      { key: 'createTime', name: '创建时间', type: 'String', size: 20 },
-      { key: 'updateTime', name: '修改时间', type: 'String', size: 20 },
-    ];
+        { key: 'name', name: '姓名', type: 'String', size: 10 },
+        { key: 'mobile', name: '手机号', type: 'String', size: 15 },
+        { key: 'email', name: '邮箱', type: 'String', size: 15 },
+        { key: 'userType', name: '建议反馈类型', type: 'Enum', size: 10, default: FeedbackTypeDict },
+        { key: 'userType', name: '业务类型', type: 'Enum', size: 10, default: BusinessTypeDict },
+        { key: 'content', name: '内容', type: 'String', size: 20 },
+        { key: 'status', name: '状态', type: 'Enum', size: 10, default: FeedbackStatusDict },
+        { key: 'description', name: '备注', type: 'String', size: 20 },
+        { key: 'createTime', name: '创建时间', type: 'String', size: 20 },
+        { key: 'updateTime', name: '修改时间', type: 'String', size: 20 },
+      ];
 
-    const result = await this.excelService.exportExcel(columns, list);
-    res.setHeader(
-      'Content-Type',
-      'application/vnd.openxmlformats;charset=utf-8',
-    );
-    res.setHeader(
-      'Content-Disposition',
-      'attachment; filename=' +
-      encodeURIComponent(`用户_${Utils.dayjsFormat('YYYYMMDD')}`) +
-      '.xlsx', // 中文名需要进行 url 转码
-    );
-    // res.setTimeout(30 * 60 * 1000); // 防止网络原因造成超时。
-    res.end(result, 'binary');
+      const result = await this.excelService.exportExcel(columns, list);
+      res.setHeader(
+        'Content-Type',
+        'application/vnd.openxmlformats;charset=utf-8',
+      );
+      res.setHeader(
+        'Content-Disposition',
+        'attachment; filename=' +
+        encodeURIComponent(`用户_${Utils.dayjsFormat('YYYYMMDD')}`) +
+        '.xlsx', // 中文名需要进行 url 转码
+      );
+      // res.setTimeout(30 * 60 * 1000); // 防止网络原因造成超时。
+      res.end(result, 'binary');
+    } catch (e) {
+      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+    }
   }
 
   @Post('pass')
   @Auth('system:feedback:pass')
   @ApiOperation({ summary: '处理' })
   async pass(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
-    const { id } = baseFindByIdDto;
-    return this.feedbackService.updateStatus({ ids: id, status: 1 }, curUser);
+    try {
+      const { id } = baseFindByIdDto;
+      return this.feedbackService.updateStatus({ ids: id, status: 1 }, curUser);
+    } catch (e) {
+      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+    }
   }
 
   @Post('reject')
   @Auth('system:feedback:reject')
   @ApiOperation({ summary: '忽略' })
   async reject(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
-    const { id } = baseFindByIdDto;
-    return this.feedbackService.updateStatus({ ids: id, status: 2 }, curUser);
+    try {
+      const { id } = baseFindByIdDto;
+      return this.feedbackService.updateStatus({ ids: id, status: 2 }, curUser);
+    } catch (e) {
+      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+    }
   }
 
   @Post('updateStatus')
@@ -122,20 +134,28 @@ export class FeedbackController {
   @Auth('account:feedback:delete')
   @ApiOperation({ summary: '删除' })
   async delete(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
-    const { id } = baseFindByIdDto;
+    try {
+      const { id } = baseFindByIdDto;
 
-    const isExistId = await this.feedbackService.isExistId(id);
-    if (!isExistId) {
-      throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
+      const isExistId = await this.feedbackService.isExistId(id);
+      if (!isExistId) {
+        throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
+      }
+
+      return await this.feedbackService.deleteById(baseFindByIdDto, curUser);
+    } catch (e) {
+      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
     }
-
-    return await this.feedbackService.deleteById(baseFindByIdDto, curUser);
   }
 
   @Post('deleteBatch')
   @Auth('system:feedback:deleteBatch')
   @ApiOperation({ summary: '删除（批量）' })
   async deleteBatch(@CurUser() curUser, @Body() baseFindByIdsDto: BaseFindByIdsDto): Promise<any> {
-    return await this.feedbackService.deleteByIds(baseFindByIdsDto, curUser);
+    try {
+      return await this.feedbackService.deleteByIds(baseFindByIdsDto, curUser);
+    } catch (e) {
+      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+    }
   }
 }

@@ -73,11 +73,15 @@ export class QiniuController {
     },
   }))
   async upload(@CurUser() curUser, @UploadedFile() file, @Body() body) {
-    if (Utils.isNil(file)) {
-      throw new ApiException(`文件不能为空！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
-    }
+    try {
+      if (Utils.isNil(file)) {
+        throw new ApiException(`文件不能为空！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
+      }
 
-    return await this.qiniuService.upload(file, body, curUser);
+      return await this.qiniuService.upload(file, body, curUser);
+    } catch (e) {
+      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+    }
   }
 
   @Post('uploads')
@@ -128,11 +132,15 @@ export class QiniuController {
     },
   ]))
   async uploads(@CurUser() curUser, @UploadedFiles() files, @Body() body) {
-    if (Utils.isNil(files.files)) {
-      throw new ApiException(`文件不能为空！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
-    }
+    try {
+      if (Utils.isNil(files.files)) {
+        throw new ApiException(`文件不能为空！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
+      }
 
-    return await this.qiniuService.uploads(files.files, body, curUser);
+      return await this.qiniuService.uploads(files.files, body, curUser);
+    } catch (e) {
+      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+    }
   }
 
   @Get('findById')

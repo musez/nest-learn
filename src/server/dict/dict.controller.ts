@@ -65,9 +65,7 @@ export class DictController {
   @Get('findItemList')
   @Auth('system:dict:findItemList')
   @ApiOperation({ summary: '获取字典项列表' })
-  async findItemList(
-    @Query() searchDictItemDto: SearchDictItemDto,
-  ): Promise<DictItem[]> {
+  async findItemList(@Query() searchDictItemDto: SearchDictItemDto): Promise<DictItem[]> {
     return await this.dictItemService.selectList(searchDictItemDto);
   }
 
@@ -96,14 +94,18 @@ export class DictController {
   @Auth('system:dict:update')
   @ApiOperation({ summary: '修改' })
   async update(@CurUser() curUser, @Body() updateDictDto: UpdateDictDto): Promise<any> {
-    const { id } = updateDictDto;
-    const isExistId = await this.dictService.isExistId(id);
+    try {
+      const { id } = updateDictDto;
+      const isExistId = await this.dictService.isExistId(id);
 
-    if (!isExistId) {
-      throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
+      if (!isExistId) {
+        throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
+      }
+
+      return this.dictService.update(updateDictDto, curUser);
+    } catch (e) {
+      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
     }
-
-    return this.dictService.update(updateDictDto, curUser);
   }
 
   @Post('updateStatus')
@@ -117,14 +119,18 @@ export class DictController {
   @Auth('system:dict:delete')
   @ApiOperation({ summary: '删除' })
   async delete(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
-    const { id } = baseFindByIdDto;
-    const isExistId = await this.dictService.isExistId(id);
+    try {
+      const { id } = baseFindByIdDto;
+      const isExistId = await this.dictService.isExistId(id);
 
-    if (!isExistId) {
-      throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
+      if (!isExistId) {
+        throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
+      }
+
+      return await this.dictService.deleteById(baseFindByIdDto, curUser);
+    } catch (e) {
+      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
     }
-
-    return await this.dictService.deleteById(baseFindByIdDto, curUser);
   }
 
   @Post('deleteBatch')

@@ -67,47 +67,55 @@ export class CommentController {
   @Auth('account:comment:exportExcel')
   @ApiOperation({ summary: '列表（Excel 导出）' })
   async exportExcel(@Query() searchCommentDto: SearchCommentDto, @Res() res): Promise<any> {
-    const list = await this.commentService.selectList(searchCommentDto);
+    try {
+      const list = await this.commentService.selectList(searchCommentDto);
 
-    const columns = [
-      { key: 'commentId', name: '评论 id', type: 'String', size: 10 },
-      { key: 'replyId', name: '回复目标 id', type: 'String', size: 10 },
-      { key: 'replyType', name: '回复类型', type: 'Enum', size: 10, default: ReplyTypeDict },
-      { key: 'content', name: '回复内容', type: 'String', size: 20 },
-      { key: 'fromUid', name: '回复用户 id', type: 'String', size: 10 },
-      { key: 'toUid', name: '目标用户 id', type: 'String', size: 10 },
-      { key: 'status', name: '状态', type: 'Enum', size: 10, default: TopicStatusDict },
-      { key: 'description', name: '评论用户', type: 'String', size: 20 },
-      { key: 'createTime', name: '创建时间', type: 'String', size: 20 },
-      { key: 'updateTime', name: '修改时间', type: 'String', size: 20 },
-    ];
-    const result = await this.excelService.exportExcel(columns, list);
+      const columns = [
+        { key: 'commentId', name: '评论 id', type: 'String', size: 10 },
+        { key: 'replyId', name: '回复目标 id', type: 'String', size: 10 },
+        { key: 'replyType', name: '回复类型', type: 'Enum', size: 10, default: ReplyTypeDict },
+        { key: 'content', name: '回复内容', type: 'String', size: 20 },
+        { key: 'fromUid', name: '回复用户 id', type: 'String', size: 10 },
+        { key: 'toUid', name: '目标用户 id', type: 'String', size: 10 },
+        { key: 'status', name: '状态', type: 'Enum', size: 10, default: TopicStatusDict },
+        { key: 'description', name: '评论用户', type: 'String', size: 20 },
+        { key: 'createTime', name: '创建时间', type: 'String', size: 20 },
+        { key: 'updateTime', name: '修改时间', type: 'String', size: 20 },
+      ];
+      const result = await this.excelService.exportExcel(columns, list);
 
-    res.setHeader(
-      'Content-Type',
-      'application/vnd.openxmlformats;charset=utf-8',
-    );
-    res.setHeader(
-      'Content-Disposition',
-      'attachment; filename=' +
-      encodeURIComponent(`文章评论回复_${Utils.dayjsFormat('YYYYMMDD')}`) +
-      '.xlsx', // 中文名需要进行 url 转码
-    );
-    // res.setTimeout(30 * 60 * 1000); // 防止网络原因造成超时。
-    res.end(result, 'binary');
+      res.setHeader(
+        'Content-Type',
+        'application/vnd.openxmlformats;charset=utf-8',
+      );
+      res.setHeader(
+        'Content-Disposition',
+        'attachment; filename=' +
+        encodeURIComponent(`文章评论回复_${Utils.dayjsFormat('YYYYMMDD')}`) +
+        '.xlsx', // 中文名需要进行 url 转码
+      );
+      // res.setTimeout(30 * 60 * 1000); // 防止网络原因造成超时。
+      res.end(result, 'binary');
+    } catch (e) {
+      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+    }
   }
 
   @Post('update')
   @Auth('system:comment:update')
   @ApiOperation({ summary: '修改' })
   async update(@CurUser() curUser, @Body() updateCommentDto: UpdateCommentDto): Promise<any> {
-    const { id } = updateCommentDto;
-    const isExistId = await this.commentService.isExistId(id);
-    if (!isExistId) {
-      throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
-    }
+    try {
+      const { id } = updateCommentDto;
+      const isExistId = await this.commentService.isExistId(id);
+      if (!isExistId) {
+        throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
+      }
 
-    return this.commentService.update(updateCommentDto, curUser);
+      return this.commentService.update(updateCommentDto, curUser);
+    } catch (e) {
+      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+    }
   }
 
   @Post('updateStatus')
@@ -121,36 +129,52 @@ export class CommentController {
   @Auth('system:comment:pass')
   @ApiOperation({ summary: '审核通过' })
   async pass(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
-    const { id } = baseFindByIdDto;
-    return this.commentService.updateStatus({ ids: id, status: 1 }, curUser);
+    try {
+      const { id } = baseFindByIdDto;
+      return this.commentService.updateStatus({ ids: id, status: 1 }, curUser);
+    } catch (e) {
+      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+    }
   }
 
   @Post('reject')
   @Auth('system:comment:reject')
   @ApiOperation({ summary: '审核驳回' })
   async reject(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
-    const { id } = baseFindByIdDto;
-    return this.commentService.updateStatus({ ids: id, status: 2 }, curUser);
+    try {
+      const { id } = baseFindByIdDto;
+      return this.commentService.updateStatus({ ids: id, status: 2 }, curUser);
+    } catch (e) {
+      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+    }
   }
 
   @Post('delete')
   @Auth('system:comment:delete')
   @ApiOperation({ summary: '删除' })
   async delete(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
-    const { id } = baseFindByIdDto;
-    const isExistId = await this.commentService.isExistId(id);
+    try {
+      const { id } = baseFindByIdDto;
+      const isExistId = await this.commentService.isExistId(id);
 
-    if (!isExistId) {
-      throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
+      if (!isExistId) {
+        throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
+      }
+
+      return await this.commentService.deleteById(baseFindByIdDto, curUser);
+    } catch (e) {
+      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
     }
-
-    return await this.commentService.deleteById(baseFindByIdDto, curUser);
   }
 
   @Post('deleteBatch')
   @Auth('system:comment:deleteBatch')
   @ApiOperation({ summary: '删除（批量）' })
   async deleteBatch(@CurUser() curUser, @Body() baseFindByIdsDto: BaseFindByIdsDto): Promise<any> {
-    return await this.commentService.deleteByIds(baseFindByIdsDto, curUser);
+    try {
+      return await this.commentService.deleteByIds(baseFindByIdsDto, curUser);
+    } catch (e) {
+      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+    }
   }
 }

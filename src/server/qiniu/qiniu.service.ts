@@ -1,7 +1,6 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { ApiException } from '../../common/exception/api-exception';
 import { ConfigService } from '@nestjs/config';
-// @ts-ignore
 import * as qiniu from 'qiniu';
 import { BaseQiniuDto } from './dto/base-qiniu.dto';
 import { FileService } from '../file/file.service';
