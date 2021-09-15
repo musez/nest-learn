@@ -22,7 +22,7 @@ export class GroupPermissionService {
     try {
       return await this.groupPermissionRepository.save(groupPermission);
     } catch (e) {
-      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -41,7 +41,7 @@ export class GroupPermissionService {
 
       return ret;
     } catch (e) {
-      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -57,7 +57,7 @@ export class GroupPermissionService {
         },
       });
     } catch (e) {
-      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -73,7 +73,7 @@ export class GroupPermissionService {
         .where('groupId = :id', { id: id })
         .execute();
     } catch (e) {
-      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 }

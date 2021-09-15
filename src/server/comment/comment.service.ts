@@ -28,7 +28,7 @@ export class CommentService {
     try {
       return await this.commentRepository.save(createCommentDto);
     } catch (e) {
-      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -82,7 +82,7 @@ export class CommentService {
         })
         .getRawMany();
     } catch (e) {
-      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -154,7 +154,7 @@ export class CommentService {
         limit: limit,
       };
     } catch (e) {
-      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -166,7 +166,7 @@ export class CommentService {
       const { id } = baseFindByIdDto;
       return await this.commentRepository.findOne(id);
     } catch (e) {
-      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -182,7 +182,7 @@ export class CommentService {
         return true;
       }
     } catch (e) {
-      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -198,7 +198,7 @@ export class CommentService {
 
       await this.commentRepository.update(id, article);
     } catch (e) {
-      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -226,7 +226,7 @@ export class CommentService {
 
       return ret;
     } catch (e) {
-      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -244,7 +244,7 @@ export class CommentService {
         .where('id = :id', { id: id })
         .execute();
     } catch (e) {
-      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -265,7 +265,7 @@ export class CommentService {
         .where('id IN (:ids)', { ids: ids })
         .execute();
     } catch (e) {
-      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 }

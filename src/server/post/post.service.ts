@@ -34,7 +34,7 @@ export class PostService {
       }
       return await this.postRepository.save(post);
     } catch (e) {
-      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -72,7 +72,7 @@ export class PostService {
         })
         .getMany();
     } catch (e) {
-      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -122,7 +122,7 @@ export class PostService {
         limit: limit,
       };
     } catch (e) {
-      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -133,7 +133,7 @@ export class PostService {
     try {
       return await this.postRepository.findOne(baseFindByIdDto);
     } catch (e) {
-      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -149,7 +149,7 @@ export class PostService {
         return true;
       }
     } catch (e) {
-      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -172,7 +172,7 @@ export class PostService {
 
       await this.postRepository.update(id, post);
     } catch (e) {
-      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -199,7 +199,7 @@ export class PostService {
 
       return ret;
     } catch (e) {
-      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -222,7 +222,7 @@ export class PostService {
         .where('id = :id', { id: id })
         .execute();
     } catch (e) {
-      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -243,7 +243,7 @@ export class PostService {
         .where('id IN (:ids)', { ids: ids })
         .execute();
     } catch (e) {
-      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 }

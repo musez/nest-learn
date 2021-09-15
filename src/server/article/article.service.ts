@@ -54,7 +54,7 @@ export class ArticleService {
       }
       return await this.bindArticleCats(ret.id, cats);
     } catch (e) {
-      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -120,7 +120,7 @@ export class ArticleService {
 
       return ret;
     } catch (e) {
-      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -191,7 +191,7 @@ export class ArticleService {
         limit: limit,
       };
     } catch (e) {
-      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -214,7 +214,7 @@ export class ArticleService {
         throw new ApiException('获取异常！', ApiErrorCode.ERROR, HttpStatus.OK);
       }
     } catch (e) {
-      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -246,7 +246,7 @@ export class ArticleService {
 
       return ret;
     } catch (e) {
-      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -262,7 +262,7 @@ export class ArticleService {
         return true;
       }
     } catch (e) {
-      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -287,7 +287,7 @@ export class ArticleService {
         return ret;
       }
     } catch (e) {
-      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -308,7 +308,7 @@ export class ArticleService {
         .where('id IN (:ids)', { ids: ids })
         .execute();
     } catch (e) {
-      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -326,7 +326,7 @@ export class ArticleService {
         .where('id = :id', { id: id })
         .execute();
     } catch (e) {
-      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -347,7 +347,7 @@ export class ArticleService {
         .where('id IN (:ids)', { ids: ids })
         .execute();
     } catch (e) {
-      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -363,7 +363,7 @@ export class ArticleService {
         .where('status = 3')
         .execute();
     } catch (e) {
-      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -405,7 +405,7 @@ export class ArticleService {
         throw new ApiException('操作异常！', ApiErrorCode.ERROR, HttpStatus.OK);
       }
     } catch (e) {
-      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -459,7 +459,7 @@ export class ArticleService {
 
       return topicRet;
     } catch (e) {
-      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -522,7 +522,7 @@ export class ArticleService {
         limit: limit,
       };
     } catch (e) {
-      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -552,7 +552,7 @@ export class ArticleService {
         return await this.commentService.insert(params, curUser);
       }
     } catch (e) {
-      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -563,7 +563,7 @@ export class ArticleService {
     try {
       return await this.cacheService.client.zrevrangebyscore(`${ArticlePrefix.ARTICLE_BROWSE_COUNT}`, '+inf', '-inf', 'withscores');
     } catch (e) {
-      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -606,7 +606,7 @@ export class ArticleService {
         isBrowse: isBrowse,
       };
     } catch (e) {
-      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -617,7 +617,7 @@ export class ArticleService {
     try {
       return await this.cacheService.client.zrevrangebyscore(`${ArticlePrefix.ARTICLE_LINK_COUNT}`, '+inf', '-inf', 'withscores');
     } catch (e) {
-      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -661,7 +661,7 @@ export class ArticleService {
         isLink: isLink,
       };
     } catch (e) {
-      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -672,7 +672,7 @@ export class ArticleService {
     try {
       return await this.cacheService.client.zrevrangebyscore(`${ArticlePrefix.ARTICLE_COLLECT_COUNT}`, '+inf', '-inf', 'withscores');
     } catch (e) {
-      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -716,7 +716,7 @@ export class ArticleService {
         isCollect: isCollect,
       };
     } catch (e) {
-      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -727,7 +727,7 @@ export class ArticleService {
     try {
       return await this.cacheService.client.zrevrangebyscore(`${ArticlePrefix.ARTICLE_SHARE_COUNT}`, '+inf', '-inf', 'withscores');
     } catch (e) {
-      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -770,7 +770,7 @@ export class ArticleService {
         isShare: isShare,
       };
     } catch (e) {
-      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -781,7 +781,7 @@ export class ArticleService {
     try {
       return await this.cacheService.client.zrevrangebyscore(`${ArticlePrefix.ARTICLE_COMMENT_COUNT}`, '+inf', '-inf', 'withscores');
     } catch (e) {
-      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -825,7 +825,7 @@ export class ArticleService {
         isComment: isComment,
       };
     } catch (e) {
-      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 }

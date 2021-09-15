@@ -32,7 +32,7 @@ export class FeedbackService {
         throw new ApiException('保存异常！', ApiErrorCode.ERROR, HttpStatus.OK);
       }
     } catch (e) {
-      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -91,7 +91,7 @@ export class FeedbackService {
 
       return ret;
     } catch (e) {
-      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -166,7 +166,7 @@ export class FeedbackService {
         limit: limit,
       };
     } catch (e) {
-      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -187,7 +187,7 @@ export class FeedbackService {
       }
       return ret;
     } catch (e) {
-      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -203,7 +203,7 @@ export class FeedbackService {
         return true;
       }
     } catch (e) {
-      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -230,7 +230,7 @@ export class FeedbackService {
 
       return ret;
     } catch (e) {
-      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -254,7 +254,7 @@ export class FeedbackService {
 
       return null;
     } catch (e) {
-      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -281,7 +281,7 @@ export class FeedbackService {
 
       return null;
     } catch (e) {
-      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 }

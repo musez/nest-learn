@@ -33,7 +33,7 @@ export class AuthService {
         return null;
       }
     } catch (e) {
-      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -45,21 +45,16 @@ export class AuthService {
    */
   async validateCaptcha(captchaId: string, captchaText: string): Promise<any> {
     try {
-      const captcha = await this.captchaService.selectCaptcha(captchaId);
-
+      const { captchaId: id, text } = await this.captchaService.selectCaptcha(captchaId);
       // 万能验证码 icmz
-      if (
-        captchaId.toString() === captcha.captchaId.toString() &&
-        (captchaText.toLowerCase() === captcha.text ||
-          captchaText.toLowerCase() === 'icmz')
-      ) {
-        // if (captchaId === captcha.captchaId && (captchaText.toLowerCase() === captcha.text)) {
+      if (captchaId.toString() === id.toString() && (captchaText.toLowerCase() === text || captchaText.toLowerCase() === 'icmz')) {
+        // if (captchaId === id && (captchaText.toLowerCase() === text)) {
         return true;
       } else {
         return null;
       }
     } catch (e) {
-      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -78,7 +73,7 @@ export class AuthService {
         token: this.jwtService.sign(payload),
       };
     } catch (e) {
-      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 }

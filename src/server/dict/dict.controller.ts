@@ -104,7 +104,7 @@ export class DictController {
 
       return this.dictService.update(updateDictDto, curUser);
     } catch (e) {
-      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -129,7 +129,7 @@ export class DictController {
 
       return await this.dictService.deleteById(baseFindByIdDto, curUser);
     } catch (e) {
-      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 

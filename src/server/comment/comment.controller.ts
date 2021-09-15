@@ -97,7 +97,7 @@ export class CommentController {
       // res.setTimeout(30 * 60 * 1000); // 防止网络原因造成超时。
       res.end(result, 'binary');
     } catch (e) {
-      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -114,7 +114,7 @@ export class CommentController {
 
       return this.commentService.update(updateCommentDto, curUser);
     } catch (e) {
-      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -133,7 +133,7 @@ export class CommentController {
       const { id } = baseFindByIdDto;
       return this.commentService.updateStatus({ ids: id, status: 1 }, curUser);
     } catch (e) {
-      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -145,7 +145,7 @@ export class CommentController {
       const { id } = baseFindByIdDto;
       return this.commentService.updateStatus({ ids: id, status: 2 }, curUser);
     } catch (e) {
-      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -163,7 +163,7 @@ export class CommentController {
 
       return await this.commentService.deleteById(baseFindByIdDto, curUser);
     } catch (e) {
-      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -174,7 +174,7 @@ export class CommentController {
     try {
       return await this.commentService.deleteByIds(baseFindByIdsDto, curUser);
     } catch (e) {
-      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 }

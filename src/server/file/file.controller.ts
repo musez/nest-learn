@@ -84,7 +84,7 @@ export class FileController {
 
       return this.fileService.insert(file, body, curUser);
     } catch (e) {
-      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -145,7 +145,7 @@ export class FileController {
 
       return this.fileService.insertBatch(files.files, body, curUser);
     } catch (e) {
-      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -181,7 +181,7 @@ export class FileController {
       res.write(content, 'binary'); // 格式必须为 binary，否则会出错
       res.end();
     } catch (e) {
-      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -209,7 +209,7 @@ export class FileController {
 
       return await this.fileService.deleteById(baseFindByIdDto, curUser);
     } catch (e) {
-      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -221,7 +221,7 @@ export class FileController {
     try {
       return await this.fileService.deleteByIds(baseFindByIdsDto, curUser);
     } catch (e) {
-      throw new ApiException(e.message, ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 }
