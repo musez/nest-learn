@@ -8,6 +8,7 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger'; // api文档�
 import * as helmet from 'helmet';
 import * as rateLimit from 'express-rate-limit';
 import * as compression from 'compression';
+import * as figlet from 'figlet';
 import { TransformInterceptor } from './common/interceptor/transform.interceptor';
 import { ValidationPipe } from './common/pipe/validation.pipe';
 import { HttpExceptionFilter } from './common/filter/http-exception.filter';
@@ -97,6 +98,19 @@ async function bootstrap() {
   });
 
   await app.listen(listenPort, () => {
+    // figlet.text('icmz', {
+    //   font: 'Standard',
+    //   horizontalLayout: 'default',
+    //   verticalLayout: 'default',
+    //   width: 60,
+    //   whitespaceBreak: true
+    // }, function(err, data) {
+    //   if (err) {
+    //     return;
+    //   }
+    //   Logger.info(data);
+    // });
+
     Logger.info(`
     <<<<<<<<<<<<<<<<<<<<.<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
        _                   

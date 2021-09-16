@@ -20,7 +20,7 @@ export class LimitFileDto extends PartialType(BasePageDto) {
   @ApiPropertyOptional({ description: '文件显示名称' })
   readonly fileDisName?: string;
 
-  @ApiPropertyOptional({ description: '状态（0：禁用；1：启用）', example: 0 })
+  @ApiPropertyOptional({ description: '状态（0：禁用；1：启用）', example: 1 })
   // @IsOptional()
   // @Transform((value) => Number.parseInt(value))
   // @IsInt({ message: '查询类型必须为数字！' })

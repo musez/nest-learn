@@ -1,9 +1,9 @@
 // 状态类型
 export enum StatusType {
-  DISABLE = 0, // 禁用/未发布/未审核
-  ENABLE = 1, // 启用/发布/审核通过
-  DRAFT = 2, // 草稿/审核未通过
-  RECYCLE = 3, // 回收站
+  DISABLE = 0, // 禁用/未发布/未审核/未处理
+  ENABLE = 1, // 启用/发布/审核通过/已处理
+  DRAFT = 2, // -/草稿/审核未通过/已忽略
+  RECYCLE = 3, // -/回收站/-/-/
 }
 
 // 删除类型

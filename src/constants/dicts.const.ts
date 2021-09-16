@@ -19,6 +19,13 @@ export const TopicStatusDict = {
   '2': '审核未通过', // 审核未通过
 };
 
+// 意见反馈类型
+export const FeedbackStatusDict = {
+  '0': '未处理', // 未处理
+  '1': '已处理', // 已处理
+  '2': '已忽略', // 已忽略
+};
+
 // 删除类型
 export const DeleteDict = {
   '0': '未删除', // 未删除
@@ -56,12 +63,12 @@ export const IsCommentDict = {
 };
 
 // 评论类型
-export const TopicTypeDict = {
+export const TopicDict = {
   '0': '新闻',
 };
 
 // 评论回复类型
-export const ReplyTypeDict = {
+export const ReplyDict = {
   '0': '评论',
   '1': '回复',
 };
@@ -133,29 +140,22 @@ export const AreaLevelDict = {
 };
 
 // 建议反馈类型
-export const FeedbackTypeDict = {
+export const FeedbackDict = {
   '0': '其他',
   '1': '建议',
   '2': '投诉',
 };
 
 // 业务类型
-export const BusinessTypeDict = {
+export const BusinessDict = {
   '0': '其他',
   '1': '用户',
   '2': '文章',
   '3': '系统',
 };
 
-// 意见反馈类型
-export const FeedbackStatusDict = {
-  '0': '未处理', // 未处理
-  '1': '已处理', // 已处理
-  '2': '已忽略', // 已忽略
-};
-
 // 导入模块
-export const ImportTypeDict = {
+export const ImportDict = {
   '1': '地区', // 地区
   '2': '节假日', // 节假日
   '3': '用户', // 用户

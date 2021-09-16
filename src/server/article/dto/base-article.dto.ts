@@ -149,7 +149,7 @@ export class BaseArticleDto {
 
   @ApiProperty({
     description: '状态（0：未发布；1：发布；2：草稿；3：回收站）',
-    example: 0,
+    example: 2,
   })
   @IsDefined({ message: '状态不能为空！' })
   @IsNotEmpty({ message: '状态不能为空！' })

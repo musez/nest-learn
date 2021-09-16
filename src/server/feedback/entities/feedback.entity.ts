@@ -39,8 +39,8 @@ export class Feedback extends BaseEntity {
   content: string;
 
   @Column('tinyint', {
-    comment: '状态（0：未发布；1：发布；2：草稿；3：回收站）',
-    default: StatusType.DRAFT,
+    comment: '状态',
+    default: StatusType.DISABLE,
   })
   status: StatusType;
 }

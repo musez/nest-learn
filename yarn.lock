@@ -3835,6 +3835,11 @@ figlet@^1.1.1:
   resolved "https://registry.npm.taobao.org/figlet/download/figlet-1.5.0.tgz?cache=0&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Ffiglet%2Fdownload%2Ffiglet-1.5.0.tgz#2db4d00a584e5155a96080632db919213c3e003c"
   integrity sha1-LbTQClhOUVWpYIBjLbkZITw+ADw=
 
+figlet@^1.5.2:
+  version "1.5.2"
+  resolved "https://registry.nlark.com/figlet/download/figlet-1.5.2.tgz#dda34ff233c9a48e36fcff6741aeb5bafe49b634"
+  integrity sha1-3aNP8jPJpI42/P9nQa61uv5JtjQ=
+
 figures@^3.0.0:
   version "3.2.0"
   resolved "https://registry.npm.taobao.org/figures/download/figures-3.2.0.tgz#625c18bd293c604dc4a8ddb2febf0c88341746af"

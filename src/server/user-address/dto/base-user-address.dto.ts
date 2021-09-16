@@ -71,7 +71,7 @@ export class BaseUserAddressDto {
   })
   readonly address?: string;
 
-  @ApiProperty({ description: '状态（0：禁用；1：启用）', example: 0 })
+  @ApiProperty({ description: '状态（0：禁用；1：启用）', example: 1 })
   @IsDefined({ message: '状态不能为空！' })
   @IsNotEmpty({ message: '状态不能为空！' })
   // @Transform((value) => Number.parseInt(value))

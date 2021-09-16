@@ -14,9 +14,9 @@ import { BaseFindByIdDto, BaseFindByIdsDto, BaseModifyStatusByIdsDto } from '../
 import { CurUser } from '../../common/decorators/cur-user.decorator';
 import { ApiException } from '../../common/exception/api-exception';
 import {
-  BusinessTypeDict,
+  BusinessDict,
   FeedbackStatusDict,
-  FeedbackTypeDict,
+  FeedbackDict,
 } from '../../constants/dicts.const';
 import { Utils } from '../../utils';
 import { ApiErrorCode } from '../../constants/api-error-code.enum';
@@ -72,8 +72,8 @@ export class FeedbackController {
         { key: 'name', name: '姓名', type: 'String', size: 10 },
         { key: 'mobile', name: '手机号', type: 'String', size: 15 },
         { key: 'email', name: '邮箱', type: 'String', size: 15 },
-        { key: 'userType', name: '建议反馈类型', type: 'Enum', size: 10, default: FeedbackTypeDict },
-        { key: 'userType', name: '业务类型', type: 'Enum', size: 10, default: BusinessTypeDict },
+        { key: 'userType', name: '建议反馈类型', type: 'Enum', size: 10, default: FeedbackDict },
+        { key: 'userType', name: '业务类型', type: 'Enum', size: 10, default: BusinessDict },
         { key: 'content', name: '内容', type: 'String', size: 20 },
         { key: 'status', name: '状态', type: 'Enum', size: 10, default: FeedbackStatusDict },
         { key: 'description', name: '备注', type: 'String', size: 20 },

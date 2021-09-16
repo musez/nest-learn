@@ -21,7 +21,7 @@ import { LimitCommentDto } from './dto/limit-comment.dto';
 import { SearchCommentDto } from './dto/search-comment.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { AuthGuard } from '../../common/guards/auth.guard';
-import { ReplyTypeDict, TopicStatusDict } from '../../constants/dicts.const';
+import { ReplyDict, TopicStatusDict } from '../../constants/dicts.const';
 import { ApiErrorCode } from '../../constants/api-error-code.enum';
 
 @Controller('comment')
@@ -73,7 +73,7 @@ export class CommentController {
       const columns = [
         { key: 'commentId', name: '评论 id', type: 'String', size: 10 },
         { key: 'replyId', name: '回复目标 id', type: 'String', size: 10 },
-        { key: 'replyType', name: '回复类型', type: 'Enum', size: 10, default: ReplyTypeDict },
+        { key: 'replyType', name: '回复类型', type: 'Enum', size: 10, default: ReplyDict },
         { key: 'content', name: '回复内容', type: 'String', size: 20 },
         { key: 'fromUid', name: '回复用户 id', type: 'String', size: 10 },
         { key: 'toUid', name: '目标用户 id', type: 'String', size: 10 },

@@ -13,10 +13,7 @@ export class LimitTopicDto extends PartialType(BasePageDto) {
   @ApiPropertyOptional({ description: '主题类型' })
   readonly topicType?: number;
 
-  @ApiPropertyOptional({ description: '状态（0：禁用；1：启用）', example: 0 })
-  // @IsOptional()
-  // @Transform((value) => Number.parseInt(value))
-  // @IsInt({ message: '查询类型必须为数字！' })
+  @ApiPropertyOptional({ description: '状态（0：禁用；1：启用）', example: 1 })
   readonly status?: number | string | (number | string)[];
 
   @ApiPropertyOptional({ description: '回复类型（0：未回复；1：已回复）', example: 0 })
