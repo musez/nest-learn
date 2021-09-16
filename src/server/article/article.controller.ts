@@ -89,7 +89,7 @@ export class ArticleController {
         throw new ApiException('查询异常！', ApiErrorCode.ERROR, HttpStatus.OK);
       }
     } catch (e) {
-      throw new ApiException(e.errorMessage, ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -145,7 +145,7 @@ export class ArticleController {
       // res.setTimeout(30 * 60 * 1000); // 防止网络原因造成超时。
       res.end(result, 'binary');
     } catch (e) {
-      throw new ApiException(e.errorMessage, ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -184,7 +184,7 @@ export class ArticleController {
         curUser,
       );
     } catch (e) {
-      throw new ApiException(e.errorMessage, ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -199,7 +199,7 @@ export class ArticleController {
         curUser,
       );
     } catch (e) {
-      throw new ApiException(e.errorMessage, ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -214,7 +214,7 @@ export class ArticleController {
         curUser,
       );
     } catch (e) {
-      throw new ApiException(e.errorMessage, ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -232,7 +232,7 @@ export class ArticleController {
 
       return await this.articleService.deleteById(baseFindByIdDto, curUser);
     } catch (e) {
-      throw new ApiException(e.errorMessage, ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 

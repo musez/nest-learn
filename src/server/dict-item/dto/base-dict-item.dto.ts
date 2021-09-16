@@ -6,7 +6,7 @@ import {
   MaxLength,
   IsUUID,
 } from 'class-validator';
-import { Transform } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { DictItemConstants } from '../../../constants/swagger.const';
 
@@ -44,7 +44,8 @@ export class BaseDictItemDto {
 
   @ApiPropertyOptional({ description: '排序', example: 0 })
   @IsOptional()
-  @Transform((value) => Number.parseInt(value))
+  // @Transform((value) => Number.parseInt(value))
+  @Type(() => Number)
   @IsInt({ message: '排序必须为数字！' })
   readonly sort?: number;
 }

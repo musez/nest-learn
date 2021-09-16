@@ -1,7 +1,7 @@
 import { ApiPropertyOptional, PartialType } from '@nestjs/swagger';
 import { BasePageDto } from '../../base.dto';
 import { IsInt, IsOptional } from 'class-validator';
-import { Transform } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 
 export class LimitTopicDto extends PartialType(BasePageDto) {
   @ApiPropertyOptional({ description: '主题 id' })
@@ -21,7 +21,8 @@ export class LimitTopicDto extends PartialType(BasePageDto) {
 
   @ApiPropertyOptional({ description: '回复类型（0：未回复；1：已回复）', example: 0 })
   @IsOptional()
-  @Transform((value) => Number.parseInt(value))
+  // @Transform((value) => Number.parseInt(value))
+  @Type(() => Number)
   @IsInt({ message: '回复类型必须为数字！' })
   readonly isReply?: number;
 }

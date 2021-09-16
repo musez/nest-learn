@@ -33,7 +33,7 @@ export class CaptchaService {
 
       return captcha;
     } catch (e) {
-      throw new ApiException(e.errorMessage, ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -52,7 +52,7 @@ export class CaptchaService {
         2 * 60,
       );
     } catch (e) {
-      throw new ApiException(e.errorMessage, ApiErrorCode.ERROR, HttpStatus.OK);
+       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -70,7 +70,7 @@ export class CaptchaService {
 
       return captcha;
     } catch (e) {
-      throw new ApiException(e.errorMessage, ApiErrorCode.ERROR, HttpStatus.OK);
+       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 }

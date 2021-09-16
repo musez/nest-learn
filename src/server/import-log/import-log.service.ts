@@ -37,7 +37,7 @@ export class ImportLogService {
         throw new ApiException('保存异常！', ApiErrorCode.ERROR, HttpStatus.OK);
       }
     } catch (e) {
-      throw new ApiException(e.errorMessage, ApiErrorCode.ERROR, HttpStatus.OK);
+       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -80,7 +80,7 @@ export class ImportLogService {
 
       return ret;
     } catch (e) {
-      throw new ApiException(e.errorMessage, ApiErrorCode.ERROR, HttpStatus.OK);
+       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -133,7 +133,7 @@ export class ImportLogService {
         limit: limit,
       };
     } catch (e) {
-      throw new ApiException(e.errorMessage, ApiErrorCode.ERROR, HttpStatus.OK);
+       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 }

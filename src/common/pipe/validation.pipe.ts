@@ -1,7 +1,7 @@
 import { ArgumentMetadata, HttpStatus, Injectable, PipeTransform } from '@nestjs/common';
 // 可以识别校验装饰器数据
 import { validate } from 'class-validator';
-// plainToClass 会把一个普通的js对象转换成指定类的实例
+// plainToClass 会把一个普通的 js 对象转换成指定类的实例
 import { plainToClass } from 'class-transformer';
 import { Logger } from '../../utils/log4js.util';
 import { ApiException } from '../exception/api-exception';
@@ -12,14 +12,14 @@ export class ValidationPipe implements PipeTransform {
   // value 就是传入的实际数据
   // metatype 就是元数据，其实就是装饰器添加那些
   async transform(value: any, { metatype }: ArgumentMetadata) {
-    // console.log(`ValidationPipe：value:`, value, 'metatype: ', metatype);
+    console.log(`ValidationPipe：value:`, value, 'metatype: ', metatype);
     if (!metatype || !this.toValidate(metatype)) {
       // 如果没有传入验证规则，则不验证，直接返回数据
       return value;
     }
     // 将对象转换为 Class 来验证
     const object = plainToClass(metatype, value);
-    // 同步阻塞,返回校验结果
+    // 同步阻塞，返回校验结果
     const errors = await validate(object);
 
     if (errors.length > 0) {
@@ -28,9 +28,9 @@ export class ValidationPipe implements PipeTransform {
       Logger.error(`字段校验不通过: ${msg}`);
       // 抛出这个异常，逻辑就会交付 nest 的错误拦截去了
       // 要拦截这个错误做处理，可以从 filters 入手
-      throw new ApiException(`字段校验不通过: ${msg}`, ApiErrorCode.PARAMS_ERROR, HttpStatus.OK);
+      throw new ApiException(`字段校验不通过: ${msg}！`, ApiErrorCode.PARAMS_ERROR, HttpStatus.OK);
     }
-    return object;
+    return value;
   }
 
   // 这个函数的意义就是验证元数据传入的类型是否是定义内的常规类型数据

@@ -36,7 +36,7 @@ export class ArticleCatService {
       }
       return await this.articleCatRepository.save(createArticleCatDto);
     } catch (e) {
-      throw new ApiException(e.errorMessage, ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -83,7 +83,7 @@ export class ArticleCatService {
         .getRawMany();
       return res;
     } catch (e) {
-      throw new ApiException(e.errorMessage, ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -145,7 +145,7 @@ export class ArticleCatService {
         .getRawMany();
       return res;
     } catch (e) {
-      throw new ApiException(e.errorMessage, ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -200,7 +200,7 @@ export class ArticleCatService {
         limit: limit,
       };
     } catch (e) {
-      throw new ApiException(e.errorMessage, ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -226,7 +226,7 @@ export class ArticleCatService {
 
       return list;
     } catch (e) {
-      throw new ApiException(e.errorMessage, ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -252,7 +252,7 @@ export class ArticleCatService {
         return result;
       }
     } catch (e) {
-      throw new ApiException(e.errorMessage, ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -284,7 +284,7 @@ export class ArticleCatService {
 
       return list;
     } catch (e) {
-      throw new ApiException(e.errorMessage, ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -296,7 +296,7 @@ export class ArticleCatService {
       const { id } = baseFindByIdDto;
       return await this.articleCatRepository.findOne(id);
     } catch (e) {
-      throw new ApiException(e.errorMessage, ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -312,7 +312,7 @@ export class ArticleCatService {
         return true;
       }
     } catch (e) {
-      throw new ApiException(e.errorMessage, ApiErrorCode.ERROR, HttpStatus.OK);
+       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -326,7 +326,7 @@ export class ArticleCatService {
       if (ret) return true;
       else return false;
     } catch (e) {
-      throw new ApiException(e.errorMessage, ApiErrorCode.ERROR, HttpStatus.OK);
+       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -342,7 +342,7 @@ export class ArticleCatService {
 
       await this.articleCatRepository.update(id, articleCat);
     } catch (e) {
-      throw new ApiException(e.errorMessage, ApiErrorCode.ERROR, HttpStatus.OK);
+       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -369,7 +369,7 @@ export class ArticleCatService {
 
       return ret;
     } catch (e) {
-      throw new ApiException(e.errorMessage, ApiErrorCode.ERROR, HttpStatus.OK);
+       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -392,7 +392,7 @@ export class ArticleCatService {
         .where('id = :id', { id: id })
         .execute();
     } catch (e) {
-      throw new ApiException(e.errorMessage, ApiErrorCode.ERROR, HttpStatus.OK);
+       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -420,7 +420,7 @@ export class ArticleCatService {
         .where('id IN (:ids)', { ids: ids })
         .execute();
     } catch (e) {
-      throw new ApiException(e.errorMessage, ApiErrorCode.ERROR, HttpStatus.OK);
+       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 }

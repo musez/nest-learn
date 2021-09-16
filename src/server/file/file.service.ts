@@ -46,7 +46,7 @@ export class FileService {
 
       return await this.fileRepository.save(fileEntity);
     } catch (e) {
-      throw new ApiException(e.errorMessage, ApiErrorCode.ERROR, HttpStatus.OK);
+       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -86,7 +86,7 @@ export class FileService {
 
       return await this.fileRepository.save(filesEntity);
     } catch (e) {
-      throw new ApiException(e.errorMessage, ApiErrorCode.ERROR, HttpStatus.OK);
+       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -139,7 +139,7 @@ export class FileService {
         limit: limit,
       };
     } catch (e) {
-      throw new ApiException(e.errorMessage, ApiErrorCode.ERROR, HttpStatus.OK);
+       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -151,7 +151,7 @@ export class FileService {
       const { id } = baseFindByIdDto;
       return await this.fileRepository.findOne(id);
     } catch (e) {
-      throw new ApiException(e.errorMessage, ApiErrorCode.ERROR, HttpStatus.OK);
+       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -167,7 +167,7 @@ export class FileService {
         return true;
       }
     } catch (e) {
-      throw new ApiException(e.errorMessage, ApiErrorCode.ERROR, HttpStatus.OK);
+       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -181,7 +181,7 @@ export class FileService {
         deleteStatus: 0,
       });
     } catch (e) {
-      throw new ApiException(e.errorMessage, ApiErrorCode.ERROR, HttpStatus.OK);
+       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -199,7 +199,7 @@ export class FileService {
         .where('id = :id', { id: id })
         .execute();
     } catch (e) {
-      throw new ApiException(e.errorMessage, ApiErrorCode.ERROR, HttpStatus.OK);
+       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -220,7 +220,7 @@ export class FileService {
         .where('id IN (:ids)', { ids: ids })
         .execute();
     } catch (e) {
-      throw new ApiException(e.errorMessage, ApiErrorCode.ERROR, HttpStatus.OK);
+       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 }

@@ -6,7 +6,7 @@ import {
   MaxLength,
   IsUUID,
 } from 'class-validator';
-import { Transform } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { BaseConstants, OrgConstants } from '../../../constants/swagger.const';
 
@@ -37,7 +37,8 @@ export class BaseOrgDto {
 
   @ApiPropertyOptional({ description: '机构类型', example: 0 })
   @IsOptional()
-  @Transform((value) => Number.parseInt(value))
+  // @Transform((value) => Number.parseInt(value))
+  @Type(() => Number)
   @IsInt({ message: '机构类型必须为数字！' })
   readonly orgType?: number;
 
@@ -51,7 +52,8 @@ export class BaseOrgDto {
   @ApiProperty({ description: '状态（0：禁用；1：启用）', example: 0 })
   @IsDefined({ message: '状态不能为空！' })
   @IsNotEmpty({ message: '状态不能为空！' })
-  @Transform((value) => Number.parseInt(value))
+  // @Transform((value) => Number.parseInt(value))
+  @Type(() => Number)
   @IsInt({ message: '状态必须为数字！' })
   readonly status?: number;
 

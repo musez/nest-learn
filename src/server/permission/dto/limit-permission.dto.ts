@@ -3,7 +3,7 @@ import {
   IsInt,
   IsOptional,
 } from 'class-validator';
-import { Transform } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import { BasePageDto } from '../../base.dto';
 
 export class LimitPermissionDto extends PartialType(BasePageDto) {
@@ -14,7 +14,8 @@ export class LimitPermissionDto extends PartialType(BasePageDto) {
     description: '查询类型（0：子代；1：所有后代）',
     example: 0,
   })
-  @Transform((value) => Number.parseInt(value))
+  // @Transform((value) => Number.parseInt(value))
+  @Type(() => Number)
   @IsInt({ message: '查询类型必须为数字！' })
   readonly kinship?: number;
 

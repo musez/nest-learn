@@ -18,6 +18,7 @@ export class TransformInterceptor<T>
   intercept(context: ExecutionContext, next: CallHandler<T>): Observable<any> {
     const request = context.switchToHttp().getRequest<Request>();
     const req = context.getArgByIndex(1).req;
+
     return next.handle().pipe(
       map((data) => {
         const logFormat = ` <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<

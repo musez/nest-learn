@@ -10,7 +10,7 @@ import {
   IsOptional,
   IsUUID,
 } from 'class-validator';
-import { Transform } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { BaseConstants, UserConstants } from '../../../constants/swagger.const';
 
@@ -50,7 +50,8 @@ export class BaseUserDto {
   })
   @IsDefined({ message: '用户类型不能为空！' })
   @IsNotEmpty({ message: '用户类型不能为空！' })
-  @Transform((value) => Number.parseInt(value))
+  // @Transform((value) => Number.parseInt(value))
+  @Type(() => Number)
   @IsInt({ message: '用户类型必须为数字！' })
   readonly userType?: number;
 
@@ -80,7 +81,8 @@ export class BaseUserDto {
     example: 0,
   })
   @IsOptional()
-  @Transform((value) => Number.parseInt(value))
+  // @Transform((value) => Number.parseInt(value))
+  @Type(() => Number)
   @IsInt({ message: '性别必须为数字！' })
   readonly sex?: number;
 
@@ -106,7 +108,8 @@ export class BaseUserDto {
   @ApiProperty({ description: '状态（0：禁用；1：启用）', example: 0 })
   @IsDefined({ message: '状态不能为空！' })
   @IsNotEmpty({ message: '状态不能为空！' })
-  @Transform((value) => Number.parseInt(value))
+  // @Transform((value) => Number.parseInt(value))
+  @Type(() => Number)
   @IsInt({ message: '状态必须为数字！' })
   readonly status?: number;
 

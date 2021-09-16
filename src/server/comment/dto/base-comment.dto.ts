@@ -6,7 +6,7 @@ import {
   MaxLength,
   IsUUID,
 } from 'class-validator';
-import { Transform } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { BaseConstants } from '../../../constants/swagger.const';
 
@@ -32,7 +32,8 @@ export class BaseCommentDto {
   @ApiProperty({ description: '回复类型', default: 0 })
   @IsDefined({ message: '回复类型不能为空！' })
   @IsNotEmpty({ message: '回复类型不能为空！' })
-  @Transform((value) => Number.parseInt(value))
+  // @Transform((value) => Number.parseInt(value))
+  @Type(() => Number)
   @IsInt({ message: '回复类型为数字！' })
   readonly replyType: number;
 
@@ -53,7 +54,8 @@ export class BaseCommentDto {
 
   @ApiPropertyOptional({ description: '状态（0：禁用；1：启用）' })
   @IsOptional()
-  @Transform((value) => Number.parseInt(value))
+  // @Transform((value) => Number.parseInt(value))
+  @Type(() => Number)
   @IsInt({ message: '状态必须为数字！' })
   readonly status?: number;
 

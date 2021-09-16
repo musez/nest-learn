@@ -104,7 +104,7 @@ export class RoleController {
       // res.setTimeout(30 * 60 * 1000); // 防止网络原因造成超时。
       res.end(result, 'binary');
     } catch (e) {
-      throw new ApiException(e.errorMessage, ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -121,7 +121,7 @@ export class RoleController {
       }
       return this.roleService.update(updateRoleDto, curUser);
     } catch (e) {
-      throw new ApiException(e.errorMessage, ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -135,10 +135,7 @@ export class RoleController {
   @Post('delete')
   @Auth('account:role:delete')
   @ApiOperation({ summary: '删除' })
-  async delete(
-    @CurUser() curUser,
-    @Body() baseFindByIdDto: BaseFindByIdDto,
-  ): Promise<any> {
+  async delete(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
     try {
       const { id } = baseFindByIdDto;
       const isExistId = await this.roleService.isExistId(id);
@@ -148,7 +145,7 @@ export class RoleController {
       }
       return await this.roleService.deleteById(baseFindByIdDto, curUser);
     } catch (e) {
-      throw new ApiException(e.errorMessage, ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -162,10 +159,7 @@ export class RoleController {
   @Post('bindPermissions')
   @Auth('account:role:bindPermissions')
   @ApiOperation({ summary: '绑定角色权限' })
-  async bindPermissions(
-    @CurUser() curUser,
-    @Body() bindRolePermissionDto: BindRolePermissionDto,
-  ): Promise<any> {
+  async bindPermissions(@CurUser() curUser, @Body() bindRolePermissionDto: BindRolePermissionDto): Promise<any> {
     try {
       const { id } = bindRolePermissionDto;
       const isExistId = await this.roleService.isExistId(id);
@@ -175,7 +169,7 @@ export class RoleController {
       }
       return await this.roleService.bindPermissions(bindRolePermissionDto);
     } catch (e) {
-      throw new ApiException(e.errorMessage, ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -192,7 +186,7 @@ export class RoleController {
       }
       return await this.roleService.selectPermissionsByRoleId(baseFindByIdDto);
     } catch (e) {
-      throw new ApiException(e.errorMessage, ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 }

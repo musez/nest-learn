@@ -6,7 +6,7 @@ import {
   IsDefined,
   IsOptional,
 } from 'class-validator';
-import { Transform } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 
 export class CreateArticleCommentDto {
   @ApiProperty({ description: '主键 id', example: null })
@@ -21,7 +21,8 @@ export class CreateArticleCommentDto {
   })
   @IsDefined({ message: '评论类型不能为空！' })
   @IsNotEmpty({ message: '评论类型不能为空！' })
-  @Transform((value) => Number.parseInt(value))
+  // @Transform((value) => Number.parseInt(value))
+  @Type(() => Number)
   @IsInt({ message: '评论类型为数字！' })
   readonly type: number;
 
@@ -30,7 +31,8 @@ export class CreateArticleCommentDto {
     default: 0,
   })
   @IsOptional()
-  @Transform((value) => Number.parseInt(value))
+  // @Transform((value) => Number.parseInt(value))
+  @Type(() => Number)
   @IsInt({ message: '回复类型为数字！' })
   readonly replyType?: number;
 

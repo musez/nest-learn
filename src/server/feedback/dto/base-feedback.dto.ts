@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { Transform } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import { IsDefined, IsEmail, IsInt, IsMobilePhone, IsNotEmpty, IsOptional, IsString, IsUUID, MaxLength, MinLength } from 'class-validator';
 import { BaseConstants, UserConstants } from '../../../constants/swagger.const';
 
@@ -36,7 +36,8 @@ export class BaseFeedbackDto {
     example: 0,
   })
   @IsOptional()
-  @Transform((value) => Number.parseInt(value))
+  // @Transform((value) => Number.parseInt(value))
+  @Type(() => Number)
   @IsInt({ message: '建议反馈类型必须为数字！' })
   readonly feedbackType?: number;
 
@@ -45,7 +46,8 @@ export class BaseFeedbackDto {
     example: 0,
   })
   @IsOptional()
-  @Transform((value) => Number.parseInt(value))
+  // @Transform((value) => Number.parseInt(value))
+  @Type(() => Number)
   @IsInt({ message: '业务类型必须为数字！' })
   readonly businessType?: number;
 
@@ -59,7 +61,8 @@ export class BaseFeedbackDto {
   @ApiProperty({ description: '状态（0：禁用；1：启用）', example: 0 })
   @IsDefined({ message: '状态不能为空！' })
   @IsNotEmpty({ message: '状态不能为空！' })
-  @Transform((value) => Number.parseInt(value))
+  // @Transform((value) => Number.parseInt(value))
+  @Type(() => Number)
   @IsInt({ message: '状态必须为数字！' })
   readonly status?: number;
 

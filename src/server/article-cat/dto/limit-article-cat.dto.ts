@@ -4,7 +4,7 @@ import {
   IsOptional,
 } from 'class-validator';
 import { BasePageDto } from '../../base.dto';
-import { Transform } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 
 export class LimitArticleCatDto extends PartialType(BasePageDto) {
   @ApiPropertyOptional({ description: '父 id' })
@@ -15,7 +15,8 @@ export class LimitArticleCatDto extends PartialType(BasePageDto) {
     example: 0,
   })
   @IsOptional()
-  @Transform((value) => Number.parseInt(value))
+  // @Transform((value) => Number.parseInt(value))
+  @Type(() => Number)
   @IsInt({ message: '查询类型必须为数字！' })
   readonly kinship?: number;
 

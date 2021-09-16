@@ -6,7 +6,7 @@ import {
   MaxLength,
   IsUUID,
 } from 'class-validator';
-import { Transform } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { ArticleConstants, BaseConstants } from '../../../constants/swagger.const';
 
@@ -67,7 +67,8 @@ export class BaseArticleDto {
   })
   @IsDefined({ message: '文章类型不能为空！' })
   @IsNotEmpty({ message: '文章类型不能为空！' })
-  @Transform((value) => Number.parseInt(value))
+  // @Transform((value) => Number.parseInt(value))
+  @Type(() => Number)
   @IsInt({ message: '文章类型为数字！' })
   readonly type: number;
 
@@ -93,7 +94,8 @@ export class BaseArticleDto {
 
   @ApiPropertyOptional({ description: '权重', default: 0 })
   @IsOptional()
-  @Transform((value) => Number.parseInt(value))
+  // @Transform((value) => Number.parseInt(value))
+  @Type(() => Number)
   @IsInt({ message: '权重为数字！' })
   readonly weight?: number;
 
@@ -105,37 +107,43 @@ export class BaseArticleDto {
 
   @ApiPropertyOptional({ description: '浏览量', example: 0 })
   @IsOptional()
-  @Transform((value) => Number.parseInt(value))
+  // @Transform((value) => Number.parseInt(value))
+  @Type(() => Number)
   @IsInt({ message: '浏览量为数字！' })
   readonly browseCount?: number;
 
   @ApiPropertyOptional({ description: '点赞量', example: 0 })
   @IsOptional()
-  @Transform((value) => Number.parseInt(value))
+  // @Transform((value) => Number.parseInt(value))
+  @Type(() => Number)
   @IsInt({ message: '点赞量为数字！' })
   readonly linkCount?: number;
 
   @ApiPropertyOptional({ description: '收藏量', example: 0 })
   @IsOptional()
-  @Transform((value) => Number.parseInt(value))
+  // @Transform((value) => Number.parseInt(value))
+  @Type(() => Number)
   @IsInt({ message: '收藏量为数字！' })
   readonly collectCount?: number;
 
   @ApiPropertyOptional({ description: '分享量', example: 0 })
   @IsOptional()
-  @Transform((value) => Number.parseInt(value))
+  // @Transform((value) => Number.parseInt(value))
+  @Type(() => Number)
   @IsInt({ message: '分享量为数字！' })
   readonly shareCount?: number;
 
   @ApiPropertyOptional({ description: '允许评论', example: 0 })
   @IsOptional()
-  @Transform((value) => Number.parseInt(value))
+  // @Transform((value) => Number.parseInt(value))
+  @Type(() => Number)
   @IsInt({ message: '评论量为数字！' })
   readonly isComment?: number;
 
   @ApiPropertyOptional({ description: '评论量', example: 0 })
   @IsOptional()
-  @Transform((value) => Number.parseInt(value))
+  // @Transform((value) => Number.parseInt(value))
+  @Type(() => Number)
   @IsInt({ message: '允许评论为数字！' })
   readonly commentCount?: number;
 
@@ -145,7 +153,8 @@ export class BaseArticleDto {
   })
   @IsDefined({ message: '状态不能为空！' })
   @IsNotEmpty({ message: '状态不能为空！' })
-  @Transform((value) => Number.parseInt(value))
+  // @Transform((value) => Number.parseInt(value))
+  @Type(() => Number)
   @IsInt({ message: '状态必须为数字！' })
   readonly status?: number;
 
