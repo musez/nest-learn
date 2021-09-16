@@ -51,6 +51,7 @@ import SwaggerConfig from './config/swagger.config';
 import WechatConfig from './config/wechat.config';
 import QiNiuConfig from './config/qiniu.config';
 import { LoggerMiddleware } from './common/middleware/logger.middleware';
+import { UploadModule } from './server/upload/upload.module';
 
 @Module({
   imports: [
@@ -114,6 +115,7 @@ import { LoggerMiddleware } from './common/middleware/logger.middleware';
     DictModule,
     DictItemModule,
     AreaModule,
+    UploadModule,
     FileModule,
     QiniuModule,
     ArticleModule,

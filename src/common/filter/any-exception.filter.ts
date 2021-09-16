@@ -37,7 +37,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
     response.status(200).json({
       code: status,
       data: null,
-      message: `Service Error: ${exception}`,
+      message: `服务端错误: ${exception}`,
       time: nowDate,
       path: request.url,
     });

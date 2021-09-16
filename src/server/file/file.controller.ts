@@ -4,27 +4,16 @@ import {
   Post,
   Body,
   Query,
-  UseInterceptors,
-  UploadedFile,
-  UploadedFiles,
   UseGuards,
   Res, HttpStatus,
 } from '@nestjs/common';
 import {
   ApiTags,
   ApiQuery,
-  ApiBody,
-  ApiConsumes,
   ApiBasicAuth,
   ApiOperation,
 } from '@nestjs/swagger';
-import {
-  FileInterceptor,
-  FileFieldsInterceptor,
-} from '@nestjs/platform-express';
-
 import * as fs from 'fs';
-import { Utils } from './../../utils/index';
 import { FileService } from './file.service';
 import { CreateFileDto } from './dto/create-file.dto';
 import { UpdateFileDto } from './dto/update-file.dto';
@@ -35,7 +24,6 @@ import { Auth } from '../../common/decorators/auth.decorator';
 import { AuthGuard } from '../../common/guards/auth.guard';
 import { ApiException } from '../../common/exception/api-exception';
 import { ApiErrorCode } from '../../constants/api-error-code.enum';
-import { BaseFilesUploadDto, BaseFileUploadDto } from './dto/upload-file.dto';
 
 @Controller('file')
 @ApiTags('文件')
@@ -44,64 +32,6 @@ export class FileController {
   constructor(
     private readonly fileService: FileService,
   ) {
-  }
-
-  @Post('upload')
-  @UseGuards(JwtAuthGuard, AuthGuard)
-  @Auth('system:file:upload')
-  @ApiOperation({ summary: '文件上传（单）' })
-  @ApiConsumes('multipart/form-data')
-  @ApiBody({ type: BaseFileUploadDto, description: '文件' })
-  @UseInterceptors(FileInterceptor('file'))
-  upload(@CurUser() curUser, @UploadedFile() file, @Body() body) {
-    console.log('upload', file, body);
-    try {
-      if (Utils.isNil(file)) {
-        throw new ApiException(`文件不能为空！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
-      }
-
-      return this.fileService.insert(file, body, curUser);
-    } catch (e) {
-      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
-    }
-  }
-
-  @Post('uploads')
-  @UseGuards(JwtAuthGuard, AuthGuard)
-  @Auth('system:file:uploads')
-  @ApiOperation({ summary: '文件上传（批量）' })
-  @ApiConsumes('multipart/form-data')
-  @ApiBody({ type: BaseFilesUploadDto, description: '文件' })
-  @UseInterceptors(
-    FileFieldsInterceptor([
-      {
-        name: 'files',
-        maxCount: 10,
-      },
-      {
-        name: 'fileDisName',
-        maxCount: 10,
-      },
-      {
-        name: 'extId',
-        maxCount: 1,
-      },
-      {
-        name: 'description',
-        maxCount: 1,
-      },
-    ]),
-  )
-  uploads(@CurUser() curUser, @UploadedFiles() files, @Body() body) {
-    try {
-      if (Utils.isNil(files.files)) {
-        throw new ApiException(`文件不能为空！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
-      }
-
-      return this.fileService.insertBatch(files.files, body, curUser);
-    } catch (e) {
-      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
-    }
   }
 
   @Get('findListPage')

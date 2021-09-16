@@ -27,7 +27,7 @@ async function bootstrap() {
 
   // 使用跨站脚本攻击类的库
   app.use(helmet());
-  // 为了保护您的应用程序免受暴力攻击，您必须实现某种速率限制。幸运的是，NPM上已经有很多各种中间件可用。其中一个是快速限额。
+  // 为了保护您的应用程序免受暴力攻击，您必须实现某种速率限制。幸运的是，NPM 上已经有很多各种中间件可用。其中一个是快速限额。
   app.use(rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
     max: 100, // limit each IP to 100 requests per windowMs
@@ -107,7 +107,7 @@ async function bootstrap() {
     server listen on：http://localhost:${listenPort}/api
     swagger listen on：http://localhost:${listenPort}${setupPath}
     
-    Powered by WangYue
+    Powered by WangYue 2021
     <<<<<<<<<<<<<<<<<<<<.<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<`);
   });
 }
