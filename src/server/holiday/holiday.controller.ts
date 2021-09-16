@@ -25,11 +25,7 @@ import {
 } from '@nestjs/swagger';
 import { CurUser } from '../../common/decorators/cur-user.decorator';
 import { Auth } from '../../common/decorators/auth.decorator';
-import {
-  BaseFindByIdDto,
-  BaseFindByIdsDto,
-  BaseModifyStatusByIdsDto,
-} from '../base.dto';
+import { BaseFileImportDto, BaseFindByIdDto, BaseFindByIdsDto, BaseModifyStatusByIdsDto } from '../base.dto';
 import { Holiday } from './entities/holiday.entity';
 import { SearchHolidayDto } from './dto/search-holiday.dto';
 import { LimitHolidayDto } from './dto/limit-holiday.dto';
@@ -93,7 +89,7 @@ export class HolidayController {
       const dayList = Utils.dayjsGetDay(parseInt(String(days)));
       return this.holidayService.selectDays(dayList, curUser);
     } catch (e) {
-       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -129,7 +125,7 @@ export class HolidayController {
       // res.setTimeout(30 * 60 * 1000); // 防止网络原因造成超时。
       res.end(result, 'binary');
     } catch (e) {
-       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -137,18 +133,7 @@ export class HolidayController {
   @Auth('system:holiday:importExcel')
   @ApiOperation({ summary: '列表（Excel 导入）' })
   @ApiConsumes('multipart/form-data')
-  @ApiBody({
-    schema: {
-      type: 'object',
-      properties: {
-        file: {
-          type: 'string',
-          format: 'binary',
-          description: '文件',
-        },
-      },
-    },
-  })
+  @ApiBody({ type: BaseFileImportDto, description: '文件' })
   @UseInterceptors(FileInterceptor('file'))
   async importExcel(@CurUser() curUser, @UploadedFile() file): Promise<any> {
     try {
@@ -209,7 +194,7 @@ export class HolidayController {
         throw new ApiException(`操作异常！`, ApiErrorCode.ERROR, HttpStatus.OK);
       }
     } catch (e) {
-       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -227,7 +212,7 @@ export class HolidayController {
 
       return this.holidayService.update(updateHolidayDto, curUser);
     } catch (e) {
-       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -252,7 +237,7 @@ export class HolidayController {
 
       return await this.holidayService.deleteById(baseFindByIdDto, curUser);
     } catch (e) {
-       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 

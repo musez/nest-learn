@@ -22,6 +22,7 @@ import { AuthGuard } from '../../common/guards/auth.guard';
 import { Auth } from '../../common/decorators/auth.decorator';
 import { BaseFindByIdDto } from '../base.dto';
 import { ApiErrorCode } from '../../constants/api-error-code.enum';
+import { BaseFilesUploadDto, BaseFileUploadDto } from '../file/dto/upload-file.dto';
 
 @ApiTags('七牛云')
 @Controller('qiniu')
@@ -43,30 +44,7 @@ export class QiniuController {
   @Auth('system:qiniu:upload')
   @ApiOperation({ summary: '文件上传（单）' })
   @ApiConsumes('multipart/form-data')
-  @ApiBody({
-    schema: {
-      type: 'object',
-      properties: {
-        file: {
-          type: 'string',
-          format: 'binary',
-          description: '文件',
-        },
-        fileDisName: {
-          type: 'string',
-          description: '文件显示名称',
-        },
-        extId: {
-          type: 'string',
-          description: '关联 id',
-        },
-        description: {
-          type: 'string',
-          description: '描述',
-        },
-      },
-    },
-  })
+  @ApiBody({ type: BaseFileUploadDto, description: '文件' })
   @UseInterceptors(FileInterceptor('file', {
     limits: {
       fieldSize: 8 * 1024 * 1024,
@@ -89,30 +67,7 @@ export class QiniuController {
   @Auth('system:qiniu:uploads')
   @ApiOperation({ summary: '文件上传（多）' })
   @ApiConsumes('multipart/form-data')
-  @ApiBody({
-    schema: {
-      type: 'object',
-      properties: {
-        files: {
-          type: 'string',
-          format: 'binary',
-          description: '文件',
-        },
-        fileDisName: {
-          type: 'string',
-          description: '文件显示名称',
-        },
-        extId: {
-          type: 'string',
-          description: '关联 id',
-        },
-        description: {
-          type: 'string',
-          description: '描述',
-        },
-      },
-    },
-  })
+  @ApiBody({ type: BaseFilesUploadDto, description: '文件' })
   @UseInterceptors(FileFieldsInterceptor([
     {
       name: 'files',

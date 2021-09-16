@@ -28,7 +28,6 @@ import { Utils } from './../../utils/index';
 import { FileService } from './file.service';
 import { CreateFileDto } from './dto/create-file.dto';
 import { UpdateFileDto } from './dto/update-file.dto';
-import { File } from './entities/file.entity';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { BaseFindByIdDto, BaseFindByIdsDto, BasePageDto } from '../base.dto';
 import { CurUser } from '../../common/decorators/cur-user.decorator';
@@ -36,6 +35,7 @@ import { Auth } from '../../common/decorators/auth.decorator';
 import { AuthGuard } from '../../common/guards/auth.guard';
 import { ApiException } from '../../common/exception/api-exception';
 import { ApiErrorCode } from '../../constants/api-error-code.enum';
+import { BaseFilesUploadDto, BaseFileUploadDto } from './dto/upload-file.dto';
 
 @Controller('file')
 @ApiTags('文件')
@@ -51,32 +51,10 @@ export class FileController {
   @Auth('system:file:upload')
   @ApiOperation({ summary: '文件上传（单）' })
   @ApiConsumes('multipart/form-data')
-  @ApiBody({
-    schema: {
-      type: 'object',
-      properties: {
-        file: {
-          type: 'string',
-          format: 'binary',
-          description: '文件',
-        },
-        fileDisName: {
-          type: 'string',
-          description: '文件显示名称',
-        },
-        extId: {
-          type: 'string',
-          description: '关联 id',
-        },
-        description: {
-          type: 'string',
-          description: '描述',
-        },
-      },
-    },
-  })
+  @ApiBody({ type: BaseFileUploadDto, description: '文件' })
   @UseInterceptors(FileInterceptor('file'))
   upload(@CurUser() curUser, @UploadedFile() file, @Body() body) {
+    console.log('upload', file, body);
     try {
       if (Utils.isNil(file)) {
         throw new ApiException(`文件不能为空！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
@@ -84,7 +62,7 @@ export class FileController {
 
       return this.fileService.insert(file, body, curUser);
     } catch (e) {
-       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -93,30 +71,7 @@ export class FileController {
   @Auth('system:file:uploads')
   @ApiOperation({ summary: '文件上传（批量）' })
   @ApiConsumes('multipart/form-data')
-  @ApiBody({
-    schema: {
-      type: 'object',
-      properties: {
-        files: {
-          type: 'string',
-          format: 'binary',
-          description: '文件',
-        },
-        fileDisName: {
-          type: 'string',
-          description: '文件显示名称',
-        },
-        extId: {
-          type: 'string',
-          description: '关联 id',
-        },
-        description: {
-          type: 'string',
-          description: '描述',
-        },
-      },
-    },
-  })
+  @ApiBody({ type: BaseFilesUploadDto, description: '文件' })
   @UseInterceptors(
     FileFieldsInterceptor([
       {
@@ -145,7 +100,7 @@ export class FileController {
 
       return this.fileService.insertBatch(files.files, body, curUser);
     } catch (e) {
-       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -181,7 +136,7 @@ export class FileController {
       res.write(content, 'binary'); // 格式必须为 binary，否则会出错
       res.end();
     } catch (e) {
-       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -209,7 +164,7 @@ export class FileController {
 
       return await this.fileService.deleteById(baseFindByIdDto, curUser);
     } catch (e) {
-       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -221,7 +176,7 @@ export class FileController {
     try {
       return await this.fileService.deleteByIds(baseFindByIdsDto, curUser);
     } catch (e) {
-       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 }

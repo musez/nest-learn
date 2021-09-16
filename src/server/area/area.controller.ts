@@ -14,7 +14,7 @@ import { AreaService } from './area.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { Area } from './entities/area.entity';
 import { LimitAreaDto } from './dto/limit-area.dto';
-import { BaseFindByPIdDto } from '../base.dto';
+import { BaseFileImportDto, BaseFindByPIdDto } from '../base.dto';
 import { SearchAreaDto } from './dto/search-area.dto';
 import { Auth } from '../../common/decorators/auth.decorator';
 import { AuthGuard } from '../../common/guards/auth.guard';
@@ -126,18 +126,7 @@ export class AreaController {
   @Auth('system:area:importExcel')
   @ApiOperation({ summary: '列表（Excel 导入）' })
   @ApiConsumes('multipart/form-data')
-  @ApiBody({
-    schema: {
-      type: 'object',
-      properties: {
-        file: {
-          type: 'string',
-          format: 'binary',
-          description: '文件',
-        },
-      },
-    },
-  })
+  @ApiBody({ type: BaseFileImportDto, description: '文件' })
   @UseInterceptors(FileInterceptor('file'))
   async importExcel(@CurUser() curUser, @UploadedFile() file): Promise<any> {
     try {

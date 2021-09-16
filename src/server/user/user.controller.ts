@@ -18,7 +18,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { LimitUserDto } from './dto/limit-user.dto';
-import { BaseFindByIdDto, BaseFindByIdsDto, BaseModifyStatusByIdsDto } from '../base.dto';
+import { BaseFileImportDto, BaseFindByIdDto, BaseFindByIdsDto, BaseModifyStatusByIdsDto } from '../base.dto';
 import { BindUserGroupDto } from '../user-group/dto/bind-user-group.dto';
 import { BindUserRoleDto } from '../user-role/dto/bind-user-role.dto';
 import { CurUser } from '../../common/decorators/cur-user.decorator';
@@ -140,18 +140,7 @@ export class UserController {
   @Auth('account:user:importExcel')
   @ApiOperation({ summary: '列表（Excel 导入）' })
   @ApiConsumes('multipart/form-data')
-  @ApiBody({
-    schema: {
-      type: 'object',
-      properties: {
-        file: {
-          type: 'string',
-          format: 'binary',
-          description: '文件',
-        },
-      },
-    },
-  })
+  @ApiBody({ type: BaseFileImportDto, description: '文件' })
   @UseInterceptors(FileInterceptor('file'))
   async importExcel(@CurUser() curUser, @UploadedFile() file): Promise<any> {
     try {

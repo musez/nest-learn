@@ -75,7 +75,7 @@ export class BaseFindByPIdDto {
   readonly parentId: string;
 }
 
-export class BaseFileDto {
-  @ApiProperty({ description: 'file', example: null })
-  readonly file: string;
+export class BaseFileImportDto {
+  @ApiProperty({ type: 'string', format: 'binary' })
+  readonly file: any;
 }
