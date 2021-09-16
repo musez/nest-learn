@@ -105,7 +105,9 @@ export class ArticleCatService {
           queryConditionList.push('parentId = :parentIds');
         } else {
           parentIds = await this.selectChildrenIdsRecursive(parentId);
-          queryConditionList.push('parentId IN (:...parentIds)');
+          if (Utils.isArray(parentIds) && parentIds.length > 0) {
+            queryConditionList.push('parentId IN (:...parentIds)');
+          }
         }
       } else {
         queryConditionList.push('parentId IS NULL');
@@ -164,7 +166,9 @@ export class ArticleCatService {
       let parentIds = [];
       if (!Utils.isBlank(parentId)) {
         parentIds = await this.selectChildrenIdsRecursive(parentId);
-        queryConditionList.push('parentId IN (:...parentIds)');
+        if (Utils.isArray(parentIds) && parentIds.length > 0) {
+          queryConditionList.push('parentId IN (:...parentIds)');
+        }
       }
       if (!Utils.isBlank(catName)) {
         queryConditionList.push('catName LIKE :catName');
@@ -312,7 +316,7 @@ export class ArticleCatService {
         return true;
       }
     } catch (e) {
-       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -326,7 +330,7 @@ export class ArticleCatService {
       if (ret) return true;
       else return false;
     } catch (e) {
-       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -342,7 +346,7 @@ export class ArticleCatService {
 
       await this.articleCatRepository.update(id, articleCat);
     } catch (e) {
-       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -369,7 +373,7 @@ export class ArticleCatService {
 
       return ret;
     } catch (e) {
-       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -392,7 +396,7 @@ export class ArticleCatService {
         .where('id = :id', { id: id })
         .execute();
     } catch (e) {
-       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -420,7 +424,7 @@ export class ArticleCatService {
         .where('id IN (:ids)', { ids: ids })
         .execute();
     } catch (e) {
-       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 }

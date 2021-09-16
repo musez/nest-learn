@@ -55,6 +55,15 @@ export class BaseModifyStatusByIdsDto {
   status?: number;
 }
 
+export class BaseFindByIdNumberDto {
+  @ApiProperty({ description: '主键 id', example: null })
+  @IsDefined({ message: '主键 id 不能为空！' })
+  @IsNotEmpty({ message: '主键 id 不能为空！' })
+  @Type(() => Number)
+  @IsInt({ message: '主键 id 必须为数字！' })
+  readonly id: number;
+}
+
 export class BaseFindByIdDto {
   @ApiProperty({ description: '主键 id', example: null })
   @IsDefined({ message: '主键 id 不能为空！' })

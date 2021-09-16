@@ -14,7 +14,7 @@ import { AreaService } from './area.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { Area } from './entities/area.entity';
 import { LimitAreaDto } from './dto/limit-area.dto';
-import { BaseFileImportDto, BaseFindByPIdDto } from '../base.dto';
+import { BaseFileImportDto, BaseFindByIdNumberDto, BaseFindByPIdDto } from '../base.dto';
 import { SearchAreaDto } from './dto/search-area.dto';
 import { Auth } from '../../common/decorators/auth.decorator';
 import { AuthGuard } from '../../common/guards/auth.guard';
@@ -81,8 +81,8 @@ export class AreaController {
   @Get('findById')
   @Auth('system:area:findById')
   @ApiOperation({ summary: '获取详情（主键 id）' })
-  async findById(@Query() id: string): Promise<Area> {
-    return await this.areaService.selectById(id);
+  async findById(@Query() baseFindByIdNumberDto: BaseFindByIdNumberDto): Promise<Area> {
+    return await this.areaService.selectById(baseFindByIdNumberDto);
   }
 
   @Get('exportExcel')

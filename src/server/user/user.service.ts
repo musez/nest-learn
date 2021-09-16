@@ -319,7 +319,6 @@ export class UserService {
     try {
       // eslint-disable-next-line prefer-const
       let { page, limit, userName, name, userType, mobile, email, status } = limitUserDto;
-      console.log('selectListPage:', page, limit, typeof page, typeof limit);
       page = page ? page : 1;
       limit = limit ? limit : 10;
       const offset = (page - 1) * limit;

@@ -40,7 +40,6 @@ export class WechatController {
 
     // 请求获取令牌
     request.get({ url: `https://api.weixin.qq.com/sns/oauth2/access_token?appid=${appID}&secret=${appSecret}&code=${code}&grant_type=authorization_code` }, function(error, response, body) {
-        console.log(response.statusCode, body);
         if (response.statusCode == 200) {
           const data = JSON.parse(body);
           const access_token = data.access_token;

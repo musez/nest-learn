@@ -31,7 +31,7 @@ export class OrgService {
       }
       return await this.orgRepository.save(role);
     } catch (e) {
-       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -78,7 +78,7 @@ export class OrgService {
         .getRawMany();
       return res;
     } catch (e) {
-       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -100,7 +100,9 @@ export class OrgService {
           queryConditionList.push('parentId = :parentIds');
         } else {
           parentIds = await this.selectChildrenIdsRecursive(parentId);
-          queryConditionList.push('parentId IN (:...parentIds)');
+          if (Utils.isArray(parentIds) && parentIds.length > 0) {
+            queryConditionList.push('parentId IN (:...parentIds)');
+          }
         }
       } else {
         queryConditionList.push('parentId IS NULL');
@@ -140,7 +142,7 @@ export class OrgService {
         .getRawMany();
       return res;
     } catch (e) {
-       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -159,7 +161,9 @@ export class OrgService {
       let parentIds = [];
       if (!Utils.isBlank(parentId)) {
         parentIds = await this.selectChildrenIdsRecursive(parentId);
-        queryConditionList.push('org.parentId IN (:...parentIds)');
+        if (Utils.isArray(parentIds) && parentIds.length > 0) {
+          queryConditionList.push('org.parentId IN (:...parentIds)');
+        }
       }
       if (!Utils.isBlank(name)) {
         queryConditionList.push('org.name LIKE :name');
@@ -196,7 +200,7 @@ export class OrgService {
         limit: limit,
       };
     } catch (e) {
-       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -222,7 +226,7 @@ export class OrgService {
 
       return list;
     } catch (e) {
-       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -248,7 +252,7 @@ export class OrgService {
         return result;
       }
     } catch (e) {
-       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -280,7 +284,7 @@ export class OrgService {
 
       return list;
     } catch (e) {
-       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -292,7 +296,7 @@ export class OrgService {
       const { id } = baseFindByIdDto;
       return await this.orgRepository.findOne(id);
     } catch (e) {
-       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -308,7 +312,7 @@ export class OrgService {
         return true;
       }
     } catch (e) {
-       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -322,7 +326,7 @@ export class OrgService {
       if (ret) return true;
       else return false;
     } catch (e) {
-       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -341,7 +345,7 @@ export class OrgService {
 
       await this.orgRepository.update(id, org);
     } catch (e) {
-       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -368,7 +372,7 @@ export class OrgService {
 
       return ret;
     } catch (e) {
-       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -391,7 +395,7 @@ export class OrgService {
         .where('id = :id', { id: id })
         .execute();
     } catch (e) {
-       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -420,7 +424,7 @@ export class OrgService {
         .where('id IN (:ids)', { ids: ids })
         .execute();
     } catch (e) {
-       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 }

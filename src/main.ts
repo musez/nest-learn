@@ -98,31 +98,19 @@ async function bootstrap() {
   });
 
   await app.listen(listenPort, () => {
-    // figlet.text('icmz', {
-    //   font: 'Standard',
-    //   horizontalLayout: 'default',
-    //   verticalLayout: 'default',
-    //   width: 60,
-    //   whitespaceBreak: true
-    // }, function(err, data) {
-    //   if (err) {
-    //     return;
-    //   }
-    //   Logger.info(data);
-    // });
+    figlet.text('icmz', {
+      font: 'Small Slant',
+      horizontalLayout: 'full',
+      verticalLayout: 'default',
+      width: 80,
+      whitespaceBreak: false,
+    }, function(err, data) {
+      if (err) {
+        return;
+      }
 
-    Logger.info(`
-    <<<<<<<<<<<<<<<<<<<<.<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-       _                   
-      (_) ____  __ _    ___
-     / / / __/ /  ' \\  /_ /
-    /_/  \\__/ /_/_/_/  /__/
-    
-    server listen on：http://localhost:${listenPort}/api
-    swagger listen on：http://localhost:${listenPort}${setupPath}
-    
-    Powered by WangYue 2021
-    <<<<<<<<<<<<<<<<<<<<.<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<`);
+      Logger.info(`${data} \n server listen on：http://localhost:${listenPort}/api \n swagger listen on：http://localhost:${listenPort}${setupPath} \n\n Powered by WangYue 2021`);
+    });
   });
 }
 

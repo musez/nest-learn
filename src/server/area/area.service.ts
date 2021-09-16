@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Utils } from './../../utils/index';
 import { Area } from './entities/area.entity';
-import { BaseFindByPIdDto } from '../base.dto';
+import { BaseFindByIdNumberDto, BaseFindByPIdDto } from '../base.dto';
 import { LimitAreaDto } from './dto/limit-area.dto';
 import { SearchAreaDto } from './dto/search-area.dto';
 import { ApiException } from '../../common/exception/api-exception';
@@ -41,7 +41,7 @@ export class AreaService {
         throw new ApiException('保存异常！', ApiErrorCode.ERROR, HttpStatus.OK);
       }
     } catch (e) {
-       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -56,10 +56,12 @@ export class AreaService {
       let parentIds = [];
       if (!Utils.isBlank(parentId)) {
         parentIds = await this.selectChildrenIdsRecursive(parentId);
-        queryConditionList.push('parentId IN (:...parentIds)');
+        if (Utils.isArray(parentIds) && parentIds.length > 0) {
+          queryConditionList.push('a.parentId IN (:...parentIds)');
+        }
       }
       if (!Utils.isBlank(areaName)) {
-        queryConditionList.push('areaName LIKE :areaName');
+        queryConditionList.push('a.areaName LIKE :areaName');
       }
       const queryCondition = queryConditionList.join(' AND ');
 
@@ -85,7 +87,7 @@ export class AreaService {
         .getRawMany();
       return res;
     } catch (e) {
-       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -104,7 +106,9 @@ export class AreaService {
       let parentIds = [];
       if (!Utils.isBlank(parentId)) {
         parentIds = await this.selectChildrenIdsRecursive(parentId);
-        queryConditionList.push('parentId IN (:parentIds)');
+        if (Utils.isArray(parentIds) && parentIds.length > 0) {
+          queryConditionList.push('parentId IN (:...parentIds)');
+        }
       }
       if (!Utils.isBlank(areaName)) {
         queryConditionList.push('areaName LIKE :areaName');
@@ -132,7 +136,7 @@ export class AreaService {
         limit: limit,
       };
     } catch (e) {
-       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -156,7 +160,7 @@ export class AreaService {
 
       return list;
     } catch (e) {
-       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -177,7 +181,7 @@ export class AreaService {
         },
       });
     } catch (e) {
-       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -202,7 +206,7 @@ export class AreaService {
         return result;
       }
     } catch (e) {
-       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -233,14 +237,15 @@ export class AreaService {
 
       return list;
     } catch (e) {
-       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
   /**
    * 获取详情（主键 id）
    */
-  async selectById(id: string): Promise<Area> {
+  async selectById(baseFindByIdNumberDto: BaseFindByIdNumberDto): Promise<Area> {
+    const { id } = baseFindByIdNumberDto;
     return await this.areaRepository.findOne(id);
   }
 
@@ -256,7 +261,7 @@ export class AreaService {
         return true;
       }
     } catch (e) {
-       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 }

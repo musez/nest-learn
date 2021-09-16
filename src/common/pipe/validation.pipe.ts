@@ -12,7 +12,7 @@ export class ValidationPipe implements PipeTransform {
   // value 就是传入的实际数据
   // metatype 就是元数据，其实就是装饰器添加那些
   async transform(value: any, { metatype }: ArgumentMetadata) {
-    console.log(`ValidationPipe：value:`, value, 'metatype: ', metatype);
+    // console.log(`ValidationPipe：value:`, value, 'metatype: ', metatype);
     if (!metatype || !this.toValidate(metatype)) {
       // 如果没有传入验证规则，则不验证，直接返回数据
       return value;
