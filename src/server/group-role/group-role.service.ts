@@ -27,9 +27,9 @@ export class GroupRoleService {
   }
 
   /**
-   * 获取角色（批量，用户组 id）
+   * 获取角色（批量）
    */
-  async selectByGroupIds(ids: string[]): Promise<GroupRole[]> {
+  async selectByIds(ids: string[]): Promise<GroupRole[]> {
     try {
       return await this.groupRoleRepository.find({
         relations: ['role'],

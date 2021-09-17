@@ -153,7 +153,7 @@ export class RoleService {
       if (ret?.rolePermissions?.length > 0) {
         const ids = ret.rolePermissions.map((v) => v.id);
 
-        const rolePermissionRet = await this.rolePermissionService.selectByRoleIds(ids);
+        const rolePermissionRet = await this.rolePermissionService.selectByIds(ids);
         const rolePermissions = rolePermissionRet.filter(v => v.permission).map((v) => {
           return v.permission;
         });

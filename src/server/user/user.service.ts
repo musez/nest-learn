@@ -33,6 +33,7 @@ import { UserPermissionService } from '../user-permission/user-permission.servic
 import { UserPrefix } from '../../constants/user.prefix';
 import { CacheService } from '../cache/cache.service';
 import { ApiErrorCode } from '../../constants/api-error-code.enum';
+import { Group } from '../group/entities/group.entity';
 
 @Injectable()
 export class UserService {
@@ -352,15 +353,16 @@ export class UserService {
 
       const queryBuilder = this.userRepository
         .createQueryBuilder('user')
-        .innerJoinAndSelect('user.userinfo', 'userinfo')
+        .innerJoin('user.userinfo', 'userinfo')
+        .leftJoinAndSelect("user.userGroups", "userGroups")
         .leftJoinAndSelect(Area, 'p', 'p.id = userinfo.provinceId')
         .leftJoinAndSelect(Area, 'c', 'c.id = userinfo.cityId')
         .leftJoinAndSelect(Area, 'd', 'd.id = userinfo.districtId')
         .select(
-          'user.*, userinfo.provinceId, userinfo.cityId, userinfo.districtId, userinfo.address ',
+          'user.*, userinfo.provinceId, userinfo.cityId, userinfo.districtId, userinfo.address',
         )
         .addSelect(
-          `p.areaName AS provinceName, c.areaName AS cityName, d.areaName AS districtName`,
+          `p.areaName AS provinceName, c.areaName AS cityName, d.areaName AS districtName, userGroups.id AS ugIds`,
         )
         .where(queryCondition, {
           userName: `%${userName}%`,
@@ -382,17 +384,29 @@ export class UserService {
         })
         .getRawMany();
 
-      ret.forEach((v) => {
+      for (const v of ret) {
+        const { ugIds, provinceId, cityId, districtId, address, provinceName, cityName, districtName } = v;
+
         const ui = {
-          provinceId: v.provinceId,
-          cityId: v.cityId,
-          districtId: v.districtId,
-          address: v.address,
-          provinceName: v.provinceName,
-          cityName: v.cityName,
-          districtName: v.districtName,
+          provinceId,
+          cityId,
+          districtId,
+          address,
+          provinceName,
+          cityName,
+          districtName,
         };
         v['userinfo'] = ui;
+
+        if (ugIds){
+          console.log(ugIds);
+          // const userGroupRet = await this.userGroupService.selectByIds(ugId);
+          // if (userGroupRet) {
+          //   v['group'] = userGroupRet;
+          // } else {
+          //   v['group'] = [];
+          // }
+        }
 
         delete v.userPwd;
         delete v.provinceId;
@@ -401,7 +415,7 @@ export class UserService {
         delete v.provinceName;
         delete v.cityName;
         delete v.districtName;
-      });
+      }
 
       const retCount = await queryBuilder.getCount();
 

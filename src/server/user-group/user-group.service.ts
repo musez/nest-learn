@@ -50,7 +50,6 @@ export class UserGroupService {
           userId: id,
         },
       });
-
       return ret;
     } catch (e) {
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
@@ -58,7 +57,7 @@ export class UserGroupService {
   }
 
   /**
-   * 获取用户组（批量，用户 id）
+   * 获取用户组（批量）
    */
   async selectByIds(ids: string[]): Promise<UserGroup[]> {
     try {

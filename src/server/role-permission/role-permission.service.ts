@@ -26,9 +26,9 @@ export class RolePermissionService {
   }
 
   /**
-   * 获取权限（批量，角色 id）
+   * 获取权限（批量）
    */
-  async selectByRoleIds(ids: string[]): Promise<RolePermission[]> {
+  async selectByIds(ids: string[]): Promise<RolePermission[]> {
     try {
       return await this.rolePermissionRepository.find({
         relations: ['permission'],

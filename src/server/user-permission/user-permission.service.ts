@@ -45,7 +45,7 @@ export class UserPermissionService {
   }
 
   /**
-   * 获取权限（批量，用户 id）
+   * 获取权限（批量）
    */
   async selectByIds(ids: string[]): Promise<UserPermission[]> {
     try {

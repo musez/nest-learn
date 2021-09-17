@@ -25,9 +25,9 @@ export class GroupPermissionService {
   }
 
   /**
-   * 获取权限（批量，用户组 id）
+   * 获取权限（批量）
    */
-  async selectByGroupIds(ids: string[]): Promise<GroupPermission[]> {
+  async selectByIds(ids: string[]): Promise<GroupPermission[]> {
     try {
       return await this.groupPermissionRepository.find({
         relations: ['permission'],

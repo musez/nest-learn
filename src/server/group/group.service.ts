@@ -154,7 +154,7 @@ export class GroupService {
       if (ret?.groupRoles?.length > 0) {
         const ids = ret.groupRoles.map((v) => v.id);
 
-        const groupRoleRet = await this.groupRoleService.selectByGroupIds(ids);
+        const groupRoleRet = await this.groupRoleService.selectByIds(ids);
         const groupRoles = groupRoleRet.filter(v => v.role).map((v) => {
           return v.role;
         });
@@ -165,7 +165,7 @@ export class GroupService {
       if (ret?.groupPermissions?.length > 0) {
         const ids = ret.groupPermissions.map((v) => v.id);
 
-        const groupPermissionsRet = await this.groupPermissionService.selectByGroupIds(ids);
+        const groupPermissionsRet = await this.groupPermissionService.selectByIds(ids);
         const groupPermissions = groupPermissionsRet.filter(v => v.permission).map((v) => {
           return v.permission;
         });

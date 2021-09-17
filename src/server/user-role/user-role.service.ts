@@ -45,7 +45,7 @@ export class UserRoleService {
   }
 
   /**
-   * 获取角色（批量，用户 id）
+   * 获取角色（批量）
    */
   async selectByIds(ids: string[]): Promise<UserRole[]> {
     try {
