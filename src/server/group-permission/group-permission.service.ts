@@ -1,6 +1,4 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
-import { BaseFindByIdDto, BaseFindByIdsDto } from '../base.dto';
-import { Utils } from '../../utils';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
 import { GroupPermission } from './entities/group-permission.entity';
@@ -27,26 +25,7 @@ export class GroupPermissionService {
   }
 
   /**
-   * 获取权限
-   */
-  async selectByGroupId(baseFindByIdDto: BaseFindByIdDto): Promise<GroupPermission[]> {
-    try {
-      const { id } = baseFindByIdDto;
-      const ret = await this.groupPermissionRepository.find({
-        relations: ['permission'],
-        where: {
-          userId: id,
-        },
-      });
-
-      return ret;
-    } catch (e) {
-       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
-    }
-  }
-
-  /**
-   * 获取权限（批量）
+   * 获取权限（批量，用户组 id）
    */
   async selectByGroupIds(ids: string[]): Promise<GroupPermission[]> {
     try {
@@ -62,7 +41,7 @@ export class GroupPermissionService {
   }
 
   /**
-   * 删除权限
+   * 删除（用户组 id）
    */
   async deleteByGroupId(id: string): Promise<any> {
     try {

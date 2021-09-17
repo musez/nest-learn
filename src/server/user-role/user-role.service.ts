@@ -1,9 +1,8 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, In } from 'typeorm';
-import { BaseFindByIdDto, BaseFindByIdsDto } from '../base.dto';
+import { BaseFindByIdDto } from '../base.dto';
 import { UserRole } from './entities/user-role.entity';
-import { Utils } from '../../utils';
 import { ApiException } from '../../common/exception/api-exception';
 import { ApiErrorCode } from '../../constants/api-error-code.enum';
 
@@ -27,7 +26,7 @@ export class UserRoleService {
   }
 
   /**
-   * 获取角色
+   * 获取角色（用户 id）
    */
   async selectByUserId(baseFindByIdDto: BaseFindByIdDto): Promise<UserRole[]> {
     try {
@@ -46,7 +45,7 @@ export class UserRoleService {
   }
 
   /**
-   * 获取用户组（批量）
+   * 获取角色（批量，用户 id）
    */
   async selectByIds(ids: string[]): Promise<UserRole[]> {
     try {
@@ -62,7 +61,7 @@ export class UserRoleService {
   }
 
   /**
-   * 删除角色
+   * 删除（用户 id）
    */
   async deleteByUserId(id: string): Promise<any> {
     try {

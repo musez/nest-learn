@@ -1,6 +1,5 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
-import { BaseFindByIdDto, BaseFindByIdsDto } from '../base.dto';
-import { Utils } from '../../utils';
+import { BaseFindByIdDto } from '../base.dto';
 import { In, Repository } from 'typeorm';
 import { UserPermission } from './entities/user-permission.entity';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -27,7 +26,7 @@ export class UserPermissionService {
   }
 
   /**
-   * 获取权限
+   * 获取权限（用户 id）
    */
   async selectByUserId(baseFindByIdDto: BaseFindByIdDto): Promise<UserPermission[]> {
     try {
@@ -46,7 +45,7 @@ export class UserPermissionService {
   }
 
   /**
-   * 获取权限（批量）
+   * 获取权限（批量，用户 id）
    */
   async selectByIds(ids: string[]): Promise<UserPermission[]> {
     try {
@@ -62,7 +61,7 @@ export class UserPermissionService {
   }
 
   /**
-   * 删除权限
+   * 删除（用户 id）
    */
   async deleteByUserId(id: string): Promise<any> {
     try {

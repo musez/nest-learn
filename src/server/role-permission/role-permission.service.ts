@@ -2,9 +2,7 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, In } from 'typeorm';
 import { RolePermission } from './entities/role-permission.entity';
-import { BaseFindByIdsDto } from '../base.dto';
 import { UserRole } from '../user-role/entities/user-role.entity';
-import { Utils } from '../../utils';
 import { ApiException } from '../../common/exception/api-exception';
 import { ApiErrorCode } from '../../constants/api-error-code.enum';
 
@@ -28,7 +26,7 @@ export class RolePermissionService {
   }
 
   /**
-   * 获取权限（批量）
+   * 获取权限（批量，角色 id）
    */
   async selectByRoleIds(ids: string[]): Promise<RolePermission[]> {
     try {
@@ -44,7 +42,7 @@ export class RolePermissionService {
   }
 
   /**
-   * 删除用户组
+   * 删除（角色 id）
    */
   async deleteByRoleId(id: string): Promise<any> {
     try {

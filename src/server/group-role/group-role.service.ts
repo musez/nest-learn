@@ -27,7 +27,7 @@ export class GroupRoleService {
   }
 
   /**
-   * 获取用户组（批量）
+   * 获取角色（批量，用户组 id）
    */
   async selectByGroupIds(ids: string[]): Promise<GroupRole[]> {
     try {
@@ -43,7 +43,7 @@ export class GroupRoleService {
   }
 
   /**
-   * 删除用户组
+   * 删除（用户组 id）
    */
   async deleteByGroupId(id: string): Promise<any> {
     try {

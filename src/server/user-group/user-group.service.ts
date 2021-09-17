@@ -4,8 +4,7 @@ import { Repository, In } from 'typeorm';
 import { CreateUserGroupDto } from './dto/create-user-group.dto';
 import { UpdateUserGroupDto } from './dto/update-user-group.dto';
 import { UserGroup } from './entities/user-group.entity';
-import { BaseFindByIdsDto } from '../base.dto';
-import { Utils } from '../../utils';
+import { BaseFindByIdDto } from '../base.dto';
 import { ApiException } from '../../common/exception/api-exception';
 import { ApiErrorCode } from '../../constants/api-error-code.enum';
 
@@ -40,7 +39,26 @@ export class UserGroupService {
   }
 
   /**
-   * 获取用户组（批量）
+   * 获取用户组（用户 id）
+   */
+  async selectByUserId(baseFindByIdDto: BaseFindByIdDto): Promise<UserGroup[]> {
+    try {
+      const { id } = baseFindByIdDto;
+      const ret = await this.userGroupRepository.find({
+        relations: ['group'],
+        where: {
+          userId: id,
+        },
+      });
+
+      return ret;
+    } catch (e) {
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+    }
+  }
+
+  /**
+   * 获取用户组（批量，用户 id）
    */
   async selectByIds(ids: string[]): Promise<UserGroup[]> {
     try {
@@ -56,7 +74,7 @@ export class UserGroupService {
   }
 
   /**
-   * 删除用户组
+   * 删除（用户 id）
    */
   async deleteByUserId(id: string): Promise<any> {
     try {
