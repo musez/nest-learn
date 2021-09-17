@@ -353,8 +353,7 @@ export class UserService {
 
       const queryBuilder = this.userRepository
         .createQueryBuilder('user')
-        .innerJoin('user.userinfo', 'userinfo')
-        .leftJoinAndSelect("user.userGroups", "userGroups")
+        .leftJoinAndSelect('user.userGroups', 'userGroups')
         .leftJoinAndSelect(Area, 'p', 'p.id = userinfo.provinceId')
         .leftJoinAndSelect(Area, 'c', 'c.id = userinfo.cityId')
         .leftJoinAndSelect(Area, 'd', 'd.id = userinfo.districtId')
@@ -362,7 +361,7 @@ export class UserService {
           'user.*, userinfo.provinceId, userinfo.cityId, userinfo.districtId, userinfo.address',
         )
         .addSelect(
-          `p.areaName AS provinceName, c.areaName AS cityName, d.areaName AS districtName, userGroups.id AS ugIds`,
+          `p.areaName AS provinceName, c.areaName AS cityName, d.areaName AS districtName`,
         )
         .where(queryCondition, {
           userName: `%${userName}%`,
@@ -385,7 +384,7 @@ export class UserService {
         .getRawMany();
 
       for (const v of ret) {
-        const { ugIds, provinceId, cityId, districtId, address, provinceName, cityName, districtName } = v;
+        const { id, provinceId, cityId, districtId, address, provinceName, cityName, districtName } = v;
 
         const ui = {
           provinceId,
@@ -398,15 +397,16 @@ export class UserService {
         };
         v['userinfo'] = ui;
 
-        if (ugIds){
-          console.log(ugIds);
-          // const userGroupRet = await this.userGroupService.selectByIds(ugId);
-          // if (userGroupRet) {
-          //   v['group'] = userGroupRet;
-          // } else {
-          //   v['group'] = [];
-          // }
-        }
+        // 获取关联 id
+        const userGroupRet = await this.userRepository.find({
+          relations: ['userGroups'],
+          where: {
+            id: id,
+          },
+        });
+        const ids = userGroupRet.map(v => v.id);
+        const groupRet = await this.userGroupService.selectByIds(ids);
+        v['group'] = groupRet;
 
         delete v.userPwd;
         delete v.provinceId;
