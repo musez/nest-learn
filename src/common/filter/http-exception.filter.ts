@@ -53,10 +53,10 @@ export class HttpExceptionFilter implements ExceptionFilter {
       response.status(200).json({
         code: status,
         data: null,
-        message: `${status >= 500 ? '服务端错误！' : '客户端错误！'}`,
+        message: `${status >= 500 ? '服务端错误：' : '客户端错误：'}${exception.message}！`,
         time: nowDate,
         path: request.url,
-        error: exception.message,
+        error: JSON.stringify(exception),
       });
     }
   }

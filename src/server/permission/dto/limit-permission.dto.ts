@@ -23,5 +23,5 @@ export class LimitPermissionDto extends PartialType(BasePageDto) {
   type?: number | Array<number>;
 
   @ApiPropertyOptional({ description: '状态（0：禁用；1：启用）', example: 1 })
-  readonly status?: number | string | (number | string)[];
+   readonly status?: string;
 }

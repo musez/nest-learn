@@ -17,5 +17,5 @@ export class LimitHolidayDto extends PartialType(BasePageDto) {
   readonly restType?: number;
 
   @ApiPropertyOptional({ description: '状态（0：禁用；1：启用）', example: 1 })
-  readonly status?: number | string | (number | string)[];
+   readonly status?: string;
 }

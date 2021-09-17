@@ -49,9 +49,10 @@ export class OrgService {
       }
       if (!Utils.isBlank(status)) {
         if (!Utils.isArray(status)) {
+          // @ts-ignore
           status = Utils.split(status.toString());
         }
-        queryConditionList.push('status IN (:...status)');
+        queryConditionList.push('status IN (:status)');
       }
       queryConditionList.push('deleteStatus = 0');
       const queryCondition = queryConditionList.join(' AND ');
@@ -101,7 +102,7 @@ export class OrgService {
         } else {
           parentIds = await this.selectChildrenIdsRecursive(parentId);
           if (Utils.isArray(parentIds) && parentIds.length > 0) {
-            queryConditionList.push('parentId IN (:...parentIds)');
+            queryConditionList.push('parentId IN (:parentIds)');
           }
         }
       } else {
@@ -112,9 +113,10 @@ export class OrgService {
       }
       if (!Utils.isBlank(status)) {
         if (!Utils.isArray(status)) {
+          // @ts-ignore
           status = Utils.split(status.toString());
         }
-        queryConditionList.push('status IN (:...status)');
+        queryConditionList.push('status IN (:status)');
       }
       queryConditionList.push('deleteStatus = 0');
       const queryCondition = queryConditionList.join(' AND ');
@@ -162,7 +164,7 @@ export class OrgService {
       if (!Utils.isBlank(parentId)) {
         parentIds = await this.selectChildrenIdsRecursive(parentId);
         if (Utils.isArray(parentIds) && parentIds.length > 0) {
-          queryConditionList.push('org.parentId IN (:...parentIds)');
+          queryConditionList.push('org.parentId IN (:parentIds)');
         }
       }
       if (!Utils.isBlank(name)) {
@@ -170,9 +172,10 @@ export class OrgService {
       }
       if (!Utils.isBlank(status)) {
         if (!Utils.isArray(status)) {
+          // @ts-ignore
           status = Utils.split(status.toString());
         }
-        queryConditionList.push('status IN (:...status)');
+        queryConditionList.push('status IN (:status)');
       }
       queryConditionList.push('deleteStatus = 0');
       const queryCondition = queryConditionList.join(' AND ');

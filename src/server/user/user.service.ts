@@ -248,9 +248,10 @@ export class UserService {
       }
       if (!Utils.isBlank(status)) {
         if (!Utils.isArray(status)) {
+          // @ts-ignore
           status = Utils.split(status.toString());
         }
-        queryConditionList.push('user.status IN (:...status)');
+        queryConditionList.push('user.status IN (:status)');
       }
       queryConditionList.push('deleteStatus = 0');
       const queryCondition = queryConditionList.join(' AND ');
@@ -341,9 +342,10 @@ export class UserService {
       }
       if (!Utils.isBlank(status)) {
         if (!Utils.isArray(status)) {
+          // @ts-ignore
           status = Utils.split(status.toString());
         }
-        queryConditionList.push('user.status IN (:...status)');
+        queryConditionList.push('user.status IN (:status)');
       }
       queryConditionList.push('deleteStatus = 0');
       const queryCondition = queryConditionList.join(' AND ');
@@ -438,7 +440,7 @@ export class UserService {
       if (ret?.userGroups?.length > 0) {
         const ids = ret.userGroups.map((v) => v.id);
 
-        const userGroupRet = await this.userGroupService.selectByUserIds(ids);
+        const userGroupRet = await this.userGroupService.selectByIds(ids);
         const userGroups = userGroupRet.filter(v => v.group).map((v) => {
           return v.group;
         });
@@ -449,7 +451,7 @@ export class UserService {
       if (ret?.userRoles?.length > 0) {
         const ids = ret.userRoles.map((v) => v.id);
 
-        const userRoleRet = await this.userRoleService.selectByUserIds(ids);
+        const userRoleRet = await this.userRoleService.selectByIds(ids);
         const userRoles = userRoleRet.filter(v => v.role).map((v) => {
           return v.role;
         });
@@ -460,7 +462,7 @@ export class UserService {
       if (ret?.userPermissions?.length > 0) {
         const ids = ret.userPermissions.map((v) => v.id);
 
-        const userPermissionRet = await this.userPermissionService.selectByUserIds(ids);
+        const userPermissionRet = await this.userPermissionService.selectByIds(ids);
         const userPermissions = userPermissionRet.filter(v => v.permission).map((v) => {
           return v.permission;
         });
@@ -823,7 +825,7 @@ export class UserService {
   /**
    * 获取权限（权限合集）
    */
-  async selectAuthPermissionsByUserId(baseFindByIdDto: BaseFindByIdDto): Promise<any> {
+  async selectAuthPByUserId(baseFindByIdDto: BaseFindByIdDto): Promise<any> {
     try {
       return await this.permissionService.selectByUserId(baseFindByIdDto);
     } catch (e) {
@@ -834,14 +836,14 @@ export class UserService {
   /**
    * 获取权限（用户、用户组、角色、权限合集）
    */
-  async selectAuthByUserId(baseFindByIdDto: BaseFindByIdDto): Promise<any> {
+  async selectAuthUGRPByUserId(baseFindByIdDto: BaseFindByIdDto): Promise<any> {
     try {
       const userRet = await this.selectById(baseFindByIdDto);
 
       if (userRet?.userType === 2) {
         const [permissionRet, roleRet, groupRet] = await Promise.all([
           this.permissionService.selectAll({}),
-          this.roleService.selectByUserId(baseFindByIdDto),
+          this.roleService.selectRByUserId(baseFindByIdDto),
           this.groupService.selectByUserId(baseFindByIdDto),
         ]);
 
@@ -854,8 +856,8 @@ export class UserService {
         return res;
       } else {
         const [permissionRet, roleRet, groupRet] = await Promise.all([
-          this.permissionService.selectByUserId(baseFindByIdDto),
-          this.roleService.selectByUserId(baseFindByIdDto),
+          this.permissionService.selectPByUserId(baseFindByIdDto),
+          this.roleService.selectRByUserId(baseFindByIdDto),
           this.groupService.selectByUserId(baseFindByIdDto),
         ]);
 

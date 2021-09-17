@@ -20,7 +20,7 @@ import { Auth } from '../../common/decorators/auth.decorator';
 import { AuthGuard } from '../../common/guards/auth.guard';
 import { Utils } from '../../utils';
 import { ExcelService } from '../excel/excel.service';
-import { AreaLevelDict, SexDict, StatusDict, UserDict } from '../../constants/dicts.const';
+import { AreaLevelDict } from '../../constants/dicts.const';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { CurUser } from '../../common/decorators/cur-user.decorator';
 import { ApiException } from '../../common/exception/api-exception';

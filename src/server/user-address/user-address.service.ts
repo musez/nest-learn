@@ -55,9 +55,10 @@ export class UserAddressService {
     }
     if (!Utils.isBlank(status)) {
       if (!Utils.isArray(status)) {
+        // @ts-ignore
         status = Utils.split(status.toString());
       }
-      queryConditionList.push('userAddress.status IN (:...status)');
+      queryConditionList.push('userAddress.status IN (:status)');
     }
     queryConditionList.push('userAddress.deleteStatus = 0');
     const queryCondition = queryConditionList.join(' AND ');
@@ -131,9 +132,10 @@ export class UserAddressService {
     }
     if (!Utils.isBlank(status)) {
       if (!Utils.isArray(status)) {
+        // @ts-ignore
         status = Utils.split(status.toString());
       }
-      queryConditionList.push('userAddress.status IN (:...status)');
+      queryConditionList.push('userAddress.status IN (:status)');
     }
     queryConditionList.push('userAddress.deleteStatus = 0');
     const queryCondition = queryConditionList.join(' AND ');

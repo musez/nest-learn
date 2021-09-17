@@ -48,7 +48,7 @@ export class UserRoleService {
   /**
    * 获取用户组（批量）
    */
-  async selectByUserIds(ids: string[]): Promise<UserRole[]> {
+  async selectByIds(ids: string[]): Promise<UserRole[]> {
     try {
       return await this.userRoleRepository.find({
         relations: ['role'],

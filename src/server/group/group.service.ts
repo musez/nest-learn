@@ -64,7 +64,7 @@ export class GroupService {
         if (!Utils.isArray(status)) {
           status = Utils.split(status.toString());
         }
-        queryConditionList.push('status IN (:...status)');
+        queryConditionList.push('status IN (:status)');
       }
       queryConditionList.push('deleteStatus = 0');
       const queryCondition = queryConditionList.join(' AND ');
@@ -102,9 +102,10 @@ export class GroupService {
       }
       if (!Utils.isBlank(status)) {
         if (!Utils.isArray(status)) {
+          // @ts-ignore
           status = Utils.split(status.toString());
         }
-        queryConditionList.push('status IN (:...status)');
+        queryConditionList.push('status IN (:status)');
       }
       queryConditionList.push('deleteStatus = 0');
       const queryCondition = queryConditionList.join(' AND ');
@@ -183,6 +184,7 @@ export class GroupService {
   async selectByUserId(baseFindByIdDto: BaseFindByIdDto): Promise<any> {
     try {
       const { id } = baseFindByIdDto;
+      // User -> UserGroup -> Group
       const userGroup = await this.groupRepository
         .createQueryBuilder('g')
         .innerJoinAndSelect(UserGroup, 'ug', 'g.id = ug.groupId')

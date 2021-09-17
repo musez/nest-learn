@@ -57,7 +57,7 @@ export class AreaService {
       if (!Utils.isBlank(parentId)) {
         parentIds = await this.selectChildrenIdsRecursive(parentId);
         if (Utils.isArray(parentIds) && parentIds.length > 0) {
-          queryConditionList.push('a.parentId IN (:...parentIds)');
+          queryConditionList.push('a.parentId IN (:parentIds)');
         }
       }
       if (!Utils.isBlank(areaName)) {
@@ -107,7 +107,7 @@ export class AreaService {
       if (!Utils.isBlank(parentId)) {
         parentIds = await this.selectChildrenIdsRecursive(parentId);
         if (Utils.isArray(parentIds) && parentIds.length > 0) {
-          queryConditionList.push('parentId IN (:...parentIds)');
+          queryConditionList.push('parentId IN (:parentIds)');
         }
       }
       if (!Utils.isBlank(areaName)) {

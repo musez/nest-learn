@@ -18,6 +18,7 @@ import { UserRole } from '../user-role/entities/user-role.entity';
 import { ApiException } from '../../common/exception/api-exception';
 import { UserPermission } from '../user-permission/entities/user-permission.entity';
 import { ApiErrorCode } from '../../constants/api-error-code.enum';
+import { GroupPermission } from '../group-permission/entities/group-permission.entity';
 
 @Injectable()
 export class PermissionService {
@@ -58,16 +59,17 @@ export class PermissionService {
       }
       if (!Utils.isBlank(type)) {
         if (Array.isArray(type)) {
-          queryConditionList.push('type IN (:...type)');
+          queryConditionList.push('type IN (:type)');
         } else {
           queryConditionList.push('type = type');
         }
       }
       if (!Utils.isBlank(status)) {
         if (!Utils.isArray(status)) {
+          // @ts-ignore
           status = Utils.split(status.toString());
         }
-        queryConditionList.push('status IN (:...status)');
+        queryConditionList.push('status IN (:status)');
       }
       queryConditionList.push('deleteStatus = 0');
       const queryCondition = queryConditionList.join(' AND ');
@@ -121,7 +123,7 @@ export class PermissionService {
         } else {
           parentIds = await this.selectChildrenIdsRecursive(parentId);
           if (Utils.isArray(parentIds) && parentIds.length > 0) {
-            queryConditionList.push('parentId IN (:...parentIds)');
+            queryConditionList.push('parentId IN (:parentIds)');
           }
         }
       } else {
@@ -132,16 +134,17 @@ export class PermissionService {
       }
       if (!Utils.isBlank(type)) {
         if (Array.isArray(type)) {
-          queryConditionList.push('type IN (:...type)');
+          queryConditionList.push('type IN (:type)');
         } else {
           queryConditionList.push('type = type');
         }
       }
       if (!Utils.isBlank(status)) {
         if (!Utils.isArray(status)) {
+          // @ts-ignore
           status = Utils.split(status.toString());
         }
-        queryConditionList.push('status IN (:...status)');
+        queryConditionList.push('status IN (:status)');
       }
       queryConditionList.push('deleteStatus = 0');
       const queryCondition = queryConditionList.join(' AND ');
@@ -193,7 +196,7 @@ export class PermissionService {
       if (!Utils.isBlank(parentId)) {
         parentIds = await this.selectChildrenIdsRecursive(parentId);
         if (Utils.isArray(parentIds) && parentIds.length > 0) {
-          queryConditionList.push('parentId IN (:...parentIds)');
+          queryConditionList.push('parentId IN (:parentIds)');
         }
       }
       if (!Utils.isBlank(name)) {
@@ -201,9 +204,10 @@ export class PermissionService {
       }
       if (!Utils.isBlank(status)) {
         if (!Utils.isArray(status)) {
+          // @ts-ignore
           status = Utils.split(status.toString());
         }
-        queryConditionList.push('status IN (:...status)');
+        queryConditionList.push('status IN (:status)');
       }
       queryConditionList.push('deleteStatus = 0');
       const queryCondition = queryConditionList.join(' AND ');
@@ -332,12 +336,13 @@ export class PermissionService {
   }
 
   /**
-   * 获取权限（用户 id）
+   * 获取权限（用户 id，复杂模式） TODO 多级查询未实现
    */
   async selectByUserId(baseFindByIdDto: BaseFindByIdDto): Promise<any> {
     try {
       const { id } = baseFindByIdDto;
-      const userGroupPermission = await this.permissionRepository
+      // User -> UserGroup -> Group -> GroupRole -> Role -> RolePermission -> Permission
+      const userGroupRolePermission = await this.permissionRepository
         .createQueryBuilder('p')
         .innerJoinAndSelect(RolePermission, 'rp', 'p.id = rp.permissionId')
         .innerJoinAndSelect(Role, 'r', 'rp.roleId = r.id')
@@ -353,6 +358,7 @@ export class PermissionService {
         )
         .getMany();
 
+      // User -> UserRole -> Role -> RolePermission -> Permission
       const userRolePermission = await this.permissionRepository
         .createQueryBuilder('p')
         .innerJoinAndSelect(RolePermission, 'rp', 'p.id = rp.permissionId')
@@ -367,6 +373,22 @@ export class PermissionService {
         )
         .getMany();
 
+      // User -> UserGroup -> Group -> GroupPermission -> Permission
+      const userGroupPermission = await this.permissionRepository
+        .createQueryBuilder('p')
+        .innerJoinAndSelect(GroupPermission, 'gp', 'p.id = gp.permissionId')
+        .innerJoinAndSelect(Group, 'g', 'gp.groupId = g.id')
+        .innerJoinAndSelect(UserGroup, 'ug', 'g.id = ug.groupId')
+        .innerJoinAndSelect(User, 'u', 'u.id = ug.userId')
+        .where(
+          'u.id = :id AND u.deleteStatus = 0 AND g.deleteStatus = 0 AND p.deleteStatus = 0 AND u.status = 1 AND g.status = 1 AND p.status = 1',
+          {
+            id: id,
+          },
+        )
+        .getMany();
+
+      // User -> UserPermission -> Permission
       const userPermission = await this.permissionRepository
         .createQueryBuilder('p')
         .innerJoinAndSelect(UserPermission, 'up', 'p.id = up.permissionId')
@@ -380,11 +402,40 @@ export class PermissionService {
         .getMany();
 
       const res = Utils.uniqBy(
-        Utils.concat(userGroupPermission, userRolePermission, userPermission),
+        Utils.concat(userGroupRolePermission, userGroupPermission, userRolePermission, userPermission),
         'id',
       );
 
       return res;
+    } catch (e) {
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+    }
+  }
+
+  /**
+   * 获取权限（用户 id，简易模式）
+   */
+  async selectPByUserId(baseFindByIdDto: BaseFindByIdDto): Promise<any> {
+    try {
+      const { id } = baseFindByIdDto;
+      // User -> UserGroup -> Group -> GroupRole -> Role -> RolePermission -> Permission
+      const userGroupRolePermission = await this.permissionRepository
+        .createQueryBuilder('p')
+        .innerJoinAndSelect(RolePermission, 'rp', 'p.id = rp.permissionId')
+        .innerJoinAndSelect(Role, 'r', 'rp.roleId = r.id')
+        .innerJoinAndSelect(GroupRole, 'gr', 'r.id = gr.roleId')
+        .innerJoinAndSelect(Group, 'g', 'gr.groupId = g.id')
+        .innerJoinAndSelect(UserGroup, 'ug', 'g.id = ug.groupId')
+        .innerJoinAndSelect(User, 'u', 'u.id = ug.userId')
+        .where(
+          'u.id = :id AND u.deleteStatus = 0 AND g.deleteStatus = 0 AND r.deleteStatus = 0 AND p.deleteStatus = 0 AND u.status = 1 AND g.status = 1  AND r.status = 1 AND p.status = 1',
+          {
+            id: id,
+          },
+        )
+        .getMany();
+
+      return userGroupRolePermission;
     } catch (e) {
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }

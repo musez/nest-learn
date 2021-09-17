@@ -42,7 +42,7 @@ export class UserGroupService {
   /**
    * 获取用户组（批量）
    */
-  async selectByUserIds(ids: string[]): Promise<UserGroup[]> {
+  async selectByIds(ids: string[]): Promise<UserGroup[]> {
     try {
       return await this.userGroupRepository.find({
         relations: ['group'],

@@ -62,9 +62,10 @@ export class DictService {
       }
       if (!Utils.isBlank(status)) {
         if (!Utils.isArray(status)) {
+          // @ts-ignore
           status = Utils.split(status.toString());
         }
-        queryConditionList.push('dict.status IN (:...status)');
+        queryConditionList.push('dict.status IN (:status)');
       }
       queryConditionList.push('dict.deleteStatus = 0');
       const queryCondition = queryConditionList.join(' AND ');
@@ -106,7 +107,7 @@ export class DictService {
           // @ts-ignore
           status = Utils.split(status.toString());
         }
-        queryConditionList.push('dict.status IN (:...status)');
+        queryConditionList.push('dict.status IN (:status)');
       }
       queryConditionList.push('dict.deleteStatus = 0');
       const queryCondition = queryConditionList.join(' AND ');

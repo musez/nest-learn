@@ -42,7 +42,7 @@ export class RoleService {
       }
       return await this.roleRepository.save(role);
     } catch (e) {
-       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -60,9 +60,10 @@ export class RoleService {
       }
       if (!Utils.isBlank(status)) {
         if (!Utils.isArray(status)) {
+          // @ts-ignore
           status = Utils.split(status.toString());
         }
-        queryConditionList.push('status IN (:...status)');
+        queryConditionList.push('status IN (:status)');
       }
       queryConditionList.push('deleteStatus = 0');
       const queryCondition = queryConditionList.join(' AND ');
@@ -79,7 +80,7 @@ export class RoleService {
         })
         .getMany();
     } catch (e) {
-       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -100,9 +101,10 @@ export class RoleService {
       }
       if (!Utils.isBlank(status)) {
         if (!Utils.isArray(status)) {
+          // @ts-ignore
           status = Utils.split(status.toString());
         }
-        queryConditionList.push('status IN (:...status)');
+        queryConditionList.push('status IN (:status)');
       }
       queryConditionList.push('deleteStatus = 0');
       const queryCondition = queryConditionList.join(' AND ');
@@ -128,7 +130,7 @@ export class RoleService {
         limit: limit,
       };
     } catch (e) {
-       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -161,7 +163,7 @@ export class RoleService {
 
       return ret;
     } catch (e) {
-       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -177,16 +179,17 @@ export class RoleService {
         return true;
       }
     } catch (e) {
-       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
   /**
-   * 获取角色（用户 id）
+   * 获取角色（用户 id，复杂模式）
    */
   async selectByUserId(baseFindByIdDto: BaseFindByIdDto): Promise<any> {
     try {
       const { id } = baseFindByIdDto;
+      // User -> UserGroup -> Group -> GroupRole -> Role
       const userGroupRole = await this.roleRepository
         .createQueryBuilder('r')
         .innerJoinAndSelect(GroupRole, 'gr', 'r.id = gr.roleId')
@@ -201,6 +204,7 @@ export class RoleService {
         )
         .getMany();
 
+      // User -> UserRole -> Role
       const userRole = await this.roleRepository
         .createQueryBuilder('r')
         .innerJoinAndSelect(UserRole, 'ur', 'r.id = ur.roleId')
@@ -212,7 +216,34 @@ export class RoleService {
 
       return Utils.uniqBy(Utils.concat(userGroupRole, userRole), 'id');
     } catch (e) {
-       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+    }
+  }
+
+  /**
+   * 获取角色（用户 id，简易模式）
+   */
+  async selectRByUserId(baseFindByIdDto: BaseFindByIdDto): Promise<any> {
+    try {
+      const { id } = baseFindByIdDto;
+      // User -> UserGroup -> Group -> GroupRole -> Role
+      const userGroupRole = await this.roleRepository
+        .createQueryBuilder('r')
+        .innerJoinAndSelect(GroupRole, 'gr', 'r.id = gr.roleId')
+        .innerJoinAndSelect(Group, 'g', 'gr.groupId = g.id')
+        .innerJoinAndSelect(UserGroup, 'ug', 'g.id = ug.groupId')
+        .innerJoinAndSelect(User, 'u', 'u.id = ug.userId')
+        .where(
+          'u.id = :id AND u.deleteStatus = 0 AND g.deleteStatus = 0 AND r.deleteStatus = 0',
+          {
+            id: id,
+          },
+        )
+        .getMany();
+
+      return userGroupRole;
+    } catch (e) {
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -231,7 +262,7 @@ export class RoleService {
 
       await this.roleRepository.update(id, role);
     } catch (e) {
-       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -258,7 +289,7 @@ export class RoleService {
 
       return ret;
     } catch (e) {
-       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -276,7 +307,7 @@ export class RoleService {
         .where('id = :id', { id: id })
         .execute();
     } catch (e) {
-       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -297,7 +328,7 @@ export class RoleService {
         .where('id IN (:ids)', { ids: ids })
         .execute();
     } catch (e) {
-       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -344,7 +375,7 @@ export class RoleService {
         throw new ApiException('操作异常！', ApiErrorCode.ERROR, HttpStatus.OK);
       }
     } catch (e) {
-       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -363,7 +394,7 @@ export class RoleService {
 
       return ret;
     } catch (e) {
-       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 }

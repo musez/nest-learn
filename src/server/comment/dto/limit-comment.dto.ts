@@ -17,5 +17,5 @@ export class LimitCommentDto extends PartialType(BasePageDto) {
   // @IsOptional()
   // @Transform((value) => Number.parseInt(value))
   // @IsInt({ message: '查询类型必须为数字！' })
-  readonly status?: number | string | (number | string)[];
+   readonly status?: string;
 }

@@ -22,21 +22,6 @@ export class AuthController {
 
   @Post('/login')
   @UseGuards(LocalAuthGuard)
-  // @ApiBody({
-  //   schema: {
-  //     type: 'object',
-  //     properties: {
-  //       userName: { type: 'string', description: '用户名', example: 'admin' },
-  //       userPwd: { type: 'string', description: '密码', example: '888888' },
-  //       captchaId: {
-  //         type: 'string',
-  //         description: '验证码 id',
-  //         example: '888888',
-  //       },
-  //       captchaText: { type: 'string', description: '验证码', example: 'icmz' },
-  //     },
-  //   },
-  // })
   @ApiResponse({ status: ApiErrorCode.LOGIN_ERROR, description: '用户名或密码错误！' })
   @ApiResponse({ status: ApiErrorCode.INVALID_CAPTCHA, description: '验证码错误！' })
   @ApiOperation({ summary: '登录' })
@@ -94,7 +79,7 @@ export class AuthController {
         throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
       }
 
-      return await this.userService.selectAuthPermissionsByUserId(id);
+      return await this.userService.selectAuthPByUserId(id);
     } catch (e) {
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
@@ -113,7 +98,7 @@ export class AuthController {
         throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
       }
 
-      return await this.userService.selectAuthByUserId({ id });
+      return await this.userService.selectAuthUGRPByUserId({ id });
     } catch (e) {
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }

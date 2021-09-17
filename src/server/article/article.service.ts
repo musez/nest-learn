@@ -75,9 +75,10 @@ export class ArticleService {
       }
       if (!Utils.isBlank(status)) {
         if (!Utils.isArray(status)) {
+          // @ts-ignore
           status = Utils.split(status.toString());
         }
-        queryConditionList.push('status IN (:...status)');
+        queryConditionList.push('status IN (:status)');
       }
       if (!Utils.isBlank(catId)) {
         queryConditionList.push('articleDataCats.articleId = article.id');
@@ -144,9 +145,10 @@ export class ArticleService {
       }
       if (!Utils.isBlank(status)) {
         if (!Utils.isArray(status)) {
+          // @ts-ignore
           status = Utils.split(status.toString());
         }
-        queryConditionList.push('status IN (:...status)');
+        queryConditionList.push('status IN (:status)');
       }
       if (!Utils.isBlank(catId)) {
         queryConditionList.push('articleDataCats.articleId = article.id');

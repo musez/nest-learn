@@ -52,9 +52,10 @@ export class CommentService {
       }
       if (!Utils.isBlank(status)) {
         if (!Utils.isArray(status)) {
+          // @ts-ignore
           status = Utils.split(status.toString());
         }
-        queryConditionList.push('comment.status IN (:...status)');
+        queryConditionList.push('comment.status IN (:status)');
       }
       queryConditionList.push('comment.deleteStatus = 0');
       const queryCondition = queryConditionList.join(' AND ');
@@ -109,9 +110,10 @@ export class CommentService {
       }
       if (!Utils.isBlank(status)) {
         if (!Utils.isArray(status)) {
+          // @ts-ignore
           status = Utils.split(status.toString());
         }
-        queryConditionList.push('comment.status IN (:...status)');
+        queryConditionList.push('comment.status IN (:status)');
       }
       queryConditionList.push('comment.deleteStatus = 0');
       const queryCondition = queryConditionList.join(' AND ');

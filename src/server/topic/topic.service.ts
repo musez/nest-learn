@@ -53,9 +53,10 @@ export class TopicService {
       }
       if (!Utils.isBlank(status)) {
         if (!Utils.isArray(status)) {
+          // @ts-ignore
           status = Utils.split(status.toString());
         }
-        queryConditionList.push('topic.status IN (:...status)');
+        queryConditionList.push('topic.status IN (:status)');
       }
       if (!Utils.isBlank(isReply)) {
         if (isReply === 0) {
@@ -126,9 +127,10 @@ export class TopicService {
       }
       if (!Utils.isBlank(status)) {
         if (!Utils.isArray(status)) {
+          // @ts-ignore
           status = Utils.split(status.toString());
         }
-        queryConditionList.push('topic.status IN (:...status)');
+        queryConditionList.push('topic.status IN (:status)');
       }
       if (!Utils.isBlank(isReply)) {
         if (isReply === 0) {

@@ -48,7 +48,7 @@ export class UserPermissionService {
   /**
    * 获取权限（批量）
    */
-  async selectByUserIds(ids: string[]): Promise<UserPermission[]> {
+  async selectByIds(ids: string[]): Promise<UserPermission[]> {
     try {
       return await this.userPermissionRepository.find({
         relations: ['permission'],

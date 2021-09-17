@@ -9,5 +9,5 @@ export class LimitUserAddressDto extends PartialType(BasePageDto) {
   readonly mobile?: string;
 
   @ApiPropertyOptional({ description: '状态（0：禁用；1：启用）', example: 1 })
-  readonly status?: number | string | (number | string)[];
+   readonly status?: string;
 }
