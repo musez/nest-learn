@@ -112,7 +112,7 @@ export class DictService {
       queryConditionList.push('dict.deleteStatus = 0');
       const queryCondition = queryConditionList.join(' AND ');
 
-      const res = await this.dictRepository
+      const ret = await this.dictRepository
         .createQueryBuilder('dict')
         .leftJoinAndSelect('dict.dictItems', 'dictItems')
         .where(queryCondition, {
@@ -128,8 +128,8 @@ export class DictService {
         .getManyAndCount();
 
       return {
-        list: res[0],
-        total: res[1],
+        list: ret[0],
+        total: ret[1],
         page: page,
         limit: limit,
       };

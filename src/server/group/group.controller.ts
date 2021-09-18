@@ -69,7 +69,7 @@ export class GroupController {
   @Auth('account:group:findById')
   @ApiOperation({ summary: '获取详情（主键 id）' })
   async findById(@Query() baseFindByIdDto: BaseFindByIdDto): Promise<Group> {
-    return await this.groupService.selectById(baseFindByIdDto);
+    return await this.groupService.selectInfoById(baseFindByIdDto);
   }
 
   @Get('exportExcel')
@@ -182,7 +182,7 @@ export class GroupController {
   @Get('getRoles')
   @Auth('account:group:getRoles')
   @ApiOperation({ summary: '获取用户组角色' })
-  async findRolesByGroupId(@CurUser() curUser, @Query() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
+  async findRolesById(@CurUser() curUser, @Query() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
     try {
       const { id } = baseFindByIdDto;
       const isExistId = await this.groupService.isExistId(id);
@@ -191,7 +191,7 @@ export class GroupController {
         throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
       }
 
-      return await this.groupService.selectRolesByGroupId(baseFindByIdDto);
+      return await this.groupService.selectRolesById(baseFindByIdDto);
     } catch (e) {
        throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
@@ -217,7 +217,7 @@ export class GroupController {
   @Get('getPermissions')
   @Auth('account:group:getPermissions')
   @ApiOperation({ summary: '获取权限' })
-  async findPermissionsByGroupId(@CurUser() curUser, @Query() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
+  async findPermissionsById(@CurUser() curUser, @Query() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
     try {
       const { id } = baseFindByIdDto;
 
@@ -226,7 +226,7 @@ export class GroupController {
         throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
       }
 
-      return await this.groupService.selectPermissionsByGroupId(baseFindByIdDto);
+      return await this.groupService.selectPermissionsById(baseFindByIdDto);
     } catch (e) {
        throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }

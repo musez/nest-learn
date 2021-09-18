@@ -81,7 +81,7 @@ export class UserController {
   @Auth('account:user:findById')
   @ApiOperation({ summary: '获取详情（主键 id）' })
   async findById(@Query() baseFindByIdDto: BaseFindByIdDto): Promise<User> {
-    return await this.userService.selectById(baseFindByIdDto);
+    return await this.userService.selectInfoById(baseFindByIdDto);
   }
 
   @Get('exportExcel')
@@ -270,7 +270,7 @@ export class UserController {
   @Get('getGroups')
   @Auth('account:user:getGroups')
   @ApiOperation({ summary: '获取用户组' })
-  async findGroupsByUserId(@CurUser() curUser, @Query() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
+  async findGroupsById(@CurUser() curUser, @Query() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
     try {
       const { id } = baseFindByIdDto;
 
@@ -278,7 +278,7 @@ export class UserController {
       if (!isExistId) {
         throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
       }
-      return await this.userService.selectGroupsByUserId(baseFindByIdDto);
+      return await this.userService.selectGroupsById(baseFindByIdDto);
     } catch (e) {
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
@@ -304,7 +304,7 @@ export class UserController {
   @Get('getRoles')
   @Auth('account:user:getRoles')
   @ApiOperation({ summary: '获取角色' })
-  async findRolesByUserId(@CurUser() curUser, @Query() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
+  async findRolesById(@CurUser() curUser, @Query() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
     try {
       const { id } = baseFindByIdDto;
 
@@ -313,7 +313,7 @@ export class UserController {
         throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
       }
 
-      return await this.userService.selectRolesByUserId(baseFindByIdDto);
+      return await this.userService.selectRolesById(baseFindByIdDto);
     } catch (e) {
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
@@ -338,7 +338,7 @@ export class UserController {
   @Get('getPermissions')
   @Auth('account:user:getPermissions')
   @ApiOperation({ summary: '获取权限' })
-  async findPermissionsByUserId(@CurUser() curUser, @Query() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
+  async findPermissionsById(@CurUser() curUser, @Query() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
     try {
       const { id } = baseFindByIdDto;
 
@@ -347,7 +347,7 @@ export class UserController {
         throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
       }
 
-      return await this.userService.selectPermissionsByUserId(baseFindByIdDto);
+      return await this.userService.selectPermissionsById(baseFindByIdDto);
     } catch (e) {
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }

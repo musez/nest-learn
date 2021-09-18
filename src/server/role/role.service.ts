@@ -1,6 +1,6 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { Utils } from './../../utils/index';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
@@ -97,20 +97,21 @@ export class RoleService {
 
       const queryConditionList = [];
       if (!Utils.isBlank(name)) {
-        queryConditionList.push('name LIKE :name');
+        queryConditionList.push('role.name LIKE :name');
       }
       if (!Utils.isBlank(status)) {
         if (!Utils.isArray(status)) {
           // @ts-ignore
           status = Utils.split(status.toString());
         }
-        queryConditionList.push('status IN (:status)');
+        queryConditionList.push('role.status IN (:status)');
       }
-      queryConditionList.push('deleteStatus = 0');
+      queryConditionList.push('role.deleteStatus = 0');
       const queryCondition = queryConditionList.join(' AND ');
 
       const ret = await this.roleRepository
-        .createQueryBuilder()
+        .createQueryBuilder('role')
+        .leftJoinAndSelect('role.rolePermissions', 'rolePermissions')
         .where(queryCondition, {
           name: `%${name}%`,
           status: status,
@@ -118,10 +119,23 @@ export class RoleService {
         .skip(offset)
         .take(limit)
         .orderBy({
-          status: 'DESC',
-          createTime: 'DESC',
+          'role.status': 'DESC',
+          'role.createTime': 'DESC',
         })
         .getManyAndCount();
+
+      for (const v of ret[0]) {
+        if (v?.rolePermissions?.length > 0) {
+          const ids = v.rolePermissions.map(v => v.id);
+
+          const rolePermissionRet = await this.rolePermissionService.selectByIds(ids);
+          v['permissions'] = rolePermissionRet.filter(v => v.permission).map((v) => {
+            return v.permission;
+          });
+        } else {
+          v['permissions'] = [];
+        }
+      }
 
       return {
         list: ret[0],
@@ -129,6 +143,40 @@ export class RoleService {
         page: page,
         limit: limit,
       };
+    } catch (e) {
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+    }
+  }
+
+  /**
+   * 获取详情（扩展信息，主键 id）
+   */
+  async selectInfoById(baseFindByIdDto: BaseFindByIdDto): Promise<Role> {
+    try {
+      const { id } = baseFindByIdDto;
+
+      const ret = await this.roleRepository.findOne({
+        relations: ['rolePermissions'],
+        where: {
+          id: id,
+        },
+      });
+      if (!ret) {
+        throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
+      }
+      if (ret?.rolePermissions?.length > 0) {
+        const ids = ret.rolePermissions.map((v) => v.id);
+
+        const rolePermissionRet = await this.rolePermissionService.selectByIds(ids);
+        const permissions = rolePermissionRet.filter(v => v.permission).map((v) => {
+          return v.permission;
+        });
+        ret['permissions'] = Utils.uniqBy(permissions, 'id');
+      } else {
+        ret['permissions'] = [];
+      }
+
+      return ret;
     } catch (e) {
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
@@ -150,17 +198,23 @@ export class RoleService {
       if (!ret) {
         throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
       }
-      if (ret?.rolePermissions?.length > 0) {
-        const ids = ret.rolePermissions.map((v) => v.id);
+      return ret;
+    } catch (e) {
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+    }
+  }
 
-        const rolePermissionRet = await this.rolePermissionService.selectByIds(ids);
-        const rolePermissions = rolePermissionRet.filter(v => v.permission).map((v) => {
-          return v.permission;
-        });
-        // @ts-ignore
-        ret.rolePermissions = Utils.uniqBy(rolePermissions, 'id');
-      }
-
+  /**
+   * 获取详情（主键 ids）
+   */
+  async selectByIds(ids: []): Promise<Role[]> {
+    try {
+      const ret = await this.roleRepository.find({
+        relations: ['rolePermissions'],
+        where: {
+          id: In(ids),
+        },
+      });
       return ret;
     } catch (e) {
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
@@ -382,7 +436,7 @@ export class RoleService {
   /**
    * 获取权限
    */
-  async selectPermissionsByRoleId(baseFindByIdDto: BaseFindByIdDto): Promise<Role> {
+  async selectPermissionsById(baseFindByIdDto: BaseFindByIdDto): Promise<Role> {
     try {
       const { id } = baseFindByIdDto;
       const ret = await this.roleRepository.findOne({

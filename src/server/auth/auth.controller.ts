@@ -79,7 +79,7 @@ export class AuthController {
         throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
       }
 
-      return await this.userService.selectAuthPByUserId(id);
+      return await this.userService.selectAuthPById(id);
     } catch (e) {
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
@@ -98,7 +98,7 @@ export class AuthController {
         throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
       }
 
-      return await this.userService.selectAuthUGRPByUserId({ id });
+      return await this.userService.selectAuthUGRPById({ id });
     } catch (e) {
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }

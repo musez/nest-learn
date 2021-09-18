@@ -1,6 +1,6 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { Utils } from './../../utils/index';
 import { CreateGroupDto } from './dto/create-group.dto';
 import { UpdateGroupDto } from './dto/update-group.dto';
@@ -44,7 +44,7 @@ export class GroupService {
       }
       return await this.groupRepository.save(group);
     } catch (e) {
-       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -81,7 +81,7 @@ export class GroupService {
         })
         .getMany();
     } catch (e) {
-       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -98,20 +98,21 @@ export class GroupService {
 
       const queryConditionList = [];
       if (!Utils.isBlank(name)) {
-        queryConditionList.push('name LIKE :name');
+        queryConditionList.push('group.name LIKE :name');
       }
       if (!Utils.isBlank(status)) {
         if (!Utils.isArray(status)) {
           // @ts-ignore
           status = Utils.split(status.toString());
         }
-        queryConditionList.push('status IN (:status)');
+        queryConditionList.push('group.status IN (:status)');
       }
-      queryConditionList.push('deleteStatus = 0');
+      queryConditionList.push('group.deleteStatus = 0');
       const queryCondition = queryConditionList.join(' AND ');
 
-      const res = await this.groupRepository
-        .createQueryBuilder()
+      const ret = await this.groupRepository
+        .createQueryBuilder('group')
+        .leftJoinAndSelect('group.groupRoles', 'groupRoles')
         .where(queryCondition, {
           name: `%${name}%`,
           status: status,
@@ -119,19 +120,78 @@ export class GroupService {
         .skip(offset)
         .take(limit)
         .orderBy({
-          status: 'DESC',
-          createTime: 'DESC',
+          'group.status': 'DESC',
+          'group.createTime': 'DESC',
         })
         .getManyAndCount();
 
+      for (const v of ret[0]) {
+        if (v?.groupRoles?.length > 0) {
+          const ids = v.groupRoles.map(v => v.id);
+
+          const groupRoleRet = await this.groupRoleService.selectByIds(ids);
+          v['roles'] = groupRoleRet.filter(v => v.role).map((v) => {
+            return v.role;
+          });
+        } else {
+          v['roles'] = [];
+        }
+      }
+
       return {
-        list: res[0],
-        total: res[1],
+        list: ret[0],
+        total: ret[1],
         page: page,
         limit: limit,
       };
     } catch (e) {
-       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+      console.log(e);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+    }
+  }
+
+  /**
+   * 获取详情（关联信息，主键 id）
+   */
+  async selectInfoById(baseFindByIdDto: BaseFindByIdDto): Promise<Group> {
+    try {
+      const { id } = baseFindByIdDto;
+      const ret = await this.groupRepository.findOne({
+        relations: ['groupRoles', 'groupPermissions'],
+        where: {
+          id: id,
+        },
+      });
+      if (!ret) {
+        throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
+      }
+
+      if (ret?.groupRoles?.length > 0) {
+        const ids = ret.groupRoles.map((v) => v.id);
+
+        const groupRoleRet = await this.groupRoleService.selectByIds(ids);
+        const roles = groupRoleRet.filter(v => v.role).map((v) => {
+          return v.role;
+        });
+        ret['roles'] = roles;
+      } else {
+        ret['roles'] = [];
+      }
+
+      if (ret?.groupPermissions?.length > 0) {
+        const ids = ret.groupPermissions.map((v) => v.id);
+
+        const groupPermissionsRet = await this.groupPermissionService.selectByIds(ids);
+        const permissions = groupPermissionsRet.filter(v => v.permission).map((v) => {
+          return v.permission;
+        });
+        ret['permissions'] = permissions;
+      } else {
+        ret['permissions'] = [];
+      }
+      return ret;
+    } catch (e) {
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -150,31 +210,25 @@ export class GroupService {
       if (!ret) {
         throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
       }
-
-      if (ret?.groupRoles?.length > 0) {
-        const ids = ret.groupRoles.map((v) => v.id);
-
-        const groupRoleRet = await this.groupRoleService.selectByIds(ids);
-        const groupRoles = groupRoleRet.filter(v => v.role).map((v) => {
-          return v.role;
-        });
-        // @ts-ignore
-        ret.groupRoles = groupRoles;
-      }
-
-      if (ret?.groupPermissions?.length > 0) {
-        const ids = ret.groupPermissions.map((v) => v.id);
-
-        const groupPermissionsRet = await this.groupPermissionService.selectByIds(ids);
-        const groupPermissions = groupPermissionsRet.filter(v => v.permission).map((v) => {
-          return v.permission;
-        });
-        // @ts-ignore
-        ret.groupPermissions = groupPermissions;
-      }
       return ret;
     } catch (e) {
-       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+    }
+  }
+
+  /**
+   * 获取详情（主键 ids）
+   */
+  async selectByIds(ids: string[]): Promise<Group[]> {
+    try {
+      const ret = await this.groupRepository.find({
+        where: {
+          id: In(ids),
+        },
+      });
+      return ret;
+    } catch (e) {
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -196,7 +250,7 @@ export class GroupService {
 
       return userGroup;
     } catch (e) {
-       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -212,7 +266,7 @@ export class GroupService {
         return true;
       }
     } catch (e) {
-       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -230,7 +284,7 @@ export class GroupService {
       }
       await this.groupRepository.update(id, group);
     } catch (e) {
-       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -257,7 +311,7 @@ export class GroupService {
 
       return ret;
     } catch (e) {
-       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -275,7 +329,7 @@ export class GroupService {
         .where('id = :id', { id: id })
         .execute();
     } catch (e) {
-       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -296,7 +350,7 @@ export class GroupService {
         .where('id IN (:ids)', { ids: ids })
         .execute();
     } catch (e) {
-       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -340,14 +394,14 @@ export class GroupService {
         throw new ApiException('操作异常！', ApiErrorCode.ERROR, HttpStatus.OK);
       }
     } catch (e) {
-       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
   /**
    * 获取角色
    */
-  async selectRolesByGroupId(baseFindByIdDto: BaseFindByIdDto): Promise<Group> {
+  async selectRolesById(baseFindByIdDto: BaseFindByIdDto): Promise<Group> {
     try {
       const { id } = baseFindByIdDto;
       const ret = await this.groupRepository.findOne({
@@ -359,7 +413,7 @@ export class GroupService {
 
       return ret;
     } catch (e) {
-       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -404,14 +458,14 @@ export class GroupService {
         throw new ApiException('操作异常！', ApiErrorCode.ERROR, HttpStatus.OK);
       }
     } catch (e) {
-       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
   /**
    * 获取权限
    */
-  async selectPermissionsByGroupId(baseFindByIdDto: BaseFindByIdDto): Promise<Group> {
+  async selectPermissionsById(baseFindByIdDto: BaseFindByIdDto): Promise<Group> {
     try {
       const { id } = baseFindByIdDto;
       const ret = await this.groupRepository.findOne({
@@ -423,7 +477,7 @@ export class GroupService {
 
       return ret;
     } catch (e) {
-       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 }

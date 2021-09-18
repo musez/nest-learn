@@ -66,7 +66,7 @@ export class RoleController {
   @Auth('account:role:findById')
   @ApiOperation({ summary: '获取详情（主键 id）' })
   async findById(@Query() baseFindByIdDto: BaseFindByIdDto): Promise<Role> {
-    return await this.roleService.selectById(baseFindByIdDto);
+    return await this.roleService.selectInfoById(baseFindByIdDto);
   }
 
   @Get('exportExcel')
@@ -176,7 +176,7 @@ export class RoleController {
   @Get('getPermissions')
   @Auth('account:role:getPermissions')
   @ApiOperation({ summary: '获取角色权限' })
-  async findPermissionsByRoleId(@CurUser() curUser, @Query() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
+  async findPermissionsById(@CurUser() curUser, @Query() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
     try {
       const { id } = baseFindByIdDto;
       const isExistId = await this.roleService.isExistId(id);
@@ -184,7 +184,7 @@ export class RoleController {
       if (!isExistId) {
         throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
       }
-      return await this.roleService.selectPermissionsByRoleId(baseFindByIdDto);
+      return await this.roleService.selectPermissionsById(baseFindByIdDto);
     } catch (e) {
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }

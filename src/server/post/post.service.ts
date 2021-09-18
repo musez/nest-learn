@@ -101,7 +101,7 @@ export class PostService {
       queryConditionList.push('deleteStatus = 0');
       const queryCondition = queryConditionList.join(' AND ');
 
-      const res = await this.postRepository
+      const ret = await this.postRepository
         .createQueryBuilder()
         .where(queryCondition, {
           name: `%${name}%`,
@@ -117,8 +117,8 @@ export class PostService {
         .getManyAndCount();
 
       return {
-        list: res[0],
-        total: res[1],
+        list: ret[0],
+        total: ret[1],
         page: page,
         limit: limit,
       };

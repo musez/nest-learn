@@ -1,6 +1,6 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { Utils } from './../../utils/index';
 import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -353,7 +353,7 @@ export class UserService {
 
       const queryBuilder = this.userRepository
         .createQueryBuilder('user')
-        .leftJoinAndSelect('user.userGroups', 'userGroups')
+        .innerJoin('user.userinfo', 'userinfo')
         .leftJoinAndSelect(Area, 'p', 'p.id = userinfo.provinceId')
         .leftJoinAndSelect(Area, 'c', 'c.id = userinfo.cityId')
         .leftJoinAndSelect(Area, 'd', 'd.id = userinfo.districtId')
@@ -398,15 +398,23 @@ export class UserService {
         v['userinfo'] = ui;
 
         // 获取关联 id
-        const userGroupRet = await this.userRepository.find({
+        const userRet = await this.userRepository.findOne({
           relations: ['userGroups'],
           where: {
             id: id,
           },
         });
-        const ids = userGroupRet.map(v => v.id);
-        const groupRet = await this.userGroupService.selectByIds(ids);
-        v['group'] = groupRet;
+
+        if (userRet?.userGroups?.length > 0) {
+          const ids = userRet.userGroups.map(v => v.id);
+
+          const userGroupRet = await this.userGroupService.selectByIds(ids);
+          v['groups'] = userGroupRet.filter(v => v.group).map((v) => {
+            return v.group;
+          });
+        } else {
+          v['groups'] = [];
+        }
 
         delete v.userPwd;
         delete v.provinceId;
@@ -435,9 +443,9 @@ export class UserService {
   }
 
   /**
-   * 获取详情（主键 id）
+   * 获取详情（关联信息，主键 id）
    */
-  async selectById(baseFindByIdDto: BaseFindByIdDto): Promise<User> {
+  async selectInfoById(baseFindByIdDto: BaseFindByIdDto): Promise<User> {
     try {
       const { id } = baseFindByIdDto;
 
@@ -455,35 +463,75 @@ export class UserService {
         const ids = ret.userGroups.map((v) => v.id);
 
         const userGroupRet = await this.userGroupService.selectByIds(ids);
-        const userGroups = userGroupRet.filter(v => v.group).map((v) => {
+        const groups = userGroupRet.filter(v => v.group).map((v) => {
           return v.group;
         });
-        // @ts-ignore
-        ret.userGroups = Utils.uniqBy(userGroups, 'id');
+        ret['groups'] = Utils.uniqBy(groups, 'id');
+      } else {
+        ret['groups'] = [];
       }
 
       if (ret?.userRoles?.length > 0) {
         const ids = ret.userRoles.map((v) => v.id);
 
         const userRoleRet = await this.userRoleService.selectByIds(ids);
-        const userRoles = userRoleRet.filter(v => v.role).map((v) => {
+        const roles = userRoleRet.filter(v => v.role).map((v) => {
           return v.role;
         });
-        // @ts-ignore
-        ret.userRoles = userRoles;
+        ret['roles'] = roles;
+      } else {
+        ret['roles'] = [];
       }
 
       if (ret?.userPermissions?.length > 0) {
         const ids = ret.userPermissions.map((v) => v.id);
 
         const userPermissionRet = await this.userPermissionService.selectByIds(ids);
-        const userPermissions = userPermissionRet.filter(v => v.permission).map((v) => {
+        const permissions = userPermissionRet.filter(v => v.permission).map((v) => {
           return v.permission;
         });
-        // @ts-ignore
-        ret.userPermissions = userPermissions;
+        ret['permissions'] = permissions;
+      } else {
+        ret['permissions'] = [];
       }
 
+      return ret;
+    } catch (e) {
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+    }
+  }
+
+  /**
+   * 获取详情（主键 id）
+   */
+  async selectById(baseFindByIdDto: BaseFindByIdDto): Promise<User> {
+    try {
+      const { id } = baseFindByIdDto;
+
+      const ret = await this.userRepository.findOne({
+        where: {
+          id: id,
+        },
+      });
+      if (!ret) {
+        throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
+      }
+      return ret;
+    } catch (e) {
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+    }
+  }
+
+  /**
+   * 获取详情（批量，主键 ids）
+   */
+  async selectByIds(ids: string[]): Promise<User[]> {
+    try {
+      const ret = await this.userRepository.find({
+        where: {
+          id: In(ids),
+        },
+      });
       return ret;
     } catch (e) {
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
@@ -692,9 +740,10 @@ export class UserService {
   /**
    * 获取用户组
    */
-  async selectGroupsByUserId(baseFindByIdDto: BaseFindByIdDto): Promise<User> {
+  async selectGroupsById(baseFindByIdDto: BaseFindByIdDto): Promise<User> {
     try {
       const { id } = baseFindByIdDto;
+      // 获取关联 id
       const ret = await this.userRepository.findOne({
         relations: ['userGroups'],
         where: {
@@ -756,7 +805,7 @@ export class UserService {
   /**
    * 获取角色
    */
-  async selectRolesByUserId(baseFindByIdDto: BaseFindByIdDto): Promise<User> {
+  async selectRolesById(baseFindByIdDto: BaseFindByIdDto): Promise<User> {
     try {
       const { id } = baseFindByIdDto;
       const ret = await this.userRepository.findOne({
@@ -820,7 +869,7 @@ export class UserService {
   /**
    * 获取权限
    */
-  async selectPermissionsByUserId(baseFindByIdDto: BaseFindByIdDto): Promise<User> {
+  async selectPermissionsById(baseFindByIdDto: BaseFindByIdDto): Promise<User> {
     try {
       const { id } = baseFindByIdDto;
       const ret = await this.userRepository.findOne({
@@ -839,7 +888,7 @@ export class UserService {
   /**
    * 获取权限（权限合集）
    */
-  async selectAuthPByUserId(baseFindByIdDto: BaseFindByIdDto): Promise<any> {
+  async selectAuthPById(baseFindByIdDto: BaseFindByIdDto): Promise<any> {
     try {
       return await this.permissionService.selectByUserId(baseFindByIdDto);
     } catch (e) {
@@ -850,7 +899,7 @@ export class UserService {
   /**
    * 获取权限（用户、用户组、角色、权限合集）
    */
-  async selectAuthUGRPByUserId(baseFindByIdDto: BaseFindByIdDto): Promise<any> {
+  async selectAuthUGRPById(baseFindByIdDto: BaseFindByIdDto): Promise<any> {
     try {
       const userRet = await this.selectById(baseFindByIdDto);
 

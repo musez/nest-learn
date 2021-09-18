@@ -73,7 +73,7 @@ export class PermissionService {
       }
       queryConditionList.push('deleteStatus = 0');
       const queryCondition = queryConditionList.join(' AND ');
-      const res = await this.permissionRepository
+      const ret = await this.permissionRepository
         .createQueryBuilder('p')
         .select(['p.*'])
         .addSelect(
@@ -96,7 +96,7 @@ export class PermissionService {
         })
         .getRawMany();
 
-      return res;
+      return ret;
     } catch (e) {
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
@@ -149,7 +149,7 @@ export class PermissionService {
       queryConditionList.push('deleteStatus = 0');
       const queryCondition = queryConditionList.join(' AND ');
 
-      const res = await this.permissionRepository
+      const ret = await this.permissionRepository
         .createQueryBuilder('p')
         .select(['p.*'])
         .addSelect(
@@ -173,7 +173,7 @@ export class PermissionService {
         })
         .getRawMany();
 
-      return res;
+      return ret;
     } catch (e) {
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
@@ -212,7 +212,7 @@ export class PermissionService {
       queryConditionList.push('deleteStatus = 0');
       const queryCondition = queryConditionList.join(' AND ');
 
-      const res = await this.permissionRepository
+      const ret = await this.permissionRepository
         .createQueryBuilder()
         .where(queryCondition, {
           parentIds: parentIds,
@@ -229,8 +229,8 @@ export class PermissionService {
         .getManyAndCount();
 
       return {
-        list: res[0],
-        total: res[1],
+        list: ret[0],
+        total: ret[1],
         page: page,
         limit: limit,
       };
@@ -273,10 +273,10 @@ export class PermissionService {
       const { parentId } = baseFindByPIdDto;
 
       if (Utils.isBlank(parentId)) {
-        const res = await this.permissionRepository.find({
+        const ret = await this.permissionRepository.find({
           deleteStatus: 0,
         });
-        return Utils.construct(res, {
+        return Utils.construct(ret, {
           id: 'id',
           pid: 'parentId',
           children: 'children',
@@ -401,12 +401,12 @@ export class PermissionService {
         )
         .getMany();
 
-      const res = Utils.uniqBy(
+      const ret = Utils.uniqBy(
         Utils.concat(userGroupRolePermission, userGroupPermission, userRolePermission, userPermission),
         'id',
       );
 
-      return res;
+      return ret;
     } catch (e) {
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }

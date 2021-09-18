@@ -150,7 +150,7 @@ export class HolidayService {
       queryConditionList.push('deleteStatus = 0');
       const queryCondition = queryConditionList.join(' AND ');
 
-      const res = await this.holidayRepository
+      const ret = await this.holidayRepository
         .createQueryBuilder()
         .where(queryCondition, {
           year: `${year}%`,
@@ -169,8 +169,8 @@ export class HolidayService {
         .getManyAndCount();
 
       return {
-        list: res[0],
-        total: res[1],
+        list: ret[0],
+        total: ret[1],
         page: page,
         limit: limit,
       };

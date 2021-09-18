@@ -48,6 +48,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
         message: exception.getErrorMessage(),
         time: nowDate,
         path: request.url,
+        error: exception.getErrorMessage(),
       });
     } else {
       response.status(200).json({
@@ -56,7 +57,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
         message: `${status >= 500 ? '服务端错误：' : '客户端错误：'}${exception.message}！`,
         time: nowDate,
         path: request.url,
-        error: JSON.stringify(exception),
+        error: exception.toString(),
       });
     }
   }

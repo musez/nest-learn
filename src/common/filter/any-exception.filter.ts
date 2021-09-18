@@ -40,6 +40,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
       message: `服务端错误: ${exception}`,
       time: nowDate,
       path: request.url,
+      error: exception.toString(),
     });
   }
 }

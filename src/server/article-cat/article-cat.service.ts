@@ -62,7 +62,7 @@ export class ArticleCatService {
       queryConditionList.push('deleteStatus = 0');
       const queryCondition = queryConditionList.join(' AND ');
 
-      const res = await this.articleCatRepository
+      const ret = await this.articleCatRepository
         .createQueryBuilder('ac')
         .select(['ac.*'])
         .addSelect(
@@ -82,7 +82,7 @@ export class ArticleCatService {
           status: status,
         })
         .getRawMany();
-      return res;
+      return ret;
     } catch (e) {
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
@@ -126,7 +126,7 @@ export class ArticleCatService {
       queryConditionList.push('deleteStatus = 0');
       const queryCondition = queryConditionList.join(' AND ');
 
-      const res = await this.articleCatRepository
+      const ret = await this.articleCatRepository
         .createQueryBuilder('ac')
         .select(['ac.*'])
         .addSelect(
@@ -147,7 +147,7 @@ export class ArticleCatService {
           status: status,
         })
         .getRawMany();
-      return res;
+      return ret;
     } catch (e) {
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
@@ -185,7 +185,7 @@ export class ArticleCatService {
       queryConditionList.push('deleteStatus = 0');
       const queryCondition = queryConditionList.join(' AND ');
 
-      const res = await this.articleCatRepository
+      const ret = await this.articleCatRepository
         .createQueryBuilder()
         .where(queryCondition, {
           parentIds: parentIds,
@@ -201,8 +201,8 @@ export class ArticleCatService {
         .getManyAndCount();
 
       return {
-        list: res[0],
-        total: res[1],
+        list: ret[0],
+        total: ret[1],
         page: page,
         limit: limit,
       };
@@ -245,10 +245,10 @@ export class ArticleCatService {
       const { parentId } = baseFindByPIdDto;
 
       if (Utils.isBlank(parentId)) {
-        const res = await this.articleCatRepository.find({
+        const ret = await this.articleCatRepository.find({
           deleteStatus: 0,
         });
-        return Utils.construct(res, {
+        return Utils.construct(ret, {
           id: 'id',
           pid: 'parentId',
           children: 'children',
