@@ -23,7 +23,7 @@ export class ArticleDataCatService {
   /**
    * 获取分类（批量）
    */
-  async selectByArticleDataCatIds(ids: string[]): Promise<ArticleDataCat[]> {
+  async selectByIds(ids: string[]): Promise<ArticleDataCat[]> {
     return await this.articleDataCatRepository.find({
       relations: ['cat'],
       where: {

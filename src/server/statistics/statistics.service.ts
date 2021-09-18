@@ -2,19 +2,23 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { ApiException } from '../../common/exception/api-exception';
 import { ArticleService } from '../article/article.service';
 import { ApiErrorCode } from '../../constants/api-error-code.enum';
+import { UserService } from '../user/user.service';
+import { InjectRepository } from '@nestjs/typeorm';
+import { User } from '../user/entities/user.entity';
 
 @Injectable()
 export class StatisticsService {
   constructor(
     private readonly articleService: ArticleService,
+    private readonly userService: UserService,
   ) {
   }
 
   /**
-   * 获取配置文件
+   * 获取面板信息
    */
   public async selectCount() {
-    return null;
+    return await this.userService.selectOnline();
   }
 
   /**

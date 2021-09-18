@@ -11,7 +11,7 @@
  Target Server Version : 50726
  File Encoding         : 65001
 
- Date: 09/09/2021 10:23:42
+ Date: 18/09/2021 17:46:03
 */
 
 SET NAMES utf8mb4;
@@ -36,9 +36,10 @@ CREATE TABLE `sys_user_group`  (
 -- Records of sys_user_group
 -- ----------------------------
 INSERT INTO `sys_user_group` VALUES ('148dc66f-0c0e-47b6-80a9-2d6837577645', 'a2fdfeb4-9a1a-41ce-b1c9-c8f81b510a98', '0950c980-ab23-4244-8e0f-ce70e9628e13');
-INSERT INTO `sys_user_group` VALUES ('537c5612-8dd2-4e70-bdeb-611137a6fe6b', 'd42d636b-cd41-4514-88e8-97ce499d4c32', '0950c980-ab23-4244-8e0f-ce70e9628e13');
-INSERT INTO `sys_user_group` VALUES ('977753c0-d0fd-42d3-99ab-663243f48586', '62310947-7b54-45c8-a5da-19837f2541a4', '0950c980-ab23-4244-8e0f-ce70e9628e13');
+INSERT INTO `sys_user_group` VALUES ('20cb55d3-a2a2-474a-bbe4-0a05e6b1bbe5', '62310947-7b54-45c8-a5da-19837f2541a4', 'ef439baf-ba10-4662-b394-b91938a256e5');
+INSERT INTO `sys_user_group` VALUES ('7c8a7411-782b-47d0-a543-367e1c137ce8', '62310947-7b54-45c8-a5da-19837f2541a4', '0950c980-ab23-4244-8e0f-ce70e9628e13');
+INSERT INTO `sys_user_group` VALUES ('afcd1500-24d7-459b-9513-34b246c94fc7', '62310947-7b54-45c8-a5da-19837f2541a4', 'c61ecdb2-ca08-4bfd-afbe-8a86ea53f438');
 INSERT INTO `sys_user_group` VALUES ('b499f632-dd40-4997-8492-0f1c7f91d0e2', '518e81b2-0bda-4729-be21-d25c94a424ff', '0950c980-ab23-4244-8e0f-ce70e9628e13');
-INSERT INTO `sys_user_group` VALUES ('e853ffcc-4fa3-4eff-95b9-29e1d0ec0a3c', '0511f0a5-3ff8-4284-9851-4bfd9c0d5b16', '0950c980-ab23-4244-8e0f-ce70e9628e13');
+INSERT INTO `sys_user_group` VALUES ('c470ab20-91f3-46a7-b851-ccc41b674e40', '62310947-7b54-45c8-a5da-19837f2541a4', '0078b5ce-ba44-45c8-9a02-142d085cb311');
 
 SET FOREIGN_KEY_CHECKS = 1;

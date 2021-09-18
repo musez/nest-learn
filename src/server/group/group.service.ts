@@ -130,9 +130,7 @@ export class GroupService {
           const ids = v.groupRoles.map(v => v.id);
 
           const groupRoleRet = await this.groupRoleService.selectByIds(ids);
-          v['roles'] = groupRoleRet.filter(v => v.role).map((v) => {
-            return v.role;
-          });
+          v['roles'] = groupRoleRet.filter(v => v.role).map((v) => v.role);
         } else {
           v['roles'] = [];
         }
@@ -170,9 +168,7 @@ export class GroupService {
         const ids = ret.groupRoles.map((v) => v.id);
 
         const groupRoleRet = await this.groupRoleService.selectByIds(ids);
-        const roles = groupRoleRet.filter(v => v.role).map((v) => {
-          return v.role;
-        });
+        const roles = groupRoleRet.filter(v => v.role).map((v) => v.role);
         ret['roles'] = roles;
       } else {
         ret['roles'] = [];
@@ -182,9 +178,7 @@ export class GroupService {
         const ids = ret.groupPermissions.map((v) => v.id);
 
         const groupPermissionsRet = await this.groupPermissionService.selectByIds(ids);
-        const permissions = groupPermissionsRet.filter(v => v.permission).map((v) => {
-          return v.permission;
-        });
+        const permissions = groupPermissionsRet.filter(v => v.permission).map((v) => v.permission);
         ret['permissions'] = permissions;
       } else {
         ret['permissions'] = [];

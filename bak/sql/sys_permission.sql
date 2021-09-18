@@ -11,7 +11,7 @@
  Target Server Version : 50726
  File Encoding         : 65001
 
- Date: 09/09/2021 10:22:47
+ Date: 18/09/2021 17:45:19
 */
 
 SET NAMES utf8mb4;
@@ -83,7 +83,8 @@ INSERT INTO `sys_permission` VALUES ('66a7e4f0-46ad-4642-b348-0c85ee5860af', 1, 
 INSERT INTO `sys_permission` VALUES ('676cec2a-d9ff-4961-9213-499369b1c902', 1, NULL, '2021-08-07 11:42:44.799968', '518e81b2-0bda-4729-be21-d25c94a424ff', '2021-08-07 11:42:44.799968', NULL, 0, NULL, NULL, 'ba3334a6-d382-4fc9-8e40-6f4f134d2206', '添加', 3, 'cms:articleCat:add', 20401, NULL, NULL, NULL, NULL);
 INSERT INTO `sys_permission` VALUES ('67f7c348-8bdb-486e-8585-e579e90b43c3', 1, NULL, '2021-08-07 11:42:45.047540', '518e81b2-0bda-4729-be21-d25c94a424ff', '2021-08-07 11:42:45.047540', NULL, 0, NULL, NULL, 'ba3334a6-d382-4fc9-8e40-6f4f134d2206', '批量删除', 3, 'cms:articleCat:deleteBatch', 20404, NULL, NULL, NULL, NULL);
 INSERT INTO `sys_permission` VALUES ('6a5aee9a-2739-429f-83db-ebd2ec656205', 1, NULL, '2021-08-07 11:08:11.156613', '518e81b2-0bda-4729-be21-d25c94a424ff', '2021-08-07 11:08:11.156613', NULL, 0, NULL, NULL, '78f4e162-3cb2-4ac9-ab1e-3e4e7d9e27bb', '批量删除', 3, 'account:role:deleteBatch', 10804, NULL, NULL, NULL, NULL);
-INSERT INTO `sys_permission` VALUES ('6d304bad-996b-40d5-a43a-7bab9ead2744', 1, '', '2021-08-07 01:10:25.568965', '518e81b2-0bda-4729-be21-d25c94a424ff', '2021-08-20 20:21:34.000000', '518e81b2-0bda-4729-be21-d25c94a424ff', 0, NULL, NULL, '4313ded5-ee99-49cb-88fd-44b70dc0bef1', '广告列表', 2, NULL, 20100, 'cms/article/index', 0, 'list-check-2', 'article-list');
+INSERT INTO `sys_permission` VALUES ('6d304bad-996b-40d5-a43a-7bab9ead2744', 1, '', '2021-08-07 01:10:25.568965', '518e81b2-0bda-4729-be21-d25c94a424ff', '2021-09-13 15:45:31.000000', '62310947-7b54-45c8-a5da-19837f2541a4', 0, NULL, NULL, '4313ded5-ee99-49cb-88fd-44b70dc0bef1', '广告列表', 2, NULL, 20100, 'cms/article/index', 0, 'article-fill', 'article-list');
+INSERT INTO `sys_permission` VALUES ('6fd83ed8-cc8f-48ce-84dc-9b6a00bdc26f', 1, '', '2021-09-13 15:15:31.994784', '62310947-7b54-45c8-a5da-19837f2541a4', '2021-09-13 15:43:38.000000', '62310947-7b54-45c8-a5da-19837f2541a4', 0, NULL, NULL, '76726c38-e251-4573-9648-050efee195d5', '导入日志', 2, NULL, 0, 'system/import-log/index', 0, 'file-history-fill', 'import-log');
 INSERT INTO `sys_permission` VALUES ('710fbbc8-8e54-450d-b81c-624f1ec07c1a', 1, '', '2021-08-18 22:25:23.964268', '518e81b2-0bda-4729-be21-d25c94a424ff', '2021-08-20 14:11:22.000000', '518e81b2-0bda-4729-be21-d25c94a424ff', 0, NULL, NULL, 'ef2db655-1acb-4aed-bbe6-0c12020d0562', '岗位添加/编辑', 2, NULL, 11600, 'account/post/post-edit', 1, NULL, 'post-edit');
 INSERT INTO `sys_permission` VALUES ('736b3334-8d0a-4c17-bd85-daa429a19a37', 1, NULL, '2021-08-18 20:45:02.027323', NULL, '2021-09-01 15:56:18.000000', '518e81b2-0bda-4729-be21-d25c94a424ff', 0, '2021-09-01 07:56:18', '62310947-7b54-45c8-a5da-19837f2541a4', '3dfaeace-3a67-4106-b2d2-a33f630c8ca1', '图标管理', 2, NULL, 40003, 'tools/icons/index', 0, 'remixicon-fill', 'icons');
 INSERT INTO `sys_permission` VALUES ('76726c38-e251-4573-9648-050efee195d5', 1, NULL, '2021-08-18 20:45:01.266715', NULL, '2021-08-20 18:12:09.000000', '518e81b2-0bda-4729-be21-d25c94a424ff', 0, NULL, NULL, NULL, '系统管理', 1, NULL, 30000, 'Layout', 0, 'settings-4-fill', '/system');

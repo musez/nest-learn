@@ -7,7 +7,7 @@ import { Auth } from '../../common/decorators/auth.decorator';
 
 @Controller('statistics')
 @ApiTags('统计')
-@ApiBasicAuth('token')
+// @ApiBasicAuth('token')
 export class StatisticsController {
   constructor(private readonly statisticsService: StatisticsService) {
   }

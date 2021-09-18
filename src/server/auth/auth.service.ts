@@ -5,10 +5,12 @@ import { UserService } from '../user/user.service';
 import { CaptchaService } from '../captcha/captcha.service';
 import { ApiException } from '../../common/exception/api-exception';
 import { ApiErrorCode } from '../../constants/api-error-code.enum';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AuthService {
   constructor(
+    private readonly configService: ConfigService,
     private readonly userService: UserService,
     private readonly jwtService: JwtService,
     private readonly captchaService: CaptchaService,
@@ -54,7 +56,7 @@ export class AuthService {
         return null;
       }
     } catch (e) {
-       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -71,9 +73,10 @@ export class AuthService {
       };
       return {
         token: this.jwtService.sign(payload),
+        expiresIn: this.configService.get('jwt.expiresIn'),
       };
     } catch (e) {
-       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 }

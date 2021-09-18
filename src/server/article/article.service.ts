@@ -54,7 +54,7 @@ export class ArticleService {
       }
       return await this.bindArticleCats(ret.id, cats);
     } catch (e) {
-       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -121,7 +121,7 @@ export class ArticleService {
 
       return ret;
     } catch (e) {
-       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -174,15 +174,16 @@ export class ArticleService {
         })
         .getManyAndCount();
 
-      for (let item of ret[0]) {
+      for (const item of ret[0]) {
         const { articleDataCats } = item;
         if (articleDataCats?.length > 0) {
           const ids = articleDataCats.map((v) => v.id);
-          const retRel = await this.articleDataCatService.selectByArticleDataCatIds(ids);
+          const articleDataCatRel = await this.articleDataCatService.selectByIds(ids);
 
-          item = Object.assign(item, {
-            articleDataCats: retRel.map((v) => v.cat),
-          });
+          const cats = articleDataCatRel.filter(v => v.cat).map((v) => v.cat);
+          item['cats'] = cats;
+        } else {
+          item['cats'] = [];
         }
       }
 
@@ -193,7 +194,7 @@ export class ArticleService {
         limit: limit,
       };
     } catch (e) {
-       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -216,7 +217,7 @@ export class ArticleService {
         throw new ApiException('获取异常！', ApiErrorCode.ERROR, HttpStatus.OK);
       }
     } catch (e) {
-       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -237,18 +238,16 @@ export class ArticleService {
       }
       if (ret?.articleDataCats?.length > 0) {
         const ids = ret.articleDataCats.map((v) => v.id);
+        const articleDataCatRet = await this.articleDataCatService.selectByIds(ids);
 
-        const articleDataCatRet = await this.articleDataCatService.selectByArticleDataCatIds(ids);
-
-        // @ts-ignore
-        ret.articleDataCats = articleDataCatRet.map((v) => {
-          return v.cat;
-        });
+        ret['cats'] = articleDataCatRet.map((v) => v.cat);
+      } else {
+        ret['cats'] = [];
       }
 
       return ret;
     } catch (e) {
-       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -264,7 +263,7 @@ export class ArticleService {
         return true;
       }
     } catch (e) {
-       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -289,7 +288,7 @@ export class ArticleService {
         return ret;
       }
     } catch (e) {
-       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -310,7 +309,7 @@ export class ArticleService {
         .where('id IN (:ids)', { ids: ids })
         .execute();
     } catch (e) {
-       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -328,7 +327,7 @@ export class ArticleService {
         .where('id = :id', { id: id })
         .execute();
     } catch (e) {
-       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -349,7 +348,7 @@ export class ArticleService {
         .where('id IN (:ids)', { ids: ids })
         .execute();
     } catch (e) {
-       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -365,7 +364,7 @@ export class ArticleService {
         .where('status = 3')
         .execute();
     } catch (e) {
-       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -407,7 +406,7 @@ export class ArticleService {
         throw new ApiException('操作异常！', ApiErrorCode.ERROR, HttpStatus.OK);
       }
     } catch (e) {
-       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -461,7 +460,7 @@ export class ArticleService {
 
       return topicRet;
     } catch (e) {
-       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -524,7 +523,7 @@ export class ArticleService {
         limit: limit,
       };
     } catch (e) {
-       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -554,7 +553,7 @@ export class ArticleService {
         return await this.commentService.insert(params, curUser);
       }
     } catch (e) {
-       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -565,7 +564,7 @@ export class ArticleService {
     try {
       return await this.cacheService.client.zrevrangebyscore(`${ArticlePrefix.ARTICLE_BROWSE_COUNT}`, '+inf', '-inf', 'withscores');
     } catch (e) {
-       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -579,7 +578,7 @@ export class ArticleService {
 
       if (isBrowseBefore === 1) {
         // 多次浏览
-        this.cacheService.client.zincrby(`${ArticlePrefix.ARTICLE_BROWSE_COUNT}`, 1, id);
+        await this.cacheService.client.zincrby(`${ArticlePrefix.ARTICLE_BROWSE_COUNT}`, 1, id);
         const incrementRet = await this.articleRepository.increment(
           { id: id },
           'browseCount',
@@ -587,8 +586,8 @@ export class ArticleService {
         );
       } else {
         // 浏览
-        this.cacheService.client.sadd(`${ArticlePrefix.ARTICLE_BROWSE}${id}`, curUser.id);
-        this.cacheService.client.zincrby(`${ArticlePrefix.ARTICLE_BROWSE_COUNT}`, 1, id);
+        await this.cacheService.client.sadd(`${ArticlePrefix.ARTICLE_BROWSE}${id}`, curUser.id);
+        await this.cacheService.client.zincrby(`${ArticlePrefix.ARTICLE_BROWSE_COUNT}`, 1, id);
         const incrementRet = await this.articleRepository.increment(
           { id: id },
           'browseCount',
@@ -608,7 +607,7 @@ export class ArticleService {
         isBrowse: isBrowse,
       };
     } catch (e) {
-       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -619,7 +618,7 @@ export class ArticleService {
     try {
       return await this.cacheService.client.zrevrangebyscore(`${ArticlePrefix.ARTICLE_LINK_COUNT}`, '+inf', '-inf', 'withscores');
     } catch (e) {
-       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -633,8 +632,8 @@ export class ArticleService {
 
       if (isLinkBefore === 1) {
         // 取消点赞
-        this.cacheService.client.srem(`${ArticlePrefix.ARTICLE_LINK}${id}`, curUser.id);
-        this.cacheService.client.zincrby(`${ArticlePrefix.ARTICLE_LINK_COUNT}`, -1, id);
+        await this.cacheService.client.srem(`${ArticlePrefix.ARTICLE_LINK}${id}`, curUser.id);
+        await this.cacheService.client.zincrby(`${ArticlePrefix.ARTICLE_LINK_COUNT}`, -1, id);
         const decrementRet = await this.articleRepository.decrement(
           { id: id },
           'linkCount',
@@ -642,8 +641,8 @@ export class ArticleService {
         );
       } else {
         // 点赞
-        this.cacheService.client.sadd(`${ArticlePrefix.ARTICLE_LINK}${id}`, curUser.id);
-        this.cacheService.client.zincrby(`${ArticlePrefix.ARTICLE_LINK_COUNT}`, 1, id);
+        await this.cacheService.client.sadd(`${ArticlePrefix.ARTICLE_LINK}${id}`, curUser.id);
+        await this.cacheService.client.zincrby(`${ArticlePrefix.ARTICLE_LINK_COUNT}`, 1, id);
         const incrementRet = await this.articleRepository.increment(
           { id: id },
           'linkCount',
@@ -663,7 +662,7 @@ export class ArticleService {
         isLink: isLink,
       };
     } catch (e) {
-       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -674,7 +673,7 @@ export class ArticleService {
     try {
       return await this.cacheService.client.zrevrangebyscore(`${ArticlePrefix.ARTICLE_COLLECT_COUNT}`, '+inf', '-inf', 'withscores');
     } catch (e) {
-       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -688,8 +687,8 @@ export class ArticleService {
 
       if (isCollectBefore === 1) {
         // 取消收藏
-        this.cacheService.client.srem(`${ArticlePrefix.ARTICLE_COLLECT}${id}`, curUser.id);
-        this.cacheService.client.zincrby(`${ArticlePrefix.ARTICLE_COLLECT_COUNT}`, -1, id);
+        await this.cacheService.client.srem(`${ArticlePrefix.ARTICLE_COLLECT}${id}`, curUser.id);
+        await this.cacheService.client.zincrby(`${ArticlePrefix.ARTICLE_COLLECT_COUNT}`, -1, id);
         const decrementRet = await this.articleRepository.decrement(
           { id: id },
           'collectCount',
@@ -697,8 +696,8 @@ export class ArticleService {
         );
       } else {
         // 收藏
-        this.cacheService.client.sadd(`${ArticlePrefix.ARTICLE_COLLECT}${id}`, curUser.id);
-        this.cacheService.client.zincrby(`${ArticlePrefix.ARTICLE_COLLECT_COUNT}`, 1, id);
+        await this.cacheService.client.sadd(`${ArticlePrefix.ARTICLE_COLLECT}${id}`, curUser.id);
+        await this.cacheService.client.zincrby(`${ArticlePrefix.ARTICLE_COLLECT_COUNT}`, 1, id);
         const incrementRet = await this.articleRepository.increment(
           { id: id },
           'collectCount',
@@ -718,7 +717,7 @@ export class ArticleService {
         isCollect: isCollect,
       };
     } catch (e) {
-       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -729,7 +728,7 @@ export class ArticleService {
     try {
       return await this.cacheService.client.zrevrangebyscore(`${ArticlePrefix.ARTICLE_SHARE_COUNT}`, '+inf', '-inf', 'withscores');
     } catch (e) {
-       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -743,7 +742,7 @@ export class ArticleService {
 
       if (isLinkBefore === 1) {
         // 多次分享
-        this.cacheService.client.zincrby(`${ArticlePrefix.ARTICLE_SHARE_COUNT}`, 1, id);
+        await this.cacheService.client.zincrby(`${ArticlePrefix.ARTICLE_SHARE_COUNT}`, 1, id);
         const incrementRet = await this.articleRepository.increment(
           { id: id },
           'shareCount',
@@ -751,8 +750,8 @@ export class ArticleService {
         );
       } else {
         // 分享
-        this.cacheService.client.sadd(`${ArticlePrefix.ARTICLE_SHARE}${id}`, curUser.id);
-        this.cacheService.client.zincrby(`${ArticlePrefix.ARTICLE_SHARE_COUNT}`, 1, id);
+        await this.cacheService.client.sadd(`${ArticlePrefix.ARTICLE_SHARE}${id}`, curUser.id);
+        await this.cacheService.client.zincrby(`${ArticlePrefix.ARTICLE_SHARE_COUNT}`, 1, id);
         const incrementRet = await this.articleRepository.increment(
           { id: id },
           'shareCount',
@@ -772,7 +771,7 @@ export class ArticleService {
         isShare: isShare,
       };
     } catch (e) {
-       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -783,7 +782,7 @@ export class ArticleService {
     try {
       return await this.cacheService.client.zrevrangebyscore(`${ArticlePrefix.ARTICLE_COMMENT_COUNT}`, '+inf', '-inf', 'withscores');
     } catch (e) {
-       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -798,7 +797,7 @@ export class ArticleService {
 
       if (isLinkBefore === 1) {
         // 多次评论
-        this.cacheService.client.zincrby(`${ArticlePrefix.ARTICLE_COMMENT_COUNT}`, 1, id);
+        await this.cacheService.client.zincrby(`${ArticlePrefix.ARTICLE_COMMENT_COUNT}`, 1, id);
         const incrementRet = await this.articleRepository.increment(
           { id: id },
           'commentCount',
@@ -806,8 +805,8 @@ export class ArticleService {
         );
       } else {
         // 评论
-        this.cacheService.client.sadd(`${ArticlePrefix.ARTICLE_COMMENT}${id}`, curUser.id);
-        this.cacheService.client.zincrby(`${ArticlePrefix.ARTICLE_COMMENT_COUNT}`, 1, id);
+        await this.cacheService.client.sadd(`${ArticlePrefix.ARTICLE_COMMENT}${id}`, curUser.id);
+        await this.cacheService.client.zincrby(`${ArticlePrefix.ARTICLE_COMMENT_COUNT}`, 1, id);
         const incrementRet = await this.articleRepository.increment(
           { id: id },
           'commentCount',
@@ -827,7 +826,7 @@ export class ArticleService {
         isComment: isComment,
       };
     } catch (e) {
-       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 }

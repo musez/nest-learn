@@ -33,7 +33,6 @@ import { UserPermissionService } from '../user-permission/user-permission.servic
 import { UserPrefix } from '../../constants/user.prefix';
 import { CacheService } from '../cache/cache.service';
 import { ApiErrorCode } from '../../constants/api-error-code.enum';
-import { Group } from '../group/entities/group.entity';
 
 @Injectable()
 export class UserService {
@@ -78,8 +77,6 @@ export class UserService {
    */
   async incrementLoginCount(id: string): Promise<any> {
     try {
-      const client = await this.cacheService.getClient();
-
       const findOneRet = await this.userRepository.findOne({
         where: {
           id: id,
@@ -91,8 +88,7 @@ export class UserService {
       if (!findOneRet) {
         throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
       }
-
-      this.cacheService.client.zadd(`${UserPrefix.ONLINE_USER}`, id, Utils.valueOf());
+      await this.cacheService.client.zadd(`${UserPrefix.ONLINE_USER}`, Utils.valueOf(), id);
       const incrementRet = await this.userRepository.increment(
         { id: id },
         'loginCount',
@@ -112,9 +108,20 @@ export class UserService {
   /**
    * 获取在线用户
    */
-  async selectOnline(curUser?): Promise<any> {
+  async selectOnline(): Promise<any> {
     try {
-      return this.cacheService.client.zrevrangebyscore(`${UserPrefix.ONLINE_USER}`, '+inf', '-inf', 'withscores');
+      return await this.cacheService.client.zrevrangebyscore(`${UserPrefix.ONLINE_USER}`, '+inf', '-inf', 'withscores');
+    } catch (e) {
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+    }
+  }
+
+  /**
+   * 注销登录
+   */
+  async loginOut(curUser): Promise<any> {
+    try {
+      return await this.cacheService.client.zrem(`${UserPrefix.ONLINE_USER}`, curUser.id);
     } catch (e) {
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
@@ -409,9 +416,7 @@ export class UserService {
           const ids = userRet.userGroups.map(v => v.id);
 
           const userGroupRet = await this.userGroupService.selectByIds(ids);
-          v['groups'] = userGroupRet.filter(v => v.group).map((v) => {
-            return v.group;
-          });
+          v['groups'] = userGroupRet.filter(v => v.group).map((v) => v.group);
         } else {
           v['groups'] = [];
         }
@@ -463,9 +468,7 @@ export class UserService {
         const ids = ret.userGroups.map((v) => v.id);
 
         const userGroupRet = await this.userGroupService.selectByIds(ids);
-        const groups = userGroupRet.filter(v => v.group).map((v) => {
-          return v.group;
-        });
+        const groups = userGroupRet.filter(v => v.group).map((v) => v.group);
         ret['groups'] = Utils.uniqBy(groups, 'id');
       } else {
         ret['groups'] = [];
@@ -475,9 +478,7 @@ export class UserService {
         const ids = ret.userRoles.map((v) => v.id);
 
         const userRoleRet = await this.userRoleService.selectByIds(ids);
-        const roles = userRoleRet.filter(v => v.role).map((v) => {
-          return v.role;
-        });
+        const roles = userRoleRet.filter(v => v.role).map((v) => v.role);
         ret['roles'] = roles;
       } else {
         ret['roles'] = [];
@@ -487,9 +488,7 @@ export class UserService {
         const ids = ret.userPermissions.map((v) => v.id);
 
         const userPermissionRet = await this.userPermissionService.selectByIds(ids);
-        const permissions = userPermissionRet.filter(v => v.permission).map((v) => {
-          return v.permission;
-        });
+        const permissions = userPermissionRet.filter(v => v.permission).map((v) => v.permission);
         ret['permissions'] = permissions;
       } else {
         ret['permissions'] = [];

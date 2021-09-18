@@ -11,7 +11,7 @@
  Target Server Version : 50726
  File Encoding         : 65001
 
- Date: 09/09/2021 10:23:54
+ Date: 18/09/2021 17:46:16
 */
 
 SET NAMES utf8mb4;
@@ -35,6 +35,5 @@ CREATE TABLE `sys_user_role`  (
 -- ----------------------------
 -- Records of sys_user_role
 -- ----------------------------
-INSERT INTO `sys_user_role` VALUES ('1591d72a-d14b-4a84-abb8-04a809a7d66b', '0511f0a5-3ff8-4284-9851-4bfd9c0d5b16', '983fea12-af42-4c00-a5d7-053614ca0a5c');
 
 SET FOREIGN_KEY_CHECKS = 1;

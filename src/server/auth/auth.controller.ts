@@ -103,4 +103,16 @@ export class AuthController {
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
+
+  @Post('/loginOut')
+  @UseGuards(JwtAuthGuard)
+  @ApiBasicAuth('token')
+  @ApiOperation({ summary: '登出（注销登录）' })
+  async loginOut(@CurUser() curUser) {
+    try {
+      return this.userService.loginOut(curUser);
+    } catch (e) {
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+    }
+  }
 }

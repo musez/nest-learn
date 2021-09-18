@@ -129,9 +129,7 @@ export class RoleService {
           const ids = v.rolePermissions.map(v => v.id);
 
           const rolePermissionRet = await this.rolePermissionService.selectByIds(ids);
-          v['permissions'] = rolePermissionRet.filter(v => v.permission).map((v) => {
-            return v.permission;
-          });
+          v['permissions'] = rolePermissionRet.filter(v => v.permission).map((v) => v.permission);
         } else {
           v['permissions'] = [];
         }
@@ -168,9 +166,7 @@ export class RoleService {
         const ids = ret.rolePermissions.map((v) => v.id);
 
         const rolePermissionRet = await this.rolePermissionService.selectByIds(ids);
-        const permissions = rolePermissionRet.filter(v => v.permission).map((v) => {
-          return v.permission;
-        });
+        const permissions = rolePermissionRet.filter(v => v.permission).map((v) => v.permission);
         ret['permissions'] = Utils.uniqBy(permissions, 'id');
       } else {
         ret['permissions'] = [];
