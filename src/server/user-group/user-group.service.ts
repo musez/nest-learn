@@ -62,7 +62,7 @@ export class UserGroupService {
   async selectByIds(ids: string[]): Promise<UserGroup[]> {
     try {
       return await this.userGroupRepository.find({
-        relations: ['group'],
+        relations: ['user','group'],
         where: {
           id: In(ids),
         },
@@ -85,6 +85,22 @@ export class UserGroupService {
         .execute();
     } catch (e) {
        throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+    }
+  }
+
+  /**
+   * 删除（用户 id）
+   */
+  async deleteByGroupId(id: string): Promise<any> {
+    try {
+      return await this.userGroupRepository
+        .createQueryBuilder()
+        .delete()
+        .from(UserGroup)
+        .where('groupId = :id', { id: id })
+        .execute();
+    } catch (e) {
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 }

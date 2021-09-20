@@ -29,6 +29,7 @@ import { ExcelService } from '../excel/excel.service';
 import { StatusDict } from '../../constants/dicts.const';
 import { ApiException } from '../../common/exception/api-exception';
 import { ApiErrorCode } from '../../constants/api-error-code.enum';
+import { BindGroupUserDto } from './dto/bind-group-user.dto';
 
 @Controller('group')
 @ApiTags('用户组')
@@ -156,6 +157,40 @@ export class GroupController {
   @ApiOperation({ summary: '删除（批量）' })
   async deleteBatch(@CurUser() curUser, @Body() baseFindByIdsDto: BaseFindByIdsDto): Promise<any> {
     return await this.groupService.deleteByIds(baseFindByIdsDto, curUser);
+  }
+
+  @Post('bindUsers')
+  @Auth('account:group:bindUsers')
+  @ApiOperation({ summary: '绑定用户' })
+  async bindUsers(@CurUser() curUser, @Body() bindGroupUserDto: BindGroupUserDto): Promise<any> {
+    try {
+      const { id } = bindGroupUserDto;
+
+      const isExistId = await this.groupService.isExistId(id);
+      if (!isExistId) {
+        throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
+      }
+      return await this.groupService.bindUsers(bindGroupUserDto);
+    } catch (e) {
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+    }
+  }
+
+  @Get('getUsers')
+  @Auth('account:group:getUsers')
+  @ApiOperation({ summary: '获取用户' })
+  async findUsersById(@CurUser() curUser, @Query() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
+    try {
+      const { id } = baseFindByIdDto;
+
+      const isExistId = await this.groupService.isExistId(id);
+      if (!isExistId) {
+        throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
+      }
+      return await this.groupService.selectUsersById(baseFindByIdDto);
+    } catch (e) {
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+    }
   }
 
   @Post('bindRoles')

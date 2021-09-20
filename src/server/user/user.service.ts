@@ -1,4 +1,4 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
+import { forwardRef, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
 import { Utils } from './../../utils/index';
@@ -37,6 +37,7 @@ export class UserService {
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
     private readonly userinfoService: UserinfoService,
+    @Inject(forwardRef(() => GroupService))
     private readonly groupService: GroupService,
     private readonly roleService: RoleService,
     private readonly permissionService: PermissionService,
@@ -402,7 +403,7 @@ export class UserService {
 
         // 获取关联 id
         const userRet = await this.userRepository.findOne({
-          relations: ['userGroups'],
+          relations: ['userGroups','userRoles'],
           where: {
             id: id,
           },
@@ -415,6 +416,15 @@ export class UserService {
           v['groups'] = userGroupRet.filter(v => v.group).map((v) => v.group);
         } else {
           v['groups'] = [];
+        }
+
+        if (userRet?.userRoles?.length > 0) {
+          const ids = userRet.userRoles.map(v => v.id);
+
+          const userGroupRet = await this.userRoleService.selectByIds(ids);
+          v['roles'] = userGroupRet.filter(v => v.role).map((v) => v.role);
+        } else {
+          v['roles'] = [];
         }
 
         delete v.userPwd;
@@ -451,7 +461,7 @@ export class UserService {
       const { id } = baseFindByIdDto;
 
       const ret = await this.userRepository.findOne({
-        relations: ['userinfo', 'userGroups', 'userRoles', 'userPermissions'],
+        relations: ['userinfo', 'userGroups', 'userRoles'],
         where: {
           id: id,
         },

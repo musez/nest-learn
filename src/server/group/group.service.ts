@@ -1,4 +1,4 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
+import { forwardRef, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
 import { Utils } from './../../utils/index';
@@ -16,14 +16,20 @@ import { UserGroup } from '../user-group/entities/user-group.entity';
 import { ApiException } from '../../common/exception/api-exception';
 import { PermissionService } from '../permission/permission.service';
 import { ApiErrorCode } from '../../constants/api-error-code.enum';
+import { BindGroupUserDto } from './dto/bind-group-user.dto';
+import { UserService } from '../user/user.service';
+import { UserGroupService } from '../user-group/user-group.service';
 
 @Injectable()
 export class GroupService {
   constructor(
     @InjectRepository(Group)
     private readonly groupRepository: Repository<Group>,
+    @Inject(forwardRef(() => UserService))
+    private readonly userService: UserService,
     private readonly roleService: RoleService,
     private readonly permissionService: PermissionService,
+    private readonly userGroupService: UserGroupService,
     private readonly groupRoleService: GroupRoleService,
   ) {
   }
@@ -151,7 +157,7 @@ export class GroupService {
     try {
       const { id } = baseFindByIdDto;
       const ret = await this.groupRepository.findOne({
-        relations: ['groupRoles', 'groupPermissions'],
+        relations: ['userGroups','groupRoles'],
         where: {
           id: id,
         },
@@ -159,6 +165,16 @@ export class GroupService {
       if (!ret) {
         throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
       }
+
+      // if (ret?.userGroups?.length > 0) {
+      //   const ids = ret.userGroups.map((v) => v.id);
+      //
+      //   const userGroupRet = await this.userGroupService.selectByIds(ids);
+      //   const users = userGroupRet.filter(v => v.user).map((v) => v.user);
+      //   ret['users'] = users;
+      // } else {
+      //   ret['users'] = [];
+      // }
 
       if (ret?.groupRoles?.length > 0) {
         const ids = ret.groupRoles.map((v) => v.id);
@@ -192,7 +208,8 @@ export class GroupService {
     try {
       const { id } = baseFindByIdDto;
       const ret = await this.groupRepository.findOne({
-        relations: ['groupRoles', 'groupPermissions'],
+        relations: ['groupRoles'],
+        // relations: ['userGroups', 'groupRoles'],
         where: {
           id: id,
         },
@@ -339,6 +356,69 @@ export class GroupService {
         .set({ deleteStatus: 1, deleteBy: curUser ? curUser!.id : null, deleteTime: Utils.now() })
         .where('id IN (:ids)', { ids: ids })
         .execute();
+    } catch (e) {
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+    }
+  }
+
+  /**
+   * 绑定用户
+   */
+  async bindUsers(bindGroupUserDto: BindGroupUserDto): Promise<void> {
+    try {
+      // eslint-disable-next-line prefer-const
+      let { id, users } = bindGroupUserDto;
+
+      if (users && !Utils.isArray(users)) {
+        users = Utils.split(',');
+      }
+
+      const groupRet = await this.groupRepository.findOne({
+        where: {
+          id: id,
+        },
+      });
+
+      const groupUsers = [];
+      for (const item of users) {
+        const userRet = await this.userService.selectById({ id: item });
+        const groupUser = new UserGroup();
+        groupUser.group = groupRet;
+        groupUser.user = userRet;
+        groupUsers.push(groupUser);
+      }
+
+      const deleteRet = await this.userGroupService.deleteByGroupId(id);
+      if (!deleteRet) {
+        throw new ApiException('操作异常！', ApiErrorCode.ERROR, HttpStatus.OK);
+      }
+
+      const ret = await this.userGroupService.insertBatch(groupUsers);
+
+      if (ret) {
+        return null;
+      } else {
+        throw new ApiException('操作异常！', ApiErrorCode.ERROR, HttpStatus.OK);
+      }
+    } catch (e) {
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+    }
+  }
+
+  /**
+   * 获取用户
+   */
+  async selectUsersById(baseFindByIdDto: BaseFindByIdDto): Promise<Group> {
+    try {
+      const { id } = baseFindByIdDto;
+      const ret = await this.groupRepository.findOne({
+        relations: ['userGroups'],
+        where: {
+          id: id,
+        },
+      });
+
+      return ret;
     } catch (e) {
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
