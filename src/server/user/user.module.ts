@@ -10,7 +10,6 @@ import { CryptoUtil } from '../../utils/crypto.util';
 import { GroupModule } from '../group/group.module';
 import { RoleModule } from '../role/role.module';
 import { PermissionModule } from '../permission/permission.module';
-import { UserPermissionModule } from '../user-permission/user-permission.module';
 
 @Global()
 @Module({
@@ -21,7 +20,6 @@ import { UserPermissionModule } from '../user-permission/user-permission.module'
     PermissionModule,
     UserGroupModule,
     UserRoleModule,
-    UserPermissionModule,
     TypeOrmModule.forFeature([User]),
   ],
   controllers: [UserController],

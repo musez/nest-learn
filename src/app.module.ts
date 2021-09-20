@@ -39,8 +39,6 @@ import { UserAddressModule } from './server/user-address/user-address.module';
 import { TaskModule } from './server/task/task.module';
 import { QiniuModule } from './server/qiniu/qiniu.module';
 import { StatisticsModule } from './server/statistics/statistics.module';
-import { UserPermissionModule } from './server/user-permission/user-permission.module';
-import { GroupPermissionModule } from './server/group-permission/group-permission.module';
 import { FeedbackModule } from './server/feedback/feedback.module';
 import { ImportLogModule } from './server/import-log/import-log.module';
 import AppConfig from './config/app.config';
@@ -128,8 +126,6 @@ import { UploadModule } from './server/upload/upload.module';
     // TaskModule,
     FeedbackModule,
     StatisticsModule,
-    UserPermissionModule,
-    GroupPermissionModule,
     ImportLogModule,
   ],
   controllers: [AppController],

@@ -1,6 +1,6 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { Utils } from './../../utils/index';
 import { CreateArticleDto } from './dto/create-article.dto';
 import { UpdateArticleDto } from './dto/update-article.dto';
@@ -222,9 +222,9 @@ export class ArticleService {
   }
 
   /**
-   * 获取详情（主键 id）
+   * 获取详情（关联信息，主键 id）
    */
-  async selectById(baseFindByIdDto: BaseFindByIdDto): Promise<Article> {
+  async selectInfoById(baseFindByIdDto: BaseFindByIdDto): Promise<Article> {
     try {
       const { id } = baseFindByIdDto;
       const ret = await this.articleRepository.findOne({
@@ -252,6 +252,42 @@ export class ArticleService {
   }
 
   /**
+   * 获取详情（主键 id）
+   */
+  async selectById(baseFindByIdDto: BaseFindByIdDto): Promise<Article> {
+    try {
+      const { id } = baseFindByIdDto;
+      const ret = await this.articleRepository.findOne({
+        where: {
+          id: id,
+        },
+      });
+      if (!ret) {
+        throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
+      }
+      return ret;
+    } catch (e) {
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+    }
+  }
+
+  /**
+   * 获取详情（主键 ids）
+   */
+  async selectByIds(ids: string[]): Promise<Article> {
+    try {
+      const ret = await this.articleRepository.findOne({
+        where: {
+          id: In(ids),
+        },
+      });
+      return ret;
+    } catch (e) {
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+    }
+  }
+
+  /**
    * 是否存在（主键 id）
    */
   async isExistId(id: string): Promise<boolean> {
@@ -272,10 +308,19 @@ export class ArticleService {
    */
   async update(updateArticleDto: UpdateArticleDto, curUser?): Promise<any> {
     try {
-      const { id, cats } = updateArticleDto;
+      const { id, cats, status } = updateArticleDto;
 
       let article = new Article();
       article = Utils.dto2entity(updateArticleDto, article);
+
+      if (status === 1) {
+        // @ts-ignore
+        article.publicTime = Utils.now();
+        article.publicBy = curUser ? curUser!.id : null;
+      } else {
+        article.publicTime = null;
+        article.publicBy = null;
+      }
 
       const ret = await this.articleRepository.update(id, article);
       if (!ret) {
@@ -293,7 +338,7 @@ export class ArticleService {
   }
 
   /**
-   * 回收站状态修改
+   * 修改状态
    */
   async updateStatus(baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto, curUser?): Promise<void> {
     try {
@@ -302,10 +347,25 @@ export class ArticleService {
       if (!Utils.isArray(ids)) {
         ids = Utils.split(ids.toString());
       }
+
+      let publicTime = null, publicBy = null;
+      if (status === 1) {
+        publicTime = Utils.now();
+        publicBy = curUser ? curUser!.id : null;
+      } else {
+        publicTime = null;
+        publicBy = null;
+      }
+
       await this.articleRepository
         .createQueryBuilder()
         .update(Article)
-        .set({ status: status, updateBy: curUser ? curUser!.id : null })
+        .set({
+          status: status,
+          updateBy: curUser ? curUser!.id : null,
+          publicTime: publicTime,
+          publicBy: publicBy,
+        })
         .where('id IN (:ids)', { ids: ids })
         .execute();
     } catch (e) {

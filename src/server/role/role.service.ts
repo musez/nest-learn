@@ -147,7 +147,7 @@ export class RoleService {
   }
 
   /**
-   * 获取详情（扩展信息，主键 id）
+   * 获取详情（关联信息，主键 id）
    */
   async selectInfoById(baseFindByIdDto: BaseFindByIdDto): Promise<Role> {
     try {
@@ -203,7 +203,7 @@ export class RoleService {
   /**
    * 获取详情（主键 ids）
    */
-  async selectByIds(ids: []): Promise<Role[]> {
+  async selectByIds(ids: string[]): Promise<Role[]> {
     try {
       const ret = await this.roleRepository.find({
         relations: ['rolePermissions'],
@@ -236,7 +236,7 @@ export class RoleService {
   /**
    * 获取角色（用户 id，复杂模式）
    */
-  async selectByUserId(baseFindByIdDto: BaseFindByIdDto): Promise<any> {
+  async selectRByUserId(baseFindByIdDto: BaseFindByIdDto): Promise<any> {
     try {
       const { id } = baseFindByIdDto;
       // User -> UserGroup -> Group -> GroupRole -> Role
@@ -273,29 +273,29 @@ export class RoleService {
   /**
    * 获取角色（用户 id，简易模式）
    */
-  async selectRByUserId(baseFindByIdDto: BaseFindByIdDto): Promise<any> {
-    try {
-      const { id } = baseFindByIdDto;
-      // User -> UserGroup -> Group -> GroupRole -> Role
-      const userGroupRole = await this.roleRepository
-        .createQueryBuilder('r')
-        .innerJoinAndSelect(GroupRole, 'gr', 'r.id = gr.roleId')
-        .innerJoinAndSelect(Group, 'g', 'gr.groupId = g.id')
-        .innerJoinAndSelect(UserGroup, 'ug', 'g.id = ug.groupId')
-        .innerJoinAndSelect(User, 'u', 'u.id = ug.userId')
-        .where(
-          'u.id = :id AND u.deleteStatus = 0 AND g.deleteStatus = 0 AND r.deleteStatus = 0',
-          {
-            id: id,
-          },
-        )
-        .getMany();
-
-      return userGroupRole;
-    } catch (e) {
-      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
-    }
-  }
+  // async selectByUserId(baseFindByIdDto: BaseFindByIdDto): Promise<any> {
+  //   try {
+  //     const { id } = baseFindByIdDto;
+  //     // User -> UserGroup -> Group -> GroupRole -> Role
+  //     const userGroupRole = await this.roleRepository
+  //       .createQueryBuilder('r')
+  //       .innerJoinAndSelect(GroupRole, 'gr', 'r.id = gr.roleId')
+  //       .innerJoinAndSelect(Group, 'g', 'gr.groupId = g.id')
+  //       .innerJoinAndSelect(UserGroup, 'ug', 'g.id = ug.groupId')
+  //       .innerJoinAndSelect(User, 'u', 'u.id = ug.userId')
+  //       .where(
+  //         'u.id = :id AND u.deleteStatus = 0 AND g.deleteStatus = 0 AND r.deleteStatus = 0',
+  //         {
+  //           id: id,
+  //         },
+  //       )
+  //       .getMany();
+  //
+  //     return userGroupRole;
+  //   } catch (e) {
+  //     throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+  //   }
+  // }
 
   /**
    * 修改

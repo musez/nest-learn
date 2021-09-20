@@ -72,13 +72,13 @@ export class ArticleController {
   @Auth('cms:article:findById')
   @ApiOperation({ summary: '获取详情（主键 id）' })
   async findById(@Query() baseFindByIdDto: BaseFindByIdDto): Promise<Article> {
-    return await this.articleService.selectById(baseFindByIdDto);
+    return await this.articleService.selectInfoById(baseFindByIdDto);
   }
 
-  @Get('findInfoById')
-  @Auth('cms:article:findInfoById')
+  @Get('findDetailById')
+  @Auth('cms:article:findDetailById')
   @ApiOperation({ summary: '获取详情（主键 id）' })
-  async findInfoById(@CurUser() curUser, @Query() baseFindByIdDto: BaseFindByIdDto): Promise<Article> {
+  async findDetailById(@CurUser() curUser, @Query() baseFindByIdDto: BaseFindByIdDto): Promise<Article> {
     try {
       const ret = await this.articleService.selectById(baseFindByIdDto);
       const incrementRet = await this.articleService.browse(baseFindByIdDto, curUser);

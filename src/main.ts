@@ -30,7 +30,7 @@ async function bootstrap() {
   app.use(helmet());
   // 为了保护您的应用程序免受暴力攻击，您必须实现某种速率限制。幸运的是，NPM 上已经有很多各种中间件可用。其中一个是快速限额。
   app.use(rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes
+    windowMs: 1 * 60 * 1000, // 1 minutes
     max: 100, // limit each IP to 100 requests per windowMs
   }));
   // 压缩，用于减少请求响应的体积

@@ -13,7 +13,6 @@ import { UserAddress } from '../../user-address/entities/user-address.entity';
 import { UserGroup } from '../../user-group/entities/user-group.entity';
 import { UserRole } from '../../user-role/entities/user-role.entity';
 import * as dayjs from 'dayjs';
-import { UserPermission } from '../../user-permission/entities/user-permission.entity';
 
 @Entity('sys_user')
 export class User extends BaseEntity {
@@ -103,6 +102,6 @@ export class User extends BaseEntity {
   @OneToMany((type) => UserRole, (userRole) => userRole.user)
   userRoles: UserRole[];
 
-  @OneToMany((type) => UserPermission, (userPermission) => userPermission.user)
-  userPermissions: UserPermission[];
+  // @OneToMany((type) => UserPermission, (userPermission) => userPermission.user)
+  // userPermissions: UserPermission[];
 }

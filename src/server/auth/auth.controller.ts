@@ -24,6 +24,7 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
   @ApiResponse({ status: ApiErrorCode.LOGIN_ERROR, description: '用户名或密码错误！' })
   @ApiResponse({ status: ApiErrorCode.INVALID_CAPTCHA, description: '验证码错误！' })
+  @ApiResponse({ status: ApiErrorCode.FROZEN, description: '账户已冻结！' })
   @ApiOperation({ summary: '登录' })
   async login(@CurUser() curUser, @Body() loginUserDto: LoginUserDto) {
     try {

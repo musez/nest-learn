@@ -6,10 +6,9 @@ import { Group } from './entities/group.entity';
 import { RoleModule } from '../role/role.module';
 import { PermissionModule } from '../permission/permission.module';
 import { GroupRoleModule } from '../group-role/group-role.module';
-import { GroupPermissionModule } from '../group-permission/group-permission.module';
 
 @Module({
-  imports: [RoleModule, PermissionModule, GroupRoleModule, GroupPermissionModule, TypeOrmModule.forFeature([Group])],
+  imports: [RoleModule, PermissionModule, GroupRoleModule, TypeOrmModule.forFeature([Group])],
   controllers: [GroupController],
   providers: [GroupService],
   exports: [GroupService],

@@ -29,7 +29,6 @@ import { ExcelService } from '../excel/excel.service';
 import { Utils } from './../../utils/index';
 import { SexDict, StatusDict, UserDict } from '../../constants/dicts.const';
 import { ApiException } from '../../common/exception/api-exception';
-import { BindUserPermissionDto } from '../user-permission/dto/bind-user-permission.dto';
 import { ApiErrorCode } from '../../constants/api-error-code.enum';
 import { ImportType } from '../../constants/dicts.enum';
 import { ImportLogService } from '../import-log/import-log.service';
@@ -319,37 +318,37 @@ export class UserController {
     }
   }
 
-  @Post('bindPermissions')
-  @Auth('account:user:bindPermissions')
-  @ApiOperation({ summary: '绑定权限' })
-  async bindPermissions(@CurUser() curUser, @Body() bindUserPermissionDto: BindUserPermissionDto): Promise<any> {
-    try {
-      const { id } = bindUserPermissionDto;
-      const isExistId = await this.userService.isExistId(id);
-      if (!isExistId) {
-        throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
-      }
-      return await this.userService.bindPermissions(bindUserPermissionDto);
-    } catch (e) {
-      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
-    }
-  }
+  // @Post('bindPermissions')
+  // @Auth('account:user:bindPermissions')
+  // @ApiOperation({ summary: '绑定权限' })
+  // async bindPermissions(@CurUser() curUser, @Body() bindUserPermissionDto: BindUserPermissionDto): Promise<any> {
+  //   try {
+  //     const { id } = bindUserPermissionDto;
+  //     const isExistId = await this.userService.isExistId(id);
+  //     if (!isExistId) {
+  //       throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
+  //     }
+  //     return await this.userService.bindPermissions(bindUserPermissionDto);
+  //   } catch (e) {
+  //     throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+  //   }
+  // }
 
-  @Get('getPermissions')
-  @Auth('account:user:getPermissions')
-  @ApiOperation({ summary: '获取权限' })
-  async findPermissionsById(@CurUser() curUser, @Query() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
-    try {
-      const { id } = baseFindByIdDto;
-
-      const isExistId = await this.userService.isExistId(id);
-      if (!isExistId) {
-        throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
-      }
-
-      return await this.userService.selectPermissionsById(baseFindByIdDto);
-    } catch (e) {
-      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
-    }
-  }
+  // @Get('getPermissions')
+  // @Auth('account:user:getPermissions')
+  // @ApiOperation({ summary: '获取权限' })
+  // async findPermissionsById(@CurUser() curUser, @Query() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
+  //   try {
+  //     const { id } = baseFindByIdDto;
+  //
+  //     const isExistId = await this.userService.isExistId(id);
+  //     if (!isExistId) {
+  //       throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
+  //     }
+  //
+  //     return await this.userService.selectPermissionsById(baseFindByIdDto);
+  //   } catch (e) {
+  //     throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+  //   }
+  // }
 }

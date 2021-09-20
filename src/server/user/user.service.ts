@@ -27,9 +27,6 @@ import { RoleService } from '../role/role.service';
 import { PermissionService } from '../permission/permission.service';
 import { ApiException } from '../../common/exception/api-exception';
 import { Area } from '../area/entities/area.entity';
-import { BindUserPermissionDto } from '../user-permission/dto/bind-user-permission.dto';
-import { UserPermission } from '../user-permission/entities/user-permission.entity';
-import { UserPermissionService } from '../user-permission/user-permission.service';
 import { UserPrefix } from '../../constants/user.prefix';
 import { CacheService } from '../cache/cache.service';
 import { ApiErrorCode } from '../../constants/api-error-code.enum';
@@ -45,7 +42,6 @@ export class UserService {
     private readonly permissionService: PermissionService,
     private readonly userGroupService: UserGroupService,
     private readonly userRoleService: UserRoleService,
-    private readonly userPermissionService: UserPermissionService,
     private readonly cryptoUtil: CryptoUtil,
     private readonly cacheService: CacheService,
   ) {
@@ -484,15 +480,15 @@ export class UserService {
         ret['roles'] = [];
       }
 
-      if (ret?.userPermissions?.length > 0) {
-        const ids = ret.userPermissions.map((v) => v.id);
-
-        const userPermissionRet = await this.userPermissionService.selectByIds(ids);
-        const permissions = userPermissionRet.filter(v => v.permission).map((v) => v.permission);
-        ret['permissions'] = permissions;
-      } else {
-        ret['permissions'] = [];
-      }
+      // if (ret?.userPermissions?.length > 0) {
+      //   const ids = ret.userPermissions.map((v) => v.id);
+      //
+      //   const userPermissionRet = await this.userPermissionService.selectByIds(ids);
+      //   const permissions = userPermissionRet.filter(v => v.permission).map((v) => v.permission);
+      //   ret['permissions'] = permissions;
+      // } else {
+      //   ret['permissions'] = [];
+      // }
 
       return ret;
     } catch (e) {
@@ -823,73 +819,73 @@ export class UserService {
   /**
    * 绑定权限
    */
-  async bindPermissions(bindUserPermissionDto: BindUserPermissionDto): Promise<void> {
-    try {
-      // eslint-disable-next-line prefer-const
-      let { id, permissions } = bindUserPermissionDto;
-
-      if (permissions && !Utils.isArray(permissions)) {
-        permissions = Utils.split(',');
-      }
-
-      const userRet = await this.userRepository.findOne({
-        where: {
-          id: id,
-        },
-      });
-
-      const userPermissions = [];
-      for (const item of permissions) {
-        const permissionRet = await this.permissionService.selectById({ id: item });
-        const userPermission = new UserPermission();
-        userPermission.user = userRet;
-        userPermission.permission = permissionRet;
-
-        userPermissions.push(userPermission);
-      }
-
-      const deleteRet = await this.userPermissionService.deleteByUserId(id);
-      if (!deleteRet) {
-        throw new ApiException('操作异常！', ApiErrorCode.ERROR, HttpStatus.OK);
-      }
-
-      const ret = await this.userPermissionService.insertBatch(userPermissions);
-
-      if (ret) {
-        return null;
-      } else {
-        throw new ApiException('操作异常！', ApiErrorCode.ERROR, HttpStatus.OK);
-      }
-    } catch (e) {
-      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
-    }
-  }
+  // async bindPermissions(bindUserPermissionDto: BindUserPermissionDto): Promise<void> {
+  //   try {
+  //     // eslint-disable-next-line prefer-const
+  //     let { id, permissions } = bindUserPermissionDto;
+  //
+  //     if (permissions && !Utils.isArray(permissions)) {
+  //       permissions = Utils.split(',');
+  //     }
+  //
+  //     const userRet = await this.userRepository.findOne({
+  //       where: {
+  //         id: id,
+  //       },
+  //     });
+  //
+  //     const userPermissions = [];
+  //     for (const item of permissions) {
+  //       const permissionRet = await this.permissionService.selectById({ id: item });
+  //       const userPermission = new UserPermission();
+  //       userPermission.user = userRet;
+  //       userPermission.permission = permissionRet;
+  //
+  //       userPermissions.push(userPermission);
+  //     }
+  //
+  //     const deleteRet = await this.userPermissionService.deleteByUserId(id);
+  //     if (!deleteRet) {
+  //       throw new ApiException('操作异常！', ApiErrorCode.ERROR, HttpStatus.OK);
+  //     }
+  //
+  //     const ret = await this.userPermissionService.insertBatch(userPermissions);
+  //
+  //     if (ret) {
+  //       return null;
+  //     } else {
+  //       throw new ApiException('操作异常！', ApiErrorCode.ERROR, HttpStatus.OK);
+  //     }
+  //   } catch (e) {
+  //     throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+  //   }
+  // }
 
   /**
    * 获取权限
    */
-  async selectPermissionsById(baseFindByIdDto: BaseFindByIdDto): Promise<User> {
-    try {
-      const { id } = baseFindByIdDto;
-      const ret = await this.userRepository.findOne({
-        relations: ['userPermissions'],
-        where: {
-          id: id,
-        },
-      });
-
-      return ret;
-    } catch (e) {
-      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
-    }
-  }
+  // async selectPermissionsById(baseFindByIdDto: BaseFindByIdDto): Promise<User> {
+  //   try {
+  //     const { id } = baseFindByIdDto;
+  //     const ret = await this.userRepository.findOne({
+  //       relations: ['userPermissions'],
+  //       where: {
+  //         id: id,
+  //       },
+  //     });
+  //
+  //     return ret;
+  //   } catch (e) {
+  //     throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+  //   }
+  // }
 
   /**
    * 获取权限（权限合集）
    */
   async selectAuthPById(baseFindByIdDto: BaseFindByIdDto): Promise<any> {
     try {
-      return await this.permissionService.selectByUserId(baseFindByIdDto);
+      return await this.permissionService.selectPByUserId(baseFindByIdDto);
     } catch (e) {
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
@@ -906,7 +902,7 @@ export class UserService {
         const [permissionRet, roleRet, groupRet] = await Promise.all([
           this.permissionService.selectAll({}),
           this.roleService.selectRByUserId(baseFindByIdDto),
-          this.groupService.selectByUserId(baseFindByIdDto),
+          this.groupService.selectGByUserId(baseFindByIdDto),
         ]);
 
         const res = Utils.assign(userRet, {
@@ -920,7 +916,7 @@ export class UserService {
         const [permissionRet, roleRet, groupRet] = await Promise.all([
           this.permissionService.selectPByUserId(baseFindByIdDto),
           this.roleService.selectRByUserId(baseFindByIdDto),
-          this.groupService.selectByUserId(baseFindByIdDto),
+          this.groupService.selectGByUserId(baseFindByIdDto),
         ]);
 
         const res = Utils.assign(userRet, {

@@ -30,6 +30,15 @@ export class AuthService {
       // 注：实际中的密码处理应通过加密措施
       if (user && this.cryptoUtil.checkPassword(userPwd, user.userPwd)) {
         const { userPwd, ...result } = user;
+
+        // if (user.userType === 0) {
+        //   throw new ApiException('普通用户无法登录！', ApiErrorCode.FORBIDDEN, HttpStatus.OK);
+        // }
+
+        if (user.status === 0) {
+          throw new ApiException('账户已冻结！', ApiErrorCode.FROZEN, HttpStatus.OK);
+        }
+
         return result;
       } else {
         return null;

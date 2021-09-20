@@ -14,9 +14,6 @@ import { RoleService } from '../role/role.service';
 import { User } from '../user/entities/user.entity';
 import { UserGroup } from '../user-group/entities/user-group.entity';
 import { ApiException } from '../../common/exception/api-exception';
-import { BindGroupPermissionDto } from '../group-permission/dto/bind-group-premission.dto';
-import { GroupPermissionService } from '../group-permission/group-permission.service';
-import { GroupPermission } from '../group-permission/entities/group-permission.entity';
 import { PermissionService } from '../permission/permission.service';
 import { ApiErrorCode } from '../../constants/api-error-code.enum';
 
@@ -28,7 +25,6 @@ export class GroupService {
     private readonly roleService: RoleService,
     private readonly permissionService: PermissionService,
     private readonly groupRoleService: GroupRoleService,
-    private readonly groupPermissionService: GroupPermissionService,
   ) {
   }
 
@@ -174,15 +170,15 @@ export class GroupService {
         ret['roles'] = [];
       }
 
-      if (ret?.groupPermissions?.length > 0) {
-        const ids = ret.groupPermissions.map((v) => v.id);
-
-        const groupPermissionsRet = await this.groupPermissionService.selectByIds(ids);
-        const permissions = groupPermissionsRet.filter(v => v.permission).map((v) => v.permission);
-        ret['permissions'] = permissions;
-      } else {
-        ret['permissions'] = [];
-      }
+      // if (ret?.groupPermissions?.length > 0) {
+      //   const ids = ret.groupPermissions.map((v) => v.id);
+      //
+      //   const groupPermissionsRet = await this.groupPermissionService.selectByIds(ids);
+      //   const permissions = groupPermissionsRet.filter(v => v.permission).map((v) => v.permission);
+      //   ret['permissions'] = permissions;
+      // } else {
+      //   ret['permissions'] = [];
+      // }
       return ret;
     } catch (e) {
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
@@ -229,7 +225,7 @@ export class GroupService {
   /**
    * 获取角色（用户 id）
    */
-  async selectByUserId(baseFindByIdDto: BaseFindByIdDto): Promise<any> {
+  async selectGByUserId(baseFindByIdDto: BaseFindByIdDto): Promise<any> {
     try {
       const { id } = baseFindByIdDto;
       // User -> UserGroup -> Group
@@ -414,64 +410,64 @@ export class GroupService {
   /**
    * 绑定权限
    */
-  async bindPermissions(bindGroupPermissionDto: BindGroupPermissionDto): Promise<void> {
-    try {
-      // eslint-disable-next-line prefer-const
-      let { id, permissions } = bindGroupPermissionDto;
-
-      if (permissions && !Utils.isArray(permissions)) {
-        permissions = Utils.split(',');
-      }
-
-      const groupRet = await this.groupRepository.findOne({
-        where: {
-          id: id,
-        },
-      });
-
-      const groupPermissions = [];
-      for (const item of permissions) {
-        const permissionRet = await this.permissionService.selectById({ id: item });
-        const groupPermission = new GroupPermission();
-        groupPermission.group = groupRet;
-        groupPermission.permission = permissionRet;
-
-        groupPermissions.push(groupPermission);
-      }
-
-      const deleteRet = await this.groupPermissionService.deleteByGroupId(id);
-      if (!deleteRet) {
-        throw new ApiException('操作异常！', ApiErrorCode.ERROR, HttpStatus.OK);
-      }
-
-      const ret = await this.groupPermissionService.insertBatch(groupPermissions);
-
-      if (ret) {
-        return null;
-      } else {
-        throw new ApiException('操作异常！', ApiErrorCode.ERROR, HttpStatus.OK);
-      }
-    } catch (e) {
-      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
-    }
-  }
+  // async bindPermissions(bindGroupPermissionDto: BindGroupPermissionDto): Promise<void> {
+  //   try {
+  //     // eslint-disable-next-line prefer-const
+  //     let { id, permissions } = bindGroupPermissionDto;
+  //
+  //     if (permissions && !Utils.isArray(permissions)) {
+  //       permissions = Utils.split(',');
+  //     }
+  //
+  //     const groupRet = await this.groupRepository.findOne({
+  //       where: {
+  //         id: id,
+  //       },
+  //     });
+  //
+  //     const groupPermissions = [];
+  //     for (const item of permissions) {
+  //       const permissionRet = await this.permissionService.selectById({ id: item });
+  //       const groupPermission = new GroupPermission();
+  //       groupPermission.group = groupRet;
+  //       groupPermission.permission = permissionRet;
+  //
+  //       groupPermissions.push(groupPermission);
+  //     }
+  //
+  //     const deleteRet = await this.groupPermissionService.deleteByGroupId(id);
+  //     if (!deleteRet) {
+  //       throw new ApiException('操作异常！', ApiErrorCode.ERROR, HttpStatus.OK);
+  //     }
+  //
+  //     const ret = await this.groupPermissionService.insertBatch(groupPermissions);
+  //
+  //     if (ret) {
+  //       return null;
+  //     } else {
+  //       throw new ApiException('操作异常！', ApiErrorCode.ERROR, HttpStatus.OK);
+  //     }
+  //   } catch (e) {
+  //     throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+  //   }
+  // }
 
   /**
    * 获取权限
    */
-  async selectPermissionsById(baseFindByIdDto: BaseFindByIdDto): Promise<Group> {
-    try {
-      const { id } = baseFindByIdDto;
-      const ret = await this.groupRepository.findOne({
-        relations: ['groupPermissions'],
-        where: {
-          id: id,
-        },
-      });
-
-      return ret;
-    } catch (e) {
-      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
-    }
-  }
+  // async selectPermissionsById(baseFindByIdDto: BaseFindByIdDto): Promise<Group> {
+  //   try {
+  //     const { id } = baseFindByIdDto;
+  //     const ret = await this.groupRepository.findOne({
+  //       relations: ['groupPermissions'],
+  //       where: {
+  //         id: id,
+  //       },
+  //     });
+  //
+  //     return ret;
+  //   } catch (e) {
+  //     throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+  //   }
+  // }
 }

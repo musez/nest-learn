@@ -28,8 +28,6 @@ import { Utils } from '../../utils';
 import { ExcelService } from '../excel/excel.service';
 import { StatusDict } from '../../constants/dicts.const';
 import { ApiException } from '../../common/exception/api-exception';
-import { BindGroupPermissionDto } from '../group-permission/dto/bind-group-premission.dto';
-import { GroupPermissionService } from '../group-permission/group-permission.service';
 import { ApiErrorCode } from '../../constants/api-error-code.enum';
 
 @Controller('group')
@@ -40,7 +38,6 @@ export class GroupController {
   constructor(
     private readonly groupService: GroupService,
     private readonly excelService: ExcelService,
-    private readonly groupPermissionService: GroupPermissionService,
   ) {
   }
 
@@ -197,38 +194,38 @@ export class GroupController {
     }
   }
 
-  @Post('bindPermissions')
-  @Auth('account:group:bindPermissions')
-  @ApiOperation({ summary: '绑定权限' })
-  async bindPermissions(@CurUser() curUser, @Body() bindGroupPermissionDto: BindGroupPermissionDto): Promise<any> {
-    try {
-      const { id } = bindGroupPermissionDto;
+  // @Post('bindPermissions')
+  // @Auth('account:group:bindPermissions')
+  // @ApiOperation({ summary: '绑定权限' })
+  // async bindPermissions(@CurUser() curUser, @Body() bindGroupPermissionDto: BindGroupPermissionDto): Promise<any> {
+  //   try {
+  //     const { id } = bindGroupPermissionDto;
+  //
+  //     const isExistId = await this.groupService.isExistId(id);
+  //     if (!isExistId) {
+  //       throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
+  //     }
+  //     return await this.groupService.bindPermissions(bindGroupPermissionDto);
+  //   } catch (e) {
+  //      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+  //   }
+  // }
 
-      const isExistId = await this.groupService.isExistId(id);
-      if (!isExistId) {
-        throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
-      }
-      return await this.groupService.bindPermissions(bindGroupPermissionDto);
-    } catch (e) {
-       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
-    }
-  }
-
-  @Get('getPermissions')
-  @Auth('account:group:getPermissions')
-  @ApiOperation({ summary: '获取权限' })
-  async findPermissionsById(@CurUser() curUser, @Query() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
-    try {
-      const { id } = baseFindByIdDto;
-
-      const isExistId = await this.groupService.isExistId(id);
-      if (!isExistId) {
-        throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
-      }
-
-      return await this.groupService.selectPermissionsById(baseFindByIdDto);
-    } catch (e) {
-       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
-    }
-  }
+  // @Get('getPermissions')
+  // @Auth('account:group:getPermissions')
+  // @ApiOperation({ summary: '获取权限' })
+  // async findPermissionsById(@CurUser() curUser, @Query() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
+  //   try {
+  //     const { id } = baseFindByIdDto;
+  //
+  //     const isExistId = await this.groupService.isExistId(id);
+  //     if (!isExistId) {
+  //       throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
+  //     }
+  //
+  //     return await this.groupService.selectPermissionsById(baseFindByIdDto);
+  //   } catch (e) {
+  //      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+  //   }
+  // }
 }
