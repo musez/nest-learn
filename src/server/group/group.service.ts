@@ -114,6 +114,7 @@ export class GroupService {
 
       const ret = await this.groupRepository
         .createQueryBuilder('group')
+        .leftJoinAndSelect('group.userGroups', 'userGroups')
         .leftJoinAndSelect('group.groupRoles', 'groupRoles')
         .where(queryCondition, {
           name: `%${name}%`,
@@ -126,6 +127,26 @@ export class GroupService {
           'group.createTime': 'DESC',
         })
         .getManyAndCount();
+
+      for (const v of ret[0]) {
+        if (v?.userGroups?.length > 0) {
+          const ids = v.userGroups.map(v => v.id);
+
+          const userGroupRet = await this.userGroupService.selectByIds(ids);
+          v['users'] = userGroupRet.filter(v => v.user).map((v) => v.user);
+        } else {
+          v['users'] = [];
+        }
+
+        if (v?.groupRoles?.length > 0) {
+          const ids = v.groupRoles.map(v => v.id);
+
+          const groupRoleRet = await this.groupRoleService.selectByIds(ids);
+          v['roles'] = groupRoleRet.filter(v => v.role).map((v) => v.role);
+        } else {
+          v['roles'] = [];
+        }
+      }
 
       for (const v of ret[0]) {
         if (v?.groupRoles?.length > 0) {
@@ -166,15 +187,15 @@ export class GroupService {
         throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
       }
 
-      // if (ret?.userGroups?.length > 0) {
-      //   const ids = ret.userGroups.map((v) => v.id);
-      //
-      //   const userGroupRet = await this.userGroupService.selectByIds(ids);
-      //   const users = userGroupRet.filter(v => v.user).map((v) => v.user);
-      //   ret['users'] = users;
-      // } else {
-      //   ret['users'] = [];
-      // }
+      if (ret?.userGroups?.length > 0) {
+        const ids = ret.userGroups.map((v) => v.id);
+
+        const userGroupRet = await this.userGroupService.selectByIds(ids);
+        const users = userGroupRet.filter(v => v.user).map((v) => v.user);
+        ret['users'] = users;
+      } else {
+        ret['users'] = [];
+      }
 
       if (ret?.groupRoles?.length > 0) {
         const ids = ret.groupRoles.map((v) => v.id);
