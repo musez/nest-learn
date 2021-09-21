@@ -3,5 +3,7 @@ import { LimitDictDto } from './limit-dict.dto';
 
 export class SearchDictDto extends PickType(LimitDictDto, [
   'dictName',
+  'dictCode',
   'status',
-]) {}
+]) {
+}

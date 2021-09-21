@@ -2,7 +2,7 @@ import {
   Column,
   Entity,
   JoinColumn,
-  OneToOne,
+  ManyToOne,
 } from 'typeorm';
 import { SexType } from '../../../constants/dicts.enum';
 import { BaseEntity } from '../../base.entity';
@@ -51,8 +51,6 @@ export class UserAddress extends BaseEntity {
   @Column({ comment: '详细地址', length: 100, nullable: true })
   address: string;
 
-  @OneToOne((type) => User, (user) => user.userAddress)
-  // @OneToOne(() => User)
-  @JoinColumn()
+  @ManyToOne((type) => User, (user) => user.userAddress)
   user: User;
 }

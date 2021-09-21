@@ -91,10 +91,10 @@ export class User extends BaseEntity {
   })
   userinfo: Userinfo;
 
-  @OneToOne((type) => UserAddress, (userAddress) => userAddress.user, {
+  @OneToMany((type) => UserAddress, (userAddress) => userAddress.user, {
     // cascade: true
   })
-  userAddress: UserAddress;
+  userAddress: UserAddress[];
 
   @OneToMany((type) => UserGroup, (userGroup) => userGroup.user)
   userGroups: UserGroup[];

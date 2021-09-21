@@ -70,7 +70,7 @@ export class UserAddressService {
       .leftJoinAndSelect(Area, 'c', 'c.id = userAddress.cityId')
       .leftJoinAndSelect(Area, 'd', 'd.id = userAddress.districtId')
       .select(
-        'userAddress.*, userAddress.provinceId, userAddress.cityId, userAddress.districtId, userAddress.address ',
+        'userAddress.*',
       )
       .addSelect(
         `p.areaName AS provinceName, c.areaName AS cityName, d.areaName AS districtName`,
@@ -85,26 +85,6 @@ export class UserAddressService {
         'userAddress.createTime': 'DESC',
       })
       .getRawMany();
-
-    ret.forEach((v) => {
-      const ui = {
-        provinceId: v.provinceId,
-        cityId: v.cityId,
-        districtId: v.districtId,
-        address: v.address,
-        provinceName: v.provinceName,
-        cityName: v.cityName,
-        districtName: v.districtName,
-      };
-      v['userAddress'] = ui;
-
-      delete v.provinceId;
-      delete v.cityId;
-      delete v.address;
-      delete v.provinceName;
-      delete v.cityName;
-      delete v.districtName;
-    });
 
     if (!ret) {
       throw new ApiException('查询异常！', ApiErrorCode.ERROR, HttpStatus.OK);
@@ -147,7 +127,7 @@ export class UserAddressService {
       .leftJoinAndSelect(Area, 'c', 'c.id = userAddress.cityId')
       .leftJoinAndSelect(Area, 'd', 'd.id = userAddress.districtId')
       .select(
-        'userAddress.*, userAddress.provinceId, userAddress.cityId, userAddress.districtId, userAddress.address ',
+        'userAddress.*',
       )
       .addSelect(
         `p.areaName AS provinceName, c.areaName AS cityName, d.areaName AS districtName`,
@@ -169,26 +149,6 @@ export class UserAddressService {
       })
       .getRawMany();
 
-    ret.forEach((v) => {
-      const ui = {
-        provinceId: v.provinceId,
-        cityId: v.cityId,
-        districtId: v.districtId,
-        address: v.address,
-        provinceName: v.provinceName,
-        cityName: v.cityName,
-        districtName: v.districtName,
-      };
-      v['userAddress'] = ui;
-
-      delete v.provinceId;
-      delete v.cityId;
-      delete v.address;
-      delete v.provinceName;
-      delete v.cityName;
-      delete v.districtName;
-    });
-
     const retCount = await queryBuilder.getCount();
 
     if (!ret) {
@@ -208,7 +168,12 @@ export class UserAddressService {
    */
   async selectById(baseFindByIdDto: BaseFindByIdDto): Promise<UserAddress> {
     const { id } = baseFindByIdDto;
-    return await this.userAddressRepository.findOne(id);
+    return await this.userAddressRepository.findOne({
+      relations: ['user'],
+      where: {
+        id: id,
+      },
+    });
   }
 
   /**

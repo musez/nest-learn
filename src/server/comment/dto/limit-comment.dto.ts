@@ -13,7 +13,7 @@ export class LimitCommentDto extends PartialType(BasePageDto) {
   @ApiPropertyOptional({ description: '主题类型' })
   readonly replyType?: number;
 
-  @ApiPropertyOptional({ description: '状态（0：禁用；1：启用）', example: 1 })
+  @ApiPropertyOptional({ description: '状态，多个使用逗号“,”分隔（0：禁用；1：启用）', example: 1 })
   // @IsOptional()
   // @Transform((value) => Number.parseInt(value))
   // @IsInt({ message: '查询类型必须为数字！' })

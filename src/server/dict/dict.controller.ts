@@ -29,6 +29,8 @@ import { SearchDictItemDto } from '../dict-item/dto/search-dict-item.dto';
 import { DictItem } from '../dict-item/entities/dict-item.entity';
 import { LimitDictItemDto } from '../dict-item/dto/limit-dict-item.dto';
 import { ApiErrorCode } from '../../constants/api-error-code.enum';
+import { SearchDictCodeDto } from './dto/search-dict-code.dto';
+import { Utils } from '../../utils';
 
 @ApiTags('字典')
 @Controller('dict')
@@ -48,12 +50,12 @@ export class DictController {
     return await this.dictService.insert(createDictDto, curUser);
   }
 
-  @Post('addItem')
-  @Auth('system:dict:addItem')
-  @ApiOperation({ summary: '添加字典项（批量）' })
-  async createItems(@CurUser() curUser, @Body() createDictItemDto: CreateDictItemDto[]) {
-    return await this.dictItemService.insertBatch(createDictItemDto, curUser);
-  }
+  // @Post('addItem')
+  // @Auth('system:dict:addItem')
+  // @ApiOperation({ summary: '添加字典项（批量）' })
+  // async createItems(@CurUser() curUser, @Body() createDictItemDto: CreateDictItemDto[]) {
+  //   return await this.dictItemService.insertBatch(createDictItemDto, curUser);
+  // }
 
   @Get('findList')
   @Auth('system:dict:findList')
@@ -62,12 +64,12 @@ export class DictController {
     return await this.dictService.selectList(searchDictDto);
   }
 
-  @Get('findItemList')
-  @Auth('system:dict:findItemList')
-  @ApiOperation({ summary: '获取字典项列表' })
-  async findItemList(@Query() searchDictItemDto: SearchDictItemDto): Promise<DictItem[]> {
-    return await this.dictItemService.selectList(searchDictItemDto);
-  }
+  // @Get('findItemList')
+  // @Auth('system:dict:findItemList')
+  // @ApiOperation({ summary: '获取字典项列表' })
+  // async findItemList(@Query() searchDictItemDto: SearchDictItemDto): Promise<DictItem[]> {
+  //   return await this.dictItemService.selectList(searchDictItemDto);
+  // }
 
   @Get('findListPage')
   @Auth('system:dict:findListPage')
@@ -76,18 +78,47 @@ export class DictController {
     return await this.dictService.selectListPage(limitDictDto);
   }
 
-  @Get('findItemListPage')
-  @Auth('system:dict:findItemListPage')
-  @ApiOperation({ summary: '获取字典项列表（分页）' })
-  async findItemListPage(@Query() limitDictItemDto: LimitDictItemDto): Promise<any> {
-    return await this.dictItemService.selectListPage(limitDictItemDto);
-  }
+  // @Get('findItemListPage')
+  // @Auth('system:dict:findItemListPage')
+  // @ApiOperation({ summary: '获取字典项列表（分页）' })
+  // async findItemListPage(@Query() limitDictItemDto: LimitDictItemDto): Promise<any> {
+  //   return await this.dictItemService.selectListPage(limitDictItemDto);
+  // }
 
   @Get('findById')
   @Auth('system:dict:findById')
   @ApiOperation({ summary: '获取详情（主键 id）' })
   async findById(@Query() baseFindByIdDto: BaseFindByIdDto): Promise<Dict> {
     return await this.dictService.selectById(baseFindByIdDto);
+  }
+
+  // @Get('findItemById')
+  // @Auth('system:dict:findItemById')
+  // @ApiOperation({ summary: '获取字典详情（主键 id）' })
+  // async findItemById(@Query() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
+  //   return await this.dictItemService.selectByDictId(baseFindByIdDto);
+  // }
+
+  @Get('findByDictCodes')
+  @Auth('system:dict:findByDictCodes')
+  @ApiOperation({ summary: '获取列表' })
+  async findByDictCodes(@Query() searchDictCodeDto: SearchDictCodeDto): Promise<any> {
+    let { dictCode } = searchDictCodeDto;
+
+    if (!Utils.isArray(dictCode)) {
+      // @ts-ignore
+      dictCode = Utils.split(dictCode.toString());
+    }
+
+    const map = {};
+    for (const v of dictCode) {
+      const ret = await this.dictService.selectByDictCode({
+        dictCode: v,
+      });
+      map[v] = ret?.dictItems;
+    }
+
+    return map;
   }
 
   @Post('update')
@@ -104,7 +135,7 @@ export class DictController {
 
       return this.dictService.update(updateDictDto, curUser);
     } catch (e) {
-       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -129,7 +160,7 @@ export class DictController {
 
       return await this.dictService.deleteById(baseFindByIdDto, curUser);
     } catch (e) {
-       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -138,12 +169,5 @@ export class DictController {
   @ApiOperation({ summary: '删除（批量）' })
   async deleteBatch(@CurUser() curUser, @Body() baseFindByIdsDto: BaseFindByIdsDto): Promise<any> {
     return await this.dictService.deleteByIds(baseFindByIdsDto, curUser);
-  }
-
-  @Get('findItemById')
-  @Auth('system:dict:findItemById')
-  @ApiOperation({ summary: '获取字典详情（主键 id）' })
-  async findItemById(@Query() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
-    return await this.dictItemService.selectByDictId(baseFindByIdDto);
   }
 }

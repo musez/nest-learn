@@ -22,7 +22,7 @@ export class LimitUserDto extends PartialType(BasePageDto) {
   @ApiPropertyOptional({ description: '邮箱' })
   readonly email?: string;
 
-  @ApiPropertyOptional({ description: '状态（0：禁用；1：启用）' })
+  @ApiPropertyOptional({ description: '状态，多个使用逗号“,”分隔（0：禁用；1：启用）' })
   // @IsOptional()
   // @Transform((value) => Number.parseInt(value))
   // @IsInt({ message: '查询类型必须为数字！' })
