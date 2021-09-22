@@ -33,12 +33,7 @@ export class SystemController {
     fs.readdir(myUrl, (err, files) => {
       if (err) throw err;
       files.forEach((file, index) => {
-        if (
-          file !== '.git' &&
-          file !== '.idea' &&
-          file !== 'node_modules' &&
-          file !== 'dist'
-        ) {
+        if (file !== '.git' && file !== '.idea' && file !== 'node_modules' && file !== 'dist') {
           // 拼接获取绝对路径，fs.stat(绝对路径,回调函数)
           const fPath = path.join(myUrl, file);
           fs.stat(fPath, (err, stat) => {

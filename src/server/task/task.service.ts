@@ -42,6 +42,12 @@ export class TaskService {
   // 0 */30 9-17 * * *：上午九时至下午五时，每三十分钟一次
   // 0 30 11 * * 1-5：星期一至星期五上午11:30
 
+  @Interval(30000)
+  handleInterval() {
+    // 先同步数据库 collect，link 中的数据到 redis
+    // 再同步 redis 中的数据到 redis
+  }
+
   // @Cron('45 * * * * *')
   // handleCron() {
   //   this.logger.debug('该方法将在 45 秒标记处每分钟运行一次');

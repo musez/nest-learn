@@ -50,6 +50,8 @@ import WechatConfig from './config/wechat.config';
 import QiNiuConfig from './config/qiniu.config';
 import { LoggerMiddleware } from './common/middleware/logger.middleware';
 import { UploadModule } from './server/upload/upload.module';
+import { ArticleLinkModule } from './server/article-link/article-link.module';
+import { ArticleCollectModule } from './server/article-collect/article-collect.module';
 
 @Module({
   imports: [
@@ -119,11 +121,13 @@ import { UploadModule } from './server/upload/upload.module';
     ArticleModule,
     ArticleCatModule,
     ArticleDataCatModule,
+    ArticleLinkModule,
+    ArticleCollectModule,
     TopicModule,
     CommentModule,
     HolidayModule,
     // WechatModule,
-    // TaskModule,
+    TaskModule,
     FeedbackModule,
     StatisticsModule,
     ImportLogModule,

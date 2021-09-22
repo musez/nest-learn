@@ -21,6 +21,8 @@ import { ArticlePrefix } from '../../constants/article.prefix';
 import { CacheService } from '../cache/cache.service';
 import { TopicType } from '../../constants/dicts.enum';
 import { ApiErrorCode } from '../../constants/api-error-code.enum';
+import { ArticleLinkService } from '../article-link/article-link.service';
+import { ArticleCollectService } from '../article-collect/article-collect.service';
 
 @Injectable()
 export class ArticleService {
@@ -29,6 +31,8 @@ export class ArticleService {
     private readonly articleRepository: Repository<Article>,
     private readonly articleCatService: ArticleCatService,
     private readonly articleDataCatService: ArticleDataCatService,
+    private readonly articleLinkService: ArticleLinkService,
+    private readonly articleCollectService: ArticleCollectService,
     private readonly topicService: TopicService,
     private readonly commentService: CommentService,
     private readonly cacheService: CacheService,
@@ -694,20 +698,28 @@ export class ArticleService {
         // 取消点赞
         await this.cacheService.client.srem(`${ArticlePrefix.ARTICLE_LINK}${id}`, curUser.id);
         await this.cacheService.client.zincrby(`${ArticlePrefix.ARTICLE_LINK_COUNT}`, -1, id);
-        const decrementRet = await this.articleRepository.decrement(
-          { id: id },
-          'linkCount',
-          1,
-        );
+        await this.articleLinkService.insert({
+          articleId: id,
+          status: 0,
+        });
+        // const decrementRet = await this.articleRepository.decrement(
+        //   { id: id },
+        //   'linkCount',
+        //   1,
+        // );
       } else {
         // 点赞
         await this.cacheService.client.sadd(`${ArticlePrefix.ARTICLE_LINK}${id}`, curUser.id);
         await this.cacheService.client.zincrby(`${ArticlePrefix.ARTICLE_LINK_COUNT}`, 1, id);
-        const incrementRet = await this.articleRepository.increment(
-          { id: id },
-          'linkCount',
-          1,
-        );
+        await this.articleLinkService.insert({
+          articleId: id,
+          status: 1,
+        });
+        // const incrementRet = await this.articleRepository.increment(
+        //   { id: id },
+        //   'linkCount',
+        //   1,
+        // );
       }
 
       const [userIds, linkCount, isLink] = await Promise.all([
@@ -749,20 +761,28 @@ export class ArticleService {
         // 取消收藏
         await this.cacheService.client.srem(`${ArticlePrefix.ARTICLE_COLLECT}${id}`, curUser.id);
         await this.cacheService.client.zincrby(`${ArticlePrefix.ARTICLE_COLLECT_COUNT}`, -1, id);
-        const decrementRet = await this.articleRepository.decrement(
-          { id: id },
-          'collectCount',
-          1,
-        );
+        await this.articleCollectService.insert({
+          articleId: id,
+          status: 0,
+        });
+        // const decrementRet = await this.articleRepository.decrement(
+        //   { id: id },
+        //   'collectCount',
+        //   1,
+        // );
       } else {
         // 收藏
         await this.cacheService.client.sadd(`${ArticlePrefix.ARTICLE_COLLECT}${id}`, curUser.id);
         await this.cacheService.client.zincrby(`${ArticlePrefix.ARTICLE_COLLECT_COUNT}`, 1, id);
-        const incrementRet = await this.articleRepository.increment(
-          { id: id },
-          'collectCount',
-          1,
-        );
+        await this.articleCollectService.insert({
+          articleId: id,
+          status: 1,
+        });
+        // const incrementRet = await this.articleRepository.increment(
+        //   { id: id },
+        //   'collectCount',
+        //   1,
+        // );
       }
 
       const [userIds, collectCount, isCollect] = await Promise.all([

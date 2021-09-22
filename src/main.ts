@@ -27,7 +27,9 @@ async function bootstrap() {
   const setupPath = config.get('swagger.setupPath');
 
   // 使用跨站脚本攻击类的库
-  app.use(helmet());
+  app.use(helmet({
+    frameguard: false,  // 允许 iframe
+  }));
   // 为了保护您的应用程序免受暴力攻击，您必须实现某种速率限制。幸运的是，NPM 上已经有很多各种中间件可用。其中一个是快速限额。
   app.use(rateLimit({
     windowMs: 1 * 60 * 1000, // 1 minutes
@@ -97,7 +99,10 @@ async function bootstrap() {
     },
   });
 
-  await app.listen(listenPort, () => {
+  const server = await app.listen(listenPort, () => {
+    // const host = server.address().address;
+    // const port = server.address().port;
+
     figlet.text('icmz', {
       font: 'Small Slant',
       horizontalLayout: 'full',

@@ -7,11 +7,15 @@ import { ArticleCatModule } from '../article-cat/article-cat.module';
 import { ArticleDataCatModule } from '../article-data-cat/article-data-cat.module';
 import { TopicModule } from '../topic/topic.module';
 import { CommentModule } from '../comment/comment.module';
+import { ArticleLinkModule } from '../article-link/article-link.module';
+import { ArticleCollectModule } from '../article-collect/article-collect.module';
 
 @Module({
   imports: [
     ArticleCatModule,
     ArticleDataCatModule,
+    ArticleLinkModule,
+    ArticleCollectModule,
     TopicModule,
     CommentModule,
     TypeOrmModule.forFeature([Article]),

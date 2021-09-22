@@ -223,7 +223,7 @@ export class QiniuService {
     const config = new qiniu.conf.Config();
     const bucketManager = new qiniu.rs.BucketManager(mac, config);
     const privateBucketDomain = qiniuConfig.domain;
-    const deadline = parseInt(String(Date.now() / 1000)) + 3600; // 1小时过期
+    const deadline = parseInt(String(Date.now() / 1000)) + 3600; // 1 小时过期
     const privateDownloadUrl = bucketManager.privateDownloadUrl(privateBucketDomain, key, deadline);
     return privateDownloadUrl;
   }
