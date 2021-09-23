@@ -12,6 +12,7 @@ import { ArticleCollectService } from '../article-collect/article-collect.servic
 import { ApiException } from '../../common/exception/api-exception';
 import { ApiErrorCode } from '../../constants/api-error-code.enum';
 import { RedisUtil } from '../../utils/redis.util';
+import * as _ from 'lodash';
 
 const cmdStr = 'sh ../../../bin/bash.sh';//这里面写你要执行的命令就行
 
@@ -52,24 +53,39 @@ export class TaskService {
         const { articleId, userId } = v;
         await this.cacheService.client.sadd(`${ArticlePrefix.ARTICLE_LINK}${articleId}`, userId);
       }
-      this.logger.log(`同步文章点赞数据 ${linkList.length} 条`);
+      this.logger.log(`同步文章点赞流水 ${linkList.length} 条`);
+
+      const linkMap = _.groupBy(linkList, 'articleId');
+      for (const [k, v] of Object.entries(linkMap)) {
+        // @ts-ignore
+        await this.cacheService.client.zadd(`${ArticlePrefix.ARTICLE_LINK_COUNT}`, v.length, k);
+      }
+      this.logger.log(`同步文章点赞统计 ${Object.keys(linkMap).length} 条`);
+
       const collectList = await this.articleCollectService.selectList();
       for (const v of collectList) {
         const { articleId, userId } = v;
         await this.cacheService.client.sadd(`${ArticlePrefix.ARTICLE_COLLECT}${articleId}`, userId);
       }
-      this.logger.log(`同步文章收藏数据 ${linkList.length} 条`);
+      this.logger.log(`同步文章收藏流水 ${linkList.length} 条`);
+
+      const collectMap = _.groupBy(linkList, 'articleId');
+      for (const [k, v] of Object.entries(collectMap)) {
+        // @ts-ignore
+        await this.cacheService.client.zadd(`${ArticlePrefix.ARTICLE_COLLECT_COUNT}`, v.length, k);
+      }
+      this.logger.log(`同步文章点赞统计 ${Object.keys(collectMap).length} 条`);
 
       const rank = await this.articleService.selectList({});
       for (const v of rank) {
         const { id, browseCount, linkCount, collectCount, shareCount, commentCount } = v;
         await this.cacheService.client.zadd(`${ArticlePrefix.ARTICLE_BROWSE_COUNT}`, browseCount, id);
-        await this.cacheService.client.zadd(`${ArticlePrefix.ARTICLE_LINK_COUNT}`, linkCount, id);
-        await this.cacheService.client.zadd(`${ArticlePrefix.ARTICLE_COLLECT_COUNT}`, collectCount, id);
+        // await this.cacheService.client.zadd(`${ArticlePrefix.ARTICLE_LINK_COUNT}`, linkCount, id);
+        // await this.cacheService.client.zadd(`${ArticlePrefix.ARTICLE_COLLECT_COUNT}`, collectCount, id);
         await this.cacheService.client.zadd(`${ArticlePrefix.ARTICLE_SHARE_COUNT}`, shareCount, id);
         await this.cacheService.client.zadd(`${ArticlePrefix.ARTICLE_COMMENT_COUNT}`, commentCount, id);
       }
-      this.logger.log(`同步文章浏览、点赞、收藏、分享、评论排行数据 ${linkList.length} 条`);
+      this.logger.log(`同步文章浏览、点赞、收藏、分享、评论统计 ${linkList.length} 条`);
 
       this.logger.log('启动服务，完成同步，同步成功！');
     } catch (e) {
@@ -98,7 +114,7 @@ export class TaskService {
           collectCount: collectMap.has(v) ? collectMap.get(v) : undefined,
         });
       }
-      this.logger.log(`同步文章点赞、收藏排行数据 ${ids.length} 条`);
+      this.logger.log(`同步文章点赞、收藏流水 ${ids.length} 条`);
       this.logger.log('定时同步，完成同步，同步成功！');
     } catch (e) {
       this.logger.error('定时同步，完成同步，同步失败！');
@@ -121,25 +137,5 @@ export class TaskService {
   //     console.log(`stderr: ${stderr}`);
   //   });
   //   console.log('bak end');
-  // }
-
-  // @Cron('45 * * * * *')
-  // handleCron() {
-  //   this.logger.debug('该方法将在 45 秒标记处每分钟运行一次');
-  // }
-  //
-  // @Interval(10000)
-  // handleInterval() {
-  //   this.logger.debug('2');
-  // }
-  //
-  // @Timeout(5000)
-  // handleTimeout() {
-  //   this.logger.debug('3');
-  // }
-  //
-  // @Interval(10000)
-  // sendEmail() {
-  //   this.logger.debug('3');
   // }
 }
