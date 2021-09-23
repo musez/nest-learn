@@ -103,7 +103,7 @@ export class BaseArticleDto {
   readonly content?: string;
 
   @ApiPropertyOptional({ description: '发布时间' })
-  readonly publicTime?: Date;
+  readonly publishTime?: Date;
 
   @ApiPropertyOptional({ description: '浏览量', example: 0 })
   @IsOptional()

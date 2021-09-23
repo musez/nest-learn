@@ -12,7 +12,6 @@ import { ExcelService } from '../excel/excel.service';
 import { Auth } from '../../common/decorators/auth.decorator';
 import { CurUser } from '../../common/decorators/cur-user.decorator';
 import { BaseFindByIdDto, BaseFindByIdsDto, BaseModifyStatusByIdsDto } from '../base.dto';
-import { ReplyType, StatusType } from '../../constants/dicts.enum';
 import { Utils } from '../../utils';
 import { ApiException } from '../../common/exception/api-exception';
 import { Query } from '@nestjs/common';

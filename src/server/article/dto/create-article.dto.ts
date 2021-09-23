@@ -15,7 +15,7 @@ export class CreateArticleDto extends PickType(BaseArticleDto, [
   'mediaId',
   'weight',
   'content',
-  'publicTime',
+  'publishTime',
   'browseCount',
   'linkCount',
   'collectCount',

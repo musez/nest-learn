@@ -30,8 +30,8 @@ export class Article extends BaseEntity {
     this.mediaId = undefined;
     this.weight = undefined;
     this.content = undefined;
-    this.publicTime = undefined;
-    this.publicBy = undefined;
+    this.publishTime = undefined;
+    this.publishBy = undefined;
     this.browseCount = undefined;
     this.linkCount = undefined;
     this.collectCount = undefined;
@@ -43,9 +43,9 @@ export class Article extends BaseEntity {
 
   @AfterLoad()
   updateDate() {
-    if (this.publicTime) {
+    if (this.publishTime) {
       // @ts-ignore
-      this.publicTime = dayjs(this.publicTime).format('YYYY-MM-DD hh:mm:ss');
+      this.publishTime = dayjs(this.publishTime).format('YYYY-MM-DD hh:mm:ss');
     }
   }
 
@@ -92,10 +92,10 @@ export class Article extends BaseEntity {
   content: string;
 
   @Column('datetime', { comment: '发布时间', nullable: true })
-  publicTime: Date;
+  publishTime: Date;
 
   @Column({ comment: '发布人 id', nullable: true })
-  publicBy: string;
+  publishBy: string;
 
   @Column('int', { comment: '浏览量', default: () => 0 })
   browseCount: number;

@@ -39,6 +39,33 @@ export class ArticleLinkService {
   }
 
   /**
+   * 获取列表
+   */
+  async selectList(): Promise<any[]> {
+    try {
+      const queryConditionList = [];
+      queryConditionList.push('status = :status');
+      const queryCondition = queryConditionList.join(' AND ');
+
+      const ret = await this.articleLinkRepository
+        .createQueryBuilder()
+        .where(queryCondition, {
+          status: 1,
+        })
+        .orderBy({
+          status: 'DESC',
+          createTime: 'DESC',
+        })
+        .getMany();
+
+      return ret;
+    } catch (e) {
+      console.log(e);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+    }
+  }
+
+  /**
    * 是否存在（主键 id）
    */
   async isExistId(id: string): Promise<boolean> {

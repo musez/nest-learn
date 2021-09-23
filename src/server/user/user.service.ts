@@ -30,6 +30,7 @@ import { Area } from '../area/entities/area.entity';
 import { UserPrefix } from '../../constants/user.prefix';
 import { CacheService } from '../cache/cache.service';
 import { ApiErrorCode } from '../../constants/api-error-code.enum';
+import { RedisUtil } from '../../utils/redis.util';
 
 @Injectable()
 export class UserService {
@@ -43,7 +44,6 @@ export class UserService {
     private readonly permissionService: PermissionService,
     private readonly userGroupService: UserGroupService,
     private readonly userRoleService: UserRoleService,
-    private readonly cryptoUtil: CryptoUtil,
     private readonly cacheService: CacheService,
   ) {
   }
@@ -107,7 +107,10 @@ export class UserService {
    */
   async selectOnline(): Promise<any> {
     try {
-      return await this.cacheService.client.zrevrangebyscore(`${UserPrefix.ONLINE_USER}`, '+inf', '-inf', 'withscores');
+      const ret = await this.cacheService.client.zrevrangebyscore(`${UserPrefix.ONLINE_USER}`, '+inf', '-inf', 'withscores');
+      const map = RedisUtil.arrayToMap(ret);
+      const list = RedisUtil.mapToList(map);
+      return list;
     } catch (e) {
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
@@ -135,9 +138,9 @@ export class UserService {
       user = Utils.dto2entity(createUserDto, user);
       // 未传入密码时，使用默认密码；传入密码时，使用传入密码
       if (Utils.isBlank(userPwd)) {
-        user.userPwd = this.cryptoUtil.encryptPassword('888888');
+        user.userPwd = CryptoUtil.encryptPassword('888888');
       } else {
-        user.userPwd = this.cryptoUtil.encryptPassword(userPwd);
+        user.userPwd = CryptoUtil.encryptPassword(userPwd);
       }
       if (curUser) {
         user.createBy = curUser!.id;
@@ -186,9 +189,9 @@ export class UserService {
         user = Utils.dto2entityImport(item, user);
         // 未传入密码时，使用默认密码；传入密码时，使用传入密码
         if (Utils.isBlank(userPwd)) {
-          user.userPwd = this.cryptoUtil.encryptPassword('888888');
+          user.userPwd = CryptoUtil.encryptPassword('888888');
         } else {
-          user.userPwd = this.cryptoUtil.encryptPassword(userPwd);
+          user.userPwd = CryptoUtil.encryptPassword(userPwd);
         }
         if (curUser) {
           user.createBy = curUser!.id;
@@ -403,7 +406,7 @@ export class UserService {
 
         // 获取关联 id
         const userRet = await this.userRepository.findOne({
-          relations: ['userGroups','userRoles'],
+          relations: ['userGroups', 'userRoles'],
           where: {
             id: id,
           },

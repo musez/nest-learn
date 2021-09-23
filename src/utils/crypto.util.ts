@@ -1,10 +1,8 @@
 import { randomBytes, createHash, createCipher, createDecipher } from 'crypto';
-import { Injectable } from '@nestjs/common';
 
-@Injectable()
 export class CryptoUtil {
   // 随机盐
-  makeSalt(): string {
+  static makeSalt(): string {
     return randomBytes(3).toString('base64');
   }
 
@@ -13,7 +11,7 @@ export class CryptoUtil {
    * @param password 登录密码
    * @returns string 加密字符串
    */
-  encryptPassword(password: string): string {
+  static encryptPassword(password: string): string {
     return createHash('sha256').update(password).digest('hex');
   }
 
@@ -23,7 +21,7 @@ export class CryptoUtil {
    * @param encryptedPassword 库中加密后的密码
    * @returns boolean 是否匹配
    */
-  checkPassword(password: string, encryptedPassword): boolean {
+  static checkPassword(password: string, encryptedPassword): boolean {
     const currentPass = this.encryptPassword(password);
     return currentPass === encryptedPassword;
   }
@@ -34,7 +32,7 @@ export class CryptoUtil {
    * @param key 加密 key
    * @returns string 加密字符串
    */
-  aesEncrypt(data, key) {
+  static aesEncrypt(data, key) {
     const cipher = createCipher('aes192', key);
     let crypted = cipher.update(data, 'utf8', 'hex');
     crypted += cipher.final('hex');
@@ -47,7 +45,7 @@ export class CryptoUtil {
    * @param key 加密 key
    * @returns string 解密字符串
    */
-  aesDecrypt(encrypted, key) {
+  static aesDecrypt(encrypted, key) {
     const decipher = createDecipher('aes192', key);
     let decrypted = decipher.update(encrypted, 'hex', 'utf8');
     decrypted += decipher.final('utf8');

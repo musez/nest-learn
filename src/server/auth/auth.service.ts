@@ -14,7 +14,6 @@ export class AuthService {
     private readonly userService: UserService,
     private readonly jwtService: JwtService,
     private readonly captchaService: CaptchaService,
-    private readonly cryptoUtil: CryptoUtil,
   ) {
   }
 
@@ -28,7 +27,7 @@ export class AuthService {
       const user = await this.userService.selectByName(userName);
 
       // 注：实际中的密码处理应通过加密措施
-      if (user && this.cryptoUtil.checkPassword(userPwd, user.userPwd)) {
+      if (user && CryptoUtil.checkPassword(userPwd, user.userPwd)) {
         const { userPwd, ...result } = user;
 
         // if (user.userType === 0) {

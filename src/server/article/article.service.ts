@@ -23,6 +23,7 @@ import { TopicType } from '../../constants/dicts.enum';
 import { ApiErrorCode } from '../../constants/api-error-code.enum';
 import { ArticleLinkService } from '../article-link/article-link.service';
 import { ArticleCollectService } from '../article-collect/article-collect.service';
+import { RedisUtil } from '../../utils/redis.util';
 
 @Injectable()
 export class ArticleService {
@@ -205,21 +206,41 @@ export class ArticleService {
   /**
    * 获取数量
    */
-  async selectCount(): Promise<any> {
+  async selectStatusCount(): Promise<any> {
     try {
-      const [retTotal, retPublic] = await Promise.all([
-        this.articleRepository.count(),
-        this.articleRepository.count({ status: 1 }),
-      ]);
+      const ret = await this.selectList({});
+      const disable = ret.filter(v => v.status === 0);
+      const enable = ret.filter(v => v.status === 1);
+      const draft = ret.filter(v => v.status === 2);
+      const recycle = ret.filter(v => v.status === 3);
 
-      if (retTotal && retPublic) {
-        return {
-          total: retTotal,
-          public: retPublic,
-        };
-      } else {
-        throw new ApiException('获取异常！', ApiErrorCode.ERROR, HttpStatus.OK);
-      }
+      return {
+        total: ret.length,
+        disable: disable.length,
+        enable: enable.length,
+        draft: draft.length,
+        recycle: recycle.length,
+      };
+
+      // const [retTotal, retDisable, retEnable, retDraft, retRecycle] = await Promise.all([
+      //   this.articleRepository.count(),
+      //   this.articleRepository.count({ status: 0 }),
+      //   this.articleRepository.count({ status: 1 }),
+      //   this.articleRepository.count({ status: 2 }),
+      //   this.articleRepository.count({ status: 3 }),
+      // ]);
+      //
+      // if (retTotal && retDisable && retEnable && retDraft && retRecycle) {
+      //   return {
+      //     total: retTotal,
+      //     disable: retDisable,
+      //     enable: retEnable,
+      //     draft: retDraft,
+      //     recycle: retRecycle,
+      //   };
+      // } else {
+      //   throw new ApiException('获取异常！', ApiErrorCode.ERROR, HttpStatus.OK);
+      // }
     } catch (e) {
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
@@ -319,11 +340,11 @@ export class ArticleService {
 
       if (status === 1) {
         // @ts-ignore
-        article.publicTime = Utils.now();
-        article.publicBy = curUser ? curUser!.id : null;
+        article.publishTime = Utils.now();
+        article.publishBy = curUser ? curUser!.id : null;
       } else {
-        article.publicTime = null;
-        article.publicBy = null;
+        article.publishTime = null;
+        article.publishBy = null;
       }
 
       const ret = await this.articleRepository.update(id, article);
@@ -352,13 +373,13 @@ export class ArticleService {
         ids = Utils.split(ids.toString());
       }
 
-      let publicTime = null, publicBy = null;
+      let publishTime = null, publishBy = null;
       if (status === 1) {
-        publicTime = Utils.now();
-        publicBy = curUser ? curUser!.id : null;
+        publishTime = Utils.now();
+        publishBy = curUser ? curUser!.id : null;
       } else {
-        publicTime = null;
-        publicBy = null;
+        publishTime = null;
+        publishBy = null;
       }
 
       await this.articleRepository
@@ -367,11 +388,30 @@ export class ArticleService {
         .set({
           status: status,
           updateBy: curUser ? curUser!.id : null,
-          publicTime: publicTime,
-          publicBy: publicBy,
+          publishTime: publishTime,
+          publishBy: publishBy,
         })
         .where('id IN (:ids)', { ids: ids })
         .execute();
+    } catch (e) {
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+    }
+  }
+
+  /**
+   * 修改浏览数、点赞数、收藏数、分享数、浏览数
+   */
+  async updateCount(updateArticleDto: UpdateArticleDto, curUser?): Promise<any> {
+    try {
+      const { id } = updateArticleDto;
+
+      let article = new Article();
+      article = Utils.dto2entity(updateArticleDto, article);
+      const ret = await this.articleRepository.update(id, article);
+      if (!ret) {
+        throw new ApiException('操作异常！', ApiErrorCode.ERROR, HttpStatus.OK);
+      }
+      return ret;
     } catch (e) {
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
@@ -626,7 +666,10 @@ export class ArticleService {
    */
   async selectBrowseRank(): Promise<any> {
     try {
-      return await this.cacheService.client.zrevrangebyscore(`${ArticlePrefix.ARTICLE_BROWSE_COUNT}`, '+inf', '-inf', 'withscores');
+      const ret = await this.cacheService.client.zrevrangebyscore(`${ArticlePrefix.ARTICLE_BROWSE_COUNT}`, '+inf', '-inf', 'withscores');
+      const map = RedisUtil.arrayToMap(ret);
+      const list = RedisUtil.mapToList(map);
+      return list;
     } catch (e) {
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
@@ -643,7 +686,8 @@ export class ArticleService {
       if (isBrowseBefore === 1) {
         // 多次浏览
         await this.cacheService.client.zincrby(`${ArticlePrefix.ARTICLE_BROWSE_COUNT}`, 1, id);
-        const incrementRet = await this.articleRepository.increment(
+        // 异步添加流水
+        this.articleRepository.increment(
           { id: id },
           'browseCount',
           1,
@@ -652,7 +696,8 @@ export class ArticleService {
         // 浏览
         await this.cacheService.client.sadd(`${ArticlePrefix.ARTICLE_BROWSE}${id}`, curUser.id);
         await this.cacheService.client.zincrby(`${ArticlePrefix.ARTICLE_BROWSE_COUNT}`, 1, id);
-        const incrementRet = await this.articleRepository.increment(
+        // 异步添加流水
+        this.articleRepository.increment(
           { id: id },
           'browseCount',
           1,
@@ -680,7 +725,10 @@ export class ArticleService {
    */
   async selectLinkRank(): Promise<any> {
     try {
-      return await this.cacheService.client.zrevrangebyscore(`${ArticlePrefix.ARTICLE_LINK_COUNT}`, '+inf', '-inf', 'withscores');
+      const ret = await this.cacheService.client.zrevrangebyscore(`${ArticlePrefix.ARTICLE_LINK_COUNT}`, '+inf', '-inf', 'withscores');
+      const map = RedisUtil.arrayToMap(ret);
+      const list = RedisUtil.mapToList(map);
+      return list;
     } catch (e) {
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
@@ -698,7 +746,8 @@ export class ArticleService {
         // 取消点赞
         await this.cacheService.client.srem(`${ArticlePrefix.ARTICLE_LINK}${id}`, curUser.id);
         await this.cacheService.client.zincrby(`${ArticlePrefix.ARTICLE_LINK_COUNT}`, -1, id);
-        await this.articleLinkService.insert({
+        // 异步添加流水
+        this.articleLinkService.insert({
           articleId: id,
           status: 0,
         });
@@ -711,7 +760,8 @@ export class ArticleService {
         // 点赞
         await this.cacheService.client.sadd(`${ArticlePrefix.ARTICLE_LINK}${id}`, curUser.id);
         await this.cacheService.client.zincrby(`${ArticlePrefix.ARTICLE_LINK_COUNT}`, 1, id);
-        await this.articleLinkService.insert({
+        // 异步添加流水
+        this.articleLinkService.insert({
           articleId: id,
           status: 1,
         });
@@ -743,7 +793,10 @@ export class ArticleService {
    */
   async selectCollectRank(): Promise<any> {
     try {
-      return await this.cacheService.client.zrevrangebyscore(`${ArticlePrefix.ARTICLE_COLLECT_COUNT}`, '+inf', '-inf', 'withscores');
+      const ret = await this.cacheService.client.zrevrangebyscore(`${ArticlePrefix.ARTICLE_COLLECT_COUNT}`, '+inf', '-inf', 'withscores');
+      const map = RedisUtil.arrayToMap(ret);
+      const list = RedisUtil.mapToList(map);
+      return list;
     } catch (e) {
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
@@ -761,7 +814,8 @@ export class ArticleService {
         // 取消收藏
         await this.cacheService.client.srem(`${ArticlePrefix.ARTICLE_COLLECT}${id}`, curUser.id);
         await this.cacheService.client.zincrby(`${ArticlePrefix.ARTICLE_COLLECT_COUNT}`, -1, id);
-        await this.articleCollectService.insert({
+        // 异步添加流水
+        this.articleCollectService.insert({
           articleId: id,
           status: 0,
         });
@@ -774,7 +828,8 @@ export class ArticleService {
         // 收藏
         await this.cacheService.client.sadd(`${ArticlePrefix.ARTICLE_COLLECT}${id}`, curUser.id);
         await this.cacheService.client.zincrby(`${ArticlePrefix.ARTICLE_COLLECT_COUNT}`, 1, id);
-        await this.articleCollectService.insert({
+        // 异步添加流水
+        this.articleCollectService.insert({
           articleId: id,
           status: 1,
         });
@@ -806,7 +861,10 @@ export class ArticleService {
    */
   async selectShareRank(): Promise<any> {
     try {
-      return await this.cacheService.client.zrevrangebyscore(`${ArticlePrefix.ARTICLE_SHARE_COUNT}`, '+inf', '-inf', 'withscores');
+      const ret = await this.cacheService.client.zrevrangebyscore(`${ArticlePrefix.ARTICLE_SHARE_COUNT}`, '+inf', '-inf', 'withscores');
+      const map = RedisUtil.arrayToMap(ret);
+      const list = RedisUtil.mapToList(map);
+      return list;
     } catch (e) {
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
@@ -823,7 +881,8 @@ export class ArticleService {
       if (isLinkBefore === 1) {
         // 多次分享
         await this.cacheService.client.zincrby(`${ArticlePrefix.ARTICLE_SHARE_COUNT}`, 1, id);
-        const incrementRet = await this.articleRepository.increment(
+        // 异步添加流水
+        this.articleRepository.increment(
           { id: id },
           'shareCount',
           1,
@@ -832,7 +891,8 @@ export class ArticleService {
         // 分享
         await this.cacheService.client.sadd(`${ArticlePrefix.ARTICLE_SHARE}${id}`, curUser.id);
         await this.cacheService.client.zincrby(`${ArticlePrefix.ARTICLE_SHARE_COUNT}`, 1, id);
-        const incrementRet = await this.articleRepository.increment(
+        // 异步添加流水
+        this.articleRepository.increment(
           { id: id },
           'shareCount',
           1,
@@ -860,7 +920,10 @@ export class ArticleService {
    */
   async selectCommentRank(): Promise<any> {
     try {
-      return await this.cacheService.client.zrevrangebyscore(`${ArticlePrefix.ARTICLE_COMMENT_COUNT}`, '+inf', '-inf', 'withscores');
+      const ret = await this.cacheService.client.zrevrangebyscore(`${ArticlePrefix.ARTICLE_COMMENT_COUNT}`, '+inf', '-inf', 'withscores');
+      const map = RedisUtil.arrayToMap(ret);
+      const list = RedisUtil.mapToList(map);
+      return list;
     } catch (e) {
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
@@ -878,7 +941,8 @@ export class ArticleService {
       if (isLinkBefore === 1) {
         // 多次评论
         await this.cacheService.client.zincrby(`${ArticlePrefix.ARTICLE_COMMENT_COUNT}`, 1, id);
-        const incrementRet = await this.articleRepository.increment(
+        // 异步添加流水
+        this.articleRepository.increment(
           { id: id },
           'commentCount',
           1,
@@ -887,7 +951,8 @@ export class ArticleService {
         // 评论
         await this.cacheService.client.sadd(`${ArticlePrefix.ARTICLE_COMMENT}${id}`, curUser.id);
         await this.cacheService.client.zincrby(`${ArticlePrefix.ARTICLE_COMMENT_COUNT}`, 1, id);
-        const incrementRet = await this.articleRepository.increment(
+        // 异步添加流水
+        this.articleRepository.increment(
           { id: id },
           'commentCount',
           1,

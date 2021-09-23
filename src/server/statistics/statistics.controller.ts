@@ -7,22 +7,29 @@ import { Auth } from '../../common/decorators/auth.decorator';
 
 @Controller('statistics')
 @ApiTags('统计')
-// @ApiBasicAuth('token')
+@ApiBasicAuth('token')
 export class StatisticsController {
   constructor(private readonly statisticsService: StatisticsService) {
   }
 
-  @Get('findCount')
-  @Auth('cms:statistics:findCount')
-  @ApiOperation({ summary: '获取数量' })
-  async findCount(): Promise<any> {
-    return this.statisticsService.selectCount();
+  @Get('findOnline')
+  @Auth('cms:statistics:findOnline')
+  @ApiOperation({ summary: '获取在线用户' })
+  async findOnline(): Promise<any> {
+    return this.statisticsService.selectOnline();
   }
 
-  @Get('findArticle')
-  @Auth('cms:statistics:findArticle')
+  @Get('findArticleStatusCount')
+  @Auth('cms:statistics:findArticleStatusCount')
+  @ApiOperation({ summary: '获取新闻各个状态的数量' })
+  async findArticleStatusCount(): Promise<any> {
+    return this.statisticsService.selectArticleStatusCount();
+  }
+
+  @Get('findArticleRank')
+  @Auth('cms:statistics:findArticleRank')
   @ApiOperation({ summary: '获取新闻' })
-  async findArticle(): Promise<any> {
-    return this.statisticsService.selectArticle();
+  async findArticleRank(): Promise<any> {
+    return this.statisticsService.selectArticleRank();
   }
 }

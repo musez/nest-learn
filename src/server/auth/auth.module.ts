@@ -7,7 +7,6 @@ import { JwtStrategy } from './strategies/jwt.strategy';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { CaptchaModule } from '../captcha/captcha.module';
-import { CryptoUtil } from '../../utils/crypto.util';
 
 @Module({
   imports: [
@@ -22,7 +21,7 @@ import { CryptoUtil } from '../../utils/crypto.util';
       inject: [ConfigService],
     }),
   ],
-  providers: [AuthService, LocalStrategy, JwtStrategy, CryptoUtil], // 把 AuthService，LocalStrategy，JwtStrategy 注册成提供者
+  providers: [AuthService, LocalStrategy, JwtStrategy], // 把 AuthService，LocalStrategy，JwtStrategy 注册成提供者
   controllers: [AuthController], // 注册控制器
   exports: [AuthService], // 把这个服务抛出，给其他模块使用
 })
