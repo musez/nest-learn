@@ -38,7 +38,7 @@ export class CommentController {
   @Auth('system:comment:add')
   @ApiOperation({ summary: '添加' })
   async add(@CurUser() curUser, @Body() createCommentDto: CreateCommentDto) {
-    return this.commentService.insert(createCommentDto, curUser);
+    return await this.commentService.insert(createCommentDto, curUser);
   }
 
   @Get('findList')
@@ -96,7 +96,7 @@ export class CommentController {
       // res.setTimeout(30 * 60 * 1000); // 防止网络原因造成超时。
       res.end(result, 'binary');
     } catch (e) {
-       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -113,7 +113,7 @@ export class CommentController {
 
       return this.commentService.update(updateCommentDto, curUser);
     } catch (e) {
-       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -132,7 +132,7 @@ export class CommentController {
       const { id } = baseFindByIdDto;
       return this.commentService.updateStatus({ ids: id, status: 1 }, curUser);
     } catch (e) {
-       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -144,7 +144,7 @@ export class CommentController {
       const { id } = baseFindByIdDto;
       return this.commentService.updateStatus({ ids: id, status: 2 }, curUser);
     } catch (e) {
-       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -162,7 +162,7 @@ export class CommentController {
 
       return await this.commentService.deleteById(baseFindByIdDto, curUser);
     } catch (e) {
-       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -173,7 +173,7 @@ export class CommentController {
     try {
       return await this.commentService.deleteByIds(baseFindByIdsDto, curUser);
     } catch (e) {
-       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 }

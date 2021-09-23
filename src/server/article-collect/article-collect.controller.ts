@@ -5,7 +5,7 @@ import { UpdateArticleCollectDto } from './dto/update-article-collect.dto';
 
 @Controller('article-collect')
 export class ArticleCollectController {
-  constructor(private readonly userArticleCollectService: ArticleCollectService) {}
+  constructor(private readonly articleCollectService: ArticleCollectService) {}
 
 
 }

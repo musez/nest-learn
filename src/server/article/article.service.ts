@@ -515,153 +515,6 @@ export class ArticleService {
   }
 
   /**
-   * 获取评论
-   */
-  async selectCommentById(baseFindByIdDto: BaseFindByIdDto): Promise<any> {
-    try {
-      const { id } = baseFindByIdDto;
-
-      const [topicRet, commentRet] = await Promise.all([
-        this.topicService.selectList({
-          topicId: id,
-          topicType: TopicType.ARTICLE,
-        }),
-        this.commentService.selectList({
-          commentId: id,
-        }),
-      ]);
-
-      // 转化成树
-      const commentTree = Utils.construct(commentRet, {
-        id: 'id',
-        pid: 'replyId',
-        children: 'children',
-      });
-
-      // 扁平化树
-      commentTree.forEach((comment) => {
-        let children = [];
-
-        if (comment?.children?.length) {
-          children = Utils.getNodeId(comment.children);
-        }
-        comment['children'] = children;
-      });
-
-      // 扁平化树与评论组装
-      topicRet.forEach((topic) => {
-        commentTree.forEach((comment) => {
-          if (topic.id === comment.replyId) {
-            if (topic?.children?.length) {
-              topic['children'].push(comment);
-            } else {
-              topic['children'] = [];
-              topic['children'].push(comment);
-            }
-          }
-        });
-      });
-
-      return topicRet;
-    } catch (e) {
-      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
-    }
-  }
-
-  /**
-   * 获取评论
-   */
-  async selectCommentPageById(limitArticleTopDto: LimitArticleTopDto): Promise<any> {
-    try {
-      const { id, page, limit } = limitArticleTopDto;
-
-      const [topicRet, commentRet] = await Promise.all([
-        this.topicService.selectListPage({
-          page,
-          limit,
-          topicId: id,
-          topicType: TopicType.ARTICLE,
-        }),
-        this.commentService.selectList({
-          commentId: id,
-        }),
-      ]);
-
-      // 转化成树
-      const commentTree = Utils.construct(commentRet, {
-        id: 'id',
-        pid: 'replyId',
-        children: 'children',
-      });
-
-      // 扁平化树
-      commentTree.forEach((comment) => {
-        let children = [];
-
-        if (comment?.children?.length > 0) {
-          children = Utils.getNodeId(comment.children);
-        }
-        comment['children'] = children;
-      });
-
-      const { list, total } = topicRet;
-
-      // 扁平化树与评论组装
-      list.forEach((topic) => {
-        commentTree.forEach((comment) => {
-          if (topic.id === comment.replyId) {
-            if (topic?.children?.length) {
-              topic['children'].push(comment);
-            } else {
-              topic['children'] = [];
-              topic['children'].push(comment);
-            }
-          }
-        });
-      });
-
-      return {
-        list: list,
-        total: total,
-        page: page,
-        limit: limit,
-      };
-    } catch (e) {
-      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
-    }
-  }
-
-  /**
-   * 评论
-   */
-  async insertComment(createArticleCommentDto: CreateArticleCommentDto, curUser?): Promise<any> {
-    try {
-      const { id, type, replyType, replyId, ...form } = createArticleCommentDto;
-
-      if (type === 0) {
-        const params = Object.assign(form, {
-          topicType: TopicType.ARTICLE,
-          topicId: id,
-          fromUid: curUser.id,
-        });
-
-        return await this.topicService.insert(params, curUser);
-      } else if (type === 1) {
-        const params = Object.assign(form, {
-          commentId: id,
-          replyId: replyId,
-          fromUid: curUser.id,
-        });
-
-        // @ts-ignore
-        return await this.commentService.insert(params, curUser);
-      }
-    } catch (e) {
-      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
-    }
-  }
-
-  /**
    * 获取浏览排行
    */
   async selectBrowseRank(): Promise<any> {
@@ -747,8 +600,9 @@ export class ArticleService {
         await this.cacheService.client.srem(`${ArticlePrefix.ARTICLE_LINK}${id}`, curUser.id);
         await this.cacheService.client.zincrby(`${ArticlePrefix.ARTICLE_LINK_COUNT}`, -1, id);
         // 异步添加流水
-        this.articleLinkService.insert({
+        this.articleLinkService.updateStatusByUserAndArticleId({
           articleId: id,
+          userId: curUser.id,
           status: 0,
         });
         // const decrementRet = await this.articleRepository.decrement(
@@ -763,8 +617,9 @@ export class ArticleService {
         // 异步添加流水
         this.articleLinkService.insert({
           articleId: id,
+          userId: curUser.id,
           status: 1,
-        });
+        }, curUser);
         // const incrementRet = await this.articleRepository.increment(
         //   { id: id },
         //   'linkCount',
@@ -815,8 +670,9 @@ export class ArticleService {
         await this.cacheService.client.srem(`${ArticlePrefix.ARTICLE_COLLECT}${id}`, curUser.id);
         await this.cacheService.client.zincrby(`${ArticlePrefix.ARTICLE_COLLECT_COUNT}`, -1, id);
         // 异步添加流水
-        this.articleCollectService.insert({
+        this.articleCollectService.updateStatusByUserAndArticleId({
           articleId: id,
+          userId: curUser.id,
           status: 0,
         });
         // const decrementRet = await this.articleRepository.decrement(
@@ -831,8 +687,9 @@ export class ArticleService {
         // 异步添加流水
         this.articleCollectService.insert({
           articleId: id,
+          userId: curUser.id,
           status: 1,
-        });
+        }, curUser);
         // const incrementRet = await this.articleRepository.increment(
         //   { id: id },
         //   'collectCount',
@@ -969,6 +826,159 @@ export class ArticleService {
         userIds: userIds,
         commentCount: commentCount,
         isComment: isComment,
+      };
+    } catch (e) {
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+    }
+  }
+
+  /**
+   * 评论
+   */
+  async insertComment(createArticleCommentDto: CreateArticleCommentDto, curUser?): Promise<any> {
+    try {
+      const { id, type, replyType, replyId, ...form } = createArticleCommentDto;
+      const { isComment } = await this.selectById({ id: id });
+
+      if (isComment === 0) {
+        throw new ApiException('文章不允许评论！', ApiErrorCode.ARTICLE_DISABLED_COMMENT, HttpStatus.OK);
+      }
+
+      if (type === 0) {
+        const params = Object.assign(form, {
+          topicType: TopicType.ARTICLE,
+          topicId: id,
+          fromUid: curUser.id,
+        });
+
+        await this.comment({ id: id }, curUser);
+        return await this.topicService.insert(params, curUser);
+      } else if (type === 1) {
+        const params = Object.assign(form, {
+          commentId: id,
+          replyId: replyId,
+          fromUid: curUser.id,
+        });
+
+        // @ts-ignore
+        return await this.commentService.insert(params, curUser);
+      }
+    } catch (e) {
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+    }
+  }
+
+  /**
+   * 获取评论
+   */
+  async selectCommentById(baseFindByIdDto: BaseFindByIdDto): Promise<any> {
+    try {
+      const { id } = baseFindByIdDto;
+
+      const [topicRet, commentRet] = await Promise.all([
+        this.topicService.selectList({
+          topicId: id,
+          topicType: TopicType.ARTICLE,
+        }),
+        this.commentService.selectList({
+          commentId: id,
+        }),
+      ]);
+
+      // 转化成树
+      const commentTree = Utils.construct(commentRet, {
+        id: 'id',
+        pid: 'replyId',
+        children: 'children',
+      });
+
+      // 扁平化树
+      commentTree.forEach((comment) => {
+        let children = [];
+
+        if (comment?.children?.length) {
+          children = Utils.getNodeId(comment.children);
+        }
+        comment['children'] = children;
+      });
+
+      // 扁平化树与评论组装
+      topicRet.forEach((topic) => {
+        commentTree.forEach((comment) => {
+          if (topic.id === comment.replyId) {
+            if (topic?.children?.length) {
+              topic['children'].push(comment);
+            } else {
+              topic['children'] = [];
+              topic['children'].push(comment);
+            }
+          }
+        });
+      });
+
+      return topicRet;
+    } catch (e) {
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+    }
+  }
+
+  /**
+   * 获取评论
+   */
+  async selectCommentPageById(limitArticleTopDto: LimitArticleTopDto): Promise<any> {
+    try {
+      const { id, page, limit } = limitArticleTopDto;
+
+      const [topicRet, commentRet] = await Promise.all([
+        this.topicService.selectListPage({
+          page,
+          limit,
+          topicId: id,
+          topicType: TopicType.ARTICLE,
+        }),
+        this.commentService.selectList({
+          commentId: id,
+        }),
+      ]);
+
+      // 转化成树
+      const commentTree = Utils.construct(commentRet, {
+        id: 'id',
+        pid: 'replyId',
+        children: 'children',
+      });
+
+      // 扁平化树
+      commentTree.forEach((comment) => {
+        let children = [];
+
+        if (comment?.children?.length > 0) {
+          children = Utils.getNodeId(comment.children);
+        }
+        comment['children'] = children;
+      });
+
+      const { list, total } = topicRet;
+
+      // 扁平化树与评论组装
+      list.forEach((topic) => {
+        commentTree.forEach((comment) => {
+          if (topic.id === comment.replyId) {
+            if (topic?.children?.length) {
+              topic['children'].push(comment);
+            } else {
+              topic['children'] = [];
+              topic['children'].push(comment);
+            }
+          }
+        });
+      });
+
+      return {
+        list: list,
+        total: total,
+        page: page,
+        limit: limit,
       };
     } catch (e) {
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);

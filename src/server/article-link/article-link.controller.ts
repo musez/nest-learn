@@ -5,6 +5,6 @@ import { UpdateArticleLinkDto } from './dto/update-article-link.dto';
 
 @Controller('article-link')
 export class ArticleLinkController {
-  constructor(private readonly userArticleLinkService: ArticleLinkService) {}
+  constructor(private readonly articleLinkService: ArticleLinkService) {}
 
 }

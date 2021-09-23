@@ -3,6 +3,12 @@ import * as dayjs from 'dayjs';
 
 @Entity('cms_article_link')
 export class ArticleLink {
+  constructor() {
+    this.userId = undefined;
+    this.articleId = undefined;
+    this.status = undefined;
+  }
+
   @AfterLoad()
   updateDate() {
     if (this.createTime) {

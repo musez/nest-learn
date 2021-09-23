@@ -8,6 +8,7 @@ import { Utils } from '../../utils';
 import { ApiException } from '../../common/exception/api-exception';
 import { ApiErrorCode } from '../../constants/api-error-code.enum';
 import { BaseModifyStatusByIdsDto } from '../base.dto';
+import { ArticleLink } from '../article-link/entities/user-article-link.entity';
 
 @Injectable()
 export class ArticleCollectService {
@@ -75,6 +76,26 @@ export class ArticleCollectService {
       } else {
         return true;
       }
+    } catch (e) {
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+    }
+  }
+
+  /**
+   * 修改状态
+   */
+  async updateStatusByUserAndArticleId(obj): Promise<void> {
+    try {
+      const { articleId, userId, status } = obj;
+
+      await this.articleCollectRepository
+        .createQueryBuilder()
+        .update(ArticleCollect)
+        .set({
+          status: status,
+        })
+        .where('articleId = :articleId AND userId = :userId', { articleId: articleId, userId: userId })
+        .execute();
     } catch (e) {
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }

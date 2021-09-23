@@ -10,7 +10,7 @@ import {
 import {
   ApiTags,
   ApiBasicAuth,
-  ApiOperation,
+  ApiOperation, ApiResponse,
 } from '@nestjs/swagger';
 import { ArticleService } from './article.service';
 import { CreateArticleDto } from './dto/create-article.dto';
@@ -250,30 +250,6 @@ export class ArticleController {
     return await this.articleService.deleteAll(curUser);
   }
 
-  @Get('findCommentById')
-  @Auth('cms:article:findCommentById')
-  @ApiOperation({ summary: '获取评论和回复（主键 id）' })
-  async findCommentById(@Query() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
-    return await this.articleService.selectCommentById(baseFindByIdDto);
-  }
-
-  @Get('findCommentPageById')
-  @Auth('cms:article:findCommentPageById')
-  @ApiOperation({ summary: '获取评论和回复（主键 id）' })
-  async findCommentPageById(@Query() limitArticleTopDto: LimitArticleTopDto): Promise<any> {
-    return await this.articleService.selectCommentPageById(limitArticleTopDto);
-  }
-
-  @Post('addComment')
-  @Auth('cms:article:addComment')
-  @ApiOperation({ summary: '添加评论' })
-  async addComment(@CurUser() curUser, @Body() createArticleCommentDto: CreateArticleCommentDto): Promise<any> {
-    return await this.articleService.insertComment(
-      createArticleCommentDto,
-      curUser,
-    );
-  }
-
   @Get('findBrowseRank')
   @ApiOperation({ summary: '获取浏览排行' })
   async findBrowseRank(): Promise<any> {
@@ -328,9 +304,34 @@ export class ArticleController {
     return await this.articleService.selectCommentRank();
   }
 
-  @Post('comment')
-  @ApiOperation({ summary: '评论' })
-  async comment(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
-    return await this.articleService.comment(baseFindByIdDto, curUser);
+  // @Post('comment')
+  // @ApiOperation({ summary: '评论' })
+  // async comment(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
+  //   return await this.articleService.comment(baseFindByIdDto, curUser);
+  // }
+
+  @Post('addComment')
+  @Auth('cms:article:addComment')
+  @ApiOperation({ summary: '添加评论' })
+  @ApiResponse({ status: ApiErrorCode.ARTICLE_DISABLED_COMMENT, description: '文章不允许评论！' })
+  async addComment(@CurUser() curUser, @Body() createArticleCommentDto: CreateArticleCommentDto): Promise<any> {
+    return await this.articleService.insertComment(
+      createArticleCommentDto,
+      curUser,
+    );
+  }
+
+  @Get('findCommentById')
+  @Auth('cms:article:findCommentById')
+  @ApiOperation({ summary: '获取评论和回复（主键 id）' })
+  async findCommentById(@Query() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
+    return await this.articleService.selectCommentById(baseFindByIdDto);
+  }
+
+  @Get('findCommentPageById')
+  @Auth('cms:article:findCommentPageById')
+  @ApiOperation({ summary: '获取评论和回复（主键 id）' })
+  async findCommentPageById(@Query() limitArticleTopDto: LimitArticleTopDto): Promise<any> {
+    return await this.articleService.selectCommentPageById(limitArticleTopDto);
   }
 }

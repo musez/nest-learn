@@ -24,6 +24,7 @@ export class ArticleLinkService {
     try {
       let articleLink = new ArticleLink();
       articleLink = Utils.dto2entity(createArticleLinkDto, articleLink);
+
       if (curUser) {
         articleLink.userId = curUser!.id;
       }
@@ -84,7 +85,7 @@ export class ArticleLinkService {
   /**
    * 获取详情（用户 id & 文章 id）
    */
-  async selectByUserIdAndArticleId(userId: string, articleId: string): Promise<boolean> {
+  async selectByUserAndArticleId(userId: string, articleId: string): Promise<boolean> {
     try {
       const isExist = await this.articleLinkRepository.findOne({
         where: {
@@ -98,6 +99,27 @@ export class ArticleLinkService {
         return true;
       }
     } catch (e) {
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+    }
+  }
+
+  /**
+   * 修改状态
+   */
+  async updateStatusByUserAndArticleId(obj): Promise<void> {
+    try {
+      const { articleId, userId, status } = obj;
+
+      await this.articleLinkRepository
+        .createQueryBuilder()
+        .update(ArticleLink)
+        .set({
+          status: status,
+        })
+        .where('articleId = :articleId AND userId = :userId', { articleId: articleId, userId: userId })
+        .execute();
+    } catch (e) {
+      console.log(e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }

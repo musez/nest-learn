@@ -23,4 +23,6 @@ export enum ApiErrorCode {
   USER_NAME_EXISTS = 1009, // 用户名已存在
   PHONE_EXISTS = 1010, // 手机号已存在
   USER_ID_NOT_EXISTS = 1011, // 用户不存在
+
+  ARTICLE_DISABLED_COMMENT = 1012, // 不允许评论
 }
