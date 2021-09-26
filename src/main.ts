@@ -15,6 +15,7 @@ import { HttpExceptionFilter } from './common/filter/http-exception.filter';
 import { AllExceptionsFilter } from './common/filter/any-exception.filter';
 import { logger } from './common/middleware/logger.middleware';
 import { Logger } from './utils/log4js.util';
+import { WsAdapter } from './server/ws/ws.adapter';
 
 async function bootstrap() {
   // const app = await NestFactory.create(AppModule);
@@ -22,6 +23,8 @@ async function bootstrap() {
     cors: true, // 设置跨站访问
     // logger: false,
   });
+  // app.useWebSocketAdapter(new WsAdapter(app)); // 使用适配器
+
   const config = app.get(ConfigService);
   const listenPort = config.get('app.listenPort');
   const setupPath = config.get('swagger.setupPath');
@@ -117,6 +120,8 @@ async function bootstrap() {
       Logger.info(`${data} \n server listen on：http://localhost:${listenPort}/api \n swagger listen on：http://localhost:${listenPort}${setupPath} \n\n Powered by WangYue 2021`);
     });
   });
+
+  // await app.listen(3001);
 }
 
 bootstrap();

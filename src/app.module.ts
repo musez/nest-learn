@@ -52,6 +52,7 @@ import { LoggerMiddleware } from './common/middleware/logger.middleware';
 import { UploadModule } from './server/upload/upload.module';
 import { ArticleLinkModule } from './server/article-link/article-link.module';
 import { ArticleCollectModule } from './server/article-collect/article-collect.module';
+import { WsModule } from './server/ws/ws.module';
 
 @Module({
   imports: [
@@ -131,12 +132,14 @@ import { ArticleCollectModule } from './server/article-collect/article-collect.m
     FeedbackModule,
     StatisticsModule,
     ImportLogModule,
+    WsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
 export class AppModule {
-  constructor(private readonly connection: Connection) {}
+  constructor(private readonly connection: Connection) {
+  }
 
   configure(consumer: MiddlewareConsumer) {
     consumer
