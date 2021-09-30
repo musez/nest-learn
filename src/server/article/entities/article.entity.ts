@@ -2,7 +2,7 @@ import {
   Entity,
   Column,
   OneToMany,
-  AfterLoad,
+  AfterLoad, VersionColumn,
 } from 'typeorm';
 import { BaseEntity } from '../../base.entity';
 import {
@@ -123,6 +123,9 @@ export class Article extends BaseEntity {
     default: StatusType.DRAFT,
   })
   status: StatusType;
+
+  @VersionColumn({ comment: '版本', nullable: true })
+  version: string;
 
   @OneToMany(
     (type) => ArticleDataCat,

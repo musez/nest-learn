@@ -4,7 +4,7 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
-  AfterLoad,
+  AfterLoad, VersionColumn,
 } from 'typeorm';
 import { AreaLevelType } from '../../../constants/dicts.enum';
 import * as dayjs from 'dayjs';
@@ -77,7 +77,7 @@ export class Area {
   })
   lat: string;
 
-  @CreateDateColumn({ comment: '创建时间', type: 'datetime', nullable: true })
+  @CreateDateColumn({ comment: '创建时间', type: 'datetime', length: 0, nullable: true })
   createTime: Date;
 
   @Column({ comment: '创建人 id', nullable: true })
@@ -86,6 +86,7 @@ export class Area {
   @UpdateDateColumn({
     comment: '最后更新时间',
     type: 'datetime',
+    length: 0,
     nullable: true,
   })
   updateTime: Date;

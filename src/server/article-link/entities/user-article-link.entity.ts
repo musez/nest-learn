@@ -29,6 +29,6 @@ export class ArticleLink {
   @Column('tinyint', { comment: '是否收藏（0：否；1：是；）', nullable: true })
   status: number;
 
-  @CreateDateColumn({ comment: '创建时间', type: 'datetime', nullable: true })
+  @CreateDateColumn({ comment: '创建时间', type: 'datetime', length: 0, nullable: true })
   createTime: Date;
 }

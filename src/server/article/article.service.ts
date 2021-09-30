@@ -24,6 +24,7 @@ import { ApiErrorCode } from '../../constants/api-error-code.enum';
 import { ArticleLinkService } from '../article-link/article-link.service';
 import { ArticleCollectService } from '../article-collect/article-collect.service';
 import { RedisUtil } from '../../utils/redis.util';
+import { UpdateArticleCountDto } from './dto/update-article-count.dto';
 
 @Injectable()
 export class ArticleService {
@@ -209,15 +210,15 @@ export class ArticleService {
   async selectStatusCount(): Promise<any> {
     try {
       const ret = await this.selectList({});
-      const disable = ret.filter(v => v.status === 0);
-      const enable = ret.filter(v => v.status === 1);
+      const unPublish = ret.filter(v => v.status === 0);
+      const publish = ret.filter(v => v.status === 1);
       const draft = ret.filter(v => v.status === 2);
       const recycle = ret.filter(v => v.status === 3);
 
       return {
         total: ret.length,
-        disable: disable.length,
-        enable: enable.length,
+        unPublish: unPublish.length,
+        publish: publish.length,
         draft: draft.length,
         recycle: recycle.length,
       };
@@ -401,12 +402,12 @@ export class ArticleService {
   /**
    * 修改浏览数、点赞数、收藏数、分享数、浏览数
    */
-  async updateCount(updateArticleDto: UpdateArticleDto, curUser?): Promise<any> {
+  async updateCount(updateArticleCountDto: UpdateArticleCountDto, curUser?): Promise<any> {
     try {
-      const { id } = updateArticleDto;
+      const { id } = updateArticleCountDto;
 
       let article = new Article();
-      article = Utils.dto2entity(updateArticleDto, article);
+      article = Utils.dto2entity(updateArticleCountDto, article);
       const ret = await this.articleRepository.update(id, article);
       if (!ret) {
         throw new ApiException('操作异常！', ApiErrorCode.ERROR, HttpStatus.OK);

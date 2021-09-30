@@ -83,9 +83,9 @@ export class TaskService {
         // await this.cacheService.client.zadd(`${ArticlePrefix.ARTICLE_LINK_COUNT}`, linkCount, id);
         // await this.cacheService.client.zadd(`${ArticlePrefix.ARTICLE_COLLECT_COUNT}`, collectCount, id);
         await this.cacheService.client.zadd(`${ArticlePrefix.ARTICLE_SHARE_COUNT}`, shareCount, id);
-        await this.cacheService.client.zadd(`${ArticlePrefix.ARTICLE_COMMENT_COUNT}`, commentCount, id);
+        // await this.cacheService.client.zadd(`${ArticlePrefix.ARTICLE_COMMENT_COUNT}`, commentCount, id);
       }
-      this.logger.log(`同步文章浏览、点赞、收藏、分享、评论统计 ${linkList.length} 条`);
+      this.logger.log(`同步文章浏览、分享统计 ${rank.length} 条`);
 
       this.logger.log('启动服务，完成同步，同步成功！');
     } catch (e) {
