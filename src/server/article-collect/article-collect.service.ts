@@ -37,6 +37,7 @@ export class ArticleCollectService {
       }
       return ret;
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
@@ -63,6 +64,7 @@ export class ArticleCollectService {
 
       return ret;
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
@@ -79,6 +81,7 @@ export class ArticleCollectService {
         return true;
       }
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
@@ -99,6 +102,7 @@ export class ArticleCollectService {
         .where('articleId = :articleId AND userId = :userId', { articleId: articleId, userId: userId })
         .execute();
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
@@ -123,6 +127,7 @@ export class ArticleCollectService {
         .where('id IN (:ids)', { ids: ids })
         .execute();
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }

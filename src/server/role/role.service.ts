@@ -45,6 +45,7 @@ export class RoleService {
       return await this.roleRepository.save(role);
     } catch (e) {
       this.logger.error('系统异常：', e);
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }

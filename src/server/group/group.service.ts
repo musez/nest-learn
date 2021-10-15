@@ -171,7 +171,6 @@ export class GroupService {
       };
     } catch (e) {
       this.logger.error('系统异常：', e);
-      console.log(e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }

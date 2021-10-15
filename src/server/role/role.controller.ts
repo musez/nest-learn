@@ -5,7 +5,7 @@ import {
   Query,
   Body,
   UseGuards,
-  Res, HttpStatus,
+  Res, HttpStatus, Logger,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -35,6 +35,8 @@ import { ApiErrorCode } from '../../constants/api-error-code.enum';
 @ApiBasicAuth('token')
 @UseGuards(JwtAuthGuard, AuthGuard)
 export class RoleController {
+  private readonly logger = new Logger(RoleController.name);
+
   constructor(
     private readonly roleService: RoleService,
     private readonly excelService: ExcelService,
@@ -104,6 +106,7 @@ export class RoleController {
       // res.setTimeout(30 * 60 * 1000); // 防止网络原因造成超时。
       res.end(result, 'binary');
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
@@ -121,6 +124,7 @@ export class RoleController {
       }
       return this.roleService.update(updateRoleDto, curUser);
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
@@ -145,6 +149,7 @@ export class RoleController {
       }
       return await this.roleService.deleteById(baseFindByIdDto, curUser);
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
@@ -169,6 +174,7 @@ export class RoleController {
       }
       return await this.roleService.bindPermissions(bindRolePermissionDto);
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
@@ -186,6 +192,7 @@ export class RoleController {
       }
       return await this.roleService.selectPermissionsById(baseFindByIdDto);
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }

@@ -5,7 +5,7 @@ import {
   Query,
   Body,
   UseGuards,
-  Res, HttpStatus,
+  Res, HttpStatus, Logger,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -41,6 +41,8 @@ import { ApiErrorCode } from '../../constants/api-error-code.enum';
 @ApiBasicAuth('token')
 @UseGuards(JwtAuthGuard, AuthGuard)
 export class ArticleController {
+  private readonly logger = new Logger(ArticleController.name);
+
   constructor(
     private readonly articleService: ArticleService,
     private readonly excelService: ExcelService,
@@ -89,6 +91,7 @@ export class ArticleController {
         throw new ApiException('查询异常！', ApiErrorCode.ERROR, HttpStatus.OK);
       }
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
@@ -145,6 +148,7 @@ export class ArticleController {
       // res.setTimeout(30 * 60 * 1000); // 防止网络原因造成超时。
       res.end(result, 'binary');
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
@@ -184,6 +188,7 @@ export class ArticleController {
         curUser,
       );
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
@@ -199,6 +204,7 @@ export class ArticleController {
         curUser,
       );
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
@@ -214,6 +220,7 @@ export class ArticleController {
         curUser,
       );
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
@@ -232,6 +239,7 @@ export class ArticleController {
 
       return await this.articleService.deleteById(baseFindByIdDto, curUser);
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }

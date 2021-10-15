@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpStatus, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, HttpStatus, Logger, Post, UseGuards } from '@nestjs/common';
 import { ApiBasicAuth, ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './guards/local-auth.guard';
@@ -14,6 +14,8 @@ import { LoginUserDto } from './dto/login-user.dto';
 @ApiTags('认证')
 @Controller('auth')
 export class AuthController {
+  private readonly logger = new Logger(AuthController.name);
+
   constructor(
     private readonly authService: AuthService,
     private readonly userService: UserService,
@@ -41,6 +43,7 @@ export class AuthController {
         throw new ApiException('验证码错误！', ApiErrorCode.INVALID_CAPTCHA, HttpStatus.OK);
       }
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }

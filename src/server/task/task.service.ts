@@ -65,8 +65,7 @@ export class TaskService {
         this.logger.log('启动服务，初始化管理员账户，已存在管理员账户！');
       }
     } catch (e) {
-      this.logger.error('系统异常：', e);
-      this.logger.error('启动服务，初始化管理员账户，初始化失败！');
+      this.logger.error('启动服务，初始化管理员账户，初始化异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
@@ -117,7 +116,7 @@ export class TaskService {
 
       this.logger.log('启动服务，完成同步，同步成功！');
     } catch (e) {
-      this.logger.error('启动服务，完成同步，同步失败！');
+      this.logger.error('启动服务，完成同步，同步异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
@@ -145,7 +144,7 @@ export class TaskService {
       this.logger.log(`同步文章点赞、收藏流水 ${ids.length} 条`);
       this.logger.log('定时同步，完成同步，同步成功！');
     } catch (e) {
-      this.logger.error('定时同步，完成同步，同步失败！');
+      this.logger.error('定时同步，完成同步，同步异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }

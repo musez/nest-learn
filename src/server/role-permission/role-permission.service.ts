@@ -23,6 +23,7 @@ export class RolePermissionService {
     try {
       return await this.rolePermissionRepository.save(rolePermission);
     } catch (e) {
+      this.logger.error('系统异常：', e);
        throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }

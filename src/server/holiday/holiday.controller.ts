@@ -7,7 +7,7 @@ import {
   UseGuards,
   UseInterceptors,
   UploadedFile,
-  Res, HttpStatus,
+  Res, HttpStatus, Logger,
 } from '@nestjs/common';
 import {
   FileInterceptor,
@@ -45,6 +45,8 @@ import { ImportLogService } from '../import-log/import-log.service';
 @ApiBasicAuth('token')
 @UseGuards(JwtAuthGuard, AuthGuard)
 export class HolidayController {
+  private readonly logger = new Logger(HolidayController.name);
+
   constructor(
     private readonly holidayService: HolidayService,
     private readonly excelService: ExcelService,
@@ -89,6 +91,7 @@ export class HolidayController {
       const dayList = Utils.dayjsGetDay(parseInt(String(days)));
       return this.holidayService.selectDays(dayList, curUser);
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
@@ -125,6 +128,7 @@ export class HolidayController {
       // res.setTimeout(30 * 60 * 1000); // 防止网络原因造成超时。
       res.end(result, 'binary');
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
@@ -194,6 +198,7 @@ export class HolidayController {
         throw new ApiException(`操作异常！`, ApiErrorCode.ERROR, HttpStatus.OK);
       }
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
@@ -212,6 +217,7 @@ export class HolidayController {
 
       return this.holidayService.update(updateHolidayDto, curUser);
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
@@ -237,6 +243,7 @@ export class HolidayController {
 
       return await this.holidayService.deleteById(baseFindByIdDto, curUser);
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }

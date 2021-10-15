@@ -48,6 +48,7 @@ export class FileService {
 
       return await this.fileRepository.save(fileEntity);
     } catch (e) {
+      this.logger.error('系统异常：', e);
        throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }

@@ -39,6 +39,7 @@ export class HolidayService {
 
       return createHolidayDto;
     } catch (e) {
+      this.logger.error('系统异常：', e);
        throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
@@ -63,6 +64,7 @@ export class HolidayService {
 
       return createHolidayDto;
     } catch (e) {
+      this.logger.error('系统异常：', e);
        throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
@@ -114,6 +116,7 @@ export class HolidayService {
         })
         .getMany();
     } catch (e) {
+      this.logger.error('系统异常：', e);
        throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
@@ -177,6 +180,7 @@ export class HolidayService {
         limit: limit,
       };
     } catch (e) {
+      this.logger.error('系统异常：', e);
        throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
@@ -189,6 +193,7 @@ export class HolidayService {
       const { id } = baseFindByIdDto;
       return await this.holidayRepository.findOne(id);
     } catch (e) {
+      this.logger.error('系统异常：', e);
        throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
