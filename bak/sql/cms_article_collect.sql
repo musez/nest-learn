@@ -1,0 +1,1 @@
+INSERT INTO `cms_article_collect` (`id`, `userId`, `articleId`, `status`, `createTime`) VALUES (1, '62310947-7b54-45c8-a5da-19837f2541a4', '0a4e9f0b-9599-446b-a956-00bea0d19d0f', 1, '2021-09-23 18:49:40.890298');
