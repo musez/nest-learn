@@ -1,4 +1,4 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateDictItemDto } from './dto/create-dict-item.dto';
@@ -13,6 +13,8 @@ import { ApiErrorCode } from '../../constants/api-error-code.enum';
 
 @Injectable()
 export class DictItemService {
+  private readonly logger = new Logger(DictItemService.name);
+
   constructor(
     @InjectRepository(DictItem)
     private readonly dictItemRepository: Repository<DictItem>,

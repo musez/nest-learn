@@ -1,10 +1,12 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { Connection } from 'typeorm';
 import { CreateCodeGenerateDto } from './dto/create-code-generate.dto';
 import { UpdateCodeGenerateDto } from './dto/update-code-generate.dto';
 
 @Injectable()
 export class CodeGenerateService {
+  private readonly logger = new Logger(CodeGenerateService.name);
+
   constructor(private readonly connection: Connection) {
     console.log(connection);
   }

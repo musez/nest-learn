@@ -1,4 +1,4 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateFileDto } from './dto/create-file.dto';
@@ -11,6 +11,8 @@ import { ApiErrorCode } from '../../constants/api-error-code.enum';
 
 @Injectable()
 export class FileService {
+  private readonly logger = new Logger(FileService.name);
+
   constructor(
     @InjectRepository(File)
     private readonly fileRepository: Repository<File>,

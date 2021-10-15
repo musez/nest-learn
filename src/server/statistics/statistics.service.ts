@@ -1,4 +1,4 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { ApiException } from '../../common/exception/api-exception';
 import { ArticleService } from '../article/article.service';
 import { ApiErrorCode } from '../../constants/api-error-code.enum';
@@ -6,6 +6,8 @@ import { UserService } from '../user/user.service';
 
 @Injectable()
 export class StatisticsService {
+  private readonly logger = new Logger(StatisticsService.name);
+
   constructor(
     private readonly articleService: ArticleService,
     private readonly userService: UserService,

@@ -16,13 +16,17 @@ export class AuthGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const req: Request = context.switchToHttp().getRequest();
     const user = req['user'];
+
     if (!user) throw new ApiException('没有权限执行此操作！', ApiErrorCode.FORBIDDEN, HttpStatus.OK);
-    if (user.userType === 0) {
+    const { id, userType } = user;
+    if (userType === 0) {
       // 普通用户不能进行任何操作
       throw new ApiException('没有权限执行此操作！', ApiErrorCode.FORBIDDEN, HttpStatus.OK);
-    } else if (user.userType === 2) {
-      // 超级管理员可以进行任何操作
-      return true;
+    } else if (userType === 2) {
+      if (id === '925a409c-ae39-4374-89b8-bd1297ef300e') {
+        // 超级管理员可以进行任何操作
+        return true;
+      }
     }
     // 当前请求所需权限
     const currentPerm = this.reflector.get<string>(

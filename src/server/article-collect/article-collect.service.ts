@@ -1,4 +1,4 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { CreateArticleCollectDto } from './dto/create-article-collect.dto';
 import { UpdateArticleCollectDto } from './dto/update-article-collect.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -12,6 +12,8 @@ import { ArticleLink } from '../article-link/entities/user-article-link.entity';
 
 @Injectable()
 export class ArticleCollectService {
+  private readonly logger = new Logger(ArticleCollectService.name);
+
   constructor(
     @InjectRepository(ArticleCollect)
     private readonly articleCollectRepository: Repository<ArticleCollect>,

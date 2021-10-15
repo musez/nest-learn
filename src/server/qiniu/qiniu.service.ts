@@ -1,4 +1,4 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { ApiException } from '../../common/exception/api-exception';
 import { ConfigService } from '@nestjs/config';
 import * as qiniu from 'qiniu';
@@ -9,6 +9,8 @@ import { ApiErrorCode } from '../../constants/api-error-code.enum';
 
 @Injectable()
 export class QiniuService {
+  private readonly logger = new Logger(QiniuService.name);
+
   constructor(
     private readonly configService: ConfigService,
     private readonly fileService: FileService,

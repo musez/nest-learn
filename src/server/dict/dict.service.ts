@@ -1,4 +1,4 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Utils } from './../../utils/index';
@@ -16,6 +16,8 @@ import { SearchDictCodeDto } from './dto/search-dict-code.dto';
 
 @Injectable()
 export class DictService {
+  private readonly logger = new Logger(DictService.name);
+
   constructor(
     @InjectRepository(Dict)
     private readonly dictRepository: Repository<Dict>,

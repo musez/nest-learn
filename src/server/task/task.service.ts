@@ -13,6 +13,7 @@ import { ApiException } from '../../common/exception/api-exception';
 import { ApiErrorCode } from '../../constants/api-error-code.enum';
 import { RedisUtil } from '../../utils/redis.util';
 import * as _ from 'lodash';
+import { UserService } from '../user/user.service';
 
 const cmdStr = 'sh ../../../bin/bash.sh';//这里面写你要执行的命令就行
 
@@ -22,6 +23,7 @@ export class TaskService {
 
   constructor(
     private readonly cacheService: CacheService,
+    private readonly userService: UserService,
     private readonly articleService: ArticleService,
     private readonly articleLinkService: ArticleLinkService,
     private readonly articleCollectService: ArticleCollectService,
@@ -44,7 +46,33 @@ export class TaskService {
   // 0 30 11 * * 1-5：星期一至星期五上午11:30
 
   @Timeout(1000)
-  async handleTimeout() {
+  async initSystemSuperUser() {
+    // 启动服务时，自动初始化管理员账户
+    try {
+      const userId = '925a409c-ae39-4374-89b8-bd1297ef300e';
+      const ret = await this.userService.isExistId(userId);
+      if (!ret) {
+        const userRet = await this.userService.initSystemSuperUser({
+          id: userId,
+          userName: 'admin',
+          userType: 2,
+          name: '超级管理员',
+        });
+        if (userRet) {
+          this.logger.log('启动服务，初始化管理员账户，初始化成功！');
+        }
+      } else {
+        this.logger.log('启动服务，初始化管理员账户，已存在管理员账户！');
+      }
+    } catch (e) {
+      this.logger.error('系统异常：', e);
+      this.logger.error('启动服务，初始化管理员账户，初始化失败！');
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+    }
+  }
+
+  @Timeout(1000)
+  async syncArticleInfoSQL2Redis() {
     // 启动服务时，同步数据至 redis
     try {
       this.logger.log('启动服务，开始同步... ...');
@@ -95,7 +123,7 @@ export class TaskService {
   }
 
   @Interval(60000)
-  async handleInterval() {
+  async syncArticleInfoRedis2SQL() {
     // 同步 redis 中的数据到 mysql
     try {
       this.logger.log('定时同步，开始同步... ...');

@@ -1,4 +1,4 @@
-import { forwardRef, HttpStatus, Inject, Injectable } from '@nestjs/common';
+import { forwardRef, HttpStatus, Inject, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
 import { Utils } from './../../utils/index';
@@ -22,6 +22,8 @@ import { UserGroupService } from '../user-group/user-group.service';
 
 @Injectable()
 export class GroupService {
+  private readonly logger = new Logger(GroupService.name);
+
   constructor(
     @InjectRepository(Group)
     private readonly groupRepository: Repository<Group>,
@@ -46,6 +48,7 @@ export class GroupService {
       }
       return await this.groupRepository.save(group);
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
@@ -83,6 +86,7 @@ export class GroupService {
         })
         .getMany();
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
@@ -166,6 +170,7 @@ export class GroupService {
         limit: limit,
       };
     } catch (e) {
+      this.logger.error('系统异常：', e);
       console.log(e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
@@ -218,6 +223,7 @@ export class GroupService {
       // }
       return ret;
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
@@ -240,6 +246,7 @@ export class GroupService {
       }
       return ret;
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
@@ -256,6 +263,7 @@ export class GroupService {
       });
       return ret;
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
@@ -278,6 +286,7 @@ export class GroupService {
 
       return userGroup;
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
@@ -294,6 +303,7 @@ export class GroupService {
         return true;
       }
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
@@ -312,6 +322,7 @@ export class GroupService {
       }
       await this.groupRepository.update(id, group);
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
@@ -339,6 +350,7 @@ export class GroupService {
 
       return ret;
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
@@ -357,6 +369,7 @@ export class GroupService {
         .where('id = :id', { id: id })
         .execute();
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
@@ -378,6 +391,7 @@ export class GroupService {
         .where('id IN (:ids)', { ids: ids })
         .execute();
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
@@ -422,6 +436,7 @@ export class GroupService {
         throw new ApiException('操作异常！', ApiErrorCode.ERROR, HttpStatus.OK);
       }
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
@@ -441,6 +456,7 @@ export class GroupService {
 
       return ret;
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
@@ -485,6 +501,7 @@ export class GroupService {
         throw new ApiException('操作异常！', ApiErrorCode.ERROR, HttpStatus.OK);
       }
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
@@ -504,6 +521,7 @@ export class GroupService {
 
       return ret;
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
@@ -549,6 +567,7 @@ export class GroupService {
   //       throw new ApiException('操作异常！', ApiErrorCode.ERROR, HttpStatus.OK);
   //     }
   //   } catch (e) {
+  //     this.logger.error('系统异常：', e);
   //     throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
   //   }
   // }
@@ -568,6 +587,7 @@ export class GroupService {
   //
   //     return ret;
   //   } catch (e) {
+  //     this.logger.error('系统异常：', e);
   //     throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
   //   }
   // }

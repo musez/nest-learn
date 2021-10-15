@@ -1,4 +1,4 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, In } from 'typeorm';
 import { RolePermission } from './entities/role-permission.entity';
@@ -8,6 +8,8 @@ import { ApiErrorCode } from '../../constants/api-error-code.enum';
 
 @Injectable()
 export class RolePermissionService {
+  private readonly logger = new Logger(RolePermissionService.name);
+
   constructor(
     @InjectRepository(RolePermission)
     private readonly rolePermissionRepository: Repository<RolePermission>,

@@ -1,4 +1,4 @@
-import { Injectable, HttpStatus } from '@nestjs/common';
+import { Injectable, HttpStatus, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateUserinfoDto } from './dto/create-userinfo.dto';
@@ -9,6 +9,8 @@ import { ApiErrorCode } from '../../constants/api-error-code.enum';
 
 @Injectable()
 export class UserinfoService {
+  private readonly logger = new Logger(UserinfoService.name);
+
   constructor(
     @InjectRepository(Userinfo)
     private readonly userinfoRepository: Repository<Userinfo>,

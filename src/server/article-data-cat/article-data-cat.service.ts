@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { CreateArticleDataCatDto } from './dto/create-article-data-cat.dto';
 import { UpdateArticleDataCatDto } from './dto/update-article-data-cat.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -7,6 +7,8 @@ import { ArticleDataCat } from './entities/article-data-cat.entity';
 
 @Injectable()
 export class ArticleDataCatService {
+  private readonly logger = new Logger(ArticleDataCatService.name);
+
   constructor(
     @InjectRepository(ArticleDataCat)
     private readonly articleDataCatRepository: Repository<ArticleDataCat>,

@@ -1,4 +1,4 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { CreateImportLogDto } from './dto/create-import-log.dto';
 import { UpdateImportLogDto } from './dto/update-import-log.dto';
 import { LimitImportLogDto } from './dto/limit-import-log.dto';
@@ -12,6 +12,8 @@ import { ApiErrorCode } from '../../constants/api-error-code.enum';
 
 @Injectable()
 export class ImportLogService {
+  private readonly logger = new Logger(ImportLogService.name);
+
   constructor(
     @InjectRepository(ImportLog)
     private readonly importLogRepository: Repository<ImportLog>,

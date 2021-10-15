@@ -1,4 +1,4 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { ApiException } from '../../common/exception/api-exception';
 import * as svgCaptcha from 'svg-captcha';
 import { CacheService } from '../cache/cache.service';
@@ -18,6 +18,8 @@ import { ApiErrorCode } from '../../constants/api-error-code.enum';
  */
 @Injectable()
 export class CaptchaService {
+  private readonly logger = new Logger(CaptchaService.name);
+
   constructor(private readonly cacheService: CacheService) {
   }
 
@@ -33,6 +35,7 @@ export class CaptchaService {
 
       return captcha;
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
@@ -52,6 +55,7 @@ export class CaptchaService {
         2 * 60,
       );
     } catch (e) {
+      this.logger.error('系统异常：', e);
        throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
@@ -70,6 +74,7 @@ export class CaptchaService {
 
       return captcha;
     } catch (e) {
+      this.logger.error('系统异常：', e);
        throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }

@@ -1,4 +1,4 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, In } from 'typeorm';
 import { BaseFindByIdsDto } from '../base.dto';
@@ -9,6 +9,8 @@ import { ApiErrorCode } from '../../constants/api-error-code.enum';
 
 @Injectable()
 export class GroupRoleService {
+  private readonly logger = new Logger(GroupRoleService.name);
+
   constructor(
     @InjectRepository(GroupRole)
     private readonly groupRoleRepository: Repository<GroupRole>,

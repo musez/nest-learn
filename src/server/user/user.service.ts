@@ -1,4 +1,4 @@
-import { forwardRef, HttpStatus, Inject, Injectable } from '@nestjs/common';
+import { forwardRef, HttpStatus, Inject, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
 import { Utils } from './../../utils/index';
@@ -34,6 +34,8 @@ import { RedisUtil } from '../../utils/redis.util';
 
 @Injectable()
 export class UserService {
+  private readonly logger = new Logger(UserService.name);
+
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
@@ -65,6 +67,7 @@ export class UserService {
       if (ret) return ret;
       else return null;
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
@@ -98,6 +101,7 @@ export class UserService {
 
       return incrementRet;
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
@@ -112,6 +116,7 @@ export class UserService {
       const list = RedisUtil.mapToList(map);
       return list;
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
@@ -123,6 +128,41 @@ export class UserService {
     try {
       return await this.cacheService.client.zrem(`${UserPrefix.ONLINE_USER}`, curUser.id);
     } catch (e) {
+      this.logger.error('系统异常：', e);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+    }
+  }
+
+  /**
+   * 初始化管理员账户
+   */
+  async initSystemSuperUser(user): Promise<any> {
+    try {
+      const { userPwd } = user;
+
+      // 未传入密码时，使用默认密码；传入密码时，使用传入密码
+      if (Utils.isBlank(userPwd)) {
+        user.userPwd = CryptoUtil.encryptPassword('888888');
+      } else {
+        user.userPwd = CryptoUtil.encryptPassword(userPwd);
+      }
+      if (user) {
+        user.createBy = user!.id;
+      }
+
+      const userinfo = new Userinfo();
+      userinfo.user = user; // 联接两者
+      const saveRet = await this.userRepository.save(user);
+      const saveUIRet = await this.userinfoService.insert(userinfo);
+
+      if (saveRet && saveUIRet) {
+        return user;
+      } else {
+        throw new ApiException('保存异常！', ApiErrorCode.ERROR, HttpStatus.OK);
+      }
+    } catch (e) {
+      this.logger.error('系统异常：', e);
+      console.log(e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
@@ -171,6 +211,7 @@ export class UserService {
         throw new ApiException('保存异常！', ApiErrorCode.ERROR, HttpStatus.OK);
       }
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
@@ -226,6 +267,7 @@ export class UserService {
         throw new ApiException('保存异常！', ApiErrorCode.ERROR, HttpStatus.OK);
       }
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
@@ -317,6 +359,7 @@ export class UserService {
 
       return ret;
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
@@ -452,6 +495,7 @@ export class UserService {
         limit: limit,
       };
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
@@ -505,6 +549,7 @@ export class UserService {
 
       return ret;
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
@@ -526,6 +571,7 @@ export class UserService {
       }
       return ret;
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
@@ -542,6 +588,7 @@ export class UserService {
       });
       return ret;
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
@@ -558,6 +605,7 @@ export class UserService {
         return true;
       }
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
@@ -574,6 +622,7 @@ export class UserService {
         return true;
       }
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
@@ -618,6 +667,7 @@ export class UserService {
         throw new ApiException('更新异常！', ApiErrorCode.ERROR, HttpStatus.OK);
       }
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
@@ -645,6 +695,7 @@ export class UserService {
 
       return ret;
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
@@ -669,6 +720,7 @@ export class UserService {
 
       return null;
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
@@ -696,6 +748,7 @@ export class UserService {
 
       return null;
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
@@ -741,6 +794,7 @@ export class UserService {
         throw new ApiException('操作异常！', ApiErrorCode.ERROR, HttpStatus.OK);
       }
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
@@ -761,6 +815,7 @@ export class UserService {
 
       return ret;
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
@@ -806,6 +861,7 @@ export class UserService {
         throw new ApiException('操作异常！', ApiErrorCode.ERROR, HttpStatus.OK);
       }
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
@@ -825,6 +881,7 @@ export class UserService {
 
       return ret;
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
@@ -870,6 +927,7 @@ export class UserService {
   //       throw new ApiException('操作异常！', ApiErrorCode.ERROR, HttpStatus.OK);
   //     }
   //   } catch (e) {
+  //     this.logger.error('系统异常：', e);
   //     throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
   //   }
   // }
@@ -889,6 +947,7 @@ export class UserService {
   //
   //     return ret;
   //   } catch (e) {
+  //     this.logger.error('系统异常：', e);
   //     throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
   //   }
   // }
@@ -900,6 +959,7 @@ export class UserService {
     try {
       return await this.permissionService.selectPByUserId(baseFindByIdDto);
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
@@ -911,7 +971,7 @@ export class UserService {
     try {
       const userRet = await this.selectById(baseFindByIdDto);
 
-      if (userRet?.userType === 2) {
+      if (userRet?.id === '925a409c-ae39-4374-89b8-bd1297ef300e' && userRet?.userType === 2) {
         const [permissionRet, roleRet, groupRet] = await Promise.all([
           this.permissionService.selectAll({}),
           this.roleService.selectRByUserId(baseFindByIdDto),
@@ -941,6 +1001,7 @@ export class UserService {
         return res;
       }
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
