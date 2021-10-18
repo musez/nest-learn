@@ -130,10 +130,9 @@ export class RoleService {
 
       for (const v of ret[0]) {
         if (v?.rolePermissions?.length > 0) {
-          const ids = v.rolePermissions.map(v => v.id);
-
-          const rolePermissionRet = await this.rolePermissionService.selectByIds(ids);
-          v['permissions'] = rolePermissionRet.filter(v => v.permission).map((v) => v.permission);
+          const ids = v.rolePermissions.map(v => v.permissionId);
+          const permissionRet = await this.permissionService.selectByIds(ids);
+          v['permissions'] = permissionRet;
         } else {
           v['permissions'] = [];
         }
@@ -168,11 +167,9 @@ export class RoleService {
         throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
       }
       if (ret?.rolePermissions?.length > 0) {
-        const ids = ret.rolePermissions.map((v) => v.id);
-
-        const rolePermissionRet = await this.rolePermissionService.selectByIds(ids);
-        const permissions = rolePermissionRet.filter(v => v.permission).map((v) => v.permission);
-        ret['permissions'] = Utils.uniqBy(permissions, 'id');
+        const ids = ret.rolePermissions.map(v => v.permissionId);
+        const permissionRet = await this.permissionService.selectByIds(ids);
+        ret['permissions'] = permissionRet;
       } else {
         ret['permissions'] = [];
       }

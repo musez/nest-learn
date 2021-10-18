@@ -134,31 +134,20 @@ export class GroupService {
 
       for (const v of ret[0]) {
         if (v?.userGroups?.length > 0) {
-          const ids = v.userGroups.map(v => v.id);
-
-          const userGroupRet = await this.userGroupService.selectByIds(ids);
-          v['users'] = userGroupRet.filter(v => v.user).map((v) => v.user);
+          const ids = v.userGroups.map(v => v.userId);
+          const userRet = await this.userService.selectByIds(ids);
+          v['users'] = userRet;
         } else {
+          ret['userGroups'] = [];
           v['users'] = [];
         }
 
         if (v?.groupRoles?.length > 0) {
-          const ids = v.groupRoles.map(v => v.id);
-
-          const groupRoleRet = await this.groupRoleService.selectByIds(ids);
-          v['roles'] = groupRoleRet.filter(v => v.role).map((v) => v.role);
+          const ids = v.groupRoles.map(v => v.roleId);
+          const roleRet = await this.roleService.selectByIds(ids);
+          v['roles'] = roleRet;
         } else {
-          v['roles'] = [];
-        }
-      }
-
-      for (const v of ret[0]) {
-        if (v?.groupRoles?.length > 0) {
-          const ids = v.groupRoles.map(v => v.id);
-
-          const groupRoleRet = await this.groupRoleService.selectByIds(ids);
-          v['roles'] = groupRoleRet.filter(v => v.role).map((v) => v.role);
-        } else {
+          v['groupRoles'] = [];
           v['roles'] = [];
         }
       }
@@ -182,7 +171,7 @@ export class GroupService {
     try {
       const { id } = baseFindByIdDto;
       const ret = await this.groupRepository.findOne({
-        relations: ['userGroups','groupRoles'],
+        relations: ['userGroups', 'groupRoles'],
         where: {
           id: id,
         },
@@ -192,34 +181,23 @@ export class GroupService {
       }
 
       if (ret?.userGroups?.length > 0) {
-        const ids = ret.userGroups.map((v) => v.id);
-
-        const userGroupRet = await this.userGroupService.selectByIds(ids);
-        const users = userGroupRet.filter(v => v.user).map((v) => v.user);
-        ret['users'] = users;
+        const ids = ret.userGroups.map((v) => v.userId);
+        const userRet = await this.userService.selectByIds(ids);
+        ret['users'] = userRet;
       } else {
+        ret['userGroups'] = [];
         ret['users'] = [];
       }
 
       if (ret?.groupRoles?.length > 0) {
-        const ids = ret.groupRoles.map((v) => v.id);
-
-        const groupRoleRet = await this.groupRoleService.selectByIds(ids);
-        const roles = groupRoleRet.filter(v => v.role).map((v) => v.role);
-        ret['roles'] = roles;
+        const ids = ret.groupRoles.map((v) => v.roleId);
+        const roleRet = await this.roleService.selectByIds(ids);
+        ret['roles'] = roleRet;
       } else {
+        ret['groupRoles'] = [];
         ret['roles'] = [];
       }
 
-      // if (ret?.groupPermissions?.length > 0) {
-      //   const ids = ret.groupPermissions.map((v) => v.id);
-      //
-      //   const groupPermissionsRet = await this.groupPermissionService.selectByIds(ids);
-      //   const permissions = groupPermissionsRet.filter(v => v.permission).map((v) => v.permission);
-      //   ret['permissions'] = permissions;
-      // } else {
-      //   ret['permissions'] = [];
-      // }
       return ret;
     } catch (e) {
       this.logger.error('系统异常：', e);

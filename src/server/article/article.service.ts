@@ -187,12 +187,11 @@ export class ArticleService {
       for (const item of ret[0]) {
         const { articleDataCats } = item;
         if (articleDataCats?.length > 0) {
-          const ids = articleDataCats.map((v) => v.id);
-          const articleDataCatRel = await this.articleDataCatService.selectByIds(ids);
-
-          const cats = articleDataCatRel.filter(v => v.cat).map((v) => v.cat);
-          item['cats'] = cats;
+          const ids = articleDataCats.map((v) => v.catId);
+          const articleCatRet = await this.articleCatService.selectByIds(ids);
+          item['cats'] = articleCatRet;
         } else {
+          item['articleDataCats'] = [];
           item['cats'] = [];
         }
       }
@@ -269,11 +268,11 @@ export class ArticleService {
         throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
       }
       if (ret?.articleDataCats?.length > 0) {
-        const ids = ret.articleDataCats.map((v) => v.id);
-        const articleDataCatRet = await this.articleDataCatService.selectByIds(ids);
-
-        ret['cats'] = articleDataCatRet.map((v) => v.cat);
+        const ids = ret.articleDataCats.map((v) => v.catId);
+        const articleCatRet = await this.articleCatService.selectByIds(ids);
+        ret['cats'] = articleCatRet;
       } else {
+        ret['articleDataCats'] = [];
         ret['cats'] = [];
       }
 

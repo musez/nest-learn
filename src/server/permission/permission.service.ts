@@ -1,6 +1,6 @@
 import { HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { Utils } from './../../utils/index';
 import { UpdatePermissionDto } from './dto/update-permission.dto';
 import { Permission } from './entities/permission.entity';
@@ -337,6 +337,22 @@ export class PermissionService {
     try {
       const { id } = baseFindByIdDto;
       return await this.permissionRepository.findOne(id);
+    } catch (e) {
+      this.logger.error('系统异常：', e);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+    }
+  }
+
+  /**
+   * 获取详情（批量）
+   */
+  async selectByIds(ids: string[]): Promise<Permission[]> {
+    try {
+      return await this.permissionRepository.find({
+        where: {
+          id: In(ids),
+        },
+      });
     } catch (e) {
       this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);

@@ -455,20 +455,20 @@ export class UserService {
         });
 
         if (userRet?.userGroups?.length > 0) {
-          const ids = userRet.userGroups.map(v => v.id);
-
-          const userGroupRet = await this.userGroupService.selectByIds(ids);
-          v['groups'] = userGroupRet.filter(v => v.group).map((v) => v.group);
+          const ids = userRet.userGroups.map(v => v.groupId);
+          const groupRet = await this.groupService.selectByIds(ids);
+          v['groups'] = groupRet;
         } else {
+          v['userGroups'] = [];
           v['groups'] = [];
         }
 
         if (userRet?.userRoles?.length > 0) {
-          const ids = userRet.userRoles.map(v => v.id);
-
-          const userGroupRet = await this.userRoleService.selectByIds(ids);
-          v['roles'] = userGroupRet.filter(v => v.role).map((v) => v.role);
+          const ids = userRet.userRoles.map(v => v.roleId);
+          const roleRet = await this.roleService.selectByIds(ids);
+          v['roles'] = roleRet;
         } else {
+          v['userRoles'] = [];
           v['roles'] = [];
         }
 
@@ -517,34 +517,22 @@ export class UserService {
       }
 
       if (ret?.userGroups?.length > 0) {
-        const ids = ret.userGroups.map((v) => v.id);
-
-        const userGroupRet = await this.userGroupService.selectByIds(ids);
-        const groups = userGroupRet.filter(v => v.group).map((v) => v.group);
-        ret['groups'] = Utils.uniqBy(groups, 'id');
+        const ids = ret.userGroups.map((v) => v.groupId);
+        const groupRet = await this.groupService.selectByIds(ids);
+        ret['groups'] = groupRet;
       } else {
+        ret['userGroups'] = [];
         ret['groups'] = [];
       }
 
       if (ret?.userRoles?.length > 0) {
-        const ids = ret.userRoles.map((v) => v.id);
-
-        const userRoleRet = await this.userRoleService.selectByIds(ids);
-        const roles = userRoleRet.filter(v => v.role).map((v) => v.role);
-        ret['roles'] = roles;
+        const ids = ret.userRoles.map((v) => v.roleId);
+        const roleRet = await this.roleService.selectByIds(ids);
+        ret['roles'] = roleRet;
       } else {
+        ret['userRoles'] = [];
         ret['roles'] = [];
       }
-
-      // if (ret?.userPermissions?.length > 0) {
-      //   const ids = ret.userPermissions.map((v) => v.id);
-      //
-      //   const userPermissionRet = await this.userPermissionService.selectByIds(ids);
-      //   const permissions = userPermissionRet.filter(v => v.permission).map((v) => v.permission);
-      //   ret['permissions'] = permissions;
-      // } else {
-      //   ret['permissions'] = [];
-      // }
 
       return ret;
     } catch (e) {

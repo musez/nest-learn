@@ -1,6 +1,6 @@
 import { HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { CreateArticleCatDto } from './dto/create-article-cat.dto';
 import { UpdateArticleCatDto } from './dto/update-article-cat.dto';
 import { ArticleCat } from './entities/article-cat.entity';
@@ -307,6 +307,23 @@ export class ArticleCatService {
       const { id } = baseFindByIdDto;
       return await this.articleCatRepository.findOne(id);
     } catch (e) {
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+    }
+  }
+
+  /**
+   * 获取详情（主键 ids）
+   */
+  async selectByIds(ids: string[]): Promise<ArticleCat[]> {
+    try {
+      const ret = await this.articleCatRepository.find({
+        where: {
+          id: In(ids),
+        },
+      });
+      return ret;
+    } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
