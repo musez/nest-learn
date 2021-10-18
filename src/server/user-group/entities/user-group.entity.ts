@@ -2,7 +2,7 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   JoinColumn,
-  ManyToOne,
+  ManyToOne, Column,
 } from 'typeorm';
 import { User } from '../../user/entities/user.entity';
 import { Group } from '../../group/entities/group.entity';
@@ -21,10 +21,18 @@ export class UserGroup {
   id: string;
 
   @ManyToOne((type) => User, (user) => user.userGroups)
-  @JoinColumn({ name: 'userId' })
+  // @JoinColumn({ name: 'userId' })
+  @JoinColumn()
   user: User;
 
+  @Column('uuid', { comment: '用户 id', nullable: true })
+  userId: string;
+
   @ManyToOne((type) => Group, (group) => group.userGroups)
-  @JoinColumn({ name: 'groupId' })
+  // @JoinColumn({ name: 'groupId' })
+  @JoinColumn()
   group: Group;
+
+  @Column('uuid', { comment: '用户组 id', nullable: true })
+  groupId: string;
 }

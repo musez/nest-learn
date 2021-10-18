@@ -307,7 +307,7 @@ export class UserService {
 
       const ret = await this.userRepository
         .createQueryBuilder('user')
-        .innerJoinAndSelect('user.userinfo', 'userinfo')
+        .leftJoinAndSelect('user.userinfo', 'userinfo')
         .leftJoinAndSelect(Area, 'p', 'p.id = userinfo.provinceId')
         .leftJoinAndSelect(Area, 'c', 'c.id = userinfo.cityId')
         .leftJoinAndSelect(Area, 'd', 'd.id = userinfo.districtId')
@@ -402,7 +402,7 @@ export class UserService {
 
       const queryBuilder = this.userRepository
         .createQueryBuilder('user')
-        .innerJoin('user.userinfo', 'userinfo')
+        .leftJoinAndSelect('user.userinfo', 'userinfo')
         .leftJoinAndSelect(Area, 'p', 'p.id = userinfo.provinceId')
         .leftJoinAndSelect(Area, 'c', 'c.id = userinfo.cityId')
         .leftJoinAndSelect(Area, 'd', 'd.id = userinfo.districtId')

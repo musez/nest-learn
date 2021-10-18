@@ -1,4 +1,4 @@
-import { Entity, Column, ManyToOne } from 'typeorm';
+import { Entity, Column, ManyToOne, JoinColumn } from 'typeorm';
 import { BaseEntity } from '../../base.entity';
 import { Dict } from '../../dict/entities/dict.entity';
 import { DefaultType } from '../../../constants/dicts.enum';
@@ -32,5 +32,9 @@ export class DictItem extends BaseEntity {
   sort: number;
 
   @ManyToOne((type) => Dict, (dict) => dict.dictItems)
+  @JoinColumn()
   dict: Dict;
+
+  @Column('uuid', { comment: '字典 id', nullable: true })
+  dictId: string;
 }

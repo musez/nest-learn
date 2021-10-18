@@ -37,4 +37,7 @@ export class Userinfo {
   // @OneToOne(() => User)
   @JoinColumn()
   user: User;
+
+  @Column('uuid', { comment: '用户 id', nullable: true })
+  userId: string;
 }
