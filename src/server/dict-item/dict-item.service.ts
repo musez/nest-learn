@@ -33,6 +33,7 @@ export class DictItemService {
       }
       return await this.dictItemRepository.save(dictItem);
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
@@ -55,6 +56,7 @@ export class DictItemService {
 
       return await this.dictItemRepository.save(dictItems);
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
@@ -89,6 +91,7 @@ export class DictItemService {
         })
         .getMany();
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
@@ -132,6 +135,7 @@ export class DictItemService {
         limit: limit,
       };
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
@@ -162,6 +166,7 @@ export class DictItemService {
         })
         .getMany();
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
@@ -178,6 +183,7 @@ export class DictItemService {
         .where('dictId = :id', { id: id })
         .execute();
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }

@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Query, Body, UseGuards, Res, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Query, Body, UseGuards, Res, HttpStatus, Logger } from '@nestjs/common';
 import { ApiTags, ApiQuery, ApiBasicAuth, ApiOperation } from '@nestjs/swagger';
 import { ArticleCatService } from './article-cat.service';
 import { CreateArticleCatDto } from './dto/create-article-cat.dto';
@@ -22,6 +22,8 @@ import { ApiErrorCode } from '../../constants/api-error-code.enum';
 @ApiBasicAuth('token')
 @UseGuards(JwtAuthGuard, AuthGuard)
 export class ArticleCatController {
+  private readonly logger = new Logger(ArticleCatController.name);
+
   constructor(
     private readonly articleCatService: ArticleCatService,
     private readonly excelService: ExcelService,
@@ -101,6 +103,7 @@ export class ArticleCatController {
       // res.setTimeout(30 * 60 * 1000); // 防止网络原因造成超时。
       res.end(result, 'binary');
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
@@ -133,7 +136,8 @@ export class ArticleCatController {
 
       return await this.articleCatService.deleteById(baseFindByIdDto, curUser);
     } catch (e) {
-       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+      this.logger.error('系统异常：', e);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 

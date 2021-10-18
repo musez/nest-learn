@@ -5,7 +5,7 @@ import {
   Query,
   Body,
   UseGuards,
-  Res, HttpStatus,
+  Res, HttpStatus, Logger,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -36,6 +36,8 @@ import { BindGroupUserDto } from './dto/bind-group-user.dto';
 @ApiBasicAuth('token')
 @UseGuards(JwtAuthGuard, AuthGuard)
 export class GroupController {
+  private readonly logger = new Logger(GroupController.name);
+
   constructor(
     private readonly groupService: GroupService,
     private readonly excelService: ExcelService,
@@ -105,6 +107,7 @@ export class GroupController {
       // res.setTimeout(30 * 60 * 1000); // 防止网络原因造成超时。
       res.end(result, 'binary');
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
@@ -123,6 +126,7 @@ export class GroupController {
 
       return this.groupService.update(updateGroupDto, curUser);
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
@@ -148,6 +152,7 @@ export class GroupController {
 
       return await this.groupService.deleteById(baseFindByIdDto, curUser);
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
@@ -172,6 +177,7 @@ export class GroupController {
       }
       return await this.groupService.bindUsers(bindGroupUserDto);
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
@@ -189,6 +195,7 @@ export class GroupController {
       }
       return await this.groupService.selectUsersById(baseFindByIdDto);
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
@@ -207,6 +214,7 @@ export class GroupController {
 
       return await this.groupService.bindRoles(bindGroupRoleDto);
     } catch (e) {
+      this.logger.error('系统异常：', e);
        throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
@@ -225,6 +233,7 @@ export class GroupController {
 
       return await this.groupService.selectRolesById(baseFindByIdDto);
     } catch (e) {
+      this.logger.error('系统异常：', e);
        throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
@@ -242,6 +251,7 @@ export class GroupController {
   //     }
   //     return await this.groupService.bindPermissions(bindGroupPermissionDto);
   //   } catch (e) {
+  //     this.logger.error('系统异常：', e);
   //      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
   //   }
   // }
@@ -260,6 +270,7 @@ export class GroupController {
   //
   //     return await this.groupService.selectPermissionsById(baseFindByIdDto);
   //   } catch (e) {
+  //     this.logger.error('系统异常：', e);
   //      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
   //   }
   // }

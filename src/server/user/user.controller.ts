@@ -2,7 +2,7 @@ import {
   Body,
   Controller,
   Get,
-  HttpStatus,
+  HttpStatus, Logger,
   Post,
   Query,
   Res,
@@ -38,6 +38,8 @@ import { ImportLogService } from '../import-log/import-log.service';
 @ApiBasicAuth('token')
 @UseGuards(JwtAuthGuard, AuthGuard)
 export class UserController {
+  private readonly logger = new Logger(UserController.name);
+
   constructor(
     private readonly userService: UserService,
     private readonly excelService: ExcelService,
@@ -58,6 +60,7 @@ export class UserController {
 
       return this.userService.insert(createUserDto, curUser);
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
@@ -131,6 +134,7 @@ export class UserController {
       // res.setTimeout(30 * 60 * 1000); // 防止网络原因造成超时。
       res.end(result, 'binary');
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
@@ -195,6 +199,7 @@ export class UserController {
         throw new ApiException(`操作异常！`, ApiErrorCode.ERROR, HttpStatus.OK);
       }
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
@@ -213,6 +218,7 @@ export class UserController {
 
       return this.userService.update(updateUserDto, curUser);
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
@@ -238,6 +244,7 @@ export class UserController {
 
       return await this.userService.deleteById(baseFindByIdDto, curUser);
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
@@ -262,6 +269,7 @@ export class UserController {
       }
       return await this.userService.bindGroups(bindUserGroupDto);
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
@@ -279,6 +287,7 @@ export class UserController {
       }
       return await this.userService.selectGroupsById(baseFindByIdDto);
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }

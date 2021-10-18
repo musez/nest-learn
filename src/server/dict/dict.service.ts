@@ -47,6 +47,7 @@ export class DictService {
       }
       return await this.dictRepository.save(dict);
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
@@ -90,6 +91,7 @@ export class DictService {
         })
         .getMany();
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
@@ -162,6 +164,7 @@ export class DictService {
         },
       });
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
@@ -179,6 +182,7 @@ export class DictService {
         },
       });
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
@@ -195,6 +199,7 @@ export class DictService {
         return true;
       }
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
@@ -222,6 +227,7 @@ export class DictService {
 
       return await this.dictRepository.save(dict);
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
@@ -249,6 +255,7 @@ export class DictService {
 
       return ret;
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
@@ -276,6 +283,7 @@ export class DictService {
 
       return await this.dictRepository.save(dict);
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
@@ -294,6 +302,7 @@ export class DictService {
         .where('id = :id', { id: id })
         .execute();
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
@@ -315,6 +324,7 @@ export class DictService {
         .where('id IN (:ids)', { ids: ids })
         .execute();
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }

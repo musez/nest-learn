@@ -5,7 +5,7 @@ import {
   Body,
   Query,
   UseGuards,
-  Res, HttpStatus,
+  Res, HttpStatus, Logger,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -24,11 +24,14 @@ import { Auth } from '../../common/decorators/auth.decorator';
 import { AuthGuard } from '../../common/guards/auth.guard';
 import { ApiException } from '../../common/exception/api-exception';
 import { ApiErrorCode } from '../../constants/api-error-code.enum';
+import { DictController } from '../dict/dict.controller';
 
 @Controller('file')
 @ApiTags('文件')
 @ApiBasicAuth('token')
 export class FileController {
+  private readonly logger = new Logger(FileController.name);
+
   constructor(
     private readonly fileService: FileService,
   ) {
@@ -66,6 +69,7 @@ export class FileController {
       res.write(content, 'binary'); // 格式必须为 binary，否则会出错
       res.end();
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
@@ -94,6 +98,7 @@ export class FileController {
 
       return await this.fileService.deleteById(baseFindByIdDto, curUser);
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
@@ -106,6 +111,7 @@ export class FileController {
     try {
       return await this.fileService.deleteByIds(baseFindByIdsDto, curUser);
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }

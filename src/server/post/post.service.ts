@@ -36,6 +36,7 @@ export class PostService {
       }
       return await this.postRepository.save(post);
     } catch (e) {
+      this.logger.error('系统异常：', e);
        throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
@@ -74,6 +75,7 @@ export class PostService {
         })
         .getMany();
     } catch (e) {
+      this.logger.error('系统异常：', e);
        throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
@@ -125,6 +127,7 @@ export class PostService {
         limit: limit,
       };
     } catch (e) {
+      this.logger.error('系统异常：', e);
        throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }

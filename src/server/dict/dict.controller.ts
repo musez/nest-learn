@@ -4,7 +4,7 @@ import {
   Post,
   Body,
   Query,
-  UseGuards, HttpStatus,
+  UseGuards, HttpStatus, Logger,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -37,6 +37,8 @@ import { Utils } from '../../utils';
 @ApiBasicAuth('token')
 @UseGuards(JwtAuthGuard, AuthGuard)
 export class DictController {
+  private readonly logger = new Logger(DictController.name);
+
   constructor(
     private readonly dictService: DictService,
     private readonly dictItemService: DictItemService,
@@ -135,6 +137,7 @@ export class DictController {
 
       return this.dictService.update(updateDictDto, curUser);
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
@@ -160,6 +163,7 @@ export class DictController {
 
       return await this.dictService.deleteById(baseFindByIdDto, curUser);
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }

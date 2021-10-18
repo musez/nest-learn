@@ -24,6 +24,7 @@ export class GroupRoleService {
     try {
       return await this.groupRoleRepository.save(groupRole);
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
@@ -40,6 +41,7 @@ export class GroupRoleService {
         },
       });
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
@@ -56,6 +58,7 @@ export class GroupRoleService {
         .where('groupId = :id', { id: id })
         .execute();
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }

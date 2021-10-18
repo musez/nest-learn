@@ -2,7 +2,7 @@ import {
   Controller,
   Get,
   Post,
-  Body, UseGuards, HttpStatus,
+  Body, UseGuards, HttpStatus, Logger,
 } from '@nestjs/common';
 import { CommentService } from './comment.service';
 import { CreateCommentDto } from './dto/create-comment.dto';
@@ -28,6 +28,8 @@ import { ApiErrorCode } from '../../constants/api-error-code.enum';
 @ApiBasicAuth('token')
 @UseGuards(JwtAuthGuard, AuthGuard)
 export class CommentController {
+  private readonly logger = new Logger(CommentController.name);
+
   constructor(
     private readonly commentService: CommentService,
     private readonly excelService: ExcelService,
@@ -96,6 +98,7 @@ export class CommentController {
       // res.setTimeout(30 * 60 * 1000); // 防止网络原因造成超时。
       res.end(result, 'binary');
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
@@ -113,6 +116,7 @@ export class CommentController {
 
       return this.commentService.update(updateCommentDto, curUser);
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
@@ -132,6 +136,7 @@ export class CommentController {
       const { id } = baseFindByIdDto;
       return this.commentService.updateStatus({ ids: id, status: 1 }, curUser);
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }

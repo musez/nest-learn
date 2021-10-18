@@ -24,7 +24,8 @@ export class UserinfoService {
     try {
       return await this.userinfoRepository.save(createUserinfoDto);
     } catch (e) {
-       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+      this.logger.error('系统异常：', e);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 

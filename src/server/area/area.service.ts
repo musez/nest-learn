@@ -43,6 +43,7 @@ export class AreaService {
         throw new ApiException('保存异常！', ApiErrorCode.ERROR, HttpStatus.OK);
       }
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
