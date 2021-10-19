@@ -68,7 +68,6 @@ export class RoleService {
         }
         queryConditionList.push('status IN (:status)');
       }
-      queryConditionList.push('deleteStatus = 0');
       const queryCondition = queryConditionList.join(' AND ');
 
       return await this.roleRepository
@@ -110,7 +109,6 @@ export class RoleService {
         }
         queryConditionList.push('role.status IN (:status)');
       }
-      queryConditionList.push('role.deleteStatus = 0');
       const queryCondition = queryConditionList.join(' AND ');
 
       const ret = await this.roleRepository
@@ -253,7 +251,7 @@ export class RoleService {
         .innerJoinAndSelect(UserGroup, 'ug', 'g.id = ug.groupId')
         .innerJoinAndSelect(User, 'u', 'u.id = ug.userId')
         .where(
-          'u.id = :id AND u.deleteStatus = 0 AND g.deleteStatus = 0 AND r.deleteStatus = 0',
+          'u.id = :id',
           {
             id: id,
           },
@@ -265,7 +263,7 @@ export class RoleService {
         .createQueryBuilder('r')
         .innerJoinAndSelect(UserRole, 'ur', 'r.id = ur.roleId')
         .innerJoinAndSelect(User, 'u', 'u.id = ur.userId')
-        .where('u.id = :id AND u.deleteStatus = 0 AND r.deleteStatus = 0', {
+        .where('u.id = :id', {
           id: id,
         })
         .getMany();
@@ -291,7 +289,7 @@ export class RoleService {
   //       .innerJoinAndSelect(UserGroup, 'ug', 'g.id = ug.groupId')
   //       .innerJoinAndSelect(User, 'u', 'u.id = ug.userId')
   //       .where(
-  //         'u.id = :id AND u.deleteStatus = 0 AND g.deleteStatus = 0 AND r.deleteStatus = 0',
+  //         'u.id = :id',
   //         {
   //           id: id,
   //         },
@@ -362,8 +360,8 @@ export class RoleService {
 
       await this.roleRepository
         .createQueryBuilder()
-        .update(Role)
-        .set({ deleteStatus: 1, deleteBy: curUser ? curUser!.id : null, deleteTime: Utils.now() })
+        .delete()
+        .from(Role)
         .where('id = :id', { id: id })
         .execute();
     } catch (e) {
@@ -384,8 +382,8 @@ export class RoleService {
       }
       await this.roleRepository
         .createQueryBuilder()
-        .update(Role)
-        .set({ deleteStatus: 1, deleteBy: curUser ? curUser!.id : null, deleteTime: Utils.now() })
+        .delete()
+        .from(Role)
         .where('id IN (:ids)', { ids: ids })
         .execute();
     } catch (e) {

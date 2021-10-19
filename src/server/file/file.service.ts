@@ -118,7 +118,6 @@ export class FileService {
         }
         queryConditionList.push('status IN (:status)');
       }
-      queryConditionList.push('deleteStatus = 0');
       const queryCondition = queryConditionList.join(' AND ');
 
       const res = await this.fileRepository
@@ -181,8 +180,7 @@ export class FileService {
   async selectByExtId(extId: string): Promise<CreateFileDto[]> {
     try {
       return await this.fileRepository.find({
-        extId: extId,
-        deleteStatus: 0,
+        extId: extId
       });
     } catch (e) {
        throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
@@ -198,8 +196,8 @@ export class FileService {
 
       await this.fileRepository
         .createQueryBuilder()
-        .update(File)
-        .set({ deleteStatus: 1, deleteBy: curUser ? curUser!.id : null, deleteTime: Utils.now() })
+        .delete()
+        .from(File)
         .where('id = :id', { id: id })
         .execute();
     } catch (e) {
@@ -219,8 +217,8 @@ export class FileService {
       }
       await this.fileRepository
         .createQueryBuilder()
-        .update(File)
-        .set({ deleteStatus: 1, deleteBy: curUser ? curUser!.id : null, deleteTime: Utils.now() })
+        .delete()
+        .from(File)
         .where('id IN (:ids)', { ids: ids })
         .execute();
     } catch (e) {

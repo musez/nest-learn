@@ -57,7 +57,6 @@ export class OrgService {
         }
         queryConditionList.push('status IN (:status)');
       }
-      queryConditionList.push('deleteStatus = 0');
       const queryCondition = queryConditionList.join(' AND ');
 
       const res = await this.orgRepository
@@ -122,7 +121,6 @@ export class OrgService {
         }
         queryConditionList.push('status IN (:status)');
       }
-      queryConditionList.push('deleteStatus = 0');
       const queryCondition = queryConditionList.join(' AND ');
 
       const res = await this.orgRepository
@@ -182,7 +180,6 @@ export class OrgService {
         }
         queryConditionList.push('status IN (:status)');
       }
-      queryConditionList.push('deleteStatus = 0');
       const queryCondition = queryConditionList.join(' AND ');
 
       const res = await this.orgRepository
@@ -223,7 +220,6 @@ export class OrgService {
       const childList = await this.orgRepository.find({
         where: {
           parentId: id,
-          deleteStatus: 0,
         },
       });
 
@@ -248,9 +244,7 @@ export class OrgService {
       const { parentId } = baseFindByPIdDto;
 
       if (Utils.isBlank(parentId)) {
-        const res = await this.orgRepository.find({
-          deleteStatus: 0,
-        });
+        const res = await this.orgRepository.find();
         return Utils.construct(res, {
           id: 'id',
           pid: 'parentId',
@@ -276,7 +270,6 @@ export class OrgService {
       const childList = await this.orgRepository.find({
         where: {
           parentId: id,
-          deleteStatus: 0,
         },
       });
 
@@ -336,7 +329,7 @@ export class OrgService {
   async isExistChildrenById(baseFindByIdDto: BaseFindByIdDto): Promise<boolean> {
     try {
       const { id } = baseFindByIdDto;
-      const ret = await this.orgRepository.findOne({ parentId: id, deleteStatus: 0 });
+      const ret = await this.orgRepository.findOne({ parentId: id });
       if (ret) return true;
       else return false;
     } catch (e) {
@@ -407,8 +400,8 @@ export class OrgService {
 
       await this.orgRepository
         .createQueryBuilder()
-        .update(Org)
-        .set({ deleteStatus: 1, deleteBy: curUser ? curUser!.id : null, deleteTime: Utils.now() })
+        .delete()
+        .from(Org)
         .where('id = :id', { id: id })
         .execute();
     } catch (e) {
@@ -437,8 +430,8 @@ export class OrgService {
 
       await this.orgRepository
         .createQueryBuilder()
-        .update(Org)
-        .set({ deleteStatus: 1, deleteBy: curUser ? curUser!.id : null, deleteTime: Utils.now() })
+        .delete()
+        .from(Org)
         .where('id IN (:ids)', { ids: ids })
         .execute();
     } catch (e) {

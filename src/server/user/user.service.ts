@@ -59,7 +59,7 @@ export class UserService {
         .createQueryBuilder()
         .select('User')
         .addSelect('User.userPwd')
-        .where('User.userName = :userName AND User.deleteStatus = 0', {
+        .where('User.userName = :userName', {
           userName: userName,
         })
         .getOne();
@@ -80,7 +80,6 @@ export class UserService {
       const findOneRet = await this.userRepository.findOne({
         where: {
           id: id,
-          deleteStatus: 0,
         },
         select: ['id'],
       });
@@ -302,7 +301,6 @@ export class UserService {
         }
         queryConditionList.push('user.status IN (:status)');
       }
-      queryConditionList.push('deleteStatus = 0');
       const queryCondition = queryConditionList.join(' AND ');
 
       const ret = await this.userRepository
@@ -397,7 +395,6 @@ export class UserService {
         }
         queryConditionList.push('user.status IN (:status)');
       }
-      queryConditionList.push('deleteStatus = 0');
       const queryCondition = queryConditionList.join(' AND ');
 
       const queryBuilder = this.userRepository
@@ -696,8 +693,8 @@ export class UserService {
 
       const ret = await this.userRepository
         .createQueryBuilder()
-        .update(User)
-        .set({ deleteStatus: 1, deleteBy: curUser ? curUser!.id : null, deleteTime: Utils.now() })
+        .delete()
+        .from(User)
         .where('id = :id', { id: id })
         .execute();
 
@@ -722,10 +719,13 @@ export class UserService {
       if (!Utils.isArray(ids)) {
         ids = Utils.split(ids.toString());
       }
+
+      await this.userinfoService.deleteByUserIds({ ids });
+
       const ret = await this.userRepository
         .createQueryBuilder()
-        .update(User)
-        .set({ deleteStatus: 1, deleteBy: curUser ? curUser!.id : null, deleteTime: Utils.now() })
+        .delete()
+        .from(User)
         .where('id IN (:ids)', { ids: ids })
         .execute();
 

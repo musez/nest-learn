@@ -75,7 +75,6 @@ export class DictItemService {
       if (!Utils.isBlank(dictId)) {
         queryConditionList.push('dictId = :dictId');
       }
-      queryConditionList.push('deleteStatus = 0');
       const queryCondition = queryConditionList.join(' AND ');
 
       return await this.dictItemRepository
@@ -111,7 +110,6 @@ export class DictItemService {
       if (!Utils.isBlank(itemText)) {
         queryConditionList.push('itemText LIKE :itemText');
       }
-      queryConditionList.push('deleteStatus = 0');
       const queryCondition = queryConditionList.join(' AND ');
 
       const ret = await this.dictItemRepository
@@ -151,7 +149,6 @@ export class DictItemService {
       if (!Utils.isBlank(id)) {
         queryConditionList.push('dictId = :id');
       }
-      queryConditionList.push('deleteStatus = 0');
       const queryCondition = queryConditionList.join(' AND ');
 
       return await this.dictItemRepository
@@ -178,8 +175,8 @@ export class DictItemService {
     try {
       await this.dictItemRepository
         .createQueryBuilder()
-        .update(DictItem)
-        .set({ deleteStatus: 1, deleteBy: curUser ? curUser!.id : null, deleteTime: Utils.now() })
+        .delete()
+        .from(DictItem)
         .where('dictId = :id', { id: id })
         .execute();
     } catch (e) {

@@ -72,8 +72,8 @@ export class PermissionService {
         }
         queryConditionList.push('status IN (:status)');
       }
-      queryConditionList.push('deleteStatus = 0');
       const queryCondition = queryConditionList.join(' AND ');
+
       const ret = await this.permissionRepository
         .createQueryBuilder('p')
         .select(['p.*'])
@@ -148,7 +148,6 @@ export class PermissionService {
         }
         queryConditionList.push('status IN (:status)');
       }
-      queryConditionList.push('deleteStatus = 0');
       const queryCondition = queryConditionList.join(' AND ');
 
       const ret = await this.permissionRepository
@@ -212,7 +211,6 @@ export class PermissionService {
         }
         queryConditionList.push('status IN (:status)');
       }
-      queryConditionList.push('deleteStatus = 0');
       const queryCondition = queryConditionList.join(' AND ');
 
       const ret = await this.permissionRepository
@@ -253,7 +251,6 @@ export class PermissionService {
       const childList = await this.permissionRepository.find({
         where: {
           parentId: id,
-          deleteStatus: 0,
         },
       });
 
@@ -278,9 +275,7 @@ export class PermissionService {
       const { parentId } = baseFindByPIdDto;
 
       if (Utils.isBlank(parentId)) {
-        const ret = await this.permissionRepository.find({
-          deleteStatus: 0,
-        });
+        const ret = await this.permissionRepository.find();
         return Utils.construct(ret, {
           id: 'id',
           pid: 'parentId',
@@ -306,7 +301,6 @@ export class PermissionService {
       const childList = await this.permissionRepository.find({
         where: {
           parentId: id,
-          deleteStatus: 0,
         },
       });
 
@@ -375,7 +369,7 @@ export class PermissionService {
         .innerJoinAndSelect(UserGroup, 'ug', 'g.id = ug.groupId')
         .innerJoinAndSelect(User, 'u', 'u.id = ug.userId')
         .where(
-          'u.id = :id AND u.deleteStatus = 0 AND g.deleteStatus = 0 AND r.deleteStatus = 0 AND p.deleteStatus = 0 AND u.status = 1 AND g.status = 1  AND r.status = 1 AND p.status = 1',
+          'u.id = :id AND u.status = 1 AND g.status = 1  AND r.status = 1 AND p.status = 1',
           {
             id: id,
           },
@@ -390,7 +384,7 @@ export class PermissionService {
         .innerJoinAndSelect(UserRole, 'ur', 'r.id = ur.roleId')
         .innerJoinAndSelect(User, 'u', 'u.id = ur.userId')
         .where(
-          'u.id = :id AND u.deleteStatus = 0 AND r.deleteStatus = 0 AND p.deleteStatus = 0 AND u.status = 1 AND r.status = 1 AND p.status = 1',
+          'u.id = :id AND u.status = 1 AND r.status = 1 AND p.status = 1',
           {
             id: id,
           },
@@ -405,7 +399,7 @@ export class PermissionService {
       //   .innerJoinAndSelect(UserGroup, 'ug', 'g.id = ug.groupId')
       //   .innerJoinAndSelect(User, 'u', 'u.id = ug.userId')
       //   .where(
-      //     'u.id = :id AND u.deleteStatus = 0 AND g.deleteStatus = 0 AND p.deleteStatus = 0 AND u.status = 1 AND g.status = 1 AND p.status = 1',
+      //     'u.id = :id AND u.status = 1 AND g.status = 1 AND p.status = 1',
       //     {
       //       id: id,
       //     },
@@ -418,7 +412,7 @@ export class PermissionService {
       //   .innerJoinAndSelect(UserPermission, 'up', 'p.id = up.permissionId')
       //   .innerJoinAndSelect(User, 'u', 'u.id = up.userId')
       //   .where(
-      //     'u.id = :id AND u.deleteStatus = 0 AND p.deleteStatus = 0 AND u.status = 1 AND p.status = 1',
+      //     'u.id = :id AND u.status = 1 AND p.status = 1',
       //     {
       //       id: id,
       //     },
@@ -453,7 +447,7 @@ export class PermissionService {
   //       .innerJoinAndSelect(UserGroup, 'ug', 'g.id = ug.groupId')
   //       .innerJoinAndSelect(User, 'u', 'u.id = ug.userId')
   //       .where(
-  //         'u.id = :id AND u.deleteStatus = 0 AND g.deleteStatus = 0 AND r.deleteStatus = 0 AND p.deleteStatus = 0 AND u.status = 1 AND g.status = 1  AND r.status = 1 AND p.status = 1',
+  //         'u.id = :id AND u.status = 1 AND g.status = 1  AND r.status = 1 AND p.status = 1',
   //         {
   //           id: id,
   //         },
@@ -490,7 +484,7 @@ export class PermissionService {
   async isExistChildrenById(baseFindByIdDto: BaseFindByIdDto): Promise<boolean> {
     try {
       const { id } = baseFindByIdDto;
-      const ret = await this.permissionRepository.findOne({ parentId: id, deleteStatus: 0 });
+      const ret = await this.permissionRepository.findOne({ parentId: id });
       if (ret) return true;
       else return false;
     } catch (e) {
@@ -560,8 +554,8 @@ export class PermissionService {
 
       await this.permissionRepository
         .createQueryBuilder()
-        .update(Permission)
-        .set({ deleteStatus: 1, deleteBy: curUser ? curUser!.id : null, deleteTime: Utils.now() })
+        .delete()
+        .from(Permission)
         .where('id = :id', { id: id })
         .execute();
     } catch (e) {
@@ -590,8 +584,8 @@ export class PermissionService {
 
       await this.permissionRepository
         .createQueryBuilder()
-        .update(Permission)
-        .set({ deleteStatus: 1, deleteBy: curUser ? curUser!.id : null, deleteTime: Utils.now() })
+        .delete()
+        .from(Permission)
         .where('id IN (:ids)', { ids: ids })
         .execute();
     } catch (e) {

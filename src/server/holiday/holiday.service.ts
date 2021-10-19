@@ -97,7 +97,6 @@ export class HolidayService {
         }
         queryConditionList.push('status IN (:status)');
       }
-      queryConditionList.push('deleteStatus = 0');
       const queryCondition = queryConditionList.join(' AND ');
 
       return await this.holidayRepository
@@ -152,7 +151,6 @@ export class HolidayService {
         }
         queryConditionList.push('status IN (:status)');
       }
-      queryConditionList.push('deleteStatus = 0');
       const queryCondition = queryConditionList.join(' AND ');
 
       const ret = await this.holidayRepository
@@ -224,8 +222,6 @@ export class HolidayService {
       if (dayList.length > 0) {
         queryConditionList.push('date IN (:date)');
       }
-
-      queryConditionList.push('deleteStatus = 0');
       const queryCondition = queryConditionList.join(' AND ');
 
       let dayListStr = dayList.map((v) => {
@@ -325,8 +321,8 @@ export class HolidayService {
 
       await this.holidayRepository
         .createQueryBuilder()
-        .update(Holiday)
-        .set({ deleteStatus: 1, deleteBy: curUser ? curUser!.id : null, deleteTime: Utils.now() })
+        .delete()
+        .from(Holiday)
         .where('id = :id', { id: id })
         .execute();
     } catch (e) {
@@ -346,8 +342,8 @@ export class HolidayService {
       }
       await this.holidayRepository
         .createQueryBuilder()
-        .update(Holiday)
-        .set({ deleteStatus: 1, deleteBy: curUser ? curUser!.id : null, deleteTime: Utils.now() })
+        .delete()
+        .from(Holiday)
         .where('id IN (:ids)', { ids: ids })
         .execute();
     } catch (e) {

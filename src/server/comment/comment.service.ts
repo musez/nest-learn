@@ -8,7 +8,6 @@ import { Utils } from '../../utils';
 import { BaseFindByIdDto, BaseFindByIdsDto, BaseModifyStatusByIdsDto } from '../base.dto';
 import { LimitCommentDto } from './dto/limit-comment.dto';
 import { SearchCommentDto } from './dto/search-comment.dto';
-import { Org } from '../org/entities/org.entity';
 import { User } from '../user/entities/user.entity';
 import { ApiException } from '../../common/exception/api-exception';
 import { ApiErrorCode } from '../../constants/api-error-code.enum';
@@ -59,7 +58,6 @@ export class CommentService {
         }
         queryConditionList.push('comment.status IN (:status)');
       }
-      queryConditionList.push('comment.deleteStatus = 0');
       const queryCondition = queryConditionList.join(' AND ');
 
       return await this.commentRepository
@@ -117,7 +115,6 @@ export class CommentService {
         }
         queryConditionList.push('comment.status IN (:status)');
       }
-      queryConditionList.push('comment.deleteStatus = 0');
       const queryCondition = queryConditionList.join(' AND ');
 
       const queryBuilder = this.commentRepository
@@ -243,8 +240,8 @@ export class CommentService {
 
       await this.commentRepository
         .createQueryBuilder()
-        .update(Org)
-        .set({ deleteStatus: 1, deleteBy: curUser ? curUser!.id : null, deleteTime: Utils.now() })
+        .delete()
+        .from(Comment)
         .where('id = :id', { id: id })
         .execute();
     } catch (e) {
@@ -264,8 +261,8 @@ export class CommentService {
       }
       await this.commentRepository
         .createQueryBuilder()
-        .update(Comment)
-        .set({ deleteStatus: 1, deleteBy: curUser ? curUser!.id : null, deleteTime: Utils.now() })
+        .delete()
+        .from(Comment)
         .where('id IN (:ids)', { ids: ids })
         .execute();
     } catch (e) {

@@ -69,7 +69,6 @@ export class FeedbackService {
         }
         queryConditionList.push('status IN (:status)');
       }
-      queryConditionList.push('deleteStatus = 0');
       const queryCondition = queryConditionList.join(' AND ');
 
       const ret = await this.feedbackRepository
@@ -132,7 +131,6 @@ export class FeedbackService {
         }
         queryConditionList.push('status IN (:status)');
       }
-      queryConditionList.push('deleteStatus = 0');
       const queryCondition = queryConditionList.join(' AND ');
 
       const ret = await this.feedbackRepository
@@ -242,8 +240,8 @@ export class FeedbackService {
 
       const ret = await this.feedbackRepository
         .createQueryBuilder()
-        .update(Feedback)
-        .set({ deleteStatus: 1, deleteBy: curUser ? curUser!.id : null, deleteTime: Utils.now() })
+        .delete()
+        .from(Feedback)
         .where('id = :id', { id: id })
         .execute();
 
@@ -269,8 +267,8 @@ export class FeedbackService {
       }
       const ret = await this.feedbackRepository
         .createQueryBuilder()
-        .update(Feedback)
-        .set({ deleteStatus: 1, deleteBy: curUser ? curUser!.id : null, deleteTime: Utils.now() })
+        .delete()
+        .from(Feedback)
         .where('id IN (:ids)', { ids: ids })
         .execute();
 

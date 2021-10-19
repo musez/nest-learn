@@ -74,7 +74,6 @@ export class DictService {
         }
         queryConditionList.push('dict.status IN (:status)');
       }
-      queryConditionList.push('dict.deleteStatus = 0');
       const queryCondition = queryConditionList.join(' AND ');
 
       return await this.dictRepository
@@ -121,7 +120,6 @@ export class DictService {
         }
         queryConditionList.push('dict.status IN (:status)');
       }
-      queryConditionList.push('dict.deleteStatus = 0');
       const queryCondition = queryConditionList.join(' AND ');
 
       const ret = await this.dictRepository
@@ -297,8 +295,8 @@ export class DictService {
 
       await this.dictRepository
         .createQueryBuilder()
-        .update(Dict)
-        .set({ deleteStatus: 1, deleteBy: curUser ? curUser!.id : null, deleteTime: Utils.now() })
+        .delete()
+        .from(Dict)
         .where('id = :id', { id: id })
         .execute();
     } catch (e) {
@@ -319,8 +317,8 @@ export class DictService {
       }
       await this.dictRepository
         .createQueryBuilder()
-        .update(Dict)
-        .set({ deleteStatus: 1, deleteBy: curUser ? curUser!.id : null, deleteTime: Utils.now() })
+        .delete()
+        .from(Dict)
         .where('id IN (:ids)', { ids: ids })
         .execute();
     } catch (e) {

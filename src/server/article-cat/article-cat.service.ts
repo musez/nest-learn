@@ -62,7 +62,6 @@ export class ArticleCatService {
         }
         queryConditionList.push('status IN (:..status)');
       }
-      queryConditionList.push('deleteStatus = 0');
       const queryCondition = queryConditionList.join(' AND ');
 
       const ret = await this.articleCatRepository
@@ -127,7 +126,6 @@ export class ArticleCatService {
         }
         queryConditionList.push('status IN (:status)');
       }
-      queryConditionList.push('deleteStatus = 0');
       const queryCondition = queryConditionList.join(' AND ');
 
       const ret = await this.articleCatRepository
@@ -186,7 +184,6 @@ export class ArticleCatService {
         }
         queryConditionList.push('status IN (:status)');
       }
-      queryConditionList.push('deleteStatus = 0');
       const queryCondition = queryConditionList.join(' AND ');
 
       const ret = await this.articleCatRepository
@@ -225,7 +222,6 @@ export class ArticleCatService {
       const childList = await this.articleCatRepository.find({
         where: {
           parentId: id,
-          deleteStatus: 0,
         },
       });
 
@@ -249,9 +245,7 @@ export class ArticleCatService {
       const { parentId } = baseFindByPIdDto;
 
       if (Utils.isBlank(parentId)) {
-        const ret = await this.articleCatRepository.find({
-          deleteStatus: 0,
-        });
+        const ret = await this.articleCatRepository.find();
         return Utils.construct(ret, {
           id: 'id',
           pid: 'parentId',
@@ -276,7 +270,6 @@ export class ArticleCatService {
       const childList = await this.articleCatRepository.find({
         where: {
           parentId: id,
-          deleteStatus: 0,
         },
       });
 
@@ -350,7 +343,7 @@ export class ArticleCatService {
   async isExistChildrenById(baseFindByIdDto: BaseFindByIdDto): Promise<boolean> {
     try {
       const { id } = baseFindByIdDto;
-      const ret = await this.articleCatRepository.findOne({ parentId: id, deleteStatus: 0 });
+      const ret = await this.articleCatRepository.findOne({ parentId: id });
       if (ret) return true;
       else return false;
     } catch (e) {
@@ -415,8 +408,8 @@ export class ArticleCatService {
 
       await this.articleCatRepository
         .createQueryBuilder()
-        .update(ArticleCat)
-        .set({ deleteStatus: 1, deleteBy: curUser ? curUser!.id : null, deleteTime: Utils.now() })
+        .delete()
+        .from(ArticleCat)
         .where('id = :id', { id: id })
         .execute();
     } catch (e) {
@@ -443,8 +436,8 @@ export class ArticleCatService {
 
       await this.articleCatRepository
         .createQueryBuilder()
-        .update(ArticleCat)
-        .set({ deleteStatus: 1, deleteBy: curUser ? curUser!.id : null, deleteTime: Utils.now() })
+        .delete()
+        .from(ArticleCat)
         .where('id IN (:ids)', { ids: ids })
         .execute();
     } catch (e) {

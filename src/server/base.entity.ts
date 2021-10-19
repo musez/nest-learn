@@ -5,9 +5,8 @@ import {
   UpdateDateColumn,
   AfterLoad,
 } from 'typeorm';
-import { DeleteType, StatusType } from '../constants/dicts.enum';
+import { StatusType } from '../constants/dicts.enum';
 import * as dayjs from 'dayjs';
-import { Exclude } from 'class-transformer';
 
 export abstract class BaseEntity {
   constructor() {
@@ -18,9 +17,6 @@ export abstract class BaseEntity {
     this.createBy = undefined;
     this.updateTime = undefined;
     this.updateBy = undefined;
-    this.deleteStatus = undefined;
-    this.deleteTime = undefined;
-    this.deleteBy = undefined;
   }
 
   @AfterLoad()
@@ -32,10 +28,6 @@ export abstract class BaseEntity {
     if (this.updateTime) {
       // @ts-ignore
       this.updateTime = dayjs(this.updateTime).format('YYYY-MM-DD hh:mm:ss');
-    }
-    if (this.deleteTime) {
-      // @ts-ignore
-      this.deleteTime = dayjs(this.deleteTime).format('YYYY-MM-DD hh:mm:ss');
     }
   }
 
@@ -67,26 +59,4 @@ export abstract class BaseEntity {
 
   @Column({ comment: '修改人 id', nullable: true })
   updateBy: string;
-
-  @Column('tinyint', {
-    comment: '删除状态（0：未删除；1：删除）',
-    default: DeleteType.UN_DEL,
-    select: false,
-  })
-  @Exclude()
-  deleteStatus: DeleteType;
-
-  // @DeleteDateColumn({ comment: '删除时间', type: 'datetime', nullable: true })
-  @Column({
-    comment: '删除时间',
-    type: 'datetime',
-    nullable: true,
-    select: false,
-  })
-  @Exclude()
-  deleteTime: Date;
-
-  @Column({ comment: '删除人 id', nullable: true, select: false })
-  @Exclude()
-  deleteBy: string;
 }

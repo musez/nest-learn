@@ -93,7 +93,6 @@ export class ArticleService {
         queryConditionList.push('articleDataCats.articleId = article.id');
         queryConditionList.push('articleDataCats.catId = :catId');
       }
-      queryConditionList.push('deleteStatus = 0');
       const queryCondition = queryConditionList.join(' AND ');
 
       const ret = await this.articleRepository
@@ -164,7 +163,6 @@ export class ArticleService {
         queryConditionList.push('articleDataCats.articleId = article.id');
         queryConditionList.push('articleDataCats.catId = :catId');
       }
-      queryConditionList.push('article.deleteStatus = 0');
       const queryCondition = queryConditionList.join(' AND ');
 
       const ret = await this.articleRepository
@@ -439,8 +437,8 @@ export class ArticleService {
 
       await this.articleRepository
         .createQueryBuilder()
-        .update(Article)
-        .set({ deleteStatus: 1, deleteBy: curUser ? curUser!.id : null, deleteTime: Utils.now() })
+        .delete()
+        .from(Article)
         .where('id = :id', { id: id })
         .execute();
     } catch (e) {
@@ -461,8 +459,8 @@ export class ArticleService {
       }
       await this.articleRepository
         .createQueryBuilder()
-        .update(Article)
-        .set({ deleteStatus: 1, deleteBy: curUser ? curUser!.id : null, deleteTime: Utils.now() })
+        .delete()
+        .from(Article)
         .where('id IN (:ids)', { ids: ids })
         .execute();
     } catch (e) {
@@ -478,8 +476,8 @@ export class ArticleService {
     try {
       await this.articleRepository
         .createQueryBuilder()
-        .update(Article)
-        .set({ deleteStatus: 1, deleteBy: curUser ? curUser!.id : null, deleteTime: Utils.now() })
+        .delete()
+        .from(Article)
         .where('status = 3')
         .execute();
     } catch (e) {

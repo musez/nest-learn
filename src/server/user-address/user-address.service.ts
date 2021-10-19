@@ -62,7 +62,6 @@ export class UserAddressService {
       }
       queryConditionList.push('userAddress.status IN (:status)');
     }
-    queryConditionList.push('userAddress.deleteStatus = 0');
     const queryCondition = queryConditionList.join(' AND ');
 
     const ret = await this.userAddressRepository
@@ -119,7 +118,6 @@ export class UserAddressService {
       }
       queryConditionList.push('userAddress.status IN (:status)');
     }
-    queryConditionList.push('userAddress.deleteStatus = 0');
     const queryCondition = queryConditionList.join(' AND ');
 
     const queryBuilder = this.userAddressRepository
@@ -233,8 +231,8 @@ export class UserAddressService {
 
     await this.userAddressRepository
       .createQueryBuilder()
-      .update(UserAddress)
-      .set({ deleteStatus: 1, deleteBy: curUser ? curUser!.id : null, deleteTime: Utils.now() })
+      .delete()
+      .from(UserAddress)
       .where('id = :id', { id: id })
       .execute();
   }
@@ -250,8 +248,8 @@ export class UserAddressService {
     }
     const ret = await this.userAddressRepository
       .createQueryBuilder()
-      .update(UserAddress)
-      .set({ deleteStatus: 1, deleteBy: curUser ? curUser!.id : null, deleteTime: Utils.now() })
+      .delete()
+      .from(UserAddress)
       .where('id IN (:ids)', { ids: ids })
       .execute();
 
