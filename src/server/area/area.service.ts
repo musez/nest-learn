@@ -28,7 +28,8 @@ export class AreaService {
       const areaList: CreateAreaDto[] = [];
       createAreaDto.forEach((item) => {
         let area = new Area();
-        area = Utils.dto2entityImport(item, area);
+        area = Utils.dto2entity(item, area);
+
         if (curUser) {
           area.createBy = curUser!.id;
         }
@@ -90,6 +91,7 @@ export class AreaService {
         .getRawMany();
       return res;
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
@@ -139,6 +141,7 @@ export class AreaService {
         limit: limit,
       };
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
@@ -163,6 +166,7 @@ export class AreaService {
 
       return list;
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
@@ -184,6 +188,7 @@ export class AreaService {
         },
       });
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
@@ -209,6 +214,7 @@ export class AreaService {
         return result;
       }
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }

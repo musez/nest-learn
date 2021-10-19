@@ -15,6 +15,7 @@ import { SearchArticleCatDto } from './dto/search-article-cat.dto';
 import { LimitArticleCatDto } from './dto/limit-article-cat.dto';
 import { ApiException } from '../../common/exception/api-exception';
 import { ApiErrorCode } from '../../constants/api-error-code.enum';
+import { ArticleDataCatService } from '../article-data-cat/article-data-cat.service';
 
 @Injectable()
 export class ArticleCatService {
@@ -23,6 +24,7 @@ export class ArticleCatService {
   constructor(
     @InjectRepository(ArticleCat)
     private readonly articleCatRepository: Repository<ArticleCat>,
+    private readonly articleDataCatService: ArticleDataCatService,
   ) {
   }
 
@@ -60,7 +62,7 @@ export class ArticleCatService {
           // @ts-ignore
           status = Utils.split(status.toString());
         }
-        queryConditionList.push('status IN (:..status)');
+        queryConditionList.push('status IN (:status)');
       }
       const queryCondition = queryConditionList.join(' AND ');
 
@@ -151,6 +153,7 @@ export class ArticleCatService {
         .getRawMany();
       return ret;
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
@@ -208,6 +211,7 @@ export class ArticleCatService {
         limit: limit,
       };
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
@@ -233,6 +237,7 @@ export class ArticleCatService {
 
       return list;
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
@@ -257,6 +262,7 @@ export class ArticleCatService {
         return result;
       }
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
@@ -288,6 +294,7 @@ export class ArticleCatService {
 
       return list;
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
@@ -300,6 +307,7 @@ export class ArticleCatService {
       const { id } = baseFindByIdDto;
       return await this.articleCatRepository.findOne(id);
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
@@ -333,6 +341,7 @@ export class ArticleCatService {
         return true;
       }
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
@@ -347,6 +356,7 @@ export class ArticleCatService {
       if (ret) return true;
       else return false;
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
@@ -363,6 +373,7 @@ export class ArticleCatService {
 
       await this.articleCatRepository.update(id, articleCat);
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
@@ -390,6 +401,7 @@ export class ArticleCatService {
 
       return ret;
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
@@ -403,7 +415,12 @@ export class ArticleCatService {
 
       const ret = await this.isExistChildrenById(baseFindByIdDto);
       if (ret) {
-        throw new ApiException('存在子分类，不允许删除！', ApiErrorCode.NOT_ACTION, HttpStatus.OK);
+        throw new ApiException('分类下存在子分类，不允许删除！', ApiErrorCode.NOT_ACTION, HttpStatus.OK);
+      }
+
+      const isExistArticleRet = await this.articleDataCatService.selectByCatId(id);
+      if (isExistArticleRet) {
+        throw new ApiException('分类下存在文章，不允许删除！', ApiErrorCode.NOT_ACTION, HttpStatus.OK);
       }
 
       await this.articleCatRepository
@@ -413,6 +430,7 @@ export class ArticleCatService {
         .where('id = :id', { id: id })
         .execute();
     } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
@@ -430,7 +448,12 @@ export class ArticleCatService {
       for (const id of ids) {
         const ret = await this.isExistChildrenById({ id });
         if (ret) {
-          throw new ApiException('存在子分类，不允许删除！', ApiErrorCode.NOT_ACTION, HttpStatus.OK);
+          throw new ApiException('分类下存在子分类，不允许删除！', ApiErrorCode.NOT_ACTION, HttpStatus.OK);
+        }
+
+        const isExistArticleRet = await this.articleDataCatService.selectByCatId(id);
+        if (isExistArticleRet) {
+          throw new ApiException('分类下存在文章，不允许删除！', ApiErrorCode.NOT_ACTION, HttpStatus.OK);
         }
       }
 

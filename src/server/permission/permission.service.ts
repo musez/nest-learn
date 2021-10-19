@@ -549,7 +549,7 @@ export class PermissionService {
 
       const ret = await this.isExistChildrenById(baseFindByIdDto);
       if (ret) {
-        throw new ApiException('存在子分类，不允许删除！', ApiErrorCode.NOT_ACTION, HttpStatus.OK);
+        throw new ApiException('分类下存在子分类，不允许删除！', ApiErrorCode.NOT_ACTION, HttpStatus.OK);
       }
 
       await this.permissionRepository
@@ -578,7 +578,7 @@ export class PermissionService {
       for (const id of ids) {
         const ret = await this.isExistChildrenById({ id });
         if (ret) {
-          throw new ApiException('存在子分类，不允许删除！', ApiErrorCode.NOT_ACTION, HttpStatus.OK);
+          throw new ApiException('分类下存在子分类，不允许删除！', ApiErrorCode.NOT_ACTION, HttpStatus.OK);
         }
       }
 

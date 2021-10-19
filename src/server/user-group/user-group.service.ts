@@ -26,7 +26,7 @@ export class UserGroupService {
       return await this.userGroupRepository.save(userGroup);
     } catch (e) {
       this.logger.error('系统异常：', e);
-       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -38,7 +38,7 @@ export class UserGroupService {
       return await this.userGroupRepository.save(userGroup);
     } catch (e) {
       this.logger.error('系统异常：', e);
-       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -67,14 +67,14 @@ export class UserGroupService {
   async selectByIds(ids: string[]): Promise<UserGroup[]> {
     try {
       return await this.userGroupRepository.find({
-        relations: ['user','group'],
+        relations: ['user', 'group'],
         where: {
           id: In(ids),
         },
       });
     } catch (e) {
       this.logger.error('系统异常：', e);
-       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -91,7 +91,7 @@ export class UserGroupService {
         .execute();
     } catch (e) {
       this.logger.error('系统异常：', e);
-       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 

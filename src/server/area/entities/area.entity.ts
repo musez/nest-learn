@@ -1,29 +1,30 @@
 import {
   Entity,
-  PrimaryGeneratedColumn,
   Column,
   CreateDateColumn,
   UpdateDateColumn,
-  AfterLoad, VersionColumn,
+  AfterLoad, VersionColumn, PrimaryColumn,
 } from 'typeorm';
 import { AreaLevelType } from '../../../constants/dicts.enum';
 import * as dayjs from 'dayjs';
 
 @Entity('sys_area')
 export class Area {
-  // constructor() {
-  //   this.id = undefined;
-  //   this.parentId = undefined;
-  //   this.areaCode = undefined;
-  //   this.areaName = undefined;
-  //   this.level = undefined;
-  //   this.cityCode = undefined;
-  //   this.center = undefined;
-  //   this.createTime = undefined;
-  //   this.createBy = undefined;
-  //   this.updateTime = undefined;
-  //   this.updateBy = undefined;
-  // }
+  constructor() {
+    this.id = undefined;
+    this.parentId = undefined;
+    this.areaCode = undefined;
+    this.areaName = undefined;
+    this.level = undefined;
+    this.cityCode = undefined;
+    this.center = undefined;
+    this.long = undefined;
+    this.lat = undefined;
+    // this.createTime = undefined;
+    // this.createBy = undefined;
+    // this.updateTime = undefined;
+    // this.updateBy = undefined;
+  }
 
   @AfterLoad()
   updateDate() {
@@ -37,7 +38,7 @@ export class Area {
     }
   }
 
-  @PrimaryGeneratedColumn({ comment: '主键 id' })
+  @PrimaryColumn({ comment: '主键 id' })
   id: number;
 
   @Column({ comment: '父 id' })

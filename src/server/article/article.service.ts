@@ -435,6 +435,7 @@ export class ArticleService {
     try {
       const { id } = baseFindByIdDto;
 
+      await this.articleDataCatService.deleteByArticleId(id);
       await this.articleRepository
         .createQueryBuilder()
         .delete()
@@ -457,6 +458,9 @@ export class ArticleService {
       if (!Utils.isArray(ids)) {
         ids = Utils.split(ids.toString());
       }
+
+      await this.articleDataCatService.deleteByArticleIds({ ids });
+
       await this.articleRepository
         .createQueryBuilder()
         .delete()
