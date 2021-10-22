@@ -69,6 +69,13 @@ export class GroupController {
   @Auth('account:group:findById')
   @ApiOperation({ summary: '获取详情（主键 id）' })
   async findById(@Query() baseFindByIdDto: BaseFindByIdDto): Promise<Group> {
+    return await this.groupService.selectById(baseFindByIdDto);
+  }
+
+  @Get('findInfoById')
+  @Auth('account:group:findInfoById')
+  @ApiOperation({ summary: '获取详情（主键 id，关联信息）' })
+  async findInfoById(@Query() baseFindByIdDto: BaseFindByIdDto): Promise<Group> {
     return await this.groupService.selectInfoById(baseFindByIdDto);
   }
 
@@ -133,14 +140,14 @@ export class GroupController {
 
   @Post('updateStatus')
   @Auth('account:group:updateStatus')
-  @ApiOperation({ summary: '修改状态' })
+  @ApiOperation({ summary: '修改状态（批量，主键 ids）' })
   async updateStatus(@CurUser() curUser, @Body() baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto): Promise<any> {
     return this.groupService.updateStatus(baseModifyStatusByIdsDto, curUser);
   }
 
   @Post('delete')
   @Auth('account:group:delete')
-  @ApiOperation({ summary: '删除' })
+  @ApiOperation({ summary: '删除（主键 id）' })
   async delete(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
     try {
       const { id } = baseFindByIdDto;
@@ -159,7 +166,7 @@ export class GroupController {
 
   @Post('deleteBatch')
   @Auth('system:group:deleteBatch')
-  @ApiOperation({ summary: '删除（批量）' })
+  @ApiOperation({ summary: '删除（批量，主键 ids）' })
   async deleteBatch(@CurUser() curUser, @Body() baseFindByIdsDto: BaseFindByIdsDto): Promise<any> {
     return await this.groupService.deleteByIds(baseFindByIdsDto, curUser);
   }

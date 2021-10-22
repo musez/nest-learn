@@ -292,7 +292,7 @@ export class HolidayService {
   }
 
   /**
-   * 修改状态
+   * 修改状态（批量，主键 ids）
    */
   async updateStatus(baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto, curUser?): Promise<any> {
     try {
@@ -313,7 +313,7 @@ export class HolidayService {
   }
 
   /**
-   * 删除
+   * 删除（主键 id）
    */
   async deleteById(baseFindByIdDto: BaseFindByIdDto, curUser?): Promise<void> {
     try {
@@ -331,7 +331,7 @@ export class HolidayService {
   }
 
   /**
-   * 删除（批量）
+   * 删除（批量，主键 ids）
    */
   async deleteByIds(baseFindByIdsDto: BaseFindByIdsDto, curUser?): Promise<void> {
     try {

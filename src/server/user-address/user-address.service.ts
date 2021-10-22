@@ -201,7 +201,7 @@ export class UserAddressService {
   }
 
   /**
-   * 修改状态
+   * 修改状态（批量，主键 ids）
    */
   async updateStatus(baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto, curUser?): Promise<any> {
     // eslint-disable-next-line prefer-const
@@ -224,7 +224,7 @@ export class UserAddressService {
   }
 
   /**
-   * 删除
+   * 删除（主键 id）
    */
   async deleteById(baseFindByIdDto: BaseFindByIdDto, curUser?): Promise<void> {
     const { id } = baseFindByIdDto;
@@ -238,7 +238,7 @@ export class UserAddressService {
   }
 
   /**
-   * 删除（批量）
+   * 删除（批量，主键 ids）
    */
   async deleteByIds(baseFindByIdsDto: BaseFindByIdsDto, curUser?): Promise<void> {
     let { ids } = baseFindByIdsDto;

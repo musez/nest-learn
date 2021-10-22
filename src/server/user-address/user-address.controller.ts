@@ -133,14 +133,14 @@ export class UserAddressController {
 
   @Post('updateStatus')
   @Auth('mall:userAddress:updateStatus')
-  @ApiOperation({ summary: '修改状态' })
+  @ApiOperation({ summary: '修改状态（批量，主键 ids）' })
   async updateStatus(@CurUser() curUser, @Body() baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto): Promise<any> {
     return this.userAddressService.updateStatus(baseModifyStatusByIdsDto, curUser);
   }
 
   @Post('delete')
   @Auth('mall:userAddress:delete')
-  @ApiOperation({ summary: '删除' })
+  @ApiOperation({ summary: '删除（主键 id）' })
   async delete(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
     const { id } = baseFindByIdDto;
     const isExistId = await this.userAddressService.isExistId(id);
@@ -154,7 +154,7 @@ export class UserAddressController {
 
   @Post('deleteBatch')
   @Auth('mall:userAddress:deleteBatch')
-  @ApiOperation({ summary: '删除（批量）' })
+  @ApiOperation({ summary: '删除（批量，主键 ids）' })
   async deleteBatch(@CurUser() curUser, @Body() baseFindByIdsDto: BaseFindByIdsDto): Promise<any> {
     return await this.userAddressService.deleteByIds(baseFindByIdsDto, curUser);
   }

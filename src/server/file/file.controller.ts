@@ -86,7 +86,7 @@ export class FileController {
   @Post('delete')
   @UseGuards(JwtAuthGuard, AuthGuard)
   @Auth('system:file:delete')
-  @ApiOperation({ summary: '删除' })
+  @ApiOperation({ summary: '删除（主键 id）' })
   async delete(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
     try {
       const { id } = baseFindByIdDto;
@@ -106,7 +106,7 @@ export class FileController {
   @Post('deleteBatch')
   @UseGuards(JwtAuthGuard, AuthGuard)
   @Auth('system:file:deleteBatch')
-  @ApiOperation({ summary: '删除（批量）' })
+  @ApiOperation({ summary: '删除（批量，主键 ids）' })
   async deleteBatch(@CurUser() curUser, @Body() baseFindByIdsDto: BaseFindByIdsDto): Promise<any> {
     try {
       return await this.fileService.deleteByIds(baseFindByIdsDto, curUser);

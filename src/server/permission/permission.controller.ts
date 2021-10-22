@@ -163,14 +163,14 @@ export class PermissionController {
 
   @Post('updateStatus')
   @Auth('account:permission:updateStatus')
-  @ApiOperation({ summary: '修改状态' })
+  @ApiOperation({ summary: '修改状态（批量，主键 ids）' })
   async updateStatus(@CurUser() curUser, @Body() baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto): Promise<any> {
     return this.permissionService.updateStatus(baseModifyStatusByIdsDto, curUser);
   }
 
   @Post('delete')
   @Auth('account:permission:delete')
-  @ApiOperation({ summary: '删除' })
+  @ApiOperation({ summary: '删除（主键 id）' })
   async delete(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
     try {
       const { id } = baseFindByIdDto;
@@ -187,7 +187,7 @@ export class PermissionController {
 
   @Post('deleteBatch')
   @Auth('system:permission:deleteBatch')
-  @ApiOperation({ summary: '删除（批量）' })
+  @ApiOperation({ summary: '删除（批量，主键 ids）' })
   async deleteBatch(@CurUser() curUser, @Body() baseFindByIdsDto: BaseFindByIdsDto): Promise<any> {
     return await this.permissionService.deleteByIds(baseFindByIdsDto, curUser);
   }

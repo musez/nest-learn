@@ -188,7 +188,7 @@ export class FileService {
   }
 
   /**
-   * 删除
+   * 删除（主键 id）
    */
   async deleteById(baseFindByIdDto: BaseFindByIdDto, curUser?): Promise<void> {
     try {
@@ -206,7 +206,7 @@ export class FileService {
   }
 
   /**
-   * 删除（批量）
+   * 删除（批量，主键 ids）
    */
   async deleteByIds(baseFindByIdsDto: BaseFindByIdsDto, curUser?): Promise<void> {
     try {

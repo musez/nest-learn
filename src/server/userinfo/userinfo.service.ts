@@ -81,7 +81,7 @@ export class UserinfoService {
   }
 
   /**
-   * 删除
+   * 删除（主键 id）
    */
   async deleteByUserId(baseFindByIdDto: BaseFindByIdDto, curUser?): Promise<void> {
     try {
@@ -107,7 +107,7 @@ export class UserinfoService {
   }
 
   /**
-   * 删除（批量）
+   * 删除（批量，主键 ids）
    */
   async deleteByUserIds(baseFindByIdsDto: BaseFindByIdsDto, curUser?): Promise<void> {
     try {

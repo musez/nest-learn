@@ -122,14 +122,14 @@ export class PostController {
 
   @Post('updateStatus')
   @Auth('account:post:updateStatus')
-  @ApiOperation({ summary: '修改状态' })
+  @ApiOperation({ summary: '修改状态（批量，主键 ids）' })
   async updateStatus(@CurUser() curUser, @Body() baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto): Promise<any> {
     return this.postService.updateStatus(baseModifyStatusByIdsDto, curUser);
   }
 
   @Post('delete')
   @Auth('account:post:delete')
-  @ApiOperation({ summary: '删除' })
+  @ApiOperation({ summary: '删除（主键 id）' })
   async delete(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
     try {
       const { id } = baseFindByIdDto;
@@ -146,7 +146,7 @@ export class PostController {
 
   @Post('deleteBatch')
   @Auth('system:post:deleteBatch')
-  @ApiOperation({ summary: '删除（批量）' })
+  @ApiOperation({ summary: '删除（批量，主键 ids）' })
   async deleteBatch(@CurUser() curUser, @Body() baseFindByIdsDto: BaseFindByIdsDto): Promise<any> {
     return await this.postService.deleteByIds(baseFindByIdsDto, curUser);
   }

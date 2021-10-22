@@ -107,7 +107,7 @@ export class ArticleLinkService {
   }
 
   /**
-   * 修改状态
+   * 修改状态（用户&文章 id）
    */
   async updateStatusByUserAndArticleId(obj): Promise<void> {
     try {
@@ -128,7 +128,7 @@ export class ArticleLinkService {
   }
 
   /**
-   * 修改状态
+   * 修改状态（批量，主键 ids）
    */
   async updateStatus(baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto, curUser?): Promise<void> {
     try {

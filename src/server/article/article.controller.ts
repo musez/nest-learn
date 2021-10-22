@@ -74,12 +74,19 @@ export class ArticleController {
   @Auth('cms:article:findById')
   @ApiOperation({ summary: '获取详情（主键 id）' })
   async findById(@Query() baseFindByIdDto: BaseFindByIdDto): Promise<Article> {
+    return await this.articleService.selectById(baseFindByIdDto);
+  }
+
+  @Get('findInfoById')
+  @Auth('cms:article:findInfoById')
+  @ApiOperation({ summary: '获取详情（主键 id，关联信息）' })
+  async findInfoById(@Query() baseFindByIdDto: BaseFindByIdDto): Promise<Article> {
     return await this.articleService.selectInfoById(baseFindByIdDto);
   }
 
   @Get('findDetailById')
   @Auth('cms:article:findDetailById')
-  @ApiOperation({ summary: '获取详情（主键 id）' })
+  @ApiOperation({ summary: '获取详情（主键 id，热度信息）' })
   async findDetailById(@CurUser() curUser, @Query() baseFindByIdDto: BaseFindByIdDto): Promise<Article> {
     try {
       const ret = await this.articleService.selectById(baseFindByIdDto);
@@ -258,17 +265,37 @@ export class ArticleController {
     return await this.articleService.deleteAll(curUser);
   }
 
+  @Get('findRank')
+  @ApiOperation({ summary: '获取浏览&点赞&收藏&分享&评论排行' })
+  async findRank(): Promise<any> {
+    const [browseRank, linkRank, collectRank, shareRank, commentRank] = await Promise.all([
+      this.articleService.selectBrowseRank(),
+      this.articleService.selectLinkRank(),
+      this.articleService.selectCollectRank(),
+      this.articleService.selectShareRank(),
+      this.articleService.selectCommentRank(),
+    ]);
+
+    return {
+      browse: browseRank,
+      link: linkRank,
+      collect: collectRank,
+      share: shareRank,
+      comment: commentRank,
+    };
+  }
+
   @Get('findBrowseRank')
   @ApiOperation({ summary: '获取浏览排行' })
   async findBrowseRank(): Promise<any> {
     return await this.articleService.selectBrowseRank();
   }
 
-  @Post('browse')
-  @ApiOperation({ summary: '浏览' })
-  async browse(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
-    return await this.articleService.browse(baseFindByIdDto, curUser);
-  }
+  // @Post('browse')
+  // @ApiOperation({ summary: '浏览' })
+  // async browse(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
+  //   return await this.articleService.browse(baseFindByIdDto, curUser);
+  // }
 
   @Get('findLinkRank')
   @ApiOperation({ summary: '获取点赞排行' })
@@ -338,7 +365,7 @@ export class ArticleController {
 
   @Get('findCommentPageById')
   @Auth('cms:article:findCommentPageById')
-  @ApiOperation({ summary: '获取评论和回复（主键 id）' })
+  @ApiOperation({ summary: '获取评论和回复（主键 id，分页）' })
   async findCommentPageById(@Query() limitArticleTopDto: LimitArticleTopDto): Promise<any> {
     return await this.articleService.selectCommentPageById(limitArticleTopDto);
   }

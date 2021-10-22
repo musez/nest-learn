@@ -251,7 +251,7 @@ export class ArticleService {
   }
 
   /**
-   * 获取详情（关联信息，主键 id）
+   * 获取详情（主键 id，关联信息）
    */
   async selectInfoById(baseFindByIdDto: BaseFindByIdDto): Promise<Article> {
     try {
@@ -303,7 +303,7 @@ export class ArticleService {
   }
 
   /**
-   * 获取详情（主键 ids）
+   * 获取详情（批量，主键 ids）
    */
   async selectByIds(ids: string[]): Promise<Article> {
     try {
@@ -372,7 +372,7 @@ export class ArticleService {
   }
 
   /**
-   * 修改状态
+   * 修改状态（批量，主键 ids）
    */
   async updateStatus(baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto, curUser?): Promise<void> {
     try {

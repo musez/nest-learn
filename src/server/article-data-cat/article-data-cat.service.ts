@@ -27,7 +27,7 @@ export class ArticleDataCatService {
   }
 
   /**
-   * 获取（批量）
+   * 获取（主键 id，批量）
    */
   async selectByIds(ids: string[]): Promise<ArticleDataCat[]> {
     return await this.articleDataCatRepository.find({
@@ -56,7 +56,7 @@ export class ArticleDataCatService {
   }
 
   /**
-   * 删除
+   * 删除（文章 id）
    */
   async deleteByArticleId(id: string): Promise<any> {
     return await this.articleDataCatRepository
@@ -68,7 +68,7 @@ export class ArticleDataCatService {
   }
 
   /**
-   * 删除（批量）
+   * 删除（文章 id，批量）
    */
   async deleteByArticleIds(baseFindByIdsDto: BaseFindByIdsDto): Promise<any> {
     const { ids } = baseFindByIdsDto;

@@ -32,6 +32,7 @@ import { ApiException } from '../../common/exception/api-exception';
 import { ApiErrorCode } from '../../constants/api-error-code.enum';
 import { ImportType } from '../../constants/dicts.enum';
 import { ImportLogService } from '../import-log/import-log.service';
+import { Role } from '../role/entities/role.entity';
 
 @ApiTags('用户')
 @Controller('user')
@@ -83,6 +84,13 @@ export class UserController {
   @Auth('account:user:findById')
   @ApiOperation({ summary: '获取详情（主键 id）' })
   async findById(@Query() baseFindByIdDto: BaseFindByIdDto): Promise<User> {
+    return await this.userService.selectById(baseFindByIdDto);
+  }
+
+  @Get('findInfoById')
+  @Auth('account:user:findInfoById')
+  @ApiOperation({ summary: '获取详情（主键 id，关联信息）' })
+  async findInfoById(@Query() baseFindByIdDto: BaseFindByIdDto): Promise<User> {
     return await this.userService.selectInfoById(baseFindByIdDto);
   }
 
@@ -225,14 +233,14 @@ export class UserController {
 
   @Post('updateStatus')
   @Auth('account:user:updateStatus')
-  @ApiOperation({ summary: '修改状态' })
+  @ApiOperation({ summary: '修改状态（批量，主键 ids）' })
   async updateStatus(@CurUser() curUser, @Body() baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto): Promise<any> {
     return this.userService.updateStatus(baseModifyStatusByIdsDto, curUser);
   }
 
   @Post('delete')
   @Auth('account:user:delete')
-  @ApiOperation({ summary: '删除' })
+  @ApiOperation({ summary: '删除（主键 id）' })
   async delete(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
     try {
       const { id } = baseFindByIdDto;
@@ -251,7 +259,7 @@ export class UserController {
 
   @Post('deleteBatch')
   @Auth('system:user:deleteBatch')
-  @ApiOperation({ summary: '删除（批量）' })
+  @ApiOperation({ summary: '删除（批量，主键 ids）' })
   async deleteBatch(@CurUser() curUser, @Body() baseFindByIdsDto: BaseFindByIdsDto): Promise<any> {
     return await this.userService.deleteByIds(baseFindByIdsDto, curUser);
   }

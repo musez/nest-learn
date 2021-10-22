@@ -68,6 +68,13 @@ export class RoleController {
   @Auth('account:role:findById')
   @ApiOperation({ summary: '获取详情（主键 id）' })
   async findById(@Query() baseFindByIdDto: BaseFindByIdDto): Promise<Role> {
+    return await this.roleService.selectById(baseFindByIdDto);
+  }
+
+  @Get('findInfoById')
+  @Auth('account:role:findInfoById')
+  @ApiOperation({ summary: '获取详情（主键 id，关联信息）' })
+  async findInfoById(@Query() baseFindByIdDto: BaseFindByIdDto): Promise<Role> {
     return await this.roleService.selectInfoById(baseFindByIdDto);
   }
 
@@ -131,14 +138,14 @@ export class RoleController {
 
   @Post('updateStatus')
   @Auth('account:role:updateStatus')
-  @ApiOperation({ summary: '修改状态' })
+  @ApiOperation({ summary: '修改状态（批量，主键 ids）' })
   async updateStatus(@CurUser() curUser, @Body() baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto): Promise<any> {
     return this.roleService.updateStatus(baseModifyStatusByIdsDto, curUser);
   }
 
   @Post('delete')
   @Auth('account:role:delete')
-  @ApiOperation({ summary: '删除' })
+  @ApiOperation({ summary: '删除（主键 id）' })
   async delete(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
     try {
       const { id } = baseFindByIdDto;
@@ -156,7 +163,7 @@ export class RoleController {
 
   @Post('deleteBatch')
   @Auth('system:role:deleteBatch')
-  @ApiOperation({ summary: '删除（批量）' })
+  @ApiOperation({ summary: '删除（批量，主键 ids）' })
   async deleteBatch(@CurUser() curUser, @Body() baseFindByIdsDto: BaseFindByIdsDto): Promise<any> {
     return await this.roleService.deleteByIds(baseFindByIdsDto, curUser);
   }
