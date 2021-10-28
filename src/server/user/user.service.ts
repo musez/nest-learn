@@ -956,9 +956,8 @@ export class UserService {
   async selectAuthUGRPById(baseFindByIdDto: BaseFindByIdDto): Promise<any> {
     try {
       const userId = this.configService.get('app.systemSuperUserId');
-
       const userRet = await this.selectById(baseFindByIdDto);
-      if (userRet?.id === userId && userRet?.userType === UserType.NORMAL) {
+      if (userRet?.id === userId && userRet?.userType === UserType.ADMIN) {
         const [permissionRet, roleRet, groupRet] = await Promise.all([
           this.permissionService.selectAll({}),
           this.roleService.selectRByUserId(baseFindByIdDto),

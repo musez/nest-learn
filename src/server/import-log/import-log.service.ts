@@ -9,6 +9,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ImportLog } from './entities/import-log.entity';
 import { ApiErrorCode } from '../../constants/api-error-code.enum';
+import { BaseFindByIdDto } from '../base.dto';
+import { Holiday } from '../holiday/entities/holiday.entity';
 
 @Injectable()
 export class ImportLogService {
@@ -135,6 +137,19 @@ export class ImportLogService {
         limit: limit,
       };
     } catch (e) {
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+    }
+  }
+
+  /**
+   * 获取详情（主键 id）
+   */
+  async selectById(baseFindByIdDto: BaseFindByIdDto): Promise<ImportLog> {
+    try {
+      const { id } = baseFindByIdDto;
+      return await this.importLogRepository.findOne(id);
+    } catch (e) {
+      this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }

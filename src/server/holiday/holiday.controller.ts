@@ -162,6 +162,13 @@ export class HolidayController {
 
       for (const item of rows) {
         const { date, restType } = item;
+        const ret = await this.holidayService.isExistDate(date);
+
+        if (ret) {
+          item.errorMsg = `数据 日期（date）：${date} 已存在！`;
+          errorRows.push(item);
+          continue;
+        }
 
         if (!date) {
           item.errorMsg = `数据 日期（date） 不能为空！`;

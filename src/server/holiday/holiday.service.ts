@@ -214,6 +214,22 @@ export class HolidayService {
   }
 
   /**
+   * 是否存在（地区编码）
+   */
+  async isExistDate(date: string): Promise<boolean> {
+    try {
+      const isExist = await this.holidayRepository.findOne({ date: date });
+      if (Utils.isNil(isExist)) {
+        return false;
+      } else {
+        return true;
+      }
+    } catch (e) {
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+    }
+  }
+
+  /**
    * 获取 n 天内的日期
    */
   async selectDays(dayList, curUser?): Promise<any> {
