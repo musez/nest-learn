@@ -3,11 +3,14 @@ import { Reflector } from '@nestjs/core';
 import { UserService } from '../../server/user/user.service';
 import { ApiException } from '../exception/api-exception';
 import { ApiErrorCode } from '../../constants/api-error-code.enum';
+import { ConfigService } from '@nestjs/config';
+import { UserType } from '../../constants/dicts.enum';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
   constructor(
     private readonly reflector: Reflector,
+    private readonly configService: ConfigService,
     @Inject('UserService')
     private readonly userService: UserService,
   ) {
@@ -19,11 +22,12 @@ export class AuthGuard implements CanActivate {
 
     if (!user) throw new ApiException('没有权限执行此操作！', ApiErrorCode.FORBIDDEN, HttpStatus.OK);
     const { id, userType } = user;
-    if (userType === 0) {
+    if (userType === UserType.NORMAL) {
       // 普通用户不能进行任何操作
       throw new ApiException('没有权限执行此操作！', ApiErrorCode.FORBIDDEN, HttpStatus.OK);
-    } else if (userType === 2) {
-      if (id === '925a409c-ae39-4374-89b8-bd1297ef300e') {
+    } else if (userType === UserType.ADMIN) {
+      const userId = this.configService.get('app.systemSuperUserId');
+      if (id === userId) {
         // 超级管理员可以进行任何操作
         return true;
       }

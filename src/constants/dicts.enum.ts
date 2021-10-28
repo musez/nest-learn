@@ -15,8 +15,7 @@ export enum DeleteType {
 // 用户类型
 export enum UserType {
   NORMAL = 0, // 普通用户
-  ADMIN = 1, // 管理员
-  SUPER_ADMIN = 2, // 超级管理员
+  ADMIN = 1, // 后台用户
 }
 
 // 性别类型

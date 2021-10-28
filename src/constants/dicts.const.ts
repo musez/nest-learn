@@ -35,8 +35,7 @@ export const DeleteDict = {
 // 用户类型
 export const UserDict = {
   '0': '普通用户',
-  '1': '管理员',
-  '2': '超级管理员',
+  '1': '后台用户',
 };
 
 // 性别类型

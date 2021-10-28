@@ -14,6 +14,8 @@ import { ApiErrorCode } from '../../constants/api-error-code.enum';
 import { RedisUtil } from '../../utils/redis.util';
 import * as _ from 'lodash';
 import { UserService } from '../user/user.service';
+import { ConfigService } from '@nestjs/config';
+import { UserType } from '../../constants/dicts.enum';
 
 const cmdStr = 'sh ../../../bin/bash.sh';//这里面写你要执行的命令就行
 
@@ -22,6 +24,7 @@ export class TaskService {
   private readonly logger = new Logger(TaskService.name);
 
   constructor(
+    private readonly configService: ConfigService,
     private readonly cacheService: CacheService,
     private readonly userService: UserService,
     private readonly articleService: ArticleService,
@@ -49,14 +52,16 @@ export class TaskService {
   async initSystemSuperUser() {
     // 启动服务时，自动初始化管理员账户
     try {
-      const userId = '925a409c-ae39-4374-89b8-bd1297ef300e';
+      const userId = this.configService.get('app.systemSuperUserId');
+      const userName = this.configService.get('app.systemSuperUserName');
+      const name = this.configService.get('app.systemSuperUserRealName');
       const ret = await this.userService.isExistId(userId);
       if (!ret) {
         const userRet = await this.userService.initSystemSuperUser({
           id: userId,
-          userName: 'admin',
-          userType: 2,
-          name: '超级管理员',
+          userName: userName,
+          userType: UserType.ADMIN,
+          name: name,
         });
         if (userRet) {
           this.logger.log('启动服务，初始化管理员账户，初始化成功！');
@@ -74,7 +79,7 @@ export class TaskService {
   async syncArticleInfoSQL2Redis() {
     // 启动服务时，同步数据至 redis
     try {
-      this.logger.log('启动服务，开始同步... ...');
+      this.logger.log('启动服务，syncArticleInfoSQL2Redis 开始同步... ...');
       const linkList = await this.articleLinkService.selectList();
       for (const v of linkList) {
         const { articleId, userId } = v;
@@ -101,7 +106,7 @@ export class TaskService {
         // @ts-ignore
         await this.cacheService.client.zadd(`${ArticlePrefix.ARTICLE_COLLECT_COUNT}`, v.length, k);
       }
-      this.logger.log(`同步文章点赞统计 ${Object.keys(collectMap).length} 条`);
+      this.logger.log(`同步文章收藏统计 ${Object.keys(collectMap).length} 条`);
 
       const rank = await this.articleService.selectList({});
       for (const v of rank) {
@@ -114,9 +119,9 @@ export class TaskService {
       }
       this.logger.log(`同步文章浏览、分享统计 ${rank.length} 条`);
 
-      this.logger.log('启动服务，完成同步，同步成功！');
+      this.logger.log('启动服务，syncArticleInfoSQL2Redis 完成同步，同步成功！');
     } catch (e) {
-      this.logger.error('启动服务，完成同步，同步异常：', e);
+      this.logger.error('启动服务，syncArticleInfoSQL2Redis 完成同步，同步异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
@@ -125,7 +130,7 @@ export class TaskService {
   async syncArticleInfoRedis2SQL() {
     // 同步 redis 中的数据到 mysql
     try {
-      this.logger.log('定时同步，开始同步... ...');
+      this.logger.log('定时同步，syncArticleInfoRedis2SQL 开始同步... ...');
       const linkRet = await this.cacheService.client.zrevrangebyscore(`${ArticlePrefix.ARTICLE_LINK_COUNT}`, '+inf', '-inf', 'withscores');
       const collectRet = await this.cacheService.client.zrevrangebyscore(`${ArticlePrefix.ARTICLE_COLLECT_COUNT}`, '+inf', '-inf', 'withscores');
       const linkMap = RedisUtil.arrayToMap(linkRet);
@@ -142,9 +147,9 @@ export class TaskService {
         });
       }
       this.logger.log(`同步文章点赞、收藏流水 ${ids.length} 条`);
-      this.logger.log('定时同步，完成同步，同步成功！');
+      this.logger.log('定时同步，syncArticleInfoRedis2SQL 完成同步，同步成功！');
     } catch (e) {
-      this.logger.error('定时同步，完成同步，同步异常：', e);
+      this.logger.error('定时同步，syncArticleInfoRedis2SQL 完成同步，同步异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }

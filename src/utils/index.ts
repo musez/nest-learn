@@ -42,10 +42,10 @@ export class Utils {
     return dayjs(Date.now()).format(format);
   }
 
-  static dayjsGetDay(day: number) {
+  static dayjsGetDay(day: number, start = new Date()) {
     const days = [];
     for (let i = 1; i <= day; i++) {
-      days.push(dayjs().add(i, 'day').format('YYYY-MM-DD'));
+      days.push(dayjs(start).add(i, 'day').format('YYYY-MM-DD'));
     }
 
     return days;

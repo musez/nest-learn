@@ -87,8 +87,8 @@ export class HolidayController {
   @ApiOperation({ summary: '获取 n 天内的日期' })
   async getDays(@CurUser() curUser, @Query() baseDaysDto: BaseDaysDto): Promise<any> {
     try {
-      const { days } = baseDaysDto;
-      const dayList = Utils.dayjsGetDay(parseInt(String(days)));
+      const { start, days } = baseDaysDto;
+      const dayList = Utils.dayjsGetDay(parseInt(String(days)), start);
       return this.holidayService.selectDays(dayList, curUser);
     } catch (e) {
       this.logger.error('系统异常：', e);

@@ -22,7 +22,7 @@ export class QiniuService {
    */
   async getConfig(): Promise<any> {
     try {
-      return this.configService.get('qiniu');
+      return await this.configService.get('qiniu');
     } catch (e) {
       throw new ApiException('获取配置失败！', ApiErrorCode.ERROR, HttpStatus.OK);
     }

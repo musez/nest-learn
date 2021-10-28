@@ -50,7 +50,7 @@ export class User extends BaseEntity {
   userPwd: string;
 
   @Column('tinyint', {
-    comment: '用户类型（0：普通用户；1：管理员；2：超级管理员；）',
+    comment: '用户类型（0：普通用户；1：后台用户；）',
     default: UserType.NORMAL,
   })
   userType: UserType;

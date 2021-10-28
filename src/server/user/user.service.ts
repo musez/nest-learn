@@ -6,11 +6,7 @@ import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { Userinfo } from '../userinfo/entities/userinfo.entity';
-import {
-  BaseFindByIdDto,
-  BaseFindByIdsDto,
-  BaseModifyStatusByIdsDto,
-} from '../base.dto';
+import { BaseFindByIdDto, BaseFindByIdsDto, BaseModifyStatusByIdsDto } from '../base.dto';
 import { BindUserGroupDto } from '../user-group/dto/bind-user-group.dto';
 import { UserGroupService } from '../user-group/user-group.service';
 import { UserGroup } from '../user-group/entities/user-group.entity';
@@ -31,12 +27,15 @@ import { UserPrefix } from '../../constants/user.prefix';
 import { CacheService } from '../cache/cache.service';
 import { ApiErrorCode } from '../../constants/api-error-code.enum';
 import { RedisUtil } from '../../utils/redis.util';
+import { ConfigService } from '@nestjs/config';
+import { UserType } from '../../constants/dicts.enum';
 
 @Injectable()
 export class UserService {
   private readonly logger = new Logger(UserService.name);
 
   constructor(
+    private readonly configService: ConfigService,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
     private readonly userinfoService: UserinfoService,
@@ -956,9 +955,10 @@ export class UserService {
    */
   async selectAuthUGRPById(baseFindByIdDto: BaseFindByIdDto): Promise<any> {
     try {
-      const userRet = await this.selectById(baseFindByIdDto);
+      const userId = this.configService.get('app.systemSuperUserId');
 
-      if (userRet?.id === '925a409c-ae39-4374-89b8-bd1297ef300e' && userRet?.userType === 2) {
+      const userRet = await this.selectById(baseFindByIdDto);
+      if (userRet?.id === userId && userRet?.userType === UserType.NORMAL) {
         const [permissionRet, roleRet, groupRet] = await Promise.all([
           this.permissionService.selectAll({}),
           this.roleService.selectRByUserId(baseFindByIdDto),

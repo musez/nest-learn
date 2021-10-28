@@ -63,6 +63,9 @@ export class BaseHolidayDto {
 }
 
 export class BaseDaysDto {
+  @ApiPropertyOptional({ description: '开始日期' })
+  readonly start?: Date;
+
   @ApiProperty({ description: '获取 n 天内的日期', example: 7 })
   @IsDefined({ message: 'n 不能为空！' })
   @IsNotEmpty({ message: 'n 不能为空' })
