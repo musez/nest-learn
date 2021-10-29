@@ -162,13 +162,6 @@ export class HolidayController {
 
       for (const item of rows) {
         const { date, restType } = item;
-        const ret = await this.holidayService.isExistDate(date);
-
-        if (ret) {
-          item.errorMsg = `数据 日期（date）：${date} 已存在！`;
-          errorRows.push(item);
-          continue;
-        }
 
         if (!date) {
           item.errorMsg = `数据 日期（date） 不能为空！`;
@@ -182,10 +175,17 @@ export class HolidayController {
           continue;
         }
 
+        const ret = await this.holidayService.isExistDate(date);
+        if (ret) {
+          item.errorMsg = `数据 日期（date）：${date} 已存在！`;
+          errorRows.push(item);
+          continue;
+        }
+
         successRows.push(item);
       }
 
-      const ret = await this.holidayService.insertBatch(rows, curUser);
+      const ret = await this.holidayService.insertBatch(successRows, curUser);
       const retLog = await this.importLogService.insert({
         importType: ImportType.HOLIDAY,
         successCount: successRows.length,

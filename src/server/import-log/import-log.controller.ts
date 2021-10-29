@@ -1,4 +1,4 @@
-import { Controller, Get, UseGuards, Query, Res } from '@nestjs/common';
+import { Controller, Get, UseGuards, Query, Res, HttpStatus, Logger, Post, Body } from '@nestjs/common';
 import { ImportLogService } from './import-log.service';
 import { CreateImportLogDto } from './dto/create-import-log.dto';
 import { UpdateImportLogDto } from './dto/update-import-log.dto';
@@ -22,12 +22,18 @@ import {
 } from '../../constants/dicts.const';
 import { Utils } from '../../utils';
 import { ExcelService } from '../excel/excel.service';
+import { ApiException } from '../../common/exception/api-exception';
+import { ApiErrorCode } from '../../constants/api-error-code.enum';
+import { CurUser } from '../../common/decorators/cur-user.decorator';
+import { BaseFindByIdDto, BaseFindByIdsDto } from '../base.dto';
 
 @Controller('importLog')
 @ApiTags('导入日志')
 @ApiBasicAuth('token')
 @UseGuards(JwtAuthGuard, AuthGuard)
 export class ImportLogController {
+  private readonly logger = new Logger(ImportLogController.name);
+
   constructor(
     private readonly importLogService: ImportLogService,
     private readonly excelService: ExcelService,
@@ -52,65 +58,94 @@ export class ImportLogController {
   @Auth('system:importLog:download')
   @ApiOperation({ summary: '下载失败数据' })
   async download(@Query() downloadImportLogDto: DownloadImportLogDto, @Res() res): Promise<any> {
-    const { id, importType } = downloadImportLogDto;
-    const { errorData } = await this.importLogService.selectById({ id });
+    try {
+      const { id, importType } = downloadImportLogDto;
+      const { errorData } = await this.importLogService.selectById({ id });
 
-    let columns = [];
-    if (Number(importType) === ImportType.AREA) {
-      columns = [
-        { key: 'id', name: 'id', type: 'String', size: 10 },
-        { key: 'parentId', name: '父 id', type: 'String', size: 10 },
-        { key: 'areaName', name: '地区名称', type: 'String', size: 10 },
-        { key: 'areaCode', name: '地区编码', type: 'String', size: 10 },
-        { key: 'level', name: '地区级别', type: 'Enum', size: 10, default: AreaLevelDict },
-        { key: 'cityCode', name: '城市编码', type: 'String', size: 10 },
-        { key: 'center', name: '城市中心点', type: 'String', size: 10 },
-        { key: 'long', name: '经度', type: 'String', size: 10 },
-        { key: 'lat', name: '纬度', type: 'String', size: 10 },
-        { key: 'errorMsg', name: '失败原因', type: 'String', size: 20 },
-      ];
-    } else if (Number(importType) === ImportType.HOLIDAY) {
-      columns = [
-        { key: 'name', name: '名称', type: 'String', size: 10 },
-        { key: 'date', name: '日期', type: 'String', size: 10 },
-        { key: 'weekday', name: '周几', type: 'Enum', size: 10, default: WeekdayDict },
-        { key: 'restType', name: '类型', type: 'Enum', size: 10, default: RestDict },
-        { key: 'status', name: '状态', type: 'Enum', size: 10, default: StatusDict },
-        { key: 'description', name: '备注', type: 'String', size: 20 },
-        { key: 'errorMsg', name: '失败原因', type: 'String', size: 20 },
-      ];
-    } else if (Number(importType) === ImportType.USER) {
-      columns = [
-        { key: 'userName', name: '用户名', type: 'String', size: 10 },
-        { key: 'userType', name: '用户类型', type: 'Enum', size: 10, default: UserDict },
-        { key: 'name', name: '姓名', type: 'String', size: 10 },
-        { key: 'mobile', name: '手机号', type: 'String', size: 15 },
-        { key: 'email', name: '邮箱', type: 'String', size: 15 },
-        { key: 'sex', name: '性别', type: 'Enum', size: 10, default: SexDict },
-        { key: 'birthday', name: '生日', type: 'String', size: 15 },
-        { key: 'provinceId', name: '省份', type: 'String', size: 15 },
-        { key: 'cityId', name: '城市', type: 'String', size: 15 },
-        { key: 'districtId', name: '区/县', type: 'String', size: 15 },
-        { key: 'address', name: '详细地址', type: 'String', size: 30 },
-        { key: 'status', name: '状态', type: 'Enum', size: 10, default: StatusDict },
-        { key: 'description', name: '备注', type: 'String', size: 20 },
-        { key: 'errorMsg', name: '失败原因', type: 'String', size: 20 },
-      ];
+      let columns = [];
+      if (Number(importType) === ImportType.AREA) {
+        columns = [
+          { key: 'id', name: 'id', type: 'String', size: 10 },
+          { key: 'parentId', name: '父 id', type: 'String', size: 10 },
+          { key: 'areaName', name: '地区名称', type: 'String', size: 10 },
+          { key: 'areaCode', name: '地区编码', type: 'String', size: 10 },
+          { key: 'level', name: '地区级别', type: 'Enum', size: 10, default: AreaLevelDict },
+          { key: 'cityCode', name: '城市编码', type: 'String', size: 10 },
+          { key: 'center', name: '城市中心点', type: 'String', size: 10 },
+          { key: 'long', name: '经度', type: 'String', size: 10 },
+          { key: 'lat', name: '纬度', type: 'String', size: 10 },
+          { key: 'errorMsg', name: '失败原因', type: 'String', size: 20 },
+        ];
+      } else if (Number(importType) === ImportType.HOLIDAY) {
+        columns = [
+          { key: 'name', name: '名称', type: 'String', size: 10 },
+          { key: 'date', name: '日期', type: 'String', size: 10 },
+          { key: 'weekday', name: '周几', type: 'Enum', size: 10, default: WeekdayDict },
+          { key: 'restType', name: '类型', type: 'Enum', size: 10, default: RestDict },
+          { key: 'status', name: '状态', type: 'Enum', size: 10, default: StatusDict },
+          { key: 'description', name: '备注', type: 'String', size: 20 },
+          { key: 'errorMsg', name: '失败原因', type: 'String', size: 20 },
+        ];
+      } else if (Number(importType) === ImportType.USER) {
+        columns = [
+          { key: 'userName', name: '用户名', type: 'String', size: 10 },
+          { key: 'userType', name: '用户类型', type: 'Enum', size: 10, default: UserDict },
+          { key: 'name', name: '姓名', type: 'String', size: 10 },
+          { key: 'mobile', name: '手机号', type: 'String', size: 15 },
+          { key: 'email', name: '邮箱', type: 'String', size: 15 },
+          { key: 'sex', name: '性别', type: 'Enum', size: 10, default: SexDict },
+          { key: 'birthday', name: '生日', type: 'String', size: 15 },
+          { key: 'provinceId', name: '省份', type: 'String', size: 15 },
+          { key: 'cityId', name: '城市', type: 'String', size: 15 },
+          { key: 'districtId', name: '区/县', type: 'String', size: 15 },
+          { key: 'address', name: '详细地址', type: 'String', size: 30 },
+          { key: 'status', name: '状态', type: 'Enum', size: 10, default: StatusDict },
+          { key: 'description', name: '备注', type: 'String', size: 20 },
+          { key: 'errorMsg', name: '失败原因', type: 'String', size: 20 },
+        ];
+      }
+
+      const result = await this.excelService.exportExcel(columns, JSON.parse(errorData));
+      res.setHeader(
+        'Content-Type',
+        'application/vnd.openxmlformats;charset=utf-8',
+      );
+      res.setHeader(
+        'Content-Disposition',
+        'attachment; filename=' +
+        encodeURIComponent(`${ImportDict[importType]}失败数据_${Utils.dayjsFormat('YYYYMMDD')}`) +
+        '.xlsx', // 中文名需要进行 url 转码
+      );
+      // res.setTimeout(30 * 60 * 1000); // 防止网络原因造成超时。
+      res.end(result, 'binary');
+    } catch (e) {
+      this.logger.error('系统异常：', e);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
-    console.log('columns',columns);
-    console.log('errorData',JSON.parse(errorData));
-    const result = await this.excelService.exportExcel(columns, JSON.parse(errorData));
-    res.setHeader(
-      'Content-Type',
-      'application/vnd.openxmlformats;charset=utf-8',
-    );
-    res.setHeader(
-      'Content-Disposition',
-      'attachment; filename=' +
-      encodeURIComponent(`${ImportDict[importType]}失败数据_${Utils.dayjsFormat('YYYYMMDD')}`) +
-      '.xlsx', // 中文名需要进行 url 转码
-    );
-    // res.setTimeout(30 * 60 * 1000); // 防止网络原因造成超时。
-    res.end(result, 'binary');
+  }
+
+  @Post('delete')
+  @Auth('account:importLog:delete')
+  @ApiOperation({ summary: '删除（主键 id）' })
+  async delete(@CurUser() curUser, @Body() baseFindByIdDto: BaseFindByIdDto): Promise<any> {
+    try {
+      const { id } = baseFindByIdDto;
+      const isExistId = await this.importLogService.isExistId(id);
+
+      if (!isExistId) {
+        throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
+      }
+      return await this.importLogService.deleteById(baseFindByIdDto, curUser);
+    } catch (e) {
+      this.logger.error('系统异常：', e);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+    }
+  }
+
+  @Post('deleteBatch')
+  @Auth('system:importLog:deleteBatch')
+  @ApiOperation({ summary: '删除（批量，主键 ids）' })
+  async deleteBatch(@CurUser() curUser, @Body() baseFindByIdsDto: BaseFindByIdsDto): Promise<any> {
+    return await this.importLogService.deleteByIds(baseFindByIdsDto, curUser);
   }
 }

@@ -9,8 +9,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ImportLog } from './entities/import-log.entity';
 import { ApiErrorCode } from '../../constants/api-error-code.enum';
-import { BaseFindByIdDto } from '../base.dto';
-import { Holiday } from '../holiday/entities/holiday.entity';
+import { BaseFindByIdDto, BaseFindByIdsDto } from '../base.dto';
 
 @Injectable()
 export class ImportLogService {
@@ -148,6 +147,77 @@ export class ImportLogService {
     try {
       const { id } = baseFindByIdDto;
       return await this.importLogRepository.findOne(id);
+    } catch (e) {
+      this.logger.error('系统异常：', e);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+    }
+  }
+
+  /**
+   * 是否存在（主键 id）
+   */
+  async isExistId(id: string): Promise<boolean> {
+    try {
+      const isExist = await this.importLogRepository.findOne(id);
+      if (Utils.isNil(isExist)) {
+        return false;
+      } else {
+        return true;
+      }
+    } catch (e) {
+      this.logger.error('系统异常：', e);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+    }
+  }
+
+  /**
+   * 删除（主键 id）
+   */
+  async deleteById(baseFindByIdDto: BaseFindByIdDto, curUser?): Promise<void> {
+    try {
+      const { id } = baseFindByIdDto;
+
+      const ret = await this.importLogRepository
+        .createQueryBuilder()
+        .delete()
+        .from(ImportLog)
+        .where('id = :id', { id: id })
+        .execute();
+
+      if (!ret) {
+        throw new ApiException('删除异常！', ApiErrorCode.ERROR, HttpStatus.OK);
+      }
+
+      return null;
+    } catch (e) {
+      this.logger.error('系统异常：', e);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+    }
+  }
+
+  /**
+   * 删除（批量，主键 ids）
+   */
+  async deleteByIds(baseFindByIdsDto: BaseFindByIdsDto, curUser?): Promise<void> {
+    try {
+      let { ids } = baseFindByIdsDto;
+
+      if (!Utils.isArray(ids)) {
+        ids = Utils.split(ids.toString());
+      }
+
+      const ret = await this.importLogRepository
+        .createQueryBuilder()
+        .delete()
+        .from(ImportLog)
+        .where('id IN (:ids)', { ids: ids })
+        .execute();
+
+      if (!ret) {
+        throw new ApiException('删除异常！', ApiErrorCode.ERROR, HttpStatus.OK);
+      }
+
+      return null;
     } catch (e) {
       this.logger.error('系统异常：', e);
       throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
