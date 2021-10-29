@@ -29,6 +29,7 @@ import { ApiErrorCode } from '../../constants/api-error-code.enum';
 import { RedisUtil } from '../../utils/redis.util';
 import { ConfigService } from '@nestjs/config';
 import { UserType } from '../../constants/dicts.enum';
+import { AreaService } from '../area/area.service';
 
 @Injectable()
 export class UserService {
@@ -45,6 +46,7 @@ export class UserService {
     private readonly permissionService: PermissionService,
     private readonly userGroupService: UserGroupService,
     private readonly userRoleService: UserRoleService,
+    private readonly areaService: AreaService,
     private readonly cacheService: CacheService,
   ) {
   }
@@ -512,6 +514,25 @@ export class UserService {
         throw new ApiException(`数据 id：${id} 不存在！`, ApiErrorCode.NOT_FOUND, HttpStatus.OK);
       }
 
+      // @ts-ignore
+      if (ret?.provinceId) {
+        // @ts-ignore
+        const provinceRet = await this.areaService.selectById({ id: ret!.provinceId });
+        if (provinceRet){
+
+        }
+      }
+
+      // @ts-ignore
+      if (ret?.cityId) {
+      }
+
+      // @ts-ignore
+      if (ret?.districtId) {
+
+      }
+
+      console.log('ret', ret);
       if (ret?.userGroups?.length > 0) {
         const ids = ret.userGroups.map((v) => v.groupId);
         const groupRet = await this.groupService.selectByIds(ids);

@@ -2,7 +2,6 @@ import { HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, In } from 'typeorm';
 import { RolePermission } from './entities/role-permission.entity';
-import { UserRole } from '../user-role/entities/user-role.entity';
 import { ApiException } from '../../common/exception/api-exception';
 import { ApiErrorCode } from '../../constants/api-error-code.enum';
 
@@ -52,7 +51,7 @@ export class RolePermissionService {
       return await this.rolePermissionRepository
         .createQueryBuilder()
         .delete()
-        .from(UserRole)
+        .from(RolePermission)
         .where('roleId = :id', { id: id })
         .execute();
     } catch (e) {

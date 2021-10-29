@@ -9,10 +9,12 @@ import { UserRoleModule } from '../user-role/user-role.module';
 import { GroupModule } from '../group/group.module';
 import { RoleModule } from '../role/role.module';
 import { PermissionModule } from '../permission/permission.module';
+import { AreaModule } from '../area/area.module';
 
 @Global()
 @Module({
   imports: [
+    AreaModule,
     UserinfoModule,
     GroupModule,
     RoleModule,

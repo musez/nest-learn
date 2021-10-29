@@ -8,5 +8,7 @@ import { Area } from './entities/area.entity';
   imports: [TypeOrmModule.forFeature([Area])],
   controllers: [AreaController],
   providers: [AreaService],
+  exports: [AreaService],
 })
-export class AreaModule {}
+export class AreaModule {
+}
