@@ -6,7 +6,7 @@ import { UpdateUserAddressDto } from './dto/update-user-address.dto';
 import { Utils } from '../../utils';
 import {
   BaseFindByIdDto,
-  BaseFindByIdsDto,
+  BaseFindByIdsDto, BaseModifyDefaultDto,
   BaseModifyStatusByIdsDto,
 } from '../base.dto';
 import { UserAddress } from './entities/user-address.entity';
@@ -32,159 +32,184 @@ export class UserAddressService {
    * 添加
    */
   async insert(createDto: CreateUserAddressDto, curUser?): Promise<CreateUserAddressDto | UserAddress> {
-    let userAddress = new UserAddress();
-    userAddress = Utils.dto2entity(createDto, userAddress);
+    try {
+      let userAddress = new UserAddress();
+      userAddress = Utils.dto2entity(createDto, userAddress);
 
-    const ret = await this.userService.selectById({ id: curUser ? curUser.id : null });
-    userAddress.user = ret;
+      const ret = await this.userService.selectById({ id: curUser ? curUser.id : null });
+      userAddress.user = ret;
 
-    return await this.userAddressRepository.save(userAddress);
+      return await this.userAddressRepository.save(userAddress);
+    } catch (e) {
+      this.logger.error('系统异常：', e);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+    }
   }
 
   /**
    * 获取列表
    */
   async selectList(searchDto: SearchUserAddressDto): Promise<any[]> {
-    // eslint-disable-next-line prefer-const
-    let { name, mobile, status } = searchDto;
+    try {
+      // eslint-disable-next-line prefer-const
+      let { name, mobile, status } = searchDto;
 
-    const queryConditionList = [];
-    if (!Utils.isBlank(name)) {
-      queryConditionList.push('userAddress.name LIKE :name');
-    }
-    if (!Utils.isBlank(mobile)) {
-      queryConditionList.push('userAddress.mobile LIKE :mobile');
-    }
-    if (!Utils.isBlank(status)) {
-      if (!Utils.isArray(status)) {
-        // @ts-ignore
-        status = Utils.split(status.toString());
+      const queryConditionList = [];
+      if (!Utils.isBlank(name)) {
+        queryConditionList.push('userAddress.name LIKE :name');
       }
-      queryConditionList.push('userAddress.status IN (:status)');
+      if (!Utils.isBlank(mobile)) {
+        queryConditionList.push('userAddress.mobile LIKE :mobile');
+      }
+      if (!Utils.isBlank(status)) {
+        if (!Utils.isArray(status)) {
+          // @ts-ignore
+          status = Utils.split(status.toString());
+        }
+        queryConditionList.push('userAddress.status IN (:status)');
+      }
+      const queryCondition = queryConditionList.join(' AND ');
+
+      const ret = await this.userAddressRepository
+        .createQueryBuilder('userAddress')
+        // .leftJoinAndSelect('userAddress.user', 'user')
+        .leftJoinAndSelect(Area, 'p', 'p.id = userAddress.provinceId')
+        .leftJoinAndSelect(Area, 'c', 'c.id = userAddress.cityId')
+        .leftJoinAndSelect(Area, 'd', 'd.id = userAddress.districtId')
+        .select(
+          'userAddress.*',
+        )
+        .addSelect(
+          `p.areaName AS provinceName, c.areaName AS cityName, d.areaName AS districtName`,
+        )
+        .where(queryCondition, {
+          name: `%${name}%`,
+          mobile: `%${mobile}%`,
+          status: status,
+        })
+        .orderBy({
+          'userAddress.status': 'DESC',
+          'userAddress.createTime': 'DESC',
+        })
+        .getRawMany();
+
+      if (!ret) {
+        throw new ApiException('查询异常！', ApiErrorCode.ERROR, HttpStatus.OK);
+      }
+
+      return ret;
+    } catch (e) {
+      this.logger.error('系统异常：', e);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
-    const queryCondition = queryConditionList.join(' AND ');
-
-    const ret = await this.userAddressRepository
-      .createQueryBuilder('userAddress')
-      // .leftJoinAndSelect('userAddress.user', 'user')
-      .leftJoinAndSelect(Area, 'p', 'p.id = userAddress.provinceId')
-      .leftJoinAndSelect(Area, 'c', 'c.id = userAddress.cityId')
-      .leftJoinAndSelect(Area, 'd', 'd.id = userAddress.districtId')
-      .select(
-        'userAddress.*',
-      )
-      .addSelect(
-        `p.areaName AS provinceName, c.areaName AS cityName, d.areaName AS districtName`,
-      )
-      .where(queryCondition, {
-        name: `%${name}%`,
-        mobile: `%${mobile}%`,
-        status: status,
-      })
-      .orderBy({
-        'userAddress.status': 'DESC',
-        'userAddress.createTime': 'DESC',
-      })
-      .getRawMany();
-
-    if (!ret) {
-      throw new ApiException('查询异常！', ApiErrorCode.ERROR, HttpStatus.OK);
-    }
-
-    return ret;
   }
 
   /**
    * 获取列表（分页）
    */
   async selectListPage(limitDto: LimitUserAddressDto): Promise<any> {
-    // eslint-disable-next-line prefer-const
-    let { page, limit, name, mobile, status } = limitDto;
-    page = page ? page : 1;
-    limit = limit ? limit : 10;
-    const offset = (page - 1) * limit;
+    try {
+      // eslint-disable-next-line prefer-const
+      let { page, limit, name, mobile, status } = limitDto;
+      page = page ? page : 1;
+      limit = limit ? limit : 10;
+      const offset = (page - 1) * limit;
 
-    const queryConditionList = [];
-    if (!Utils.isBlank(name)) {
-      queryConditionList.push('userAddress.name LIKE :name');
-    }
-    if (!Utils.isBlank(mobile)) {
-      queryConditionList.push('userAddress.mobile LIKE :mobile');
-    }
-    if (!Utils.isBlank(status)) {
-      if (!Utils.isArray(status)) {
-        // @ts-ignore
-        status = Utils.split(status.toString());
+      const queryConditionList = [];
+      if (!Utils.isBlank(name)) {
+        queryConditionList.push('userAddress.name LIKE :name');
       }
-      queryConditionList.push('userAddress.status IN (:status)');
+      if (!Utils.isBlank(mobile)) {
+        queryConditionList.push('userAddress.mobile LIKE :mobile');
+      }
+      if (!Utils.isBlank(status)) {
+        if (!Utils.isArray(status)) {
+          // @ts-ignore
+          status = Utils.split(status.toString());
+        }
+        queryConditionList.push('userAddress.status IN (:status)');
+      }
+      const queryCondition = queryConditionList.join(' AND ');
+
+      const queryBuilder = this.userAddressRepository
+        .createQueryBuilder('userAddress')
+        // .leftJoinAndSelect('userAddress.user', 'user')
+        .leftJoinAndSelect(Area, 'p', 'p.id = userAddress.provinceId')
+        .leftJoinAndSelect(Area, 'c', 'c.id = userAddress.cityId')
+        .leftJoinAndSelect(Area, 'd', 'd.id = userAddress.districtId')
+        .select(
+          'userAddress.*',
+        )
+        .addSelect(
+          `p.areaName AS provinceName, c.areaName AS cityName, d.areaName AS districtName`,
+        )
+        .where(queryCondition, {
+          name: `%${name}%`,
+          mobile: `%${mobile}%`,
+          status: status,
+        });
+
+      const ret = await queryBuilder
+        // .skip(offset)
+        // .take(limit)
+        .offset(offset)
+        .limit(limit)
+        .orderBy({
+          'userAddress.status': 'DESC',
+          'userAddress.createTime': 'DESC',
+        })
+        .getRawMany();
+
+      const retCount = await queryBuilder.getCount();
+
+      if (!ret) {
+        throw new ApiException('查询异常！', ApiErrorCode.ERROR, HttpStatus.OK);
+      }
+
+      return {
+        list: ret,
+        total: retCount,
+        page: page,
+        limit: limit,
+      };
+    } catch (e) {
+      this.logger.error('系统异常：', e);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
-    const queryCondition = queryConditionList.join(' AND ');
-
-    const queryBuilder = this.userAddressRepository
-      .createQueryBuilder('userAddress')
-      // .leftJoinAndSelect('userAddress.user', 'user')
-      .leftJoinAndSelect(Area, 'p', 'p.id = userAddress.provinceId')
-      .leftJoinAndSelect(Area, 'c', 'c.id = userAddress.cityId')
-      .leftJoinAndSelect(Area, 'd', 'd.id = userAddress.districtId')
-      .select(
-        'userAddress.*',
-      )
-      .addSelect(
-        `p.areaName AS provinceName, c.areaName AS cityName, d.areaName AS districtName`,
-      )
-      .where(queryCondition, {
-        name: `%${name}%`,
-        mobile: `%${mobile}%`,
-        status: status,
-      });
-
-    const ret = await queryBuilder
-      // .skip(offset)
-      // .take(limit)
-      .offset(offset)
-      .limit(limit)
-      .orderBy({
-        'userAddress.status': 'DESC',
-        'userAddress.createTime': 'DESC',
-      })
-      .getRawMany();
-
-    const retCount = await queryBuilder.getCount();
-
-    if (!ret) {
-      throw new ApiException('查询异常！', ApiErrorCode.ERROR, HttpStatus.OK);
-    }
-
-    return {
-      list: ret,
-      total: retCount,
-      page: page,
-      limit: limit,
-    };
   }
 
   /**
    * 获取详情（主键 id）
    */
   async selectById(baseFindByIdDto: BaseFindByIdDto): Promise<UserAddress> {
-    const { id } = baseFindByIdDto;
-    return await this.userAddressRepository.findOne({
-      relations: ['user'],
-      where: {
-        id: id,
-      },
-    });
+    try {
+      const { id } = baseFindByIdDto;
+      return await this.userAddressRepository.findOne({
+        relations: ['user'],
+        where: {
+          id: id,
+        },
+      });
+    } catch (e) {
+      this.logger.error('系统异常：', e);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+    }
   }
 
   /**
    * 是否存在（主键 id）
    */
   async isExistId(id: string): Promise<boolean> {
-    const isExist = await this.userAddressRepository.findOne(id);
-    if (Utils.isNil(isExist)) {
-      return false;
-    } else {
-      return true;
+    try {
+      const isExist = await this.userAddressRepository.findOne(id);
+      if (Utils.isNil(isExist)) {
+        return false;
+      } else {
+        return true;
+      }
+    } catch (e) {
+      this.logger.error('系统异常：', e);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
   }
 
@@ -192,71 +217,123 @@ export class UserAddressService {
    * 修改
    */
   async update(updateDto: UpdateUserAddressDto, curUser?): Promise<void> {
-    const { id } = updateDto;
+    try {
+      const { id } = updateDto;
 
-    let userAddress = new UserAddress();
-    userAddress = Utils.dto2entity(updateDto, userAddress);
+      let userAddress = new UserAddress();
+      userAddress = Utils.dto2entity(updateDto, userAddress);
 
-    await this.userAddressRepository.update(id, userAddress);
+      await this.userAddressRepository.update(id, userAddress);
+    } catch (e) {
+      this.logger.error('系统异常：', e);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+    }
   }
 
   /**
    * 修改状态（批量，主键 ids）
    */
   async updateStatus(baseModifyStatusByIdsDto: BaseModifyStatusByIdsDto, curUser?): Promise<any> {
-    // eslint-disable-next-line prefer-const
-    let { ids, status } = baseModifyStatusByIdsDto;
-    if (!Utils.isArray(ids)) {
-      ids = Utils.split(ids.toString());
-    }
-    const ret = this.userAddressRepository
-      .createQueryBuilder()
-      .update(UserAddress)
-      .set({ status: status, updateBy: curUser ? curUser!.id : null })
-      .where('id IN (:ids)', { ids: ids })
-      .execute();
+    try {
+      // eslint-disable-next-line prefer-const
+      let { ids, status } = baseModifyStatusByIdsDto;
+      if (!Utils.isArray(ids)) {
+        ids = Utils.split(ids.toString());
+      }
+      const ret = this.userAddressRepository
+        .createQueryBuilder()
+        .update(UserAddress)
+        .set({ status: status, updateBy: curUser ? curUser!.id : null })
+        .where('id IN (:ids)', { ids: ids })
+        .execute();
 
-    if (!ret) {
-      throw new ApiException('更新异常！', ApiErrorCode.ERROR, HttpStatus.OK);
-    }
+      if (!ret) {
+        throw new ApiException('更新异常！', ApiErrorCode.ERROR, HttpStatus.OK);
+      }
 
-    return ret;
+      return ret;
+    } catch (e) {
+      this.logger.error('系统异常：', e);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+    }
+  }
+
+  /**
+   * 设置默认（主键 id）
+   */
+  async updateDefault(baseModifyDefaultDto: BaseModifyDefaultDto, curUser?): Promise<any> {
+    try {
+      const { id, userId } = baseModifyDefaultDto;
+
+      const defaultRet = this.userAddressRepository
+        .createQueryBuilder()
+        .update(UserAddress)
+        .set({ isDefault: 1, updateBy: curUser ? curUser!.id : null })
+        .where('id IN (:ids) AND userId = :userId', { id: id, userId: userId })
+        .execute();
+
+      const ret = this.userAddressRepository
+        .createQueryBuilder()
+        .update(UserAddress)
+        .set({ isDefault: 0, updateBy: curUser ? curUser!.id : null })
+        .where('id NOT IN (:ids) AND userId = :userId', { id: id, userId: userId })
+        .execute();
+
+      if (defaultRet && ret) {
+        return ret;
+      } else {
+        throw new ApiException('更新异常！', ApiErrorCode.ERROR, HttpStatus.OK);
+      }
+    } catch (e) {
+      this.logger.error('系统异常：', e);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+    }
   }
 
   /**
    * 删除（主键 id）
    */
   async deleteById(baseFindByIdDto: BaseFindByIdDto, curUser?): Promise<void> {
-    const { id } = baseFindByIdDto;
+    try {
+      const { id } = baseFindByIdDto;
 
-    await this.userAddressRepository
-      .createQueryBuilder()
-      .delete()
-      .from(UserAddress)
-      .where('id = :id', { id: id })
-      .execute();
+      await this.userAddressRepository
+        .createQueryBuilder()
+        .delete()
+        .from(UserAddress)
+        .where('id = :id', { id: id })
+        .execute();
+    } catch (e) {
+      this.logger.error('系统异常：', e);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+    }
   }
 
   /**
    * 删除（批量，主键 ids）
    */
   async deleteByIds(baseFindByIdsDto: BaseFindByIdsDto, curUser?): Promise<void> {
-    let { ids } = baseFindByIdsDto;
+    try {
+      let { ids } = baseFindByIdsDto;
 
-    if (!Utils.isArray(ids)) {
-      ids = Utils.split(ids.toString());
+      if (!Utils.isArray(ids)) {
+        ids = Utils.split(ids.toString());
+      }
+      const ret = await this.userAddressRepository
+        .createQueryBuilder()
+        .delete()
+        .from(UserAddress)
+        .where('id IN (:ids)', { ids: ids })
+        .execute();
+
+      if (!ret) {
+        throw new ApiException('删除异常！', ApiErrorCode.ERROR, HttpStatus.OK);
+      }
+
+      return null;
+    } catch (e) {
+      this.logger.error('系统异常：', e);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
     }
-    const ret = await this.userAddressRepository
-      .createQueryBuilder()
-      .delete()
-      .from(UserAddress)
-      .where('id IN (:ids)', { ids: ids })
-      .execute();
-
-    if (!ret) {
-      throw new ApiException('删除异常！', ApiErrorCode.ERROR, HttpStatus.OK);
-    }
-
-    return null;
   }
 }

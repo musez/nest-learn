@@ -343,7 +343,11 @@ export class OrgService {
    */
   async update(updateOrgDto: UpdateOrgDto, curUser?): Promise<void> {
     try {
-      const { id } = updateOrgDto;
+      const { id, parentId } = updateOrgDto;
+
+      if (id === parentId) {
+        throw new ApiException('不能选择自身为父级！', ApiErrorCode.PARAMS_ERROR, HttpStatus.OK);
+      }
 
       let org = new Org();
       org = Utils.dto2entity(updateOrgDto, org);

@@ -26,7 +26,9 @@ export class AuthService {
    */
   async validateUser(userName: string, userPwd: string): Promise<any> {
     try {
+      const key = this.configService.get('app.key');
       const user = await this.userService.selectByName(userName);
+      userPwd = CryptoUtil.aesDecrypt(userPwd, key);
 
       // 注：实际中的密码处理应通过加密措施
       if (user && CryptoUtil.checkPassword(userPwd, user.userPwd)) {

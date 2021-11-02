@@ -366,7 +366,11 @@ export class ArticleCatService {
    */
   async update(updateArticleCatDto: UpdateArticleCatDto, curUser?): Promise<void> {
     try {
-      const { id } = updateArticleCatDto;
+      const { id, parentId } = updateArticleCatDto;
+
+      if (id === parentId) {
+        throw new ApiException('不能选择自身为父级！', ApiErrorCode.PARAMS_ERROR, HttpStatus.OK);
+      }
 
       let articleCat = new ArticleCat();
       articleCat = Utils.dto2entity(updateArticleCatDto, articleCat);

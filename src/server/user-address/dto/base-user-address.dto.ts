@@ -85,4 +85,11 @@ export class BaseUserAddressDto {
     message: '描述不能大于 $constraint1 位！',
   })
   readonly description?: string;
+
+  @ApiProperty({ description: '是否默认地址（0：否；1：是）', example: 0 })
+  @IsDefined({ message: '是否默认地址不能为空！' })
+  @IsNotEmpty({ message: '是否默认地址不能为空！' })
+  @Type(() => Number)
+  @IsInt({ message: '是否默认地址必须为数字！' })
+  readonly isDefault?: number;
 }

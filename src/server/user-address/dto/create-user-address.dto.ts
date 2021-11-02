@@ -11,4 +11,5 @@ export class CreateUserAddressDto extends PickType(BaseUserAddressDto, [
   'address',
   'status',
   'description',
+  'isDefault'
 ]) {}

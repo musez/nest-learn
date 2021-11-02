@@ -33,8 +33,13 @@ export class PermissionService {
    */
   async insert(createPermissionDto: CreatePermissionDto, curUser?): Promise<Permission> {
     try {
+      const { sort, parentId } = createPermissionDto;
       let permission = new Permission();
       permission = Utils.dto2entity(createPermissionDto, permission);
+      if (sort === null || sort === 0) {
+        const preSort = await this.selectCountByPId({ parentId });
+        permission.sort = preSort + 1;
+      }
       if (curUser) {
         permission.createBy = curUser!.id;
       }
@@ -174,6 +179,24 @@ export class PermissionService {
         })
         .getRawMany();
 
+      return ret;
+    } catch (e) {
+      this.logger.error('系统异常：', e);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+    }
+  }
+
+  /**
+   * 获取列表
+   */
+  async selectCountByPId(baseFindByPIdDto: BaseFindByPIdDto): Promise<number> {
+    try {
+      // eslint-disable-next-line prefer-const
+      let { parentId } = baseFindByPIdDto;
+
+      const ret = await this.permissionRepository.count({
+        parentId: parentId,
+      });
       return ret;
     } catch (e) {
       this.logger.error('系统异常：', e);
@@ -499,6 +522,10 @@ export class PermissionService {
   async update(updatePermissionDto: UpdatePermissionDto, curUser?) {
     try {
       const { id, parentId, ...result } = updatePermissionDto;
+
+      if (id === parentId) {
+        throw new ApiException('不能选择自身为父级！', ApiErrorCode.PARAMS_ERROR, HttpStatus.OK);
+      }
 
       let permission = new Permission();
       permission = Utils.dto2entity(updatePermissionDto, permission);

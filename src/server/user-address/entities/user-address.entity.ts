@@ -4,7 +4,7 @@ import {
   JoinColumn,
   ManyToOne,
 } from 'typeorm';
-import { SexType } from '../../../constants/dicts.enum';
+import { DefaultType, SexType, StatusType } from '../../../constants/dicts.enum';
 import { BaseEntity } from '../../base.entity';
 import { User } from '../../user/entities/user.entity';
 
@@ -50,6 +50,12 @@ export class UserAddress extends BaseEntity {
 
   @Column({ comment: '详细地址', length: 100, nullable: true })
   address: string;
+
+  @Column('tinyint', {
+    comment: '默认地址（0：否；1：是）',
+    default: DefaultType.UN_DEFAULT,
+  })
+  isDefault: DefaultType;
 
   @ManyToOne((type) => User, (user) => user.userAddress)
   user: User;
