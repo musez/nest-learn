@@ -103,7 +103,7 @@ export class DictController {
 
   @Get('findByDictCodes')
   @Auth('system:dict:findByDictCodes')
-  @ApiOperation({ summary: '获取列表' })
+  @ApiOperation({ summary: '获取列表（字典 codes）' })
   async findByDictCodes(@Query() searchDictCodeDto: SearchDictCodeDto): Promise<any> {
     let { dictCode } = searchDictCodeDto;
 

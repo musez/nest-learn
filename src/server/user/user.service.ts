@@ -138,11 +138,12 @@ export class UserService {
    */
   async initSystemSuperUser(user): Promise<any> {
     try {
+      const password = this.configService.get('app.password');
       const { userPwd } = user;
 
       // 未传入密码时，使用默认密码；传入密码时，使用传入密码
       if (Utils.isBlank(userPwd)) {
-        user.userPwd = CryptoUtil.encryptPassword('888888');
+        user.userPwd = CryptoUtil.encryptPassword(password);
       } else {
         user.userPwd = CryptoUtil.encryptPassword(userPwd);
       }
@@ -171,13 +172,14 @@ export class UserService {
    */
   async insert(createUserDto: CreateUserDto, curUser?): Promise<CreateUserDto | void> {
     try {
+      const password = this.configService.get('app.password');
       const { userPwd } = createUserDto;
 
       let user = new User();
       user = Utils.dto2entity(createUserDto, user);
       // 未传入密码时，使用默认密码；传入密码时，使用传入密码
       if (Utils.isBlank(userPwd)) {
-        user.userPwd = CryptoUtil.encryptPassword('888888');
+        user.userPwd = CryptoUtil.encryptPassword(password);
       } else {
         user.userPwd = CryptoUtil.encryptPassword(userPwd);
       }
@@ -220,6 +222,7 @@ export class UserService {
    */
   async insertBatch(createUserDto: CreateUserDto[], curUser?): Promise<CreateUserDto[] | void> {
     try {
+      const password = this.configService.get('app.password');
       const userList: CreateUserDto[] = [],
         userinfoList: CreateUserinfoDto[] = [];
 
@@ -229,7 +232,7 @@ export class UserService {
         user = Utils.dto2entityImport(item, user);
         // 未传入密码时，使用默认密码；传入密码时，使用传入密码
         if (Utils.isBlank(userPwd)) {
-          user.userPwd = CryptoUtil.encryptPassword('888888');
+          user.userPwd = CryptoUtil.encryptPassword(password);
         } else {
           user.userPwd = CryptoUtil.encryptPassword(userPwd);
         }
@@ -518,7 +521,7 @@ export class UserService {
       if (ret?.provinceId) {
         // @ts-ignore
         const provinceRet = await this.areaService.selectById({ id: ret!.provinceId });
-        if (provinceRet){
+        if (provinceRet) {
 
         }
       }

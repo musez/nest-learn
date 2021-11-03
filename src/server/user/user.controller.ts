@@ -32,7 +32,6 @@ import { ApiException } from '../../common/exception/api-exception';
 import { ApiErrorCode } from '../../constants/api-error-code.enum';
 import { ImportType } from '../../constants/dicts.enum';
 import { ImportLogService } from '../import-log/import-log.service';
-import { Role } from '../role/entities/role.entity';
 
 @ApiTags('用户')
 @Controller('user')

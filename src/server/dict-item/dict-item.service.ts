@@ -169,6 +169,27 @@ export class DictItemService {
   }
 
   /**
+   * 获取是否有字典项（主键 id）
+   */
+  async isExistDictId(baseFindByIdDto: BaseFindByIdDto): Promise<boolean> {
+    try {
+      const { id } = baseFindByIdDto;
+
+      const isExist = await this.dictItemRepository.find({
+        dictId: id,
+      });
+      if (Utils.isNil(isExist)) {
+        return false;
+      } else {
+        return true;
+      }
+    } catch (e) {
+      this.logger.error('系统异常：', e);
+      throw new ApiException(e.errorMessage, e.errorCode ? e.errorCode : ApiErrorCode.ERROR, HttpStatus.OK);
+    }
+  }
+
+  /**
    * 删除（字典 id）
    */
   async deleteByDictId(id: string, curUser?): Promise<void> {

@@ -293,6 +293,11 @@ export class DictService {
     try {
       const { id } = baseFindByIdDto;
 
+      const ret = await this.dictItemService.isExistDictId(baseFindByIdDto);
+      if (ret) {
+        throw new ApiException('字典下存在字典项，不允许删除！', ApiErrorCode.NOT_ACTION, HttpStatus.OK);
+      }
+
       await this.dictRepository
         .createQueryBuilder()
         .delete()
@@ -315,6 +320,14 @@ export class DictService {
       if (!Utils.isArray(ids)) {
         ids = Utils.split(ids.toString());
       }
+
+      for (const id of ids) {
+        const ret = await this.dictItemService.isExistDictId({ id });
+        if (ret) {
+          throw new ApiException('字典下存在字典项，不允许删除！', ApiErrorCode.NOT_ACTION, HttpStatus.OK);
+        }
+      }
+
       await this.dictRepository
         .createQueryBuilder()
         .delete()

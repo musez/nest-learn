@@ -1,3 +1,11 @@
+// 平台类型
+export enum PlatformType {
+  ADMIN = 0, // 后台
+  H5 = 1, // h5
+  ANDROID = 2, // 安卓
+  IOS = 3, // 苹果
+}
+
 // 状态类型
 export enum StatusType {
   DISABLE = 0, // 禁用/未发布/未审核/未处理

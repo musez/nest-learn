@@ -4,7 +4,6 @@ import { ConfigService } from '@nestjs/config';
 import { AppModule } from './app.module';
 import * as express from 'express';
 import { join } from 'path';
-import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger'; // api文档插件
 import * as helmet from 'helmet';
 import * as rateLimit from 'express-rate-limit';
 import * as compression from 'compression';
