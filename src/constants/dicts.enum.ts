@@ -4,6 +4,7 @@ export enum PlatformType {
   H5 = 1, // h5
   ANDROID = 2, // 安卓
   IOS = 3, // 苹果
+  MINI_PROGRAMS = 4, // 小程序
 }
 
 // 状态类型

@@ -85,9 +85,14 @@ export class AuthService {
         userType: user.userType,
         sub: user.id,
       };
+      const token = this.jwtService.sign(payload);
+      const expiresIn = this.configService.get('jwt.expiresIn');
       return {
-        token: this.jwtService.sign(payload),
-        expiresIn: this.configService.get('jwt.expiresIn'),
+        expiresIn: expiresIn,
+        accessToken: token,
+        refreshToken: this.jwtService.sign(payload, {
+          expiresIn: expiresIn,
+        }),
       };
     } catch (e) {
       this.logger.error('系统异常：', e);
